@@ -1,0 +1,16 @@
+Test Service
+---
+tags:
+      - IT Tools
+responses:
+      500:
+        description: Internal error from engine
+      200:
+        description: Test Service
+        schema:
+          id: userinformation
+          properties:
+            serviceonline:
+              type: object
+              default: "true"
+

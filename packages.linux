@@ -1,0 +1,7 @@
+python3-virtualenv python3-pip python3-venv 
+python3-dev uwsgi-plugin-python3 dos2unix
+freetds-dev libv8-dev libboost-dev awscli
+libssl-dev make gcc html2text libssl-dev dh-make
+awscli uwsgi-emperor uwsgi-plugin-python3 nginx
+openjdk-11-jre libcurl4-openssl-dev libssl-dev python3-pycurl
+libffi-dev wkhtmltopdf

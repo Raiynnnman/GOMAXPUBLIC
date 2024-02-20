@@ -1,0 +1,12 @@
+Chat Document Update 
+---
+tags:
+      - Chat
+parameters:
+      - name: body
+        in: body
+        required: true
+        description: body
+responses:
+      500:
+        description: Internal error from engine

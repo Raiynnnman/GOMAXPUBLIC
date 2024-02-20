@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.poundpain.mobile" version="1.0.0" 
+        xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>#PAIN</name>
+    <description>#PAIN</description>
+    <!--<content src="http://localhost/index.html" />-->
+    <author email="dev@cordova.apache.org" href="https://cordova.apache.org">
+        #PAIN
+    </author>
+    <hook type="before_prepare" src="scripts/prebuild.js" />
+    <content src="index.html" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <allow-navigation href="*" />
+    <allow-intent href="*" />
+    <access origin="*" />
+    <edit-config
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            file="app/src/main/AndroidManifest.xml"
+            mode="merge"
+            target="/manifest/application">
+        <application android:usesCleartextTraffic="true" />
+    </edit-config> 
+    <edit-config xmlns:android="http://schemas.android.com/apk/res/android" 
+            file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
+        <application android:networkSecurityConfig="@xml/network_security_config" />
+    </edit-config>
+    <resource-file src="network_security_config.xml" target="app/src/main/res/xml/network_security_config.xml" />
+    <universal-links>
+        <host name="uat.directhealthdelivery.io" event="dl_user_reset" scheme="https">
+            <path url="/#/reset" />
+        </host>
+        <host name="login.directhealthdelivery.io" event="dl_user_reset" scheme="https">
+            <path url="/#/reset" />
+        </host>
+        <host name="search.directhealthdelivery.io" event="dl_user_reset" scheme="https">
+            <path url="/#/reset" />
+        </host>
+    </universal-links>    
+    <preference name="AndroidLaunchMode" value="singleInstance" />
+    <!-- <plugin name="cordova-custom-config" version="*"/>
+    <config-file overwrite="true" parent="NSLocationAlwaysUsageDescription" platform="ios" target="*-Info.plist"> <string>Allow the app to know your location</string> </config-file>
+    <config-file overwrite="true" parent="NSLocationWhenInUseUsageDescription" platform="ios" target="*-Info.plist"> <string>Allow the app to know your location</string> </config-file> -->
+     <plugin name="cordova-plugin-geolocation">
+             <variable name="LOCATION_WHEN_IN_USE_DESCRIPTION" value="App would like to access the location." />
+            <variable name="LOCATION_ALWAYS_USAGE_DESCRIPTION" value="App would like to access the location." />
+     </plugin>
+</widget>

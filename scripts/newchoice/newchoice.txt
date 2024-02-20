@@ -1,0 +1,512 @@
+                <div class="procedure-detail" data-procedure_type_id="21" style="display: none;">
+                    <div class="procedure-title">Angioplasty Procedure</div>
+                        <ul>
+                                <li data-procedure_id="154">Angioplasty (PTCA)</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="22" style="display: none;">
+                    <div class="procedure-title">Ankle Replacement</div>
+                        <ul>
+                                <li data-procedure_id="155">Ankle Replacement Surgery</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="80" style="">
+                    <div class="procedure-title">Arthroscopic Knee Surgery</div>
+                        <ul>
+                                <li data-procedure_id="159">Acl Reconstruction Surgery</li>
+                                <li data-procedure_id="130">Knee Repair Surgery</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="1" style="display: none;">
+                    <div class="procedure-title">Arthroscopic Shoulder Surgery</div>
+                        <ul>
+                                <li data-procedure_id="128">Rotator Cuff Surgery</li>
+                                <li data-procedure_id="127">Shoulder Repair Surgery</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="26" style="display: none;">
+                    <div class="procedure-title">Bariatric Surgery</div>
+                        <ul>
+                                <li data-procedure_id="256">Duodenal Switch</li>
+                                <li data-procedure_id="165">Gastric Bypass</li>
+                                <li data-procedure_id="255">Gastric Sleeve</li>
+                                <li data-procedure_id="166">Lap Band Surgery</li>
+                                <li data-procedure_id="257">SADI</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="29" style="display: none;">
+                    <div class="procedure-title">Breast Reconstruction</div>
+                        <ul>
+                                <li data-procedure_id="169">Breast Reconstruction Surgery</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="31" style="display: none;">
+                    <div class="procedure-title">Bunionectomy</div>
+                        <ul>
+                                <li data-procedure_id="171">Bunionectomy</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="33" style="display: none;">
+                    <div class="procedure-title">Cardiac Stent</div>
+                        <ul>
+                                <li data-procedure_id="173">Cardiac Stent Implantation</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="2" style="display: none;">
+                    <div class="procedure-title">Cataract</div>
+                        <ul>
+                                <li data-procedure_id="131">Cataract Eye Surgery</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="35" style="display: none;">
+                    <div class="procedure-title">Cochlear Implant</div>
+                        <ul>
+                                <li data-procedure_id="176">Cochlear Implant   Surgery</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="3" style="display: none;">
+                    <div class="procedure-title">Colonoscopy</div>
+                        <ul>
+                                <li data-procedure_id="125">Colonoscopy</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="36" style="display: none;">
+                    <div class="procedure-title">Corneal Transplant</div>
+                        <ul>
+                                <li data-procedure_id="177">Corneal Transplant Surgery</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="37" style="display: none;">
+                    <div class="procedure-title">Coronary Bypass Surgery</div>
+                        <ul>
+                                <li data-procedure_id="179">Coronary Artery Bypass (Cabg)  Surgery</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="4" style="display: none;">
+                    <div class="procedure-title">CT Scan</div>
+                        <div class="col-md-6 col-lg-6">
+                            <ul>
+                                    <li data-procedure_id="2">Brain CT Scan</li>
+                                    <li data-procedure_id="8">Chest CT Scan</li>
+                                    <li data-procedure_id="18">CT Angiography - Abdomen</li>
+                                    <li data-procedure_id="22">CT Angiography - Aorta</li>
+                                    <li data-procedure_id="17">CT Angiography - Chest</li>
+                                    <li data-procedure_id="15">CT Angiography - Head</li>
+                                    <li data-procedure_id="21">CT Angiography - Lower Extremity</li>
+                                    <li data-procedure_id="16">CT Angiography - Neck</li>
+                                    <li data-procedure_id="19">CT Angiography - Pelvis</li>
+                                    <li data-procedure_id="20">CT Angiography - Upper Extremity</li>
+                                    <li data-procedure_id="1">CT Bone Density Scan</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6 col-lg-6">
+                            <ul>
+                                    <li data-procedure_id="3">CT Ear</li>
+                                    <li data-procedure_id="5">CT Neck</li>
+                                    <li data-procedure_id="11">CT Pelvis Scan</li>
+                                    <li data-procedure_id="9">CT Scan of Abdomen</li>
+                                    <li data-procedure_id="6">CT Spine and Neck</li>
+                                    <li data-procedure_id="14">Heart CT Scan</li>
+                                    <li data-procedure_id="13">Lower Extremity CT Scan</li>
+                                    <li data-procedure_id="10">Lumbar Spine CT</li>
+                                    <li data-procedure_id="4">Sinus CT</li>
+                                    <li data-procedure_id="7">Thoracic CT Scan - Thorax</li>
+                                    <li data-procedure_id="12">Upper Extremity CT Scan</li>
+                            </ul>
+                        </div>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="39" style="display: none;">
+                    <div class="procedure-title">Defibrillator </div>
+                        <ul>
+                                <li data-procedure_id="181">Cardiac Defibrillator Implantation</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="40" style="display: none;">
+                    <div class="procedure-title">Disc Replacement Surgery</div>
+                        <ul>
+                                <li data-procedure_id="182">Disc Replacement  Surgery</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="41" style="display: none;">
+                    <div class="procedure-title">Diskectomy</div>
+                        <ul>
+                                <li data-procedure_id="186">Diskectomy</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="42" style="display: none;">
+                    <div class="procedure-title">Ear Tube Surgery</div>
+                        <ul>
+                                <li data-procedure_id="187">Myringotomy</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="82" style="display: none;">
+                    <div class="procedure-title">Echo</div>
+                        <ul>
+                                <li data-procedure_id="26">Heart EKG</li>
+                                <li data-procedure_id="25">Transesophageal Echocardiography</li>
+                                <li data-procedure_id="23">VSD Test</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="6" style="display: none;">
+                    <div class="procedure-title">EKG</div>
+                        <ul>
+                                <li data-procedure_id="24">Electrocardiogram</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="7" style="display: none;">
+                    <div class="procedure-title">Endoscopy</div>
+                        <ul>
+                                <li data-procedure_id="126">Upper GI Endoscopy</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="44" style="display: none;">
+                    <div class="procedure-title">Essure Birth Control</div>
+                        <ul>
+                                <li data-procedure_id="190">Permanent Birth Control Surgery</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="45" style="display: none;">
+                    <div class="procedure-title">Eye Shunt</div>
+                        <ul>
+                                <li data-procedure_id="191">Aqueous Shunt Implantation</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="47" style="display: none;">
+                    <div class="procedure-title">Foot Repair Surgery</div>
+                        <ul>
+                                <li data-procedure_id="194">Foot Or Ankle Fusion Surgery</li>
+                                <li data-procedure_id="195">Foot Or Ankle Repair  Surgery</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="48" style="display: none;">
+                    <div class="procedure-title">Gastroenterostomy</div>
+                        <ul>
+                                <li data-procedure_id="197">Gastroenterostomy</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="86" style="display: none;">
+                    <div class="procedure-title">General Wellness Test</div>
+                        <ul>
+                                <li data-procedure_id="253">Basic Metabolic Panel</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="49" style="display: none;">
+                    <div class="procedure-title">Hammertoe Correction</div>
+                        <ul>
+                                <li data-procedure_id="198">Hammertoe Correction Surgery</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="8" style="display: none;">
+                    <div class="procedure-title">Hernia Repair Surgery</div>
+                        <ul>
+                                <li data-procedure_id="134">Laparoscopic Hernia Repair</li>
+                                <li data-procedure_id="135">Open Hernia Repair</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="54" style="display: none;">
+                    <div class="procedure-title">Hip Replacement</div>
+                        <ul>
+                                <li data-procedure_id="204">Hip Replacement Surgery (Total)</li>
+                                <li data-procedure_id="205">Hip Resurfacing  Surgery</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="55" style="display: none;">
+                    <div class="procedure-title">Knee Replacement Surgery</div>
+                        <ul>
+                                <li data-procedure_id="207">Knee Replacement (Total)</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="56" style="display: none;">
+                    <div class="procedure-title">Kyphoplasty</div>
+                        <ul>
+                                <li data-procedure_id="208">Kyphoplasty</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="11" style="display: none;">
+                    <div class="procedure-title">Laparoscopic Gallbladder Surgery</div>
+                        <ul>
+                                <li data-procedure_id="133">Cholecystectomy (Gallbladder Surgery)</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="10" style="display: none;">
+                    <div class="procedure-title">Laparoscopic Hysterectomy</div>
+                        <ul>
+                                <li data-procedure_id="132">Adnexa Removal</li>
+                                <li data-procedure_id="150">Hysterectomy Myomectomy</li>
+                                <li data-procedure_id="152">Hysterectomy Vaginal</li>
+                                <li data-procedure_id="153">Ovary Surgery</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="12" style="display: none;">
+                    <div class="procedure-title">Lithotripsy (Kidney Stone Removal)</div>
+                        <ul>
+                                <li data-procedure_id="136">Lithotripsy (Kidney Stone Removal)</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="13" style="display: none;">
+                    <div class="procedure-title">Mammogram</div>
+                        <ul>
+                                <li data-procedure_id="28">Breast Mammogram (bilateral)</li>
+                                <li data-procedure_id="27">Breast Mammogram (unilateral)</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="84" style="display: none;">
+                    <div class="procedure-title">Minor Illness</div>
+                        <ul>
+                                <li data-procedure_id="251">Flu Treatment</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="83" style="display: none;">
+                    <div class="procedure-title">Minor Injury</div>
+                        <ul>
+                                <li data-procedure_id="250">Suture of Skin</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="14" style="display: none;">
+                    <div class="procedure-title">MRA</div>
+                        <ul>
+                                <li data-procedure_id="31">Chest MRI (Angiography)</li>
+                                <li data-procedure_id="29">MRA Brain</li>
+                                <li data-procedure_id="30">MRA Neck</li>
+                                <li data-procedure_id="32">MRA of Abdomen</li>
+                                <li data-procedure_id="33">MRA of Pelvis</li>
+                                <li data-procedure_id="34">MRI of Lower Extremity</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="15" style="display: none;">
+                    <div class="procedure-title">MRI</div>
+                        <ul>
+                                <li data-procedure_id="42">Abdominal MRI</li>
+                                <li data-procedure_id="139">Bone MRI</li>
+                                <li data-procedure_id="36">Brain MRI</li>
+                                <li data-procedure_id="41">Breast MRI (Both Breasts)</li>
+                                <li data-procedure_id="40">Breast MRI (One Breast)</li>
+                                <li data-procedure_id="138">Cardiac MRI</li>
+                                <li data-procedure_id="38">Chest MRI</li>
+                                <li data-procedure_id="35">General MRI</li>
+                                <li data-procedure_id="46">Lower Extremity MRI</li>
+                                <li data-procedure_id="43">MRI Cervical Spine</li>
+                                <li data-procedure_id="137">MRI of Head</li>
+                                <li data-procedure_id="37">Neck MRI</li>
+                                <li data-procedure_id="44">Pelvic MRI</li>
+                                <li data-procedure_id="45">Upper Extremity MRI</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="60" style="display: none;">
+                    <div class="procedure-title">Pacemaker</div>
+                        <ul>
+                                <li data-procedure_id="214">Cardiac Pacemaker Implantation</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="16" style="display: none;">
+                    <div class="procedure-title">PET Scan</div>
+                        <ul>
+                                <li data-procedure_id="49">PET Scan (Chest to Head Neck)</li>
+                                <li data-procedure_id="48">PET Scan (Skull to Mid-Thigh)</li>
+                                <li data-procedure_id="140">PET Scan Brain</li>
+                                <li data-procedure_id="50">PET Scan Heart</li>
+                                <li data-procedure_id="47">Whole Body PET Scan</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="87" style="display: none;">
+                    <div class="procedure-title">Physical Therapy</div>
+                        <ul>
+                                <li data-procedure_id="254">Physical Therapy</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="64" style="display: none;">
+                    <div class="procedure-title">Reflux Surgery</div>
+                        <ul>
+                                <li data-procedure_id="219">Gastric Cardioplasty</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="65" style="display: none;">
+                    <div class="procedure-title">Septoplasty Surgery</div>
+                        <ul>
+                                <li data-procedure_id="220">Septoplasty</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="17" style="display: none;">
+                    <div class="procedure-title">Sleep Study</div>
+                        <ul>
+                                <li data-procedure_id="51">Sleep Study (Polysomnography)</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="67" style="display: none;">
+                    <div class="procedure-title">Spinal Cord Stimulator</div>
+                        <ul>
+                                <li data-procedure_id="223">Non-Rechargeable Neurostimulator Implantation</li>
+                                <li data-procedure_id="224">Rechargeable Neurostimulator Implantation</li>
+                                <li data-procedure_id="225">Trial Neurostimulator Implantation</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="68" style="display: none;">
+                    <div class="procedure-title">Spinal Fusion</div>
+                        <ul>
+                                <li data-procedure_id="226">Cervical Anterior Spinal Fusion Surgery</li>
+                                <li data-procedure_id="227">Cervical Posterior Spinal Fusion Surgery</li>
+                                <li data-procedure_id="228">Lumbar Anterior Spinal Fusion Surgery</li>
+                                <li data-procedure_id="229">Lumbar Posterior Spinal Fusion Surgery</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="69" style="display: none;">
+                    <div class="procedure-title">Spinal Instrumentation</div>
+                        <ul>
+                                <li data-procedure_id="235">Disk Laminectomy</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="18" style="display: none;">
+                    <div class="procedure-title">Stress Test</div>
+                        <ul>
+                                <li data-procedure_id="52">Cardiovascular Stress Test</li>
+                                <li data-procedure_id="53">Pulmonary Tests (Stress Test)</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="19" style="display: none;">
+                    <div class="procedure-title">Ultrasound</div>
+                        <div class="col-md-6 col-lg-6">
+                            <ul>
+                                    <li data-procedure_id="59">Abdominal Ultrasound</li>
+                                    <li data-procedure_id="148">Bone Ultrasound</li>
+                                    <li data-procedure_id="58">Breast Ultrasound</li>
+                                    <li data-procedure_id="57">Chest Ultrasound</li>
+                                    <li data-procedure_id="62">Extremity Ultrasound (Nonvascular)</li>
+                                    <li data-procedure_id="56">Eye Exam (Ultrasound Echography)</li>
+                                    <li data-procedure_id="143">Eye Ultrasound</li>
+                                    <li data-procedure_id="54">Fetal Biophysical Profile</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6 col-lg-6">
+                            <ul>
+                                    <li data-procedure_id="55">Head and Neck Ultrasound</li>
+                                    <li data-procedure_id="142">Head Ultrasound (echo exam)</li>
+                                    <li data-procedure_id="61">Hip Ultrasound (Infant)</li>
+                                    <li data-procedure_id="60">Pelvic Ultrasound</li>
+                                    <li data-procedure_id="145">Pregnant Ultrasound</li>
+                                    <li data-procedure_id="144">Spinal Ultrasound</li>
+                                    <li data-procedure_id="146">Ultrasound of Fetus</li>
+                                    <li data-procedure_id="147">Ultrasound of the Uterus</li>
+                            </ul>
+                        </div>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="72" style="display: none;">
+                    <div class="procedure-title">Urinary Incontinence Treatment</div>
+                        <ul>
+                                <li data-procedure_id="238">Incontinence Correction</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="73" style="display: none;">
+                    <div class="procedure-title">Urinary Stent </div>
+                        <ul>
+                                <li data-procedure_id="239">Urinary Stent Implantation</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="74" style="display: none;">
+                    <div class="procedure-title">Uterine Ablation</div>
+                        <ul>
+                                <li data-procedure_id="240">Endometrial Ablation</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="75" style="display: none;">
+                    <div class="procedure-title">Vaginal Prosthesis Implantation</div>
+                        <ul>
+                                <li data-procedure_id="241">Vaginal Prosthesis Implantation</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="76" style="display: none;">
+                    <div class="procedure-title">Vagus Nerve Stimulation</div>
+                        <ul>
+                                <li data-procedure_id="243">Sacral Nerve Stimulator Implantation</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="77" style="display: none;">
+                    <div class="procedure-title">Vertebroplasty</div>
+                        <ul>
+                                <li data-procedure_id="244">Vertebroplasty</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="85" style="display: none;">
+                    <div class="procedure-title">Wellness Visit</div>
+                        <ul>
+                                <li data-procedure_id="252">Bi-Annual Dental Appointment</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="81" style="display: none;">
+                    <div class="procedure-title">Wrist Surgery</div>
+                        <ul>
+                                <li data-procedure_id="129">Wrist/Hand Repair</li>
+                        </ul>
+                </div>
+                <div class="procedure-detail" data-procedure_type_id="20" style="display: none;">
+                    <div class="procedure-title">X-Ray</div>
+                        <div class="col-md-6 col-lg-6">
+                            <ul>
+                                    <li data-procedure_id="81">Abdominal X-Ray</li>
+                                    <li data-procedure_id="107">Ankle X-Ray</li>
+                                    <li data-procedure_id="113">Aorta X-Ray (Aortography)</li>
+                                    <li data-procedure_id="95">Bladder X-Ray</li>
+                                    <li data-procedure_id="63">Body X Ray</li>
+                                    <li data-procedure_id="64">Bone X-Ray</li>
+                                    <li data-procedure_id="78">Breastbone X-Ray</li>
+                                    <li data-procedure_id="77">Chest X-Ray</li>
+                                    <li data-procedure_id="85">Colon X-Ray</li>
+                                    <li data-procedure_id="99">Elbow X-Ray</li>
+                                    <li data-procedure_id="68">Eye X-Ray</li>
+                                    <li data-procedure_id="65">Facial X-Ray</li>
+                                    <li data-procedure_id="102">Finger X-Ray</li>
+                                    <li data-procedure_id="108">Foot X-Ray</li>
+                                    <li data-procedure_id="98">Forearm X-Ray</li>
+                                    <li data-procedure_id="88">Gallbladder X-Ray</li>
+                                    <li data-procedure_id="82">GI Tract X-Ray</li>
+                                    <li data-procedure_id="101">Hand X-Ray</li>
+                                    <li data-procedure_id="103">Hip X-Ray</li>
+                                    <li data-procedure_id="72">Jaw X-Ray</li>
+                                    <li data-procedure_id="106">Knee X-Ray</li>
+                                    <li data-procedure_id="104">Leg X-Ray</li>
+                                    <li data-procedure_id="80">Mammary Duct X-Ray</li>
+                                    <li data-procedure_id="69">Mastoid X-Ray</li>
+                                    <li data-procedure_id="71">Nasal X-Ray</li>
+                                    <li data-procedure_id="75">Neck X-Ray</li>
+                                    <li data-procedure_id="94">Pelvic X-Ray</li>
+                                    <li data-procedure_id="76">Pituitary Saddle X-Ray</li>
+                                    <li data-procedure_id="79">Rib X-Ray</li>
+                                    <li data-procedure_id="92">Sacroiliac Joint X-Ray</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6 col-lg-6">
+                            <ul>
+                                    <li data-procedure_id="74">Salivary Duct X-Ray</li>
+                                    <li data-procedure_id="97">Shoulder X-Ray</li>
+                                    <li data-procedure_id="70">Sinus X-Ray</li>
+                                    <li data-procedure_id="67">Skull X-Ray</li>
+                                    <li data-procedure_id="84">Small Bowel X-Ray</li>
+                                    <li data-procedure_id="91">Spine X-Ray</li>
+                                    <li data-procedure_id="93">Tailbone X-Ray</li>
+                                    <li data-procedure_id="73">Teeth X-Ray</li>
+                                    <li data-procedure_id="105">Thigh X-Ray</li>
+                                    <li data-procedure_id="112">Transcath Therapy X-Ray</li>
+                                    <li data-procedure_id="100">Wrist X-Ray</li>
+                                    <li data-procedure_id="86">X-Ray for Atherectomy</li>
+                                    <li data-procedure_id="83">X-Ray Guide for Stomach Tube</li>
+                                    <li data-procedure_id="119">X-Ray of Artery - Abdominal (Angiography)</li>
+                                    <li data-procedure_id="116">X-Ray of Artery - Adrenal Gland (Angiography)</li>
+                                    <li data-procedure_id="124">X-Ray of Artery - Arm (Angiography)</li>
+                                    <li data-procedure_id="118">X-Ray of Artery - Chest (Angiography)</li>
+                                    <li data-procedure_id="114">X-Ray of Artery - Head and Neck (Angiography)</li>
+                                    <li data-procedure_id="120">X-Ray of Artery - Kidney (Angiography)</li>
+                                    <li data-procedure_id="122">X-Ray of Artery - Pelvis (Angiography)</li>
+                                    <li data-procedure_id="121">X-Ray of Artery - Spine (Angiography)</li>
+                                    <li data-procedure_id="90">X-Ray of Bile Duct</li>
+                                    <li data-procedure_id="89">X-Ray of Bile Duct or Pancreas</li>
+                                    <li data-procedure_id="111">X-Ray of Blood Vessel (Angiography)</li>
+                                    <li data-procedure_id="66">X-Ray of Brain</li>
+                                    <li data-procedure_id="109">X-Ray of Toe</li>
+                                    <li data-procedure_id="96">X-Ray of Urinary Tract (Urography)</li>
+                                    <li data-procedure_id="123">X-Ray of Vein in Arm or Leg (Venography)</li>
+                                    <li data-procedure_id="87">X-Ray of Vein in Liver</li>
+                                    <li data-procedure_id="115">X-Ray of Vein in Neck</li>
+                                    <li data-procedure_id="117">X-Ray of Vein in Trunk (Venography)</li>
+                            </ul>
+                        </div>
+                </div>
+        

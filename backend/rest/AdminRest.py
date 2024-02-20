@@ -1,0 +1,123 @@
+# coding=utf-8
+
+import os
+import json
+import unittest
+from flask import request, jsonify
+
+from rest.RestBase import RestBase
+from processing import Admin
+from processing.Context import GetContext,DelContext
+
+class OfficeListRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Admin.OfficeList()
+        ret = u.process(args[0])
+        return ret
+
+class OfficeSaveRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Admin.OfficeSave()
+        ret = u.process(args[0])
+        return ret
+
+class GetContextRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = GetContext()
+        ret = u.process(args[0])
+        return ret
+
+class DelContextRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = DelContext()
+        ret = u.process(args[0])
+        return ret
+
+class AdminDashboard(RestBase):
+
+    def get(self, *args, **kwargs):
+        u = Admin.AdminDashboard()
+        ret = u.process(args)
+        return ret
+
+class BundleListRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Admin.BundleList()
+        ret = u.process(args[0])
+        return ret
+
+
+class BundleUpdateRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Admin.BundleUpdate()
+        ret = u.process(args[0])
+        return ret
+
+class ConsultantListRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Admin.ConsultantList()
+        ret = u.process(args[0])
+        return ret
+
+class ConsultantUpdateRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Admin.ConsultantUpdate()
+        ret = u.process(args[0])
+        return ret
+
+class UserListRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Admin.UserList()
+        ret = u.process(args[0])
+        return ret
+
+class UserUpdateRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Admin.UserUpdate()
+        ret = u.process(args[0])
+        return ret
+
+class InvoicesListRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Admin.InvoicesList()
+        ret = u.process(args[0])
+        return ret
+
+class InvoicesUpdateRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Admin.InvoicesUpdate()
+        ret = u.process(args[0])
+        return ret
+
+class TransfersListRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Admin.TransfersList()
+        ret = u.process(args[0])
+        return ret
+
+class CorporationListRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Admin.CorporationList()
+        ret = u.process(args[0])
+        return ret
+
+class CorporationUpdateRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Admin.CorporationUpdate()
+        ret = u.process(args[0])
+        return ret

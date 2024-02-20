@@ -1,0 +1,11 @@
+
+export const chatKey = function() {
+    return "__CHAT_KEY__";
+}
+
+export const chatURL = function() {
+    return "__CHAT_URL__";
+}
+
+
+export default chatKey;

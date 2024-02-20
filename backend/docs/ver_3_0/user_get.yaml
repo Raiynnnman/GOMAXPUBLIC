@@ -1,0 +1,12 @@
+User Get Information
+---
+tags:
+      - User
+parameters:
+      - name: body
+        in: body
+        required: true
+        description: body
+responses:
+      500:
+        description: Internal error from engine

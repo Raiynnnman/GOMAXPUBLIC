@@ -1,0 +1,62 @@
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { Col, Row } from 'reactstrap';
+import { Nav, NavItem, NavLink } from 'reactstrap';
+import { TabContent, TabPane } from 'reactstrap';
+import cx from 'classnames';
+import classnames from 'classnames';
+
+import s from './default.module.scss';
+import translate from '../utils/translate';
+import AppSpinner from '../utils/Spinner';
+import UserDashboard from './UserDashboard';
+import AdminDashboard from './AdminDashboard';
+import ConsultantDashboard from './ConsultantDashboard';
+import PhysicianDashboard from './PhysicianDashboard';
+
+class Dashboard extends Component {
+    constructor(props) { 
+        super(props);
+        this.state = { 
+        }
+    } 
+
+    componentWillReceiveProps(p) { 
+    }
+
+    componentDidMount() {
+    }
+
+    render() {
+        return (
+        <>
+            <Row md="12">
+                <Col md="12">
+                <>
+                {(this.props.currentUser && this.props.currentUser.entitlements && this.props.currentUser.entitlements.includes('Customer')) && (
+                    <UserDashboard/>
+                )}
+                {(this.props.currentUser && this.props.currentUser.entitlements && this.props.currentUser.entitlements.includes('Physician')) && (
+                    <PhysicianDashboard/>
+                )}
+                {(this.props.currentUser && this.props.currentUser.entitlements && this.props.currentUser.entitlements.includes('Admin')) && (
+                    <AdminDashboard/>
+                )}
+                {(this.props.currentUser && this.props.currentUser.entitlements && this.props.currentUser.entitlements.includes('Consultant')) && (
+                    <ConsultantDashboard/>
+                )}
+                </>
+                </Col>                
+            </Row>
+        </>
+        )
+    }
+}
+
+function mapStateToProps(store) {
+    return {
+        currentUser: store.auth.currentUser,
+    }
+}
+
+export default connect(mapStateToProps)(Dashboard);

@@ -1,0 +1,17 @@
+targets/*
+pre/*
+__pycache__/*
+*/__pycache__/*
+p/*
+.queue
+settings.cfg
+settings.enc
+requests/*
+*.swp
+*/*.swp
+tmp/*
+common/version.py
+bin/conf/flyway.conf.*
+.idea
+.idea/*
+sql.2/*

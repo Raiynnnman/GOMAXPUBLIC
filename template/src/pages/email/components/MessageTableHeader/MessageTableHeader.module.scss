@@ -1,0 +1,17 @@
+.messageTableHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .dropdown-toggle-split {
+    font-size: 14px;
+  }
+
+  .dropdown-toggle::after {
+    right: 16px!important;
+  }
+
+  & :global .form-control {
+    width: auto;
+  }
+}
