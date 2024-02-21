@@ -21,6 +21,7 @@ import ChatUser from '../../pain/chatUser/ChatUser';
 import { getVersion } from '../../version';
 import Physician from '../../pain/physician/Physician';
 import OfficeAdmin from '../../pain/admin/OfficeAdmin';
+import Map from '../../pain/admin/Map';
 import MyDay from '../../pain/myday/MyDay';
 import MyHealth from '../../pain/myhealth/MyHealth';
 import MyHealthDocuments from '../../pain/myhealth/MyHealthDocuments';
@@ -121,6 +122,7 @@ class Layout extends React.Component {
                     <Route path="/app/main/office/associations" exact component={OfficeAssociation} />
                     <Route path="/app/main/admin/office" exact component={OfficeAdmin} />
                     <Route path="/app/main/admin/registrations" exact component={Registrations} />
+                    <Route path="/app/main/admin/map" exact component={Map} />
                     <Route path="/app/main/admin/legal" exact component={LegalAdmin} />
                     <Route path="/app/main/admin/users" exact component={UserAdmin} />
                     <Route path="/app/main/admin/invoices" exact component={InvoiceAdmin} />

@@ -171,6 +171,7 @@ class LegalList(AdminBase):
         ret = {}
         job,user,off_id,params = self.getArgs(*args,**kwargs)
         limit = 10000
+        OT = self.getOfficeTypes()
         offset = 0
         if 'limit' in params:
             limit = int(params['limit'])
@@ -180,16 +181,20 @@ class LegalList(AdminBase):
         ENT = self.getEntitlementIDs()
         o = db.query("""
             select 
-                u.id,u.email,u.first_name,u.last_name,
-                u.phone,c.addr1,c.addr2,c.city,c.state,c.zipcode,
-                c.lat, c.lon, u.active
+                c.id,name,active,email,
+                JSON_ARRAYAGG(
+                    JSON_OBJECT(
+                        'id',oa.id,'addr1',oa.addr1,'addr2',oa.addr2,'phone',oa.phone,
+                        'city',oa.city,'state',oa.state,'zipcode',oa.zipcode)
+                ) as addr
             from 
-                users u,legal c 
+                office c 
+                left outer join office_addresses oa on oa.office_id=c.id
             where 
-                c.user_id = u.id and 
-                u.active = 1 and
-                c.active = 1
-            """
+                c.office_type_id = %s 
+            group by 
+                c.id
+            """,(OT['Legal'],)
         )
         ret['legals'] = o
         return ret
@@ -261,7 +266,7 @@ class LegalUpdate(AdminBase):
                       params['last_name'], params['phone'], params['id'])
                       )
             db.update("""
-                update legal set updated=now(),active=%s,addr1=%s,addr2=%s,
+                update office set updated=now(),active=%s,addr1=%s,addr2=%s,
                 phone=%s,city=%s,state=%s,zipcode=%s where user_id=%s
                 """,(params['active'],params['addr1'],params['addr2'],
                      params['phone'],params['city'],params['state'],
@@ -270,8 +275,8 @@ class LegalUpdate(AdminBase):
             )
         else:
             db.update("""
-                insert into legal (user_id,addr1,addr2,phone,city,state,zipcode) values
-                (%s,%s,%s,%s,%s,%s,%s,%s)
+                insert into office (user_id,addr1,addr2,phone,city,state,zipcode,office_type_id) values
+                (%s,%s,%s,%s,%s,%s,%s,%s,2)
                 """,(user_id,params['addr1'],params['addr2'],
                      params['phone'],params['city'],params['state'],
                      params['zipcode']
@@ -581,48 +586,6 @@ class OfficeSave(AdminBase):
                 )
         db.commit()
         return {'success': True}
-
-class TransfersList(AdminBase):
-
-    def __init__(self):
-        super().__init__()
-
-    def isDeferred(self):
-        return False
-
-    @check_admin
-    def execute(self, *args, **kwargs):
-        ret = {}
-        job,user,off_id,params = self.getArgs(*args,**kwargs)
-        limit = 10000
-        offset = 0
-        if 'limit' in params:
-            limit = int(params['limit'])
-        if 'offset' in params:
-            offset = int(params['offset'])
-        db = Query()
-        o = db.query("""
-            select
-                ot.id,ot.office_id,o.name as office_name,u.id as user_id,
-                u.first_name,u.last_name,u.email,stripe_transfer_id,
-                amount,ot.created,ot.invoices_id
-            from
-                office_transfers ot, users u, office o
-            where
-                u.id=ot.user_id and
-                o.id=ot.office_id
-            UNION
-            select
-                ot.id,0 as office_id,null as office_name,u.id as user_id,
-                u.first_name,u.last_name,u.email,stripe_transfer_id,
-                amount,ot.created,ot.invoices_id
-            from
-                legal_transfers ot, users u
-            where
-                u.id=ot.legal_user_id
-            """)
-        ret['transfers'] = o
-        return ret
 
 class CorporationList(AdminBase):
 

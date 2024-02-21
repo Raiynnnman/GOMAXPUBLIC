@@ -186,6 +186,7 @@ class LegalAdminList extends Component {
     } 
 
     render() {
+        console.log("p",this);
         const responsive = {
             0: { 
                 items: 1
@@ -206,12 +207,12 @@ class LegalAdminList extends Component {
                 text:'ID'
             },
             {
-                dataField:'first_name',
+                dataField:'name',
                 editable: false,
                 text:'Name',
                 formatter:(cellContent,row) => (
                     <div>
-                        {row.first_name + " " + row.last_name}
+                        {row.name}
                     </div>
                 )
             },

@@ -29,6 +29,7 @@ class LegalDashboard extends Component {
     }
 
     render() {
+        console.log("p",this.props);
         return (
         <>
             {(this.props.legalDashboard && this.props.legalDashboard.isReceiving) && (

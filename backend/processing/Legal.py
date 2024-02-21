@@ -82,22 +82,42 @@ class LegalBilling(ConsulantBase):
         db = Query()
         o = db.query("""
             select
-               cfi.id,cfi.description,cfi.price,ct.created as transfer_date,
-               JSON_ARRAYAGG(
-                    JSON_OBJECT(
-                        'id',ciud.id,'description',ciud.description
+                i.id,ist.name as invoice_status,i.physician_schedule_id,
+                i.nextcheck,stripe_invoice_number as number,
+                u.first_name,u.last_name,ps.day,ps.time,
+                invoice_pdf_url, invoice_pay_url, amount_due, amount_paid,
+                attempt_count, next_payment_attempt, status, finalized_at,
+                paid_at, voided_at, marked_uncollectable_at, stripe_invoice_number,
+                from_unixtime(due) as due,o.id as office_id,o.name as office_name,
+                json_arrayagg(
+                    json_object(
+                        'id',ii.id,'code',ii.code,
+                        'desc',ii.description,
+                        'price', round(ii.price,2),
+                        'quantity', ii.quantity
                     )
-               ) as documents
-                
+                ) as items
             from
-                legal_fee_items cfi,
-                legal_invoice_upload_documents ciud,
-                legal_transfers ct
+                invoices i,
+                invoice_items ii,
+                users u,
+                stripe_invoice_status sis,
+                physician_schedule ps,
+                physician_schedule_scheduled pss,
+                office o,
+                invoice_status ist
             where
-                cfi.invoices_id = ciud.invoices_id and
-                ct.invoices_id = cfi.invoices_id and 
-                cfi.legal_user_id = %s
-            """,(user['user_id'],)
+                u.id = i.user_id and
+                pss.physician_schedule_id = ps.id and
+                i.physician_schedule_id = ps.id and
+                i.id = ii.invoices_id and
+                o.id = i.office_id and
+                sis.invoices_id = i.id and 
+                ist.id = i.invoice_status_id and
+                i.office_id = %s
+            group by
+                i.id
+            """,(off_id,)
         )
         for x in o:
             if x['id'] is None:
@@ -117,21 +137,11 @@ class LegalDashboard(ConsulantBase):
         db = Query()
         o = db.query("""
             select 
-                ifnull(t1.num1,0) as num1, /* cons revenue */
-                ifnull(t2.num2,0) as num2, /* cons count */
-                ifnull(t3.num3,0) as num3, /* appointments */
-                ifnull(t4.num4,0) as num4  /* payouts */
-            from 
-                (select round(sum(price),2) as num1 from legal_fee_items a where legal_user_id = %s and
-                    a.created > date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t1,
-                (select count(id) as num2 from legal_fee_items b where legal_user_id = %s and
-                    b.created > date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t2,
-                (select count(css.id) as num3 from legal_schedule_scheduled css,legal_schedule cs where 
-                    css.legal_schedule_id = cs.id and cs.user_id=%s and
-                    cs.tstamp > date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t3,
-                (select count(cp.id) as num4 from legal_payouts cp,legal_transfers ct where cp.legal_transfers_id = ct.id and 
-                    legal_user_id=%s and ct.created > date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t4
-            """,(user_id,user_id,user_id,user_id)
+                0 as num1, /* cons revenue */
+                0 as num2, /* cons count */
+                0 as num3, /* appointments */
+                0 as num4  /* payouts */
+            """
         )
         return o[0]
 
@@ -162,20 +172,20 @@ class LegalConfig(ConsulantBase):
                         'price', round(ii.price,2),
                         'quantity', ii.quantity
                     )
-                ) as items,b.name as bundle_name,i.office_id
+                ) as items,i.office_id
             from
                 invoices i, invoice_items ii,
                 stripe_invoice_status sis,
-                bundle b,
                 legal_schedule_scheduled css,
                 invoice_status ist
             where
                 css.legal_schedule_id = %s and
                 ii.invoices_id = i.id and
-                b.id = i.bundle_id and
                 sis.invoices_id = i.id and 
                 ist.id = i.invoice_status_id and
                 i.physician_schedule_id = css.physician_schedule_id
+            group by
+                i.id
             """,(id,)
         )
         ret = []
@@ -221,162 +231,7 @@ class LegalConfig(ConsulantBase):
         if 'date' in params and len(params['date']) > 0:
             today = params['date']
         db = Query()
-        o = db.query(
-            """
-            select
-               u.id,email,first_name,last_name,phone_prefix,phone,title,u.active,
-               JSON_ARRAYAGG(
-                    JSON_OBJECT(
-                        'id',cs.id,'time',cs.time,'day',cs.day
-                    )
-               ) as schedule
-            from
-                legal_schedule cs
-                left join users u on u.id = cs.user_id
-                left join office_user ou on ou.user_id = cs.user_id
-            where
-                cs.user_id = %s and 
-                day = %s 
-            """,(user['user_id'],today)
-        )
-        if len(o) > 0 and o[0]['id'] is None:
-            o = []
         ret = {'schedule':[],'config':{},'upcoming':[]}
-        s_conf = db.query("""
-            select 
-                csc.id,csc.start_time,csc.end_time,
-                csc.inter,csc.recurring,csc.days,csc.active
-            from
-                legal_schedule_config csc,
-                users u
-            where 
-                csc.user_id=u.id and
-                csc.user_id=%s
-        """,(user['user_id'],))
-        ret['config']['schedule'] = []
-        for s_c1 in s_conf:
-            s_c1['days'] = json.loads(s_c1['days'])
-            ret['config']['schedule'].append(s_c1)
-        upc = db.query("""
-            select
-               u.id,email,first_name,last_name,phone_prefix,phone,title,u.active,
-               JSON_ARRAYAGG(
-                    JSON_OBJECT(
-                        'id',cs.id,'time',cs.time,'day',cs.day
-                    )
-               ) as schedule
-            from
-                legal_schedule cs
-                left join users u on u.id = cs.user_id
-                left join office_user ou on ou.user_id = cs.user_id
-            where
-                cs.user_id = %s and 
-                cs.id in (select legal_schedule_id from 
-                    legal_schedule_scheduled) and
-                cs.tstamp >  date_add(now(),interval 1 day)
-            limit 5
-            """,(user['user_id'],)
-        )
-        for u in upc:
-            if u['id'] is None:
-                continue
-            u['schedule'] = json.loads(u['schedule'])
-            ret['upcoming'].append(u)
-        ret['appt_status'] = db.query("""
-            select id,name,user_assignable from appt_status 
-            """
-        )
-        ret['physicians'] = self.getPhysicians(off_id,db)
-        for x in o:
-            if x['id'] is None:
-                continue
-            newarr = x
-            sched = json.loads(x['schedule'])
-            newsched = []
-            for j in sched:
-                j['appt'] = {
-                    'customer':{},
-                    'physician':{}
-                }
-                # get the physician
-                phy = db.query("""
-                    select
-                        u.id,u.first_name,u.last_name,u.email,u.title,o.id,
-                        JSON_ARRAYAGG(
-                            JSON_OBJECT(
-                                'id',oa.id,'addr1',oa.addr1,'addr2',oa.addr2,'phone',oa.phone,
-                                'lat',oa.lat,'lon',oa.lon, 'city',oa.city,'state',
-                                oa.state,'zipcode',oa.zipcode)
-                        ) as addr
-                    from
-                        legal_schedule_scheduled css,
-                        physician_schedule ps,
-                        office_user ou,
-                        office_addresses oa,
-                        office o,
-                        users u
-                    where
-                        css.physician_schedule_id=ps.id and
-                        oa.office_id = o.id and
-                        ps.user_id = u.id and
-                        ou.office_id = o.id and
-                        ou.user_id = u.id and
-                        legal_schedule_id = %s;
-                    """,(j['id'],)
-                )
-                if len(phy) > 0 and phy[0]['id'] is not None:
-                    b = phy[0]
-                    b['addr'] = json.loads(b['addr'])
-                    j['appt']['physician'] = b
-                c1 = db.query("""
-                    select pa.id,pa.text,pa.created,pa.user_id from 
-                    physician_appt_comments pa,legal_schedule_scheduled css
-                    where 
-                    pa.physician_schedule_scheduled_id = css.physician_schedule_id and
-                    css.legal_schedule_id = %s
-                    """,(j['id'],)
-                )
-                com = []
-                for bb in c1:
-                    if bb['id'] is None:
-                        continue
-                    fin = bb
-                    bb2 = encryption.decrypt(
-                        fin['text'],
-                        config.getKey('encryption_key')
-                        )
-                    fin['text'] = bb2
-                    com.append(fin)
-                j['appt']['physician']['comments'] = com
-                j['appt']['physician']['invoices'] = self.getInvoices(j['id'],db)
-                cust = db.query("""
-                    select 
-                        u.id,u.first_name,u.last_name,u.email,u.title,u.phone,
-                        JSON_OBJECT(
-                            'id',s.id,'name',s.name
-                        ) as subprocedure
-                    from
-                        legal_schedule_scheduled css,
-                        legal_schedule cs,
-                        physician_schedule_scheduled pss,
-                        physician_schedule ps,
-                        subprocedures s,
-                        users u
-                    where
-                        cs.id = css.legal_schedule_id and 
-                        pss.subprocedures_id = s.id and 
-                        css.physician_schedule_id = pss.physician_schedule_id and
-                        pss.physician_schedule_id = ps.id and
-                        u.id = pss.user_id and
-                        legal_schedule_id = %s
-                    """,(j['id'],)
-                )
-                if len(cust) > 0 and cust[0]['id'] is not None:
-                    j['appt']['customer'] = cust[0]
-                    j['appt']['customer']['subprocedure'] = json.loads(j['appt']['customer']['subprocedure'])
-                newsched.append(j)
-            newarr['schedule'] = newsched
-            ret['schedule'].append(newarr)
         return ret
 
 class UpdateSchedule(ConsulantBase):

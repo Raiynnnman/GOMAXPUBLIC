@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import ConnectWithoutContactIcon from '@mui/icons-material/ConnectWithoutContact';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import MapIcon from '@mui/icons-material/Map';
 import ChatIcon from '@mui/icons-material/Chat';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { connect } from 'react-redux';
@@ -108,8 +109,8 @@ class Sidebar extends React.Component {
           {(this.props.currentUser && this.props.currentUser.entitlements && 
             this.props.currentUser.entitlements.includes("Legal")) && (
           <LinksGroup
-            header="My Day"
-            link="/app/main/consulting/myday"
+            header="Customers"
+            link="/app/main/legal/customers"
             isHeader
             iconElement={<Apps/>}
             iconName="flaticon-users"
@@ -120,7 +121,7 @@ class Sidebar extends React.Component {
             this.props.currentUser.entitlements.includes("Legal")) && (
           <LinksGroup
             header="Invoices"
-            link="/app/main/consulting/billing"
+            link="/app/main/legal/billing"
             isHeader
             iconElement={<AccountBalanceIcon/>}
             iconName="flaticon-users"
@@ -131,7 +132,7 @@ class Sidebar extends React.Component {
             this.props.currentUser.entitlements.includes("Legal")) && (
           <LinksGroup
             header="Settings"
-            link="/app/main/consulting/settings"
+            link="/app/main/legal/settings"
             isHeader
             iconElement={<SettingsIcon/>}
             iconName="flaticon-users"
@@ -185,6 +186,17 @@ class Sidebar extends React.Component {
           {(this.props.currentUser && this.props.currentUser.entitlements && 
             this.props.currentUser.entitlements.includes("Admin")) && (
           <LinksGroup
+            header="Map"
+            link="/app/main/admin/map"
+            isHeader
+            iconElement={<MapIcon/>}
+            iconName="flaticon-users"
+            labelColor="info"
+          />
+          )}
+          {(this.props.currentUser && this.props.currentUser.entitlements && 
+            this.props.currentUser.entitlements.includes("Admin")) && (
+          <LinksGroup
             header="Registrations"
             link="/app/main/admin/registrations"
             isHeader
@@ -218,8 +230,8 @@ class Sidebar extends React.Component {
           {(this.props.currentUser && this.props.currentUser.entitlements && 
             this.props.currentUser.entitlements.includes("Physician")) && (
           <LinksGroup
-            header="My Day"
-            link="/app/main/myday"
+            header="Customers"
+            link="/app/main/customers"
             isHeader
             iconElement={<Apps/>}
             iconName="flaticon-users"
@@ -284,7 +296,7 @@ class Sidebar extends React.Component {
             index="system"
             childrenLinks={[
               {
-                header: 'Office', link: '/app/main/admin/office',
+                header: 'Providers', link: '/app/main/admin/office',
               },
               {
                 header: 'Legal', link: '/app/main/admin/legal',

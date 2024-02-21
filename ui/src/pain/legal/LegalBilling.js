@@ -89,7 +89,7 @@ class LegalBilling extends Component {
                 {(this.props.legalBilling && this.props.legalBilling.data  &&
                   this.props.legalBilling.data.length < 1) && (
                 <Col md="12">
-                    <h5>Currently no receipts are available.</h5>
+                    <h5>Currently no invoices are available.</h5>
                 </Col>
                 )}
             </Row>

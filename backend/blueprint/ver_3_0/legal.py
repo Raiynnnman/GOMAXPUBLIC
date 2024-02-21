@@ -11,33 +11,33 @@ legal = Blueprint('legal', __name__)
 @token_required
 @swag_from(docs_dir + 'legal_get.yaml')
 def getconfig(*args, **kwargs):
-    po = LegalRest.ConsultantConfigRest()
+    po = LegalRest.LegalConfigRest()
     return po.postWrapper(*args,**kwargs)
 
 @legal.route('/legal/dashboard', methods=['GET'])
 @token_required
 @swag_from(docs_dir + 'legal_dashboard.yaml')
 def getdash(*args, **kwargs):
-    po = LegalRest.ConsultantDashboardRest()
+    po = LegalRest.LegalDashboardRest()
     return po.getWrapper(*args,**kwargs)
 
 @legal.route('/legal/billing/get', methods=['POST'])
 @token_required
 @swag_from(docs_dir + 'legal_billing_get.yaml')
 def getbill(*args, **kwargs):
-    po = LegalRest.ConsultantBillingRest()
+    po = LegalRest.LegalBillingRest()
     return po.postWrapper(*args,**kwargs)
 
 @legal.route('/legal/billing/document/get', methods=['POST'])
 @token_required
 @swag_from(docs_dir + 'legal_billing_document_get.yaml')
 def getbilldoc(*args, **kwargs):
-    po = LegalRest.ConsultantBillingDownloadDocRest()
+    po = LegalRest.LegalBillingDownloadDocRest()
     return po.postWrapper(*args,**kwargs)
 
 @legal.route('/legal/schedule/update', methods=['POST'])
 @token_required
 @swag_from(docs_dir + 'legal_schedule_update.yaml')
 def updatesched(*args, **kwargs):
-    po = LegalRest.ConsultantScheduleUpdateRest()
+    po = LegalRest.LegalScheduleUpdateRest()
     return po.postWrapper(*args,**kwargs)

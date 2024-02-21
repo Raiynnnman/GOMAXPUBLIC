@@ -19,7 +19,7 @@ class LegalSettings extends Component {
     constructor(props) { 
         super(props);
         this.state = { 
-            activeTab: "scheduling",
+            activeTab: "offices",
         }
         this.toggleTabs = this.toggleTab.bind(this);
         this.onSchedulingChange = this.onSchedulingChange.bind(this);
@@ -69,14 +69,14 @@ class LegalSettings extends Component {
                 <Col md="12">
                     <Nav tabs  className={`${s.coloredNav}`} style={{backgroundColor:"#e8ecec"}}>
                         <NavItem>
-                            <NavLink className={classnames({ active: this.state.activeTab === 'scheduling' })}
-                                onClick={() => { this.toggleTab('scheduling') }}>
-                                <span>{translate('Scheduling')}</span>
+                            <NavLink className={classnames({ active: this.state.activeTab === 'offices' })}
+                                onClick={() => { this.toggleTab('offices') }}>
+                                <span>{translate('Offices')}</span>
                             </NavLink>
                         </NavItem>
                     </Nav>
                     <TabContent className='mb-lg' activeTab={this.state.activeTab}>
-                            <TabPane tabId="scheduling">
+                            <TabPane tabId="offices">
                             {(this.props.consultants && this.props.consultants.data && this.props.consultants.data.config) && (
                                 <Scheduling 
                                     data={this.props.consultants.data.config.schedule} onSchedulingChange={this.onSchedulingChange}/>
