@@ -263,9 +263,6 @@ class Sidebar extends React.Component {
                 header: 'Physician', link: '/app/main/office/physicians',
               },
               {
-                header: 'Bundles', link: '/app/main/office/bundles',
-              },
-              {
                 header: 'Associations', link: '/app/main/office/associations',
               },
               {
@@ -297,12 +294,6 @@ class Sidebar extends React.Component {
               },
               {
                 header: 'Users', link: '/app/main/admin/users',
-              },
-              {
-                header: 'Bundles', link: '/app/main/admin/bundle',
-              },
-              {
-                header: 'Transfers', link: '/app/main/admin/transfers',
               },
             ]}
           />

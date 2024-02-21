@@ -183,9 +183,8 @@ class UserAdminList extends Component {
                 formatter: (cellContent,row) => (
                     <div>
                         {(row.entitlements.filter((e) => e.name === 'Admin').length > 0) && (<Badge color="danger">Admin</Badge>)}
-                        {(row.entitlements.filter((e) => e.name === 'Consultant').length > 0)&& (<Badge color="warning">Consultant</Badge>)}
-                        {(row.entitlements.filter((e) => e.name === 'Physician').length > 0)&& (<Badge color="info">Physician</Badge>)}
-                        {(row.entitlements.filter((e) => e.name === 'Office').length > 0)&& (<Badge color="info">Office</Badge>)}
+                        {(row.entitlements.filter((e) => e.name === 'Provider').length > 0)&& (<Badge color="warning">Provider</Badge>)}
+                        {(row.entitlements.filter((e) => e.name === 'Legal').length > 0)&& (<Badge color="info">Legal</Badge>)}
                         {(row.entitlements.filter((e) => e.name === 'Customer').length > 0) && (<Badge color="primary">Customer</Badge>)}
                     </div>
                 )

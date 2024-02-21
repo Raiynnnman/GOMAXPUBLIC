@@ -11,7 +11,6 @@ import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import { getOffices } from '../../actions/offices';
 import OfficeAdminList from './OfficeAdminList';
-import BundleAdminList from './BundleAdminList';
 
 class Office extends Component {
     constructor(props) { 

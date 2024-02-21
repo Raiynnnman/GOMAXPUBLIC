@@ -21,7 +21,6 @@ import ChatUser from '../../pain/chatUser/ChatUser';
 import { getVersion } from '../../version';
 import Physician from '../../pain/physician/Physician';
 import OfficeAdmin from '../../pain/admin/OfficeAdmin';
-import Bundle from '../../pain/office/Bundle';
 import MyDay from '../../pain/myday/MyDay';
 import MyHealth from '../../pain/myhealth/MyHealth';
 import MyHealthDocuments from '../../pain/myhealth/MyHealthDocuments';
@@ -30,8 +29,6 @@ import Search from '../../pain/search/Search';
 import Dashboard from '../../pain/dashboard/Dashboard';
 import LegalAdmin from '../../pain/admin/LegalAdmin';
 import UserAdmin from '../../pain/admin/UserAdmin';
-import BundleAdminList from '../../pain/admin/BundleAdminList';
-import TransferAdminList from '../../pain/admin/TransferAdminList';
 import InvoiceAdmin from '../../pain/admin/InvoiceAdmin';
 import LegalAppointment from '../../pain/legal/LegalAppointment';
 import LegalBilling from '../../pain/legal/LegalBilling';
@@ -39,7 +36,6 @@ import LegalSettings from '../../pain/legal/LegalSettings';
 import OfficeInvoices from '../../pain/office/OfficeInvoices';
 import OfficeAssociation from '../../pain/office/OfficeAssociation';
 import Users from '../../pain/office/Users';
-import TransferList from '../../pain/office/TransferList';
 import Registrations from '../../pain/admin/Registrations';
 
 class Layout extends React.Component {
@@ -120,17 +116,13 @@ class Layout extends React.Component {
                     <Route path="/app/main/dashboard" exact component={Dashboard} />
                     <Route path="/app/main/office/physicians" exact component={Physician} />
                     <Route path="/app/main/office/invoices" exact component={OfficeInvoices} />
-                    <Route path="/app/main/office/bundles" exact component={Bundle} />
                     <Route path="/app/main/office/users" exact component={Users} />
                     <Route path="/app/main/office/chat" exact component={ChatOffice} />
-                    <Route path="/app/main/office/payouts" exact component={TransferList} />
                     <Route path="/app/main/office/associations" exact component={OfficeAssociation} />
                     <Route path="/app/main/admin/office" exact component={OfficeAdmin} />
                     <Route path="/app/main/admin/registrations" exact component={Registrations} />
                     <Route path="/app/main/admin/legal" exact component={LegalAdmin} />
                     <Route path="/app/main/admin/users" exact component={UserAdmin} />
-                    <Route path="/app/main/admin/bundle" exact component={BundleAdminList} />
-                    <Route path="/app/main/admin/transfers" exact component={TransferAdminList} />
                     <Route path="/app/main/admin/invoices" exact component={InvoiceAdmin} />
                     <Route path="/app/main/legal/myday" exact component={LegalAppointment} />
                     <Route path="/app/main/legal/settings" exact component={LegalSettings} />
