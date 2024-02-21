@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import ConnectWithoutContactIcon from '@mui/icons-material/ConnectWithoutContact';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
-import ChatIcon from '@mui/icons-material/Chat';
+import MapIcon from '@mui/icons-material/Map';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { connect } from 'react-redux';
 import { Progress, Alert } from 'reactstrap';
@@ -19,7 +19,6 @@ import Home from '../../images/sidebar/basil/Home';
 import Globe from '../../images/sidebar/basil/Globe';
 import User from '../../images/sidebar/basil/User';
 import ShoppingCart from '../../images/sidebar/basil/ShoppingCart';
-import Chat from '../../images/sidebar/basil/Chat';
 import Stack from '../../images/sidebar/basil/Stack';
 import Envelope from '../../images/sidebar/basil/Envelope';
 import Document from '../../images/sidebar/basil/Document';
@@ -106,10 +105,10 @@ class Sidebar extends React.Component {
             index="main"
           />
           {(this.props.currentUser && this.props.currentUser.entitlements && 
-            this.props.currentUser.entitlements.includes("Consultant")) && (
+            this.props.currentUser.entitlements.includes("Legal")) && (
           <LinksGroup
-            header="My Day"
-            link="/app/main/consulting/myday"
+            header="Customers"
+            link="/app/main/legal/customers"
             isHeader
             iconElement={<Apps/>}
             iconName="flaticon-users"
@@ -117,10 +116,10 @@ class Sidebar extends React.Component {
           />
           )}
           {(this.props.currentUser && this.props.currentUser.entitlements && 
-            this.props.currentUser.entitlements.includes("Consultant")) && (
+            this.props.currentUser.entitlements.includes("Legal")) && (
           <LinksGroup
             header="Invoices"
-            link="/app/main/consulting/billing"
+            link="/app/main/legal/billing"
             isHeader
             iconElement={<AccountBalanceIcon/>}
             iconName="flaticon-users"
@@ -128,10 +127,10 @@ class Sidebar extends React.Component {
           />
           )}
           {(this.props.currentUser && this.props.currentUser.entitlements && 
-            this.props.currentUser.entitlements.includes("Consultant")) && (
+            this.props.currentUser.entitlements.includes("Legal")) && (
           <LinksGroup
             header="Settings"
-            link="/app/main/consulting/settings"
+            link="/app/main/legal/settings"
             isHeader
             iconElement={<SettingsIcon/>}
             iconName="flaticon-users"
@@ -145,17 +144,6 @@ class Sidebar extends React.Component {
             link="/app/main/myhealth/appointments"
             isHeader
             iconElement={<CalendarMonthIcon/>}
-            iconName="flaticon-users"
-            labelColor="info"
-          />
-          )}
-          {(this.props.currentUser && this.props.currentUser.entitlements && 
-            this.props.currentUser.entitlements.includes("Customer")) && (
-          <LinksGroup
-            header="Chat"
-            link="/app/main/myhealth/chat"
-            isHeader
-            iconElement={<ChatIcon/>}
             iconName="flaticon-users"
             labelColor="info"
           />
@@ -185,32 +173,21 @@ class Sidebar extends React.Component {
           {(this.props.currentUser && this.props.currentUser.entitlements && 
             this.props.currentUser.entitlements.includes("Admin")) && (
           <LinksGroup
+            header="Map"
+            link="/app/main/admin/map"
+            isHeader
+            iconElement={<MapIcon/>}
+            iconName="flaticon-users"
+            labelColor="info"
+          />
+          )}
+          {(this.props.currentUser && this.props.currentUser.entitlements && 
+            this.props.currentUser.entitlements.includes("Admin")) && (
+          <LinksGroup
             header="Registrations"
             link="/app/main/admin/registrations"
             isHeader
             iconElement={<ConnectWithoutContactIcon/>}
-            iconName="flaticon-users"
-            labelColor="info"
-          />
-          )}
-          {(this.props.currentUser && this.props.currentUser.entitlements && 
-            this.props.currentUser.entitlements.includes("Admin")) && (
-          <LinksGroup
-            header="Leads"
-            link="/app/main/admin/leads"
-            isHeader
-            iconElement={<ShoppingCart/>}
-            iconName="flaticon-users"
-            labelColor="info"
-          />
-          )}
-          {(this.props.currentUser && this.props.currentUser.entitlements && 
-            this.props.currentUser.entitlements.includes("Admin")) && (
-          <LinksGroup
-            header="CPT"
-            link="/app/main/admin/cpt/search"
-            isHeader
-            iconElement={<LocalHospitalIcon/>}
             iconName="flaticon-users"
             labelColor="info"
           />
@@ -227,43 +204,14 @@ class Sidebar extends React.Component {
           />
           )}
           {(this.props.currentUser && this.props.currentUser.entitlements && 
-            this.props.currentUser.entitlements.includes("Physician")) && (
+            this.props.currentUser.entitlements.includes("Provider")) && (
           <LinksGroup
-            header="Chat"
-            link="/app/main/office/chat"
-            isHeader
-            iconElement={<ChatIcon/>}
-            iconName="flaticon-users"
-            labelColor="info"
-          />
-          )}
-          {(this.props.currentUser && this.props.currentUser.entitlements && 
-            this.props.currentUser.entitlements.includes("Physician")) && (
-          <LinksGroup
-            header="My Day"
-            link="/app/main/myday"
+            header="Customers"
+            link="/app/main/customers"
             isHeader
             iconElement={<Apps/>}
             iconName="flaticon-users"
             labelColor="info"
-          />
-          )}
-          {(this.props.currentUser && this.props.currentUser.entitlements && 
-            this.props.currentUser.entitlements.includes("CorporateAdmin")) && (
-          <LinksGroup
-            onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
-            activeItem={this.props.activeItem}
-            header="Employer"
-            iconElement={<BusinessIcon/>}
-            isHeader
-            iconName="flaticon-document"
-            link="/app/main/employer"
-            index="employer"
-            childrenLinks={[
-              {
-                header: 'Users', link: '/app/main/employer/users',
-              },
-            ]}
           />
           )}
           {(this.props.currentUser && this.props.currentUser.entitlements && 
@@ -303,9 +251,6 @@ class Sidebar extends React.Component {
                 header: 'Physician', link: '/app/main/office/physicians',
               },
               {
-                header: 'Bundles', link: '/app/main/office/bundles',
-              },
-              {
                 header: 'Associations', link: '/app/main/office/associations',
               },
               {
@@ -327,25 +272,16 @@ class Sidebar extends React.Component {
             index="system"
             childrenLinks={[
               {
-                header: 'Office', link: '/app/main/admin/office',
+                header: 'Providers', link: '/app/main/admin/office',
               },
               {
-                header: 'Consultants', link: '/app/main/admin/consultants',
-              },
-              {
-                header: 'Employers', link: '/app/main/admin/employers',
+                header: 'Legal', link: '/app/main/admin/legal',
               },
               {
                 header: 'Invoices', link: '/app/main/admin/invoices',
               },
               {
                 header: 'Users', link: '/app/main/admin/users',
-              },
-              {
-                header: 'Bundles', link: '/app/main/admin/bundle',
-              },
-              {
-                header: 'Transfers', link: '/app/main/admin/transfers',
               },
             ]}
           />

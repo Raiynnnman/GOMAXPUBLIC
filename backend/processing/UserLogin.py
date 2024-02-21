@@ -300,7 +300,7 @@ class UserLoginTest(unittest.TestCase):
 
     def test_login(self):
         d = {
-            'email': 'pmaszy@directhealthdelivery.com',
+            'email': 'pmaszy@poundpain.com',
             'password':'Leader12345!'
         }
         ul = UserLogin()
@@ -309,7 +309,7 @@ class UserLoginTest(unittest.TestCase):
 
     def test_bad_password(self):
         d = {
-            'email': 'pmaszy@directhealthdelivery.com',
+            'email': 'pmaszy@poundpain.com',
             'password':'Leader1345'
         }
         try:

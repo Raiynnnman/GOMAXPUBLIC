@@ -43,19 +43,10 @@ class AdminDashboard(AdminBase):
         db= Query()
         o = db.query("""
             select
-                ifnull(t1.num1,0) as num1, /* num leads */
-                ifnull(t2.num2,0) as num2, /* leads won */
-                ifnull(t3.num3,0) as num3, /* leads lost */
-                ifnull(t4.num4,0) as num4 /* leads invalid */
-            from
-                (select count(id) as num1 from leads where created > 
-                    date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t1,
-                (select count(l.id) as num2 from leads l, leads_status ls where ls.id=l.leads_status_id and 
-                    ls.name='WON' and created > date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t2,
-                (select count(l.id) as num3 from leads l, leads_status ls where ls.id=l.leads_status_id and 
-                    ls.name='LOST' and created > date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t3,
-                (select count(l.id) as num4 from leads l, leads_status ls where ls.id=l.leads_status_id and 
-                    ls.name='INVALID' and created > date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t4
+                0 as num1, /* num leads */
+                0 as num2, /* leads won */
+                0 as num3, /* leads lost */
+                0 as num4 /* leads invalid */
             """)
         return o[0]
 
@@ -79,25 +70,10 @@ class AdminDashboard(AdminBase):
         db = Query()
         o = db.query("""
             select 
-                ifnull(t1.num1,0) as num1, /* num leads */
-                ifnull(t2.num2,0) as num2, /* revenue */
-                ifnull(t3.num3,0) as num3, /* sales */
-                ifnull(t4.num4,0) as num4  /* leads that have generated appt */
-            from 
-                (select count(id) as num1 from leads where created > 
-                    date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t1,
-                (select round(sum(dhd_total),2) as num2 from invoices a, 
-                    physician_schedule ps, physician_schedule_scheduled pss 
-                    where ps.id=pss.physician_schedule_id and 
-                    a.physician_schedule_id=ps.id and pss.leads_id > 0 and a.created > 
-                    date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t2,
-                (select round(sum(patient_total),2) as num3 from invoices a, 
-                    physician_schedule ps, physician_schedule_scheduled pss 
-                    where ps.id=pss.physician_schedule_id and 
-                    a.physician_schedule_id=ps.id and pss.leads_id > 0 and a.created > 
-                    date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t3,
-                (select count(id) as num4 from physician_schedule_scheduled where leads_id > 0 
-                    and created > date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t4
+                0 as num1, /* num leads */
+                0 num2, /* revenue */
+                0 num3, /* sales */
+                0 num4  /* leads that have generated appt */
             """
         )
         return o[0]
@@ -110,13 +86,14 @@ class AdminDashboard(AdminBase):
                 ifnull(t3.num3,0) as num3, /* count bundles */
                 ifnull(t4.num4,0) as num4
             from 
-                (select round(sum(dhd_total),2) as num1 from invoices a
+                (select round(sum(total),2) as num1 from invoices a
                     where a.created > 
                     date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t1,
-                (select round(sum(patient_total),2) as num2 from invoices a
+                /* total twice, need to fix */
+                (select round(sum(total),2) as num2 from invoices a
                     where a.created > 
                     date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t2,
-                (select count(id) as num3 from appt_bundle where created > 
+                (select count(id) as num3 from appt_scheduled where created > 
                     date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t3,
                 (select count(id) as num4 from physician_schedule_scheduled where created > 
                     date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t4
@@ -158,6 +135,8 @@ class UserList(AdminBase):
                 u.phone,u.active
             from 
                 users u
+            where 
+                id <> 1
             """
         )
         ret['config'] = {}
@@ -180,7 +159,7 @@ class UserList(AdminBase):
             ret['users'].append(x)
         return ret
 
-class ConsultantList(AdminBase):
+class LegalList(AdminBase):
     def __init__(self):
         super().__init__()
 
@@ -192,6 +171,7 @@ class ConsultantList(AdminBase):
         ret = {}
         job,user,off_id,params = self.getArgs(*args,**kwargs)
         limit = 10000
+        OT = self.getOfficeTypes()
         offset = 0
         if 'limit' in params:
             limit = int(params['limit'])
@@ -201,21 +181,25 @@ class ConsultantList(AdminBase):
         ENT = self.getEntitlementIDs()
         o = db.query("""
             select 
-                u.id,u.email,u.first_name,u.last_name,
-                u.phone,c.addr1,c.addr2,c.city,c.state,c.zipcode,
-                c.lat, c.lon, u.active,c.ein_number
+                c.id,name,active,email,
+                JSON_ARRAYAGG(
+                    JSON_OBJECT(
+                        'id',oa.id,'addr1',oa.addr1,'addr2',oa.addr2,'phone',oa.phone,
+                        'city',oa.city,'state',oa.state,'zipcode',oa.zipcode)
+                ) as addr
             from 
-                users u,consultant c 
+                office c 
+                left outer join office_addresses oa on oa.office_id=c.id
             where 
-                c.user_id = u.id and 
-                u.active = 1 and
-                c.active = 1
-            """
+                c.office_type_id = %s 
+            group by 
+                c.id
+            """,(OT['Legal'],)
         )
-        ret['consultants'] = o
+        ret['legals'] = o
         return ret
 
-class ConsultantUpdate(AdminBase):
+class LegalUpdate(AdminBase):
     def __init__(self):
         super().__init__()
 
@@ -248,8 +232,6 @@ class ConsultantUpdate(AdminBase):
             return { 'success': False, 'message': 'CONSULTANT_STATE_REQUIRED' } 
         if 'zipcode' not in params or params['zipcode'] == '':
             return { 'success': False, 'message': 'CONSULTANT_ZIP_REQUIRED' } 
-        if 'ein_number' not in params or params['ein_number'] == '':
-            return { 'success': False, 'message': 'CONSULTANT_EIN_REQUIRED' }
         if 'addr2' not in params:
             params['addr2'] = ''
         if len(o) < 1:
@@ -267,7 +249,7 @@ class ConsultantUpdate(AdminBase):
             ENT = self.getEntitlementIDs()
             db.update("""
                 insert into user_entitlements (user_id,entitlements_id) values (%s,%s)
-                """,(user_id,ENT['Consultant'])
+                """,(user_id,ENT['Legal'])
             )
             db.update("""
                 insert into user_permissions (user_id,permissions_id) values (%s,%s)
@@ -284,20 +266,20 @@ class ConsultantUpdate(AdminBase):
                       params['last_name'], params['phone'], params['id'])
                       )
             db.update("""
-                update consultant set updated=now(),active=%s,addr1=%s,addr2=%s,
-                phone=%s,city=%s,state=%s,zipcode=%s,ein_number=%s where user_id=%s
+                update office set updated=now(),active=%s,addr1=%s,addr2=%s,
+                phone=%s,city=%s,state=%s,zipcode=%s where user_id=%s
                 """,(params['active'],params['addr1'],params['addr2'],
                      params['phone'],params['city'],params['state'],
-                     params['zipcode'],params['ein_number'],params['id']
+                     params['zipcode'],params['id']
                 )
             )
         else:
             db.update("""
-                insert into consultant (user_id,addr1,addr2,phone,city,state,zipcode,ein_number) values
-                (%s,%s,%s,%s,%s,%s,%s,%s)
+                insert into office (user_id,addr1,addr2,phone,city,state,zipcode,office_type_id) values
+                (%s,%s,%s,%s,%s,%s,%s,%s,2)
                 """,(user_id,params['addr1'],params['addr2'],
                      params['phone'],params['city'],params['state'],
-                     params['zipcode'],params['ein_number']
+                     params['zipcode']
                 )
             )
             we = WelcomeEmail()
@@ -367,21 +349,20 @@ class InvoicesList(AdminBase):
         q = """
             select
                 i.id,ist.name as invoice_status,i.physician_schedule_id,
-                i.nextcheck,i.bundle_id,stripe_invoice_number as number,
-                u.first_name,u.last_name,ps.day,ps.time,s.name as subprocedure_name,
+                i.nextcheck,stripe_invoice_number as number,
+                u.first_name,u.last_name,ps.day,ps.time,
                 stripe_invoice_number, from_unixtime(due) as due,u.id as user_id,
                 o.id as office_id,o.name as office_name,u.email,u.phone,
                 json_arrayagg(
                     json_object(
                         'id',ii.id,'code',ii.code,
                         'desc',ii.description,
-                        'phy_total',round(ii.phy_total,2),
-                        'dhd_total',round(ii.dhd_total,2),
+                        'total',round(ii.quantity*ii.price,2),
                         'price', round(ii.price,2),
                         'quantity', ii.quantity
                     )
                 ) as items,i.invoice_status_id,
-                round(i.dhd_total,2),round(i.phy_total,2),round(i.patient_total,2)
+                round(i.total,2)
             from
                 invoices i,
                 invoice_items ii,
@@ -389,13 +370,11 @@ class InvoicesList(AdminBase):
                 stripe_invoice_status sis,
                 physician_schedule ps,
                 physician_schedule_scheduled pss,
-                subprocedures s,
                 office o,
                 invoice_status ist
             where
                 u.id = i.user_id and
                 pss.physician_schedule_id = ps.id and
-                pss.subprocedures_id = s.id and
                 i.physician_schedule_id = ps.id and
                 i.id = ii.invoices_id and
                 o.id = i.office_id and
@@ -481,304 +460,6 @@ class InvoicesList(AdminBase):
         ret['success'] = True
         return ret
 
-class BundleList(AdminBase):
-    def __init__(self):
-        super().__init__()
-
-    def isDeferred(self):
-        return False
-
-    @check_admin
-    def execute(self, *args, **kwargs):
-        ret = []
-        job,user,off_id,params = self.getArgs(*args,**kwargs)
-        limit = 10000
-        offset = 0
-        if 'limit' in params:
-            limit = int(params['limit'])
-        if 'offset' in params:
-            offset = int(params['offset'])
-        db = Query()
-        o = db.query(
-            """
-            select
-               b.id,b.name as bundle_name, o.name as office_name,
-               o.id as office_id, cm.code, cm.description, 
-               round(ifnull(b.markup,1),2) as markup, o.dhd_markup,
-                json_arrayagg(
-                    json_object(
-                        'id',bi.id,'code',bi.code,
-                        'assigned',bi.user_id,
-                        'desc',bi.description,
-                        'cpt_id',bi.icd_cpt_id,
-                        'cpt',cpt.code,
-                        'price', round(bi.price,2),
-                        'markup', round(ifnull(b.markup,1),2),
-                        'dhd_markup', round(ifnull(o.dhd_markup,1),2),
-                        'quantity', bi.quantity,
-                        'market', round(ifnull(o.dhd_markup,1)*bi.price*ifnull(b.markup,1),2)
-                    )
-                ) as items
-            from
-                bundle b 
-                left join office o on o.id=b.office_id
-                left join office_addresses oa on oa.office_id=o.id
-                left outer join bundle_items bi on bi.bundle_id = b.id 
-                left outer join icd_cm cm on b.icd_cm_id = cm.id
-                left outer join icd_cpt cpt on bi.icd_cpt_id = cpt.id
-            group by
-                b.id
-            """
-        )
-        for x in o:
-            q = db.query("""
-                select json_arrayagg(
-                    json_object(
-                        'user_id',user_id,'changes',changes
-                    )
-                ) as history
-                from bundle_history where bundle_id=%s
-            """,(x['id'],))
-            j = x
-            j['history'] = []
-            if len(q) > 0:
-                j['history'] = q[0]["history"]
-                if j['history'] is not None:
-                    j['history'] = json.loads(j['history'])
-                else:
-                    j['history'] = []
-            j['items'] = json.loads(x['items'])
-            newitems = []
-            for q in j['items']:
-                if q['id'] is None:
-                    continue
-                ni = q
-                newitems.append(ni)
-            j['items'] = newitems
-            o = db.query("""
-                select 
-                    u.id,u.first_name,u.last_name
-                from
-                    office_user oa, users u
-                where 
-                    oa.user_id=u.id    
-                    and oa.office_id=%s
-                """,(j['office_id'],)
-            )
-            j['physicians'] = o
-            ret.append(j)
-        return ret
-
-class BundleUpdate(AdminBase):
-    def __init__(self):
-        super().__init__()
-
-    def isDeferred(self):
-        return False
-
-
-    def saveBundle(self,params,off_id,db):
-        bu = Bundles.BundleUpdate()
-        ret = bu.saveBundle(params,off_id,db)
-        return ret
-
-    def getOffice(self,name,params,db):
-        o = db.query("""
-            select id from office where name=%s
-            """,(name,)
-        )
-        insid = 0
-        OT = self.getOfficeTypes()
-        if len(o) < 1:
-            db.update("""
-                insert into office (name,office_type_id) values (%s,%s)
-                """,(name,OT['Physician'])
-            )
-            db.commit()
-            insid = db.query("select LAST_INSERT_ID()");
-            insid = insid[0]['LAST_INSERT_ID()']
-            db.update(
-                """
-                    insert into office_addresses (
-                        office_id,addr1,addr2,phone,city,state,zipcode
-                    ) values (%s,%s,%s,%s,%s,%s,%s)
-                """,(insid,params['addr1'],params['addr2'],
-                     params['phone'],params['city'],params['state'],params['zipcode'])
-            )
-            db.commit()
-        else:
-            insid = o[0]['id']
-        return insid
-            
-    def getBundleDetails(self,row,off_id,p_id,db):
-        b = {}
-        g = db.query("""
-            select id from icd_cm where code=%s
-            """,(row['CM Code'],)
-        )
-        b['cm_code'] = g[0]['id']
-        b['name'] = row['Name']
-        b['markup'] = int(row['CPT Rate %']) / 100
-        g = db.query("""
-            select id from icd_cpt where code=%s
-            """,(row['CPT'],)
-        )
-        b['items'] = [{
-            'cpt': g[0]['id'],
-            'code': row['CPT'],
-            'desc': 'CPT %s' % str(row['CPT']),
-            'office_id': off_id,
-            'assigned': p_id,
-            'name': b['cm_code'],
-            'quantity': 1,
-            'price': row['CPT Price'],
-            'markup': int(row['CPT Rate %'])/100
-        }]
-        return b
-
-    @check_admin
-    def execute(self, *args, **kwargs):
-        ret = {'message':[]}
-        job,user,off_id,params = self.getArgs(*args,**kwargs)
-        db = Query()
-        rowId = 0
-        success = True
-        if 'upload' not in params:
-            self.saveBundle(params,params['office_id'],db)
-        else:
-            cont = params['upload']
-            if 'mime' not in cont:
-                return { 'success': False, 'message': 'UPLOAD_CONTENT_MISSING' }
-            if 'content' not in cont or cont['content'] is None or len(cont['content']) < 1:
-                return { 'success': False, 'message': 'UPLOAD_CONTENT_MISSING' }
-            t = cont['content'].split(';')
-            t = t[1].split(',')
-            if len(t) != 2:
-                return { 'success': False, 'message': 'FORMAT_INVALID_BASE_DATA' }
-            t = t[1]
-            try: 
-                t = base64.b64decode(t)
-                table = None
-                if cont['mime'] == 'text/csv':
-                    t = StringIO(t.decode('utf-8',errors='ignore'))
-                    table = pd.read_csv(t,converters={
-                        'CPT':str,'Office Zip':str,'HOSP Zip':str,'ASC Zip': str
-                    })
-                else: 
-                    table = pd.read_excel(t)
-                df = table
-                df = df.fillna('')
-                j = df.to_dict(orient='records')
-                messages = []
-                #for row in df.itertuples(index=True, name='Pandas'):
-                for row in j:
-                    d = {}
-                    o = row['Office Name']
-                    o_id = 0
-                    a_id = 0
-                    h_id = 0
-                    if o is not None and len(o) > 0:
-                        p = {
-                            'addr1': row['Office Addr1'],
-                            'addr2': row['Office Addr2'],
-                            'city': row['Office City'],
-                            'state': row['Office State'],
-                            'phone': row['Office Phone'],
-                            'zipcode': row['Office Zip']
-                        }
-                        o_id = self.getOffice(o,p,db)
-                    a = row['ASC Name']
-                    if a is not None and len(a) > 0:
-                        p = {
-                            'addr1': row['ASC Addr1'],
-                            'addr2': row['ASC Addr2'],
-                            'city': row['ASC City'],
-                            'state': row['ASC State'],
-                            'phone': row['ASC Phone'],
-                            'zipcode': row['ASC Zip']
-                        }
-                        a_id = self.getOffice(a,p,db)
-                    h = row['HOSP Name']
-                    if h is not None and len(h) > 0:
-                        p = {
-                            'addr1': row['HOSP Addr1'],
-                            'addr2': row['HOSP Addr2'],
-                            'city': row['HOSP City'],
-                            'state': row['HOSP State'],
-                            'phone': row['HOSP Phone'],
-                            'zipcode': row['HOSP Zip']
-                        }
-                        h_id = self.getOffice(h,p,db)
-                    oass = db.query("""
-                        select id from office_associations where
-                            from_office_id=%s and to_office_id=%s
-                        """,(o_id,o_id)
-                    )
-                    if len(o) < 1:
-                        db.update("""
-                            insert into office_associations (from_office_id,to_office_id) 
-                            values (%s,%s)
-                        """,(o_id,o_id)
-                        )
-                    if a_id > 0:
-                        oass = db.query("""
-                            select id from office_associations where
-                                from_office_id=%s and to_office_id=%s
-                            """,(o_id,a_id)
-                        )
-                        if len(oass) < 1 :
-                            db.update("""
-                                insert into office_associations (from_office_id,to_office_id) 
-                                values (%s,%s)
-                            """,(o_id,a_id)
-                            )
-                    if h_id > 0:
-                        oass = db.query("""
-                            select id from office_associations where
-                                from_office_id=%s and to_office_id=%s
-                            """,(o_id,h_id)
-                        )
-                        if len(oass) < 1:
-                            db.update("""
-                                insert into office_associations (from_office_id,to_office_id) 
-                                values (%s,%s)
-                            """,(o_id,h_id)
-                            )
-                    p_cont = { 
-                        'first_name': row['Primary First'],
-                        'last_name': row['Primary Last'],
-                        'email': row['Primary Email'],
-                        'phone': row['Primary Phone'],
-                        'office_id': o_id
-                    } 
-                    c_cont = { 
-                        'first_name': row['Coordinator First'],
-                        'last_name': row['Coordinator Last'],
-                        'email': row['Coordinator Email'],
-                        'phone': row['Coordinator Phone'],
-                        'office_id': o_id
-                    } 
-                    uu = Office.UsersUpdate()
-                    p_id = uu.addUser(p_cont,o_id,db)
-                    uu.addUser(c_cont,o_id,db)
-                    b = self.getBundleDetails(row,o_id,p_id,db)
-                    r = self.saveBundle(b,o_id,db)
-                    r['row'] = rowId
-                    ret['message'].append(r)
-                    if not r['success']:
-                        success = False
-                    db.commit()
-                    rowId += 1
-            except Exception as e:
-                exc_type, exc_value, exc_traceback = sys.exc_info()
-                traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
-                print(str(e))
-                return { 'success': False, 'message': 'PARSE_FORMAT_INVALID' }
-            rowId += 1
-        db.commit()
-        ret['success'] = success
-        return ret
-
 class WelcomeEmail(AdminBase):
 
     def __init__(self):
@@ -836,12 +517,12 @@ class OfficeList(AdminBase):
         o = db.query(
             """
                 select 
-                    o.id,name,active,ein_number,email,
+                    o.id,name,active,email,
                     JSON_ARRAYAGG(
                         JSON_OBJECT(
                             'id',oa.id,'addr1',addr1,'addr2',addr2,'phone',phone,
                             'city',city,'state',state,'zipcode',zipcode)
-                    ) as addr,o.dhd_markup
+                    ) as addr
                 from 
                     office o
                 left outer join office_addresses oa on oa.office_id=o.id
@@ -849,7 +530,7 @@ class OfficeList(AdminBase):
                 group by 
                     o.id
                 limit %s offset %s
-            """, (OT['Physician'],limit,offset)
+            """, (OT['Provider'],limit,offset)
         )
         ret = []
         for x in o:
@@ -875,8 +556,8 @@ class OfficeSave(AdminBase):
         if 'dhd_markup' not in params:
             params['dhd_markup'] = 1
         if 'id' not in params:
-            db.update("insert into office (name,ein_number,office_type_id,email,dhd_markup) values (%s,%s,%s,%s,%s)",
-                (params['name'],params['ein_number'],OT['Physician'],params['email'],params['dhd_markup'])
+            db.update("insert into office (name,office_type_id,email,dhd_markup) values (%s,%s,%s,%s,%s)",
+                (params['name'],OT['Physician'],params['email'],params['dhd_markup'])
             )
             insid = db.query("select LAST_INSERT_ID()");
             insid = insid[0]['LAST_INSERT_ID()']
@@ -884,8 +565,8 @@ class OfficeSave(AdminBase):
             db.update("""
                 update office set updated=now(),
                     dhd_markup=%s, name = %s, 
-                    ein_number = %s, email = %s where id = %s
-                """,(params['dhd_markup'],params['name'],params['ein_number'],params['email'],params['id']))
+                    email = %s where id = %s
+                """,(params['dhd_markup'],params['name'],params['email'],params['id']))
             insid = params['id']
         for x in params['addr']:
             if 'id' not in x or x['id'] == 0:
@@ -905,48 +586,6 @@ class OfficeSave(AdminBase):
                 )
         db.commit()
         return {'success': True}
-
-class TransfersList(AdminBase):
-
-    def __init__(self):
-        super().__init__()
-
-    def isDeferred(self):
-        return False
-
-    @check_admin
-    def execute(self, *args, **kwargs):
-        ret = {}
-        job,user,off_id,params = self.getArgs(*args,**kwargs)
-        limit = 10000
-        offset = 0
-        if 'limit' in params:
-            limit = int(params['limit'])
-        if 'offset' in params:
-            offset = int(params['offset'])
-        db = Query()
-        o = db.query("""
-            select
-                ot.id,ot.office_id,o.name as office_name,u.id as user_id,
-                u.first_name,u.last_name,u.email,stripe_transfer_id,
-                amount,ot.created,ot.invoices_id
-            from
-                office_transfers ot, users u, office o
-            where
-                u.id=ot.user_id and
-                o.id=ot.office_id
-            UNION
-            select
-                ot.id,0 as office_id,null as office_name,u.id as user_id,
-                u.first_name,u.last_name,u.email,stripe_transfer_id,
-                amount,ot.created,ot.invoices_id
-            from
-                consultant_transfers ot, users u
-            where
-                u.id=ot.consultant_user_id
-            """)
-        ret['transfers'] = o
-        return ret
 
 class CorporationList(AdminBase):
 

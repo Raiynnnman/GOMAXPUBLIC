@@ -20,7 +20,7 @@ import createRoom from './createRoom';
 import chatUploadDoc from './chatUploadDoc';
 import chatDownloadDoc from './chatDownloadDoc';
 import transfers from './transfers';
-import consultantSchedSave from './consultantSchedSave';
+import legalSchedSave from './legalSchedSave';
 import userDefaultCard from './userDefaultCard';
 import officeUsersSave from './officeUsersSave';
 import officeUsers from './officeUsers';
@@ -36,7 +36,7 @@ import invoiceAdmin from './invoiceAdmin';
 import layout from './layout';
 import chat from './chat';
 import offices from './offices';
-import consultants from './consultants';
+import legal from './legal';
 import bundles from './bundles';
 import setupIntent from './setupIntent';
 import bundleSave from './bundleSave';
@@ -60,12 +60,12 @@ import mydayApproveInvoice from './mydayApproveInvoice';
 import bundleAdmin from './bundleAdmin';
 import bundleAdminUpdate from './bundleAdminUpdate';
 import userAdmin from './userAdmin';
-import consultantAdmin from './consultantAdmin';
-import consultantAdminUpdate from './consultantAdminUpdate';
-import consultantBilling from './consultantBilling';
-import consultantBillingDownloadDoc from './consultantBillingDownloadDoc';
+import legalAdmin from './legalAdmin';
+import legalAdminUpdate from './legalAdminUpdate';
+import legalBilling from './legalBilling';
+import legalBillingDownloadDoc from './legalBillingDownloadDoc';
 import saveCard from './saveCard';
-import consultantDashboard from './consultantDashboard';
+import legalDashboard from './legalDashboard';
 import { connectRouter } from 'connected-react-router';
 import chatUser from './chatUser';
 import chatOffice from './chatOffice';
@@ -87,13 +87,13 @@ export default (history) =>
     bundleAdminUpdate,
     bundleSave,
     bundles,
-    consultantAdmin,
-    consultantAdminUpdate,
-    consultantBilling,
-    consultantBillingDownloadDoc,
-    consultantDashboard,
-    consultantSchedSave,
-    consultants,
+    legalAdmin,
+    legalAdminUpdate,
+    legalBilling,
+    legalBillingDownloadDoc,
+    legalDashboard,
+    legalSchedSave,
+    legal,
     context,
     invoiceAdmin,
     invoiceAdminUpdate,

@@ -171,17 +171,12 @@ class RegistrationList(RegistrationsBase):
                 r.id,r.email,
                 r.first_name,r.last_name,
                 r.phone,r.created,r.verified,rt.name as reg_type,
-                r.addr1,r.state,r.zipcode,rst.name as timeframe,g.name as gender,
-                r.age, r.message,r.procs, created
+                r.addr1,r.state,r.zipcode, r.message,created
             from 
                 registrations r,
-                registration_types rt,
-                genders g,
-                registrations_timeframe rst
+                registration_types rt
             where 
-                r.registration_types_id = rt.id and
-                r.genders_id = g.id and
-                r.registrations_timeframe_id = rst.id 
+                r.registration_types_id = rt.id 
             order by created desc
         """
         )

@@ -57,18 +57,18 @@ def bundleupdate(*args, **kwargs):
     po = AdminRest.BundleUpdateRest()
     return po.postWrapper(*args,**kwargs)
 
-@admin.route('/admin/consultants/list', methods=['POST'])
+@admin.route('/admin/legal/list', methods=['POST'])
 @token_required
-@swag_from(docs_dir + 'admin_consultants_list.yaml')
+@swag_from(docs_dir + 'admin_legal_list.yaml')
 def conslist(*args, **kwargs):
-    po = AdminRest.ConsultantListRest()
+    po = AdminRest.LegalListRest()
     return po.postWrapper(*args,**kwargs)
 
-@admin.route('/admin/consultants/update', methods=['POST'])
+@admin.route('/admin/legal/update', methods=['POST'])
 @token_required
-@swag_from(docs_dir + 'admin_consultants_update.yaml')
+@swag_from(docs_dir + 'admin_legal_update.yaml')
 def consupdate(*args, **kwargs):
-    po = AdminRest.ConsultantUpdateRest()
+    po = AdminRest.LegalUpdateRest()
     return po.postWrapper(*args,**kwargs)
 
 @admin.route('/admin/users/list', methods=['POST'])

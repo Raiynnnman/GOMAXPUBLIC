@@ -1,2 +1,2 @@
 
-curl https://uat-api.directhealthdelivery.io/search/config 
+curl https://uat-api.poundpain.com/search/config 

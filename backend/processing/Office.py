@@ -54,7 +54,7 @@ class OfficeInvoicesList(OfficeBase):
         o = db.query("""
             select
                 i.id,ist.name as invoice_status,i.physician_schedule_id,
-                i.nextcheck,i.bundle_id,stripe_invoice_number as number,
+                i.nextcheck,stripe_invoice_number as number,
                 u.first_name,u.last_name,ps.day,ps.time,s.name as subprocedure_name,
                 invoice_pdf_url, invoice_pay_url, amount_due, amount_paid,
                 attempt_count, next_payment_attempt, status, finalized_at,
