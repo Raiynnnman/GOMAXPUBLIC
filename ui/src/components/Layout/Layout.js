@@ -16,8 +16,6 @@ import { DashboardThemes } from '../../reducers/layout';
 import BreadcrumbHistory from '../BreadcrumbHistory';
 
 /* PAIN */
-import ChatOffice from '../../pain/chatOffice/ChatOffice';
-import ChatUser from '../../pain/chatUser/ChatUser';
 import { getVersion } from '../../version';
 import Physician from '../../pain/physician/Physician';
 import OfficeAdmin from '../../pain/admin/OfficeAdmin';
@@ -118,7 +116,6 @@ class Layout extends React.Component {
                     <Route path="/app/main/office/physicians" exact component={Physician} />
                     <Route path="/app/main/office/invoices" exact component={OfficeInvoices} />
                     <Route path="/app/main/office/users" exact component={Users} />
-                    <Route path="/app/main/office/chat" exact component={ChatOffice} />
                     <Route path="/app/main/office/associations" exact component={OfficeAssociation} />
                     <Route path="/app/main/admin/office" exact component={OfficeAdmin} />
                     <Route path="/app/main/admin/registrations" exact component={Registrations} />
@@ -131,7 +128,6 @@ class Layout extends React.Component {
                     <Route path="/app/main/legal/billing" exact component={LegalBilling} />
                     <Route path="/app/main/myday" exact component={MyDay} />
                     <Route path="/app/main/myhealth/appointments" exact component={MyHealth} />
-                    <Route path="/app/main/myhealth/chat" exact component={ChatUser} />
                     <Route path="/app/main/myhealth/documents" exact component={MyHealthDocuments} />
                     <Route path="/app/main/myhealth/billing" exact component={MyHealthBilling} />
                     <Route path="/app/main/search" exact component={Search} />

@@ -4,7 +4,6 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import ConnectWithoutContactIcon from '@mui/icons-material/ConnectWithoutContact';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import MapIcon from '@mui/icons-material/Map';
-import ChatIcon from '@mui/icons-material/Chat';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { connect } from 'react-redux';
 import { Progress, Alert } from 'reactstrap';
@@ -20,7 +19,6 @@ import Home from '../../images/sidebar/basil/Home';
 import Globe from '../../images/sidebar/basil/Globe';
 import User from '../../images/sidebar/basil/User';
 import ShoppingCart from '../../images/sidebar/basil/ShoppingCart';
-import Chat from '../../images/sidebar/basil/Chat';
 import Stack from '../../images/sidebar/basil/Stack';
 import Envelope from '../../images/sidebar/basil/Envelope';
 import Document from '../../images/sidebar/basil/Document';
@@ -153,17 +151,6 @@ class Sidebar extends React.Component {
           {(this.props.currentUser && this.props.currentUser.entitlements && 
             this.props.currentUser.entitlements.includes("Customer")) && (
           <LinksGroup
-            header="Chat"
-            link="/app/main/myhealth/chat"
-            isHeader
-            iconElement={<ChatIcon/>}
-            iconName="flaticon-users"
-            labelColor="info"
-          />
-          )}
-          {(this.props.currentUser && this.props.currentUser.entitlements && 
-            this.props.currentUser.entitlements.includes("Customer")) && (
-          <LinksGroup
             header="Documents"
             link="/app/main/myhealth/documents"
             isHeader
@@ -217,18 +204,7 @@ class Sidebar extends React.Component {
           />
           )}
           {(this.props.currentUser && this.props.currentUser.entitlements && 
-            this.props.currentUser.entitlements.includes("Physician")) && (
-          <LinksGroup
-            header="Chat"
-            link="/app/main/office/chat"
-            isHeader
-            iconElement={<ChatIcon/>}
-            iconName="flaticon-users"
-            labelColor="info"
-          />
-          )}
-          {(this.props.currentUser && this.props.currentUser.entitlements && 
-            this.props.currentUser.entitlements.includes("Physician")) && (
+            this.props.currentUser.entitlements.includes("Provider")) && (
           <LinksGroup
             header="Customers"
             link="/app/main/customers"
