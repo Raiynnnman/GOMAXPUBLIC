@@ -17,3 +17,4 @@ nhc-cache.json
 tmp/*
 common/version.py
 *.sql
+*.json

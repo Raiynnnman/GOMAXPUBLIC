@@ -59,17 +59,17 @@ class BundleUpdateRest(RestBase):
         ret = u.process(args[0])
         return ret
 
-class ConsultantListRest(RestBase):
+class LegalListRest(RestBase):
 
     def post(self, *args, **kwargs):
-        u = Admin.ConsultantList()
+        u = Admin.LegalList()
         ret = u.process(args[0])
         return ret
 
-class ConsultantUpdateRest(RestBase):
+class LegalUpdateRest(RestBase):
 
     def post(self, *args, **kwargs):
-        u = Admin.ConsultantUpdate()
+        u = Admin.LegalUpdate()
         ret = u.process(args[0])
         return ret
 

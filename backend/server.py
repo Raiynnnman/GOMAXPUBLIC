@@ -10,7 +10,7 @@ from common import settings, version
 from blueprint.ver_3_0.ittools import ittools
 from blueprint.ver_3_0.corporation import corporation
 from blueprint.ver_3_0.users import users
-from blueprint.ver_3_0.consultants import consultants
+from blueprint.ver_3_0.legal import legal
 from blueprint.ver_3_0.myday import myday
 from blueprint.ver_3_0.admin import admin
 from blueprint.ver_3_0.search import search
@@ -71,7 +71,7 @@ app.config['SWAGGER'] = {
 app.register_blueprint(ittools)
 app.register_blueprint(corporation)
 app.register_blueprint(users)
-app.register_blueprint(consultants)
+app.register_blueprint(legal)
 app.register_blueprint(admin)
 app.register_blueprint(myday)
 app.register_blueprint(office_set)

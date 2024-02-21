@@ -23,12 +23,12 @@ def check_admin(val):
         return val(cls,jobid,inp)
     return check
 
-def check_consultant(val):
+def check_legal(val):
     def check(cls,jobid,inp):
         if len(inp) > 1:
             u = inp[0]
             if 'entitlements' in u:
-                if 'Consultant' not in u['entitlements']:
+                if 'Legal' not in u['entitlements']:
                     raise InvalidCredentials("ACCESS_REQUIRED")
             else:
                 raise InvalidCredentials("ACCESS_REQUIRED")

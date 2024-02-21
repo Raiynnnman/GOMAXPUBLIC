@@ -28,7 +28,7 @@ class Mail:
     def send(self,to,subject,template,data):
         if config.getKey("email_to_override") is not None:
             to = config.getKey("email_to_override")
-        sender = "noreply@directhealthdelivery.io"
+        sender = "noreply@poundpain.com"
         access = config.getKey("email_user")
         secret = config.getKey("email_pass")
         H=open(template,"r")

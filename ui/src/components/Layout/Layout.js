@@ -28,22 +28,18 @@ import MyHealthDocuments from '../../pain/myhealth/MyHealthDocuments';
 import MyHealthBilling from '../../pain/myhealth/MyHealthBilling';
 import Search from '../../pain/search/Search';
 import Dashboard from '../../pain/dashboard/Dashboard';
-import Leads from '../../pain/leads/Leads';
-import ConsultantAdmin from '../../pain/admin/ConsultantAdmin';
+import LegalAdmin from '../../pain/admin/LegalAdmin';
 import UserAdmin from '../../pain/admin/UserAdmin';
 import BundleAdminList from '../../pain/admin/BundleAdminList';
 import TransferAdminList from '../../pain/admin/TransferAdminList';
 import InvoiceAdmin from '../../pain/admin/InvoiceAdmin';
-import ConsultantAppointment from '../../pain/consultant/ConsultantAppointment';
-import ConsultantBilling from '../../pain/consultant/ConsultantBilling';
-import ConsultantSettings from '../../pain/consultant/ConsultantSettings';
+import LegalAppointment from '../../pain/legal/LegalAppointment';
+import LegalBilling from '../../pain/legal/LegalBilling';
+import LegalSettings from '../../pain/legal/LegalSettings';
 import OfficeInvoices from '../../pain/office/OfficeInvoices';
 import OfficeAssociation from '../../pain/office/OfficeAssociation';
 import Users from '../../pain/office/Users';
 import TransferList from '../../pain/office/TransferList';
-import CorporationAdmin from '../../pain/admin/CorporationAdmin';
-import Corporation from '../../pain/corporation/Corporation';
-import CPTLookup from '../../pain/admin/CPTLookup';
 import Registrations from '../../pain/admin/Registrations';
 
 class Layout extends React.Component {
@@ -129,31 +125,27 @@ class Layout extends React.Component {
                     <Route path="/app/main/office/chat" exact component={ChatOffice} />
                     <Route path="/app/main/office/payouts" exact component={TransferList} />
                     <Route path="/app/main/office/associations" exact component={OfficeAssociation} />
-                    <Route path="/app/main/employer/users" exact component={Corporation} />
-                    <Route path="/app/main/admin/employers" exact component={CorporationAdmin} />
                     <Route path="/app/main/admin/office" exact component={OfficeAdmin} />
-                    <Route path="/app/main/admin/cpt/search" exact component={CPTLookup} />
                     <Route path="/app/main/admin/registrations" exact component={Registrations} />
-                    <Route path="/app/main/admin/consultants" exact component={ConsultantAdmin} />
+                    <Route path="/app/main/admin/legal" exact component={LegalAdmin} />
                     <Route path="/app/main/admin/users" exact component={UserAdmin} />
                     <Route path="/app/main/admin/bundle" exact component={BundleAdminList} />
                     <Route path="/app/main/admin/transfers" exact component={TransferAdminList} />
                     <Route path="/app/main/admin/invoices" exact component={InvoiceAdmin} />
-                    <Route path="/app/main/consulting/myday" exact component={ConsultantAppointment} />
-                    <Route path="/app/main/consulting/settings" exact component={ConsultantSettings} />
-                    <Route path="/app/main/consulting/billing" exact component={ConsultantBilling} />
+                    <Route path="/app/main/legal/myday" exact component={LegalAppointment} />
+                    <Route path="/app/main/legal/settings" exact component={LegalSettings} />
+                    <Route path="/app/main/legal/billing" exact component={LegalBilling} />
                     <Route path="/app/main/myday" exact component={MyDay} />
                     <Route path="/app/main/myhealth/appointments" exact component={MyHealth} />
                     <Route path="/app/main/myhealth/chat" exact component={ChatUser} />
                     <Route path="/app/main/myhealth/documents" exact component={MyHealthDocuments} />
                     <Route path="/app/main/myhealth/billing" exact component={MyHealthBilling} />
                     <Route path="/app/main/search" exact component={Search} />
-                    <Route path="/app/main/admin/leads" exact component={Leads} />
                   </Switch>
                 </CSSTransition>
               </TransitionGroup>
               <footer className={s.contentFooter}>
-                <small>DirectHealthDelivery - {getVersion()}</small>
+                <small>#PAIN - {getVersion()}</small>
               </footer>
             </main>
           </Hammer>

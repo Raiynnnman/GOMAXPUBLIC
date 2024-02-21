@@ -6,7 +6,6 @@ import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
 import { connect } from 'react-redux';
 import SearchIcon from '@mui/icons-material/Search';
 import { Col, Row } from 'reactstrap';
-import { Nav, NavItem, NavLink } from 'reactstrap';
 import { TabContent, TabPane } from 'reactstrap';
 import cx from 'classnames';
 import classnames from 'classnames';
@@ -14,7 +13,6 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import FAQ from './FAQ';
 import s from '../utils/default.module.scss';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
@@ -23,6 +21,7 @@ import { register } from '../../actions/registration';
 import createDOMPurify from 'dompurify'
 import { JSDOM } from 'jsdom'
 import AliceCarousel from 'react-alice-carousel';
+import { Nav, NavItem, NavLink } from 'reactstrap';
 import 'react-alice-carousel/lib/alice-carousel.css';
 import './Landing.scss';
 
@@ -218,27 +217,30 @@ class Landing extends Component {
         return (
         <>
             <div style={{backgroundColor:"black",color:"white"}}>
-                <div style={{height:50,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                    <Row md="12">
-                        <Col md="1">
-                            Home
-                        </Col>
-                        <Col md="3">
-                            Join our Network
-                        </Col>
-                        <Col md="3">
-                            Preferred Provider
-                        </Col>
-                        <Col md="2">
-                            About Us
-                        </Col>
-                        <Col md="2">
-                            Contact Us
-                        </Col>
-                        <Col md="1">
-                            Careers
-                        </Col>
-                    </Row>
+                <div style={{marginLeft:150,marginRight:150,position:"sticky",top:"0px",zIndex:1000,backgroundColor:"black"}}>
+                    <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-evenly'}}>
+                            <div style={{height:50,display: 'flex', alignItems: 'end',marginTop:20}} className="home-menu">
+                                <a href="/"><font style={{fontFamily:"sans-serif",fontSize:"16px"}}>Home</font></a>
+                            </div>
+                            <div style={{height:50,display: 'flex', alignItems: 'end',marginTop:20}} className="home-menu">
+                                <a href="/join"><font style={{fontFamily:"sans-serif",fontSize:"16px"}}>Join Our Network</font></a>
+                            </div>
+                            <div style={{height:50,display: 'flex', alignItems: 'end',marginTop:20}} className="home-menu">
+                                <a href="/provider"><font style={{fontFamily:"sans-serif",fontSize:"16px"}}>Preferred Provider</font></a>
+                            </div>
+                            <div style={{height:50,display: 'flex', alignItems: 'end',marginTop:20}} className="home-menu">
+                                <a href="/about-us"><font style={{fontFamily:"sans-serif",fontSize:"16px"}}>About Us</font></a>
+                            </div>
+                            <div style={{height:50,display: 'flex', alignItems: 'end',marginTop:20}} className="home-menu">
+                                <a href="/contact-us"><font style={{fontFamily:"sans-serif",fontSize:"16px"}}>Contact Us</font></a>
+                            </div>
+                            <div style={{height:50,display: 'flex', alignItems: 'end',marginTop:20}} className="home-menu">
+                                <a href="/careers"><font style={{fontFamily:"sans-serif",fontSize:"16px"}}>Careers</font></a>
+                            </div>
+                            <div style={{height:50,display: 'flex', alignItems: 'end',marginTop:20}} className="home-menu">
+                                <a href="/#/login"><font style={{fontFamily:"sans-serif",fontSize:"16px"}}>Login</font></a>
+                            </div>
+                    </div>
                 </div>
                 <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                     <Row md="12">
@@ -254,7 +256,7 @@ class Landing extends Component {
                         </Col>
                     </Row>
                 </div>
-                <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                <div style={{marginTop:120,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                     <Row md="12">
                         <Col md="12">
                             <img src="/first_interactive.webp"/>
@@ -275,12 +277,12 @@ class Landing extends Component {
                         </Col>
                     </Row>
                 </div>
-                <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                     <Row md="12">
-                        <Col md="6">
+                        <Col md="6" style={{marginTop:0}}>
                             <img src="/yes.webp"/>
                         </Col>
-                        <Col md="6">
+                        <Col md="6" style={{marginTop:50}}>
                             <img src="/no.webp"/>
                         </Col>
                     </Row>

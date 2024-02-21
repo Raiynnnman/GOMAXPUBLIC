@@ -332,7 +332,7 @@ class WelcomeEmailReset(SearchBase):
             '__BASE__':url
         } 
         m = Mail()
-        m.defer(email,"Appointment Scheduled with Direct Health Delivery","templates/mail/welcome-reset.html",data)
+        m.defer(email,"Appointment Scheduled with #PAIN","templates/mail/welcome-reset.html",data)
         return ret
 
 class WelcomeEmail(SearchBase):
@@ -366,7 +366,7 @@ class WelcomeEmail(SearchBase):
             '__BASE__':url
         } 
         m = Mail()
-        m.defer(email,"Appointment Scheduled with Direct Health Delivery","templates/mail/appointment.html",data)
+        m.defer(email,"Appointment Scheduled with #PAIN","templates/mail/appointment.html",data)
         return ret
 
 class OfficeAppointmentEmail(SearchBase):
@@ -389,7 +389,7 @@ class OfficeAppointmentEmail(SearchBase):
             '__BASE__':url
         } 
         m = Mail()
-        m.defer(email,"Appointment Scheduled with Direct Health Delivery","templates/mail/office-appointment.html",data)
+        m.defer(email,"Appointment Scheduled with #PAIN","templates/mail/office-appointment.html",data)
         return ret
 
 class ConsultantAppointmentEmail(SearchBase):
@@ -412,7 +412,7 @@ class ConsultantAppointmentEmail(SearchBase):
             '__BASE__':url
         } 
         m = Mail()
-        m.defer(email,"Appointment Scheduled with Direct Health Delivery","templates/mail/consultant-appointment.html",data)
+        m.defer(email,"Appointment Scheduled with #PAIN","templates/mail/consultant-appointment.html",data)
         return ret
 
 class SearchRegister(SearchBase):
@@ -499,7 +499,7 @@ class SearchRegister(SearchBase):
                     select office_id from office_user ou,physician_schedule ps where ps.user_id=ou.user_id and ps.id=%s
                     """,(params['appt_id'],)
                )
-                email = "d-%s-%s-%s@directhealthdelivery.io" % (
+                email = "d-%s-%s-%s@poundpain.io" % (
                     oid[0]['office_id'],user_id,encryption.getSHA256(str(user_id)+str(oid[0]['office_id']))[:20]
                 )
                 db.update("""

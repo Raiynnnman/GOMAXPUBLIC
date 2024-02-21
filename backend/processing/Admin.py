@@ -43,19 +43,10 @@ class AdminDashboard(AdminBase):
         db= Query()
         o = db.query("""
             select
-                ifnull(t1.num1,0) as num1, /* num leads */
-                ifnull(t2.num2,0) as num2, /* leads won */
-                ifnull(t3.num3,0) as num3, /* leads lost */
-                ifnull(t4.num4,0) as num4 /* leads invalid */
-            from
-                (select count(id) as num1 from leads where created > 
-                    date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t1,
-                (select count(l.id) as num2 from leads l, leads_status ls where ls.id=l.leads_status_id and 
-                    ls.name='WON' and created > date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t2,
-                (select count(l.id) as num3 from leads l, leads_status ls where ls.id=l.leads_status_id and 
-                    ls.name='LOST' and created > date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t3,
-                (select count(l.id) as num4 from leads l, leads_status ls where ls.id=l.leads_status_id and 
-                    ls.name='INVALID' and created > date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t4
+                0 as num1, /* num leads */
+                0 as num2, /* leads won */
+                0 as num3, /* leads lost */
+                0 as num4 /* leads invalid */
             """)
         return o[0]
 
@@ -79,25 +70,10 @@ class AdminDashboard(AdminBase):
         db = Query()
         o = db.query("""
             select 
-                ifnull(t1.num1,0) as num1, /* num leads */
-                ifnull(t2.num2,0) as num2, /* revenue */
-                ifnull(t3.num3,0) as num3, /* sales */
-                ifnull(t4.num4,0) as num4  /* leads that have generated appt */
-            from 
-                (select count(id) as num1 from leads where created > 
-                    date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t1,
-                (select round(sum(dhd_total),2) as num2 from invoices a, 
-                    physician_schedule ps, physician_schedule_scheduled pss 
-                    where ps.id=pss.physician_schedule_id and 
-                    a.physician_schedule_id=ps.id and pss.leads_id > 0 and a.created > 
-                    date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t2,
-                (select round(sum(patient_total),2) as num3 from invoices a, 
-                    physician_schedule ps, physician_schedule_scheduled pss 
-                    where ps.id=pss.physician_schedule_id and 
-                    a.physician_schedule_id=ps.id and pss.leads_id > 0 and a.created > 
-                    date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t3,
-                (select count(id) as num4 from physician_schedule_scheduled where leads_id > 0 
-                    and created > date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t4
+                0 as num1, /* num leads */
+                0 num2, /* revenue */
+                0 num3, /* sales */
+                0 num4  /* leads that have generated appt */
             """
         )
         return o[0]
@@ -110,13 +86,14 @@ class AdminDashboard(AdminBase):
                 ifnull(t3.num3,0) as num3, /* count bundles */
                 ifnull(t4.num4,0) as num4
             from 
-                (select round(sum(dhd_total),2) as num1 from invoices a
+                (select round(sum(total),2) as num1 from invoices a
                     where a.created > 
                     date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t1,
-                (select round(sum(patient_total),2) as num2 from invoices a
+                /* total twice, need to fix */
+                (select round(sum(total),2) as num2 from invoices a
                     where a.created > 
                     date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t2,
-                (select count(id) as num3 from appt_bundle where created > 
+                (select count(id) as num3 from appt_scheduled where created > 
                     date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t3,
                 (select count(id) as num4 from physician_schedule_scheduled where created > 
                     date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t4
@@ -180,7 +157,7 @@ class UserList(AdminBase):
             ret['users'].append(x)
         return ret
 
-class ConsultantList(AdminBase):
+class LegalList(AdminBase):
     def __init__(self):
         super().__init__()
 
@@ -205,17 +182,17 @@ class ConsultantList(AdminBase):
                 u.phone,c.addr1,c.addr2,c.city,c.state,c.zipcode,
                 c.lat, c.lon, u.active,c.ein_number
             from 
-                users u,consultant c 
+                users u,legal c 
             where 
                 c.user_id = u.id and 
                 u.active = 1 and
                 c.active = 1
             """
         )
-        ret['consultants'] = o
+        ret['legals'] = o
         return ret
 
-class ConsultantUpdate(AdminBase):
+class LegalUpdate(AdminBase):
     def __init__(self):
         super().__init__()
 
@@ -267,7 +244,7 @@ class ConsultantUpdate(AdminBase):
             ENT = self.getEntitlementIDs()
             db.update("""
                 insert into user_entitlements (user_id,entitlements_id) values (%s,%s)
-                """,(user_id,ENT['Consultant'])
+                """,(user_id,ENT['Legal'])
             )
             db.update("""
                 insert into user_permissions (user_id,permissions_id) values (%s,%s)
@@ -284,7 +261,7 @@ class ConsultantUpdate(AdminBase):
                       params['last_name'], params['phone'], params['id'])
                       )
             db.update("""
-                update consultant set updated=now(),active=%s,addr1=%s,addr2=%s,
+                update legal set updated=now(),active=%s,addr1=%s,addr2=%s,
                 phone=%s,city=%s,state=%s,zipcode=%s,ein_number=%s where user_id=%s
                 """,(params['active'],params['addr1'],params['addr2'],
                      params['phone'],params['city'],params['state'],
@@ -293,7 +270,7 @@ class ConsultantUpdate(AdminBase):
             )
         else:
             db.update("""
-                insert into consultant (user_id,addr1,addr2,phone,city,state,zipcode,ein_number) values
+                insert into legal (user_id,addr1,addr2,phone,city,state,zipcode,ein_number) values
                 (%s,%s,%s,%s,%s,%s,%s,%s)
                 """,(user_id,params['addr1'],params['addr2'],
                      params['phone'],params['city'],params['state'],
@@ -841,7 +818,7 @@ class OfficeList(AdminBase):
                         JSON_OBJECT(
                             'id',oa.id,'addr1',addr1,'addr2',addr2,'phone',phone,
                             'city',city,'state',state,'zipcode',zipcode)
-                    ) as addr,o.dhd_markup
+                    ) as addr
                 from 
                     office o
                 left outer join office_addresses oa on oa.office_id=o.id
@@ -849,7 +826,7 @@ class OfficeList(AdminBase):
                 group by 
                     o.id
                 limit %s offset %s
-            """, (OT['Physician'],limit,offset)
+            """, (OT['Provider'],limit,offset)
         )
         ret = []
         for x in o:
@@ -941,9 +918,9 @@ class TransfersList(AdminBase):
                 u.first_name,u.last_name,u.email,stripe_transfer_id,
                 amount,ot.created,ot.invoices_id
             from
-                consultant_transfers ot, users u
+                legal_transfers ot, users u
             where
-                u.id=ot.consultant_user_id
+                u.id=ot.legal_user_id
             """)
         ret['transfers'] = o
         return ret

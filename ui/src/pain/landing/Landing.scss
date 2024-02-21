@@ -40,3 +40,20 @@
   left: 50%;
   transform: translate(-50%, -50%);
 }
+
+.home-menu { 
+   color:white; 
+}
+
+.home-menu:hover { 
+   border-top:2px solid orange;
+   color:orange; 
+}
+
+a { 
+   color:white; 
+}
+
+a:hover { 
+   color:orange; 
+}

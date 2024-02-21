@@ -11,7 +11,7 @@ import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import UserDashboard from './UserDashboard';
 import AdminDashboard from './AdminDashboard';
-import ConsultantDashboard from './ConsultantDashboard';
+import LegalDashboard from './LegalDashboard';
 import PhysicianDashboard from './PhysicianDashboard';
 
 class Dashboard extends Component {
@@ -42,8 +42,8 @@ class Dashboard extends Component {
                 {(this.props.currentUser && this.props.currentUser.entitlements && this.props.currentUser.entitlements.includes('Admin')) && (
                     <AdminDashboard/>
                 )}
-                {(this.props.currentUser && this.props.currentUser.entitlements && this.props.currentUser.entitlements.includes('Consultant')) && (
-                    <ConsultantDashboard/>
+                {(this.props.currentUser && this.props.currentUser.entitlements && this.props.currentUser.entitlements.includes('Legal')) && (
+                    <LegalDashboard/>
                 )}
                 </>
                 </Col>                

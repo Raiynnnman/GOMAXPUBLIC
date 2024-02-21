@@ -106,7 +106,7 @@ class Sidebar extends React.Component {
             index="main"
           />
           {(this.props.currentUser && this.props.currentUser.entitlements && 
-            this.props.currentUser.entitlements.includes("Consultant")) && (
+            this.props.currentUser.entitlements.includes("Legal")) && (
           <LinksGroup
             header="My Day"
             link="/app/main/consulting/myday"
@@ -117,7 +117,7 @@ class Sidebar extends React.Component {
           />
           )}
           {(this.props.currentUser && this.props.currentUser.entitlements && 
-            this.props.currentUser.entitlements.includes("Consultant")) && (
+            this.props.currentUser.entitlements.includes("Legal")) && (
           <LinksGroup
             header="Invoices"
             link="/app/main/consulting/billing"
@@ -128,7 +128,7 @@ class Sidebar extends React.Component {
           />
           )}
           {(this.props.currentUser && this.props.currentUser.entitlements && 
-            this.props.currentUser.entitlements.includes("Consultant")) && (
+            this.props.currentUser.entitlements.includes("Legal")) && (
           <LinksGroup
             header="Settings"
             link="/app/main/consulting/settings"
@@ -194,28 +194,6 @@ class Sidebar extends React.Component {
           />
           )}
           {(this.props.currentUser && this.props.currentUser.entitlements && 
-            this.props.currentUser.entitlements.includes("Admin")) && (
-          <LinksGroup
-            header="Leads"
-            link="/app/main/admin/leads"
-            isHeader
-            iconElement={<ShoppingCart/>}
-            iconName="flaticon-users"
-            labelColor="info"
-          />
-          )}
-          {(this.props.currentUser && this.props.currentUser.entitlements && 
-            this.props.currentUser.entitlements.includes("Admin")) && (
-          <LinksGroup
-            header="CPT"
-            link="/app/main/admin/cpt/search"
-            isHeader
-            iconElement={<LocalHospitalIcon/>}
-            iconName="flaticon-users"
-            labelColor="info"
-          />
-          )}
-          {(this.props.currentUser && this.props.currentUser.entitlements && 
             this.props.currentUser.entitlements.includes("Customer")) && (
           <LinksGroup
             header="Search"
@@ -246,24 +224,6 @@ class Sidebar extends React.Component {
             iconElement={<Apps/>}
             iconName="flaticon-users"
             labelColor="info"
-          />
-          )}
-          {(this.props.currentUser && this.props.currentUser.entitlements && 
-            this.props.currentUser.entitlements.includes("CorporateAdmin")) && (
-          <LinksGroup
-            onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
-            activeItem={this.props.activeItem}
-            header="Employer"
-            iconElement={<BusinessIcon/>}
-            isHeader
-            iconName="flaticon-document"
-            link="/app/main/employer"
-            index="employer"
-            childrenLinks={[
-              {
-                header: 'Users', link: '/app/main/employer/users',
-              },
-            ]}
           />
           )}
           {(this.props.currentUser && this.props.currentUser.entitlements && 
@@ -330,10 +290,7 @@ class Sidebar extends React.Component {
                 header: 'Office', link: '/app/main/admin/office',
               },
               {
-                header: 'Consultants', link: '/app/main/admin/consultants',
-              },
-              {
-                header: 'Employers', link: '/app/main/admin/employers',
+                header: 'Legal', link: '/app/main/admin/legal',
               },
               {
                 header: 'Invoices', link: '/app/main/admin/invoices',

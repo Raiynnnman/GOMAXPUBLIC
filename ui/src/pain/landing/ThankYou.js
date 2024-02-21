@@ -30,12 +30,12 @@ class ThankYou extends Component {
                 <Container>
                     <h5 className="auth-logo">
                         <i className="la la-circle text-primary" />
-                        Direct Health Delivery
+                        #PAIN
                         <i className="la la-circle text-danger" />
                     </h5>
-                    <Widget className="widget-auth mx-auto" title={<h3 className="mt-0">Welcome to DirectHealth Delivery</h3>}>
+                    <Widget className="widget-auth mx-auto" title={<h3 className="mt-0">Welcome to #PAIN</h3>}>
                         <p className="widget-auth-info">
-                            Thank you for registering with Direct Health Delivery! We will be in contact soon. 
+                            Thank you for registering with #PAIN! We will be in contact soon. 
                         </p>
                         <p className="widget-auth-info">
                             Click <a href='/#/landing'>Here</a> to exit.
