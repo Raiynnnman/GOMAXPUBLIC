@@ -51,6 +51,7 @@ class App extends React.PureComponent {
                       <AuthRoute path="/welcome" exact component={Welcome}/>
                       <AuthRoute path="/search" exact component={Search}/>
                       <AuthRoute path="/landing" exact component={Landing}/>
+                      <AuthRoute path="/join" exact component={Landing}/>
                       <AuthRoute path="/thankyou" exact component={ThankYou}/>
                       <AuthRoute path="/forgot" exact component={Forgot}/>
                       <Route path="/error" exact component={ErrorPage}/>

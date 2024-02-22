@@ -148,7 +148,20 @@ class RegistrationLandingData(RegistrationsBase):
 
     @check_admin
     def execute(self, *args, **kwargs):
-        ret = {}
+        ret = {'pricing':[]}
+        db = Query()
+        o = db.query("""
+            select price,locations,duration,start_date,end_date,active,slot
+            from
+                pricing_data p
+            where 
+                end_date > now()
+            order by 
+                slot asc,
+                start_date desc
+            
+        """)
+        ret['pricing'] = o
         return ret
 
 class RegistrationList(RegistrationsBase):
