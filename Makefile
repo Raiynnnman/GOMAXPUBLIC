@@ -1,6 +1,6 @@
 
 SHELL=/bin/bash
-D=ui backend scripts mail chat
+D=ui backend scripts 
     
 
 .PHONY: all $D save all-tests
