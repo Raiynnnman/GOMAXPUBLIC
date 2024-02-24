@@ -6,17 +6,25 @@ import 'react-toastify/dist/ReactToastify.css';
 import handleError from './handleError';
 const cookies = new Cookies();
 
-export const RECEIVED_REGL_DATA_SUCCESS = 'RECEIVED_REGL_DATA_SUCCESS';
-export const RECEIVING_REGL_DATA = 'RECEIVING_REGL_DATA';
+export const RECEIVED_REGPROV_DATA_SUCCESS = 'RECEIVED_REGPROV_DATA_SUCCESS';
+export const RECEIVING_REGPROV_DATA = 'RECEIVING_REGPROV_DATA';
+
+export function receiveDataRequest(params) {
+    return (dispatch) => {
+        dispatch(receivingData(params)).then(data => {
+            dispatch(receiveDataSuccess(data));
+        });
+    };
+}
 
 export function receiveDataSuccess(payload) {
     return {
-        type: RECEIVED_REGL_DATA_SUCCESS,
+        type: RECEIVED_REGPROV_DATA_SUCCESS,
         payload
     }
 }
 
-export function getRegistrations(params,callback,args) { 
+export function registerProvider(params,callback,args) { 
   return async (dispatch) => {
     dispatch(receivingData(params,callback,args));
   };
@@ -25,8 +33,10 @@ export function getRegistrations(params,callback,args) {
 export function receivingData(params,callback,args) {
   return async (dispatch) => {
     dispatch({
-        type: RECEIVING_REGL_DATA
+        type: RECEIVING_REGPROV_DATA
     });
+    console.log(params);
+    console.log(callback);
     const response = await axios.create({
             baseURL: apiBaseUrl(),
             withCredentials: true,
@@ -34,10 +44,11 @@ export function receivingData(params,callback,args) {
               Accept: "application/json",
               "Content-Type": "application/json",
             },
-        }).post('/admin/registrations/list',params)
+        }).post('/register/provider',params)
       .then((e) => { 
+          console.log(e)
           dispatch({
-                type: RECEIVED_REGL_DATA_SUCCESS,
+                type: RECEIVED_REGPROV_DATA_SUCCESS,
                 payload: e.data.data
             });
           if (callback) {
@@ -49,6 +60,7 @@ export function receivingData(params,callback,args) {
           }
       })
       .catch((e) => { 
+        console.log("err",e)
         handleError(e,callback,args);
       })
       .finally(() => { 

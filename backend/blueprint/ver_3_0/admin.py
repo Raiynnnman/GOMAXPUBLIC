@@ -121,3 +121,9 @@ def corporationupdate(*args, **kwargs):
     po = AdminRest.CorporationUpdateRest()
     return po.postWrapper(*args,**kwargs)
 
+@admin.route('/admin/registrations/list', methods=['POST'])
+@token_required
+@swag_from(docs_dir + 'registrationlist.yaml')
+def reglist(*args, **kwargs):
+    po = AdminRest.RegistrationListRest()
+    return po.postWrapper(*args,**kwargs)

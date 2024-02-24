@@ -121,3 +121,11 @@ class CorporationUpdateRest(RestBase):
         u = Admin.CorporationUpdate()
         ret = u.process(args[0])
         return ret
+
+class RegistrationListRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Admin.RegistrationList()
+        ret = u.process(args[0])
+        return ret
+

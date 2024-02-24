@@ -57,15 +57,10 @@ class Registrations extends Component {
             {name:'Last',value:'last_name'},
             {name:'Age',value:'age'},
             {name:'Phone',value:'phone'},
-            {name:'Type',value:'reg_type'},
-            {name:'Gender',value:'gender'},
             {name:'Address',value:'addr1'},
             {name:'City',value:'city'},
             {name:'State',value:'state'},
             {name:'Zipcode',value:'zipcode'},
-            {name:'Timeframe',value:'timeframe'},
-            {name:'Procedure',value:'procs'},
-            {name:'Comments',value:'message'},
         ]
         var regheads = [
             {

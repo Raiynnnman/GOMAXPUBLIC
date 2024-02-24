@@ -71,12 +71,14 @@ import chatUser from './chatUser';
 import chatOffice from './chatOffice';
 import mydayGetOfficePatients from './mydayGetOfficePatients';
 import mydayCustomAppt from './mydayCustomAppt'; 
+import registerProvider from './registerProvider';
 
 export default (history) =>
   combineReducers({
     router: connectRouter(history),
     adminDashboard,
     chatDownloadDoc,
+    registerProvider,
     alerts,
     createRoom,
     auth,
