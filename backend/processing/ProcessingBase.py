@@ -6,6 +6,15 @@ class ProcessingBase:
     def __init__(self):
         pass
         
+    def getPlans(self):
+        db = Query()
+        ret = {}
+        o = db.query("select id,price,duration from pricing_data")
+        for x in o:
+            i = x['id']
+            ret[i] = x
+        return ret 
+
     def getRegistrationTypes(self):
         db = Query()
         ret = {}

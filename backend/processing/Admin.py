@@ -181,7 +181,7 @@ class LegalList(AdminBase):
         ENT = self.getEntitlementIDs()
         o = db.query("""
             select 
-                c.id,name,active,email,
+                c.id,c.name,active,email,
                 JSON_ARRAYAGG(
                     JSON_OBJECT(
                         'id',oa.id,'addr1',oa.addr1,'addr2',oa.addr2,'phone',oa.phone,
@@ -517,7 +517,7 @@ class OfficeList(AdminBase):
         o = db.query(
             """
                 select 
-                    o.id,name,active,email,
+                    o.id,c.name,active,email,
                     JSON_ARRAYAGG(
                         JSON_OBJECT(
                             'id',oa.id,'addr1',addr1,'addr2',addr2,'phone',phone,
@@ -556,17 +556,17 @@ class OfficeSave(AdminBase):
         if 'dhd_markup' not in params:
             params['dhd_markup'] = 1
         if 'id' not in params:
-            db.update("insert into office (name,office_type_id,email,dhd_markup) values (%s,%s,%s,%s,%s)",
-                (params['name'],OT['Physician'],params['email'],params['dhd_markup'])
+            db.update("insert into office (name,office_type_id,email) values (%s,%s,%s,%s)",
+                (params['name'],OT['Physician'],params['email'])
             )
             insid = db.query("select LAST_INSERT_ID()");
             insid = insid[0]['LAST_INSERT_ID()']
         else:
             db.update("""
                 update office set updated=now(),
-                    dhd_markup=%s, name = %s, 
+                    name = %s, 
                     email = %s where id = %s
-                """,(params['dhd_markup'],params['name'],params['email'],params['id']))
+                """,(params['name'],params['email'],params['id']))
             insid = params['id']
         for x in params['addr']:
             if 'id' not in x or x['id'] == 0:
@@ -660,3 +660,77 @@ class CorporationUpdate(AdminBase):
                 )
         db.commit()        
         return ret
+
+class RegistrationList(AdminBase):
+
+    def __init__(self):
+        super().__init__()
+
+    def isDeferred(self):
+        return False
+
+    @check_admin
+    def execute(self, *args, **kwargs):
+        ret = {}
+        job,user,off_id,params = self.getArgs(*args,**kwargs)
+        limit = 10000
+        offset = 0
+        db = Query()
+        o = db.query("""
+            select 
+                pq.id,pqs.name,o.name,o.id as office_id,
+                JSON_ARRAYAGG(
+                    JSON_OBJECT(
+                        'id',oa.id,'addr1',oa.addr1,'addr2',oa.addr2,'phone',oa.phone,
+                        'city',oa.city,'state',oa.state,'zipcode',oa.zipcode)
+                ) as addr,u.first_name,u.last_name,u.email,u.phone
+            from
+                provider_queue pq,
+                provider_queue_status pqs,
+                office o,
+                office_addresses oa,
+                users u,
+                office_user ou
+            where
+                pq.provider_queue_status_id = pqs.id and
+                pq.office_id = o.id and
+                oa.office_id = o.id and
+                ou.office_id = o.id and
+                ou.user_id = u.id
+            group by 
+                o.id
+        """
+        )
+        k = [] 
+        for x in o:
+            x['addr'] = json.loads(x['addr'])
+            t = db.query("""
+                select 
+                    op.id,start_date,end_date,
+                    JSON_ARRAYAGG(
+                        JSON_OBJECT(
+                            'id',opi.id,'price',opi.price,'description',opi.description,'quantity',opi.quantity
+                        )
+                    ) as items
+                from 
+                    office_plans op,
+                    office_plan_items opi
+                where 
+                    opi.office_plans_id = op.id and
+                    office_id = %s 
+            """,(x['office_id'],)
+            )
+            x['items'] = []
+            for j in t:
+                if j['id'] is None:
+                    continue
+                p = j
+                p['items'] = json.loads(p['items'])
+                x['items'].append(p)
+            k.append(x)
+        ret['registrations'] = k
+        return ret
+
+
+
+

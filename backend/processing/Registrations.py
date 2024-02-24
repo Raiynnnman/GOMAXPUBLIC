@@ -151,7 +151,7 @@ class RegistrationLandingData(RegistrationsBase):
         ret = {'pricing':[]}
         db = Query()
         o = db.query("""
-            select price,locations,duration,start_date,end_date,active,slot
+            select id,price,locations,duration,start_date,end_date,active,slot
             from
                 pricing_data p
             where 
@@ -164,7 +164,7 @@ class RegistrationLandingData(RegistrationsBase):
         ret['pricing'] = o
         return ret
 
-class RegistrationList(RegistrationsBase):
+class RegisterProvider(RegistrationsBase):
 
     def __init__(self):
         super().__init__()
@@ -172,26 +172,68 @@ class RegistrationList(RegistrationsBase):
     def isDeferred(self):
         return False
 
-    @check_admin
     def execute(self, *args, **kwargs):
         ret = {}
-        job,user,off_id,params = self.getArgs(*args,**kwargs)
-        limit = 10000
-        offset = 0
+        ret['success'] = True
+        params = args[1][0]
         db = Query()
-        o = db.query("""
-            select 
-                r.id,r.email,
-                r.first_name,r.last_name,
-                r.phone,r.created,r.verified,rt.name as reg_type,
-                r.addr1,r.state,r.zipcode, r.message,created
-            from 
-                registrations r,
-                registration_types rt
-            where 
-                r.registration_types_id = rt.id 
-            order by created desc
-        """
+        insid = 0
+        OT = self.getOfficeTypes()
+        PL = self.getPlans()
+        db.update("insert into office (name,office_type_id,email) values (%s,%s,%s)",
+            (params['name'],OT['Provider'],params['email'])
         )
-        ret['registrations'] = o
+        insid = db.query("select LAST_INSERT_ID()");
+        insid = insid[0]['LAST_INSERT_ID()']
+        for x in params['addresses']:
+            db.update(
+                """
+                    insert into office_addresses (
+                        office_id,name,addr1,phone,city,state,zipcode
+                    ) values (%s,%s,%s,%s,%s,%s,%s)
+                """,(insid,x['name'],x['addr1'],x['phone'],x['city'],x['state'],x['zipcode'])
+            )
+        db.update(
+            """
+            insert into provider_queue (office_id) values (%s)
+            """,(insid,)
+        )
+        l = db.query("""
+            select id from users where email = %s
+            """,(params['email'],)
+        )
+        uid = 0
+        for o in l:
+            uid = o['id']
+        if uid == 0:
+            db.update(
+                """
+                insert into users (first_name,last_name,email,phone) values (%s,%s,%s,%s)
+                """,(params['first'],params['last'],params['email'],params['phone'])
+            )
+            uid = db.query("select LAST_INSERT_ID()");
+            uid = uid[0]['LAST_INSERT_ID()']
+        db.update("""
+            insert into office_user (office_id,user_id) values (%s,%s)
+            """,(insid,uid)
+        )
+        selplan = int(params['plan'])
+        db.update("""
+            insert into office_plans (office_id,start_date,end_date) values (%s,now(),date_add(now(),INTERVAL %s MONTH))
+            """,(insid,PL[selplan]['duration'])
+        )
+        planid = db.query("select LAST_INSERT_ID()");
+        planid = planid[0]['LAST_INSERT_ID()']
+        db.update("""
+            insert into office_plan_items (
+                office_plans_id,price,quantity,description) 
+            values 
+                (%s,%s,%s,%s)
+            """,(planid,PL[selplan]['price'],1,"%s Plan" % PL[selplan]['duration'])
+                
+        )
+        ### TODO: Send invite link
+        db.commit()
         return ret
+
+

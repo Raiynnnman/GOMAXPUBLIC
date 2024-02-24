@@ -38,6 +38,7 @@ class Landing extends Component {
             faq:false,
             index:0
         } 
+        this.selectMenu = this.selectMenu.bind(this);
         this.openFAQ = this.openFAQ.bind(this);
         this.register = this.register.bind(this);
         this.setEmail= this.setEmail.bind(this);
@@ -60,13 +61,26 @@ class Landing extends Component {
     } 
 
     componentWillReceiveProps(p) { 
-        this.state.location = this.props.match.path;
+        if (window.location.href.includes("join")) { 
+            this.state.location = "/join";
+        } 
+        console.log("s",this.state);
         this.setState(this.state);
     }
 
     componentDidMount() {
         this.props.dispatch(getLandingData({}));
+        this.state.location = this.props.match.path;
+        console.log("s",this.state);
+        this.setState(this.state);
     }
+
+    selectMenu(e) { 
+        console.log(e);
+        window.location = e;
+        this.state.location = e;
+        this.setState(this.state);
+    } 
 
     cancel() { 
         this.state.selected=null;
@@ -216,27 +230,27 @@ class Landing extends Component {
             <div style={{backgroundColor:"black",color:"white"}}>
                 <div style={{marginLeft:150,marginRight:150,position:"sticky",top:"0px",zIndex:1000,backgroundColor:"black"}}>
                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-evenly'}}>
-                            <div style={{height:50,display: 'flex', alignItems: 'end',marginTop:20}} className="home-menu">
-                                <a href="/"><font style={{fontFamily:"sans-serif",fontSize:"16px"}}>Home</font></a>
-                            </div>
-                            <div style={{height:50,display: 'flex', alignItems: 'end',marginTop:20}} className="home-menu">
-                                <a href="/#/join"><font style={{fontFamily:"sans-serif",fontSize:"16px"}}>Join Our Network</font></a>
-                            </div>
-                            <div style={{height:50,display: 'flex', alignItems: 'end',marginTop:20}} className="home-menu">
-                                <a href="/#/provider"><font style={{fontFamily:"sans-serif",fontSize:"16px"}}>Preferred Provider</font></a>
-                            </div>
-                            <div style={{height:50,display: 'flex', alignItems: 'end',marginTop:20}} className="home-menu">
-                                <a href="/#/about-us"><font style={{fontFamily:"sans-serif",fontSize:"16px"}}>About Us</font></a>
-                            </div>
-                            <div style={{height:50,display: 'flex', alignItems: 'end',marginTop:20}} className="home-menu">
-                                <a href="/#/contact-us"><font style={{fontFamily:"sans-serif",fontSize:"16px"}}>Contact Us</font></a>
-                            </div>
-                            <div style={{height:50,display: 'flex', alignItems: 'end',marginTop:20}} className="home-menu">
-                                <a href="/#/careers"><font style={{fontFamily:"sans-serif",fontSize:"16px"}}>Careers</font></a>
-                            </div>
-                            <div style={{height:50,display: 'flex', alignItems: 'end',marginTop:20}} className="home-menu">
-                                <a href="/#/login"><font style={{fontFamily:"sans-serif",fontSize:"16px"}}>Login</font></a>
-                            </div>
+                        <div style={{height:50,display: 'flex', alignItems: 'end',marginTop:20}} className="home-menu">
+                            <a href="/" onClick={() => this.selectMenu("/#")}><font style={{fontFamily:"sans-serif",fontSize:"16px"}}>Home</font></a>
+                        </div>
+                        <div style={{height:50,display: 'flex', alignItems: 'end',marginTop:20}} className="home-menu">
+                            <a onClick={() => this.selectMenu("/#/join")} ><font style={{fontFamily:"sans-serif",fontSize:"16px"}}>Join Our Network</font></a>
+                        </div>
+                        <div style={{height:50,display: 'flex', alignItems: 'end',marginTop:20}} className="home-menu">
+                            <a href="/#/provider" onClick={() => this.selectMenu("/#/provider")}><font style={{fontFamily:"sans-serif",fontSize:"16px"}}>Preferred Provider</font></a>
+                        </div>
+                        <div style={{height:50,display: 'flex', alignItems: 'end',marginTop:20}} className="home-menu">
+                            <a href="/#/about-us" onClick={() => this.selectMenu("/#/about-us")}><font style={{fontFamily:"sans-serif",fontSize:"16px"}}>About Us</font></a>
+                        </div>
+                        <div style={{height:50,display: 'flex', alignItems: 'end',marginTop:20}} className="home-menu">
+                            <a href="/#/contact-us" onClick={() => this.selectMenu("/#")}><font style={{fontFamily:"sans-serif",fontSize:"16px"}}>Contact Us</font></a>
+                        </div>
+                        <div style={{height:50,display: 'flex', alignItems: 'end',marginTop:20}} className="home-menu">
+                            <a href="/#/careers" onClick={() => this.selectMenu("/#")}><font style={{fontFamily:"sans-serif",fontSize:"16px"}}>Careers</font></a>
+                        </div>
+                        <div style={{height:50,display: 'flex', alignItems: 'end',marginTop:20}} className="home-menu">
+                            <a href="/#/login"><font style={{fontFamily:"sans-serif",fontSize:"16px"}}>Login</font></a>
+                        </div>
                     </div>
                 </div>
                 {(this.state.location === "/") && (
@@ -244,6 +258,9 @@ class Landing extends Component {
                 )}
                 {(this.state.location === "/landing") && (
                     <Home landingData={this.props.landingData}/>
+                )}
+                {(this.state.location === "/#/join") && (
+                    <Join landingData={this.props.landingData}/>
                 )}
                 {(this.state.location === "/join") && (
                     <Join landingData={this.props.landingData}/>

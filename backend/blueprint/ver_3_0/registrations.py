@@ -14,12 +14,6 @@ def regupdate(*args, **kwargs):
     po = RegistrationRest.RegistrationUpdateRest()
     return po.postWrapper(*args,**kwargs)
 
-@registrations.route('/registrations/list', methods=['POST'])
-@token_required
-@swag_from(docs_dir + 'registrationlist.yaml')
-def reglist(*args, **kwargs):
-    po = RegistrationRest.RegistrationListRest()
-    return po.postWrapper(*args,**kwargs)
 
 @registrations.route('/landing/get', methods=['POST'])
 @swag_from(docs_dir + 'landingdata.yaml')
@@ -31,4 +25,10 @@ def landingdata(*args, **kwargs):
 @swag_from(docs_dir + 'landingverify.yaml')
 def landingverify(*args, **kwargs):
     po = RegistrationRest.RegistrationVerifyRest()
+    return po.postWrapper(*args,**kwargs)
+
+@registrations.route('/register/provider', methods=['POST'])
+@swag_from(docs_dir + 'registerprovider.yaml')
+def registerprovider(*args, **kwargs):
+    po = RegistrationRest.RegisterProviderRest()
     return po.postWrapper(*args,**kwargs)

@@ -16,13 +16,6 @@ class RegistrationUpdateRest(RestBase):
         return ret
 
 
-class RegistrationListRest(RestBase):
-
-    def post(self, *args, **kwargs):
-        u = Registrations.RegistrationList()
-        ret = u.process(args[0])
-        return ret
-
 class RegistrationLandingDataRest(RestBase):
 
     def post(self, *args, **kwargs):
@@ -37,4 +30,10 @@ class RegistrationVerifyRest(RestBase):
         ret = u.process(args[0])
         return ret
 
+class RegisterProviderRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Registrations.RegisterProvider()
+        ret = u.process(args[0])
+        return ret
 

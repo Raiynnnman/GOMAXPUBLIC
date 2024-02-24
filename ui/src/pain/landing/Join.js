@@ -24,6 +24,8 @@ class Join extends Component {
             selIndex:-1
         }
         this.selectFAQ = this.selectFAQ.bind(this);
+        this.register = this.register.bind(this);
+        this.bookNow = this.bookNow.bind(this);
     } 
 
     componentWillReceiveProps(p) { 
@@ -36,6 +38,15 @@ class Join extends Component {
         if (e === this.state.selIndex) { this.state.selIndex = -1 }
         else { this.state.selIndex = e; }
         this.setState(this.state);
+    } 
+
+    register(e) { 
+        console.log(e)
+        window.location = "/#/register-provider/" + e;
+    } 
+
+    bookNow() { 
+        window.location = "https://calendly.com/poundpaindaphne";
     } 
 
 
@@ -154,7 +165,7 @@ class Join extends Component {
                                     </div>
                                 </Row>
                                 <Row md="12" style={{marginTop:20}}>
-                                    <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                                    <div onClick={this.bookNow} style={{cursor:"pointer",marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                         <div style={{width:'200px',border:"2px solid white",borderRadius:"25px 25px 25px 25px"}}>
                                             <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                             <font style={{fontSize:'16px',}}>
@@ -297,7 +308,7 @@ class Join extends Component {
                                             </div>
                                             <div style={{borderBottom:"1px solid white"}}></div>
                                             <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                                                <div style={{margin:10,width:"80%",height:50,backgroundColor:"#F74301",borderRadius:"10px 10px 10px 10px"}}>
+                                                <div onClick={() => this.register(e.id)} style={{cursor:"pointer",margin:10,width:"80%",height:50,backgroundColor:"#F74301",borderRadius:"10px 10px 10px 10px"}}>
                                                     <div style={{height:50,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                                     <font style={{color:"white"}}>
                                                         Select
