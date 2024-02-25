@@ -4,6 +4,7 @@ import os
 import time
 import unittest
 from util.DBManager import DBManager
+from mysql.connector.locales.en import client_error
 import json
 import datetime
 import decimal
