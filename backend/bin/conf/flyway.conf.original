@@ -1,0 +1,5 @@
+
+flyway.url=jdbc:mysql://localhost:3306/pain
+flyway.user=root
+flyway.password=TG52G72LJs7aa3Qj
+flyway.locations=filesystem:sql
