@@ -778,20 +778,40 @@ class TrafficGet(AdminBase):
         offset = l[0]['offset']
         l = db.query("""
             select
-                ti.uuid,
-                json_arrayagg(
-                    json_object(
-                        'lat',tc.lat,
-                        'lon',tc.lon,
-                        'ord',tc.ord
-                    )
-                ) as coords
+                ti.lat as lat ,ti.lon as lon
             from
                 traffic_incidents ti,
                 traffic_coordinates tc
             where
                 date(ti.created) = %s and
                 tc.traffic_incidents_id = ti.id and
+                ti.zipcode = %s
+            limit 1
+            """,(params['date'],params['zipcode'])
+        )
+        if len(l) > 0:
+            ret['center'] = {'lat':l[0]['lat'],'lon':l[0]['lon']}
+        else:
+            ret['center'] = {'lat':0,'lon':0}
+        l = db.query("""
+            select
+                ti.uuid,ti.traffic_categories_id as category_id,
+                tcat.name as category,ti.zipcode,
+                json_arrayagg(
+                    json_object(
+                        'lat',tc.lat,
+                        'lng',tc.lon,
+                        'ord',tc.ord
+                    )
+                ) as coords
+            from
+                traffic_incidents ti,
+                traffic_coordinates tc,
+                traffic_categories tcat
+            where
+                date(ti.created) = %s and
+                tc.traffic_incidents_id = ti.id and
+                ti.traffic_categories_id = tcat.id and
                 ti.zipcode = %s
             group by
                 ti.id

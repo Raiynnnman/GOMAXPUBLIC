@@ -19,10 +19,13 @@ class Map extends Component {
         this.state = { 
             activeTab: "traffic",
             dateSelected:null,
+            categories:null,
             zipSelected:null
         }
         this.toggleTab = this.toggleTab.bind(this);
-        this.onDateChange= this.onDateChange.bind(this)
+        this.onDateChange= this.onDateChange.bind(this);
+        this.onZipChange= this.onZipChange.bind(this);
+        this.onCategoryChange = this.onCategoryChange.bind(this);
     } 
 
     componentWillReceiveProps(p) { 
@@ -37,6 +40,11 @@ class Map extends Component {
             this.setState(this.state);
             changed = true;
         } 
+        if (p.trafficData.data && p.trafficData.data.config && p.trafficData.data.config.avail && this.state.categories === null) { 
+            this.state.categories = p.trafficData.data.config.categories;
+            this.setState(this.state);
+            changed = true;
+        } 
         if (changed) { 
             console.log("s",this.state);
             this.props.dispatch(getTraffic({date:this.state.dateSelected,zipcode:this.state.zipSelected}))
@@ -44,8 +52,18 @@ class Map extends Component {
     }
 
     componentDidMount() {
-            this.props.dispatch(getTraffic({}));
+        this.props.dispatch(getTraffic({}));
     }
+
+    onCategoryChange(e) { 
+        console.log(e);
+        t = [];
+        var c = 0;
+        for (c = 0; c < this.state.categories.length;c++) { 
+            t.append(this.state.categories[c].id);
+        } 
+        this.props.dispatch(getTraffic({categories:t,date:this.state.dateSelected,zipcode:this.state.zipSelected}))
+    } 
 
     onDateChange(e) { 
         console.log(e)
@@ -73,50 +91,79 @@ class Map extends Component {
             {(this.props.trafficData && this.props.trafficData.isReceiving) && (
                 <AppSpinner/>
             )}
-            <Row md="12">
-                <Col md="4">
-                  {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.config &&
-                    this.props.trafficData.data.config.avail && this.state.dateSelected !== null) && (
-                      <Select
-                          closeMenuOnSelect={true}
-                          isSearchable={false}
-                          onChange={this.onDateChange}
-                          value={{
-                            label:this.state.dateSelected
-                          }}
-                          options={this.props.trafficData.data.config.avail.map((e) => { 
-                            return (
-                                { 
-                                label: e.day,
-                                value: e.id
-                                }
-                            )
-                          })}
-                        />
-                    )}
-                </Col>                
-                <Col md="4">
-                  {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.config &&
-                    this.props.trafficData.data.config.avail && this.state.dateSelected !== null) && (
-                      <Select
-                          closeMenuOnSelect={true}
-                          isSearchable={false}
-                          onChange={this.onZipChange}
-                          value={{
-                            label:this.state.zipSelected
-                          }}
-                          options={this.props.trafficData.data.config.locations.map((e) => { 
-                            return (
-                                { 
-                                label: e.zipcode,
-                                value: e.zipcode
-                                }
-                            )
-                          })}
-                        />
-                    )}
-                </Col>                
-            </Row>
+            <div style={{zIndex:512}}>
+                <Row md="12">
+                    <Col md="2">
+                      {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.config &&
+                        this.props.trafficData.data.config.avail && this.state.dateSelected !== null) && (
+                          <Select
+                              closeMenuOnSelect={true}
+                              isSearchable={false}
+                              onChange={this.onDateChange}
+                              value={{
+                                label:this.state.dateSelected
+                              }}
+                              options={this.props.trafficData.data.config.avail.map((e) => { 
+                                return (
+                                    { 
+                                    label: e.day,
+                                    value: e.id
+                                    }
+                                )
+                              })}
+                            />
+                        )}
+                    </Col>                
+                    <Col md="1">
+                      {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.config &&
+                        this.props.trafficData.data.config.avail && this.state.dateSelected !== null) && (
+                          <Select
+                              closeMenuOnSelect={true}
+                              isSearchable={false}
+                              onChange={this.onZipChange}
+                              value={{
+                                label:this.state.zipSelected
+                              }}
+                              options={this.props.trafficData.data.config.locations.map((e) => { 
+                                return (
+                                    { 
+                                    label: e.zipcode,
+                                    value: e.zipcode
+                                    }
+                                )
+                              })}
+                            />
+                        )}
+                    </Col>                
+                    <Col md="7">
+                      {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.config &&
+                        this.props.trafficData.data.config.avail && this.state.dateSelected !== null) && (
+                          <Select
+                              closeMenuOnSelect={true}
+                              isSearchable={false}
+                              isMulti
+                              onChange={this.onCategoryChange}
+                              value={this.state.categories.map((g) => { 
+                                return (
+                                    {
+                                    label:g.name,
+                                    id:g.id
+                                    }
+                                )
+                              })}
+                              options={this.props.trafficData.data.config.categories.map((e) => { 
+                                return (
+                                    { 
+                                    label: e.name,
+                                    value: e.id
+                                    }
+                                )
+                              })}
+                            />
+                        )}
+                    </Col>                
+                </Row>
+            </div>
             <Row md="12" style={{marginTop:20}}>
                 <Col md="12">
                     <Nav tabs  className={`${s.coloredNav}`} style={{backgroundColor:"#e8ecec"}}>
@@ -133,11 +180,13 @@ class Map extends Component {
                             </NavLink>
                         </NavItem>
                     </Nav>
-                    <TabContent className='mb-lg' activeTab={this.state.activeTab}>
-                        <TabPane tabId="traffic">
-                            <TrafficMap data={this.props.trafficData}/>
-                        </TabPane>
-                    </TabContent>
+                    {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.center) && (
+                        <TabContent className='mb-lg' activeTab={this.state.activeTab}>
+                            <TabPane tabId="traffic">
+                                <TrafficMap data={this.props.trafficData} centerPoint={this.props.trafficData.data.center}/>
+                            </TabPane>
+                        </TabContent>
+                    )}
                 </Col>                
             </Row>
         </>
