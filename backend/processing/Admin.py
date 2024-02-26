@@ -13,6 +13,7 @@ from io import StringIO
 sys.path.append(os.path.realpath(os.curdir))
 
 from util import encryption
+from util import calcdate
 from util.Logging import Logging
 from common import settings
 from util.DBOps import Query
@@ -731,6 +732,78 @@ class RegistrationList(AdminBase):
         ret['registrations'] = k
         return ret
 
+class TrafficGet(AdminBase):
+
+    def __init__(self):
+        super().__init__()
+
+    def isDeferred(self):
+        return False
+
+    @check_admin
+    def execute(self, *args, **kwargs):
+        ret = {}
+        job,user,off_id,params = self.getArgs(*args,**kwargs)
+        today = calcdate.getYearToday()
+        if 'date' not in params:
+            params['date'] = today
+        if 'zipcode' not in params:
+            params['zipcode'] = 77089
+        db = Query()
+        l = db.query("""
+            select count(id) as cnt,date(created) as day from traffic_incidents group by date(created) order by date(created) desc
+            """)
+        ret['config'] = {}
+        ret['config']['avail'] = l
+        l = db.query("""
+            select count(id) as cnt,zipcode as zipcode from traffic_incidents group by zipcode order by zipcode desc
+            """)
+        ret['config']['locations'] = l
+        l = db.query("""
+            select id,name from traffic_categories 
+            """)
+        ret['config']['categories'] = l
+        l = db.query("""
+            select code1 from position_zip where zipcode = %s
+            """,(params['zipcode'],)
+        )
+        state = l[0]['code1']
+        l = db.query("""
+            select offset from traffic_cities tc, timezones t 
+            where 
+                tc.state = %s and
+                t.id = tc.tz
+            """,(state,)
+        )
+        offset = l[0]['offset']
+        l = db.query("""
+            select
+                ti.uuid,
+                json_arrayagg(
+                    json_object(
+                        'lat',tc.lat,
+                        'lon',tc.lon,
+                        'ord',tc.ord
+                    )
+                ) as coords
+            from
+                traffic_incidents ti,
+                traffic_coordinates tc
+            where
+                date(ti.created) = %s and
+                tc.traffic_incidents_id = ti.id and
+                ti.zipcode = %s
+            group by
+                ti.id
+            order by
+                tc.ord
+            """,(params['date'],params['zipcode'])
+        )
+        ret['data'] = []
+        for x in l:
+            x['coords'] = json.loads(x['coords'])
+            ret['data'].append(x)
+        return ret
 
 
 

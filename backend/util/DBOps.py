@@ -4,6 +4,7 @@ import os
 import time
 import unittest
 from util.DBManager import DBManager
+from mysql.connector.locales.eng import client_error
 import json
 import datetime
 import decimal
@@ -65,7 +66,10 @@ class Query(DBBase):
         self.__handle__.commit()
 
     def __del__(self):
-        self.__handle__.close()
+        try:
+            self.__handle__.close()
+        except Exception as e:
+            print("WARNING: %s" % str(e))
 
 class QueryTest(unittest.TestCase):
 
