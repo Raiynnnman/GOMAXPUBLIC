@@ -127,3 +127,10 @@ def corporationupdate(*args, **kwargs):
 def reglist(*args, **kwargs):
     po = AdminRest.RegistrationListRest()
     return po.postWrapper(*args,**kwargs)
+
+@admin.route('/admin/traffic/get', methods=['POST'])
+@token_required
+@swag_from(docs_dir + 'registrationlist.yaml')
+def trafficlist(*args, **kwargs):
+    po = AdminRest.TrafficGetRest()
+    return po.postWrapper(*args,**kwargs)

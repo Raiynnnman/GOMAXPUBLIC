@@ -48,10 +48,24 @@ def offset(lat,lon,distance):
 
 db = Query()
 l = db.query("""
-    select id,city,state from traffic_cities
+    select 
+        id,
+        city,
+        state,
+        0 as zipcode
+    from 
+        traffic_cities
+    UNION ALL
+    select 
+        id,
+        city,
+        state,
+        zipcode
+    from 
+        traffic_zipcodes
     """)
 for x in l:
-    CITIES.append({'id':x['id'],'city':x['city'],'state':x['state']})
+    CITIES.append({'id':x['id'],'city':x['city'],'state':x['state'],'zipcode':x['zipcode']})
 
 CATS = {}
 l = db.query("""
@@ -74,9 +88,16 @@ for x in l:
 
 for x in CITIES:
     # print(x)
-    l = db.query("""
-        select lat,lon,zipcode from position_zip where name=%s and code1=%s limit 5
-    """,(x['city'],x['state']))
+    l = []
+    if x['zipcode'] != 0:
+        l = db.query("""
+            select lat,lon,zipcode from position_zip where zipcode=%s limit 5
+        """,(x['zipcode'],)
+        )
+    else:
+        l = db.query("""
+            select lat,lon,zipcode from position_zip where name=%s and code1=%s limit 5
+        """,(x['city'],x['state']))
     for y in l:
         # print(l)
         i = "%s+%s" % (x['city'],y['zipcode'])

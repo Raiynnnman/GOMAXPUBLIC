@@ -2,6 +2,7 @@ import { combineReducers } from 'redux';
 import auth from './auth';
 import review from './review';
 import registrationsAdminList from './registrationsAdminList';
+import trafficData from './trafficGet';
 import registration from './registration';
 import registerVerify from './registerVerify';
 import landingData from './landingData';
@@ -144,6 +145,7 @@ export default (history) =>
     userDashboard,
     userDefaultCard,
     landingData,
+    trafficData,
     mydayReceiptSave,
     userDocumentsUpdate,
     chat,

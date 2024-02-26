@@ -129,3 +129,9 @@ class RegistrationListRest(RestBase):
         ret = u.process(args[0])
         return ret
 
+class TrafficGetRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Admin.TrafficGet()
+        ret = u.process(args[0])
+        return ret
