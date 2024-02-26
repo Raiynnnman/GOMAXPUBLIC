@@ -32,3 +32,9 @@ def landingverify(*args, **kwargs):
 def registerprovider(*args, **kwargs):
     po = RegistrationRest.RegisterProviderRest()
     return po.postWrapper(*args,**kwargs)
+
+@registrations.route('/registration/card/intent', methods=['GET'])
+@swag_from(docs_dir + 'user_card_intent.yaml')
+def setupintent(*args, **kwargs):
+    po = RegistrationRest.RegistrationSetupIntentRest()
+    return po.getWrapper(*args,**kwargs)

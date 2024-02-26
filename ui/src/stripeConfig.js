@@ -1,6 +1,6 @@
 
 export const stripeKey = function() {
-    return "pk_test_51N815jI6QZMAfN3aiRWcUtN0XyZGuMQKr9jwbAjg6KfE9t9PuRvsg5Tl2V3pEqGiHNCj5dPhXoTX3IJEX76nC1aT00quVRNkg6";
+    return "pk_test_51NWP2GBkCI2KshjJ8yD42fw8oSjqeP1xNaqssbC0xAzSZO35HDl9DtZlxnPHg7bVXbBjoth3SPIN0ORSlvElATfC00rQYT3v8n";
 } 
 
 export default stripeKey;

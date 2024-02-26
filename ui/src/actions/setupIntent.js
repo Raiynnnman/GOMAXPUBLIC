@@ -42,7 +42,7 @@ export function receivingData(params) {
               Accept: "application/json",
               "Content-Type": "application/json",
             },
-        }).get('/user/card/intent')
+        }).get('/registration/card/intent')
       .then((e) => { 
           dispatch({
                 type: RECEIVED_INTENT_DATA_SUCCESS,

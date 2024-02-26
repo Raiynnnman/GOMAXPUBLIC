@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Select from 'react-select';
+import SaveIcon from '@mui/icons-material/Save';
+import {CardElement,ElementsConsumer,Elements} from '@stripe/react-stripe-js';
 import { toast } from 'react-toastify';
 import { Col, Row } from 'reactstrap';
 import { Nav, NavItem, NavLink } from 'reactstrap';
@@ -17,6 +19,12 @@ import { registerProvider } from '../../actions/registerProvider';
 import s from '../utils/default.module.scss';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
+import {loadStripe} from '@stripe/stripe-js';
+import { setupIntent } from '../../actions/setupIntent';
+import {stripeKey} from '../../stripeConfig.js';
+import BillingCreditCardForm from './BillingCreditCardForm';
+
+const stripePromise = loadStripe(stripeKey());
 
 class RegisterProvider extends Component {
     constructor(props) { 
@@ -24,10 +32,14 @@ class RegisterProvider extends Component {
         this.state = { 
             page:0,
             plan:0,
+            selectedAddrId:null,
+            card:null,
             first:'',
             last:'',
+            phone:'',
             email:'',
             addresses:[],
+            intentid:'',
             license:'',
             provtype:0,
             provtypeSel:[
@@ -37,13 +49,23 @@ class RegisterProvider extends Component {
         this.nameChange = this.nameChange.bind(this);
         this.nextPage = this.nextPage.bind(this);
         this.firstChange = this.firstChange.bind(this);
+        this.phoneChange = this.phoneChange.bind(this);
         this.lastChange = this.lastChange.bind(this);
         this.emailChange = this.emailChange.bind(this);
         this.licenseChange = this.licenseChange.bind(this);
+        this.officeNameChange = this.officeNameChange.bind(this);
+        this.officeStateChange = this.officeStateChange.bind(this);
+        this.officeZipChange = this.officeZipChange.bind(this);
+        this.officeCityChange = this.officeCityChange.bind(this);
+        this.officePhoneChange = this.officePhoneChange.bind(this);
+        this.officeAddr1Change = this.officePhoneChange.bind(this);
         this.provtypeChange = this.provtypeChange.bind(this);
         this.addRow = this.addRow.bind(this);
+        this.saveRow = this.saveRow.bind(this);
         this.checkValid = this.checkValid.bind(this);
         this.register = this.register.bind(this);
+        this.saveCard= this.saveCard.bind(this);
+        this.cancel= this.cancel.bind(this);
     } 
 
     componentWillReceiveProps(p) { 
@@ -52,11 +74,50 @@ class RegisterProvider extends Component {
     componentDidMount() {
         console.log("p",this.props);
         this.state.plan = this.props.match.params.id;
+        this.props.dispatch(setupIntent()).then((e) =>  { 
+            this.state.newcard = {id:0};
+            this.setState(this.state);
+        })
     }
 
     checkValid() { 
         /* Implement checks */
         this.state.isValid = true;
+        this.setState(this.state);
+    } 
+
+    cancel() { 
+        console.log("cancel");
+    } 
+
+    saveCard(e,i) { 
+        console.log(e);
+        this.state.card = e.token;
+        this.state.intentid = i;
+        this.setState(this.state);
+    } 
+    officeNameChange(e) {
+        this.state.addresses[this.state.selectedAddrId].name = e.target.value;
+        this.setState(this.state);
+    } 
+    officeStateChange(e) {
+        this.state.addresses[this.state.selectedAddrId].state = e.target.value;
+        this.setState(this.state);
+    } 
+    officeZipChange(e) {
+        this.state.addresses[this.state.selectedAddrId].zip = e.target.value;
+        this.setState(this.state);
+    } 
+    officeCityChange(e) {
+        this.state.addresses[this.state.selectedAddrId].city = e.target.value;
+        this.setState(this.state);
+    } 
+    officePhoneChange(e) {
+        this.state.addresses[this.state.selectedAddrId].phone = e.target.value;
+        this.setState(this.state);
+    } 
+    officeAddr1Change(e) {
+        this.state.addresses[this.state.selectedAddrId].addr = e.target.value;
         this.setState(this.state);
     } 
 
@@ -66,7 +127,11 @@ class RegisterProvider extends Component {
             email: this.state.email,
             first: this.state.first,
             name: this.state.name,
+            phone: this.state.phone,
             plan: this.state.plan,
+            cust_id: this.props.setupIntent.data.data.cust_id,
+            intentid: this.state.intentid,
+            card: this.state.card,
             last: this.state.last,
             license: this.state.license,
             addresses: this.state.addresses
@@ -85,6 +150,12 @@ class RegisterProvider extends Component {
 
     nextPage() { 
         this.state.page += 1;
+        this.setState(this.state);
+        this.checkValid();
+    }
+
+    phoneChange(e) { 
+        this.state.phone = e.target.value;
         this.setState(this.state);
         this.checkValid();
     }
@@ -111,8 +182,14 @@ class RegisterProvider extends Component {
     provtypeChange(e) { 
 
     } 
+    saveRow(e) { 
+        this.state.selectedAddrId = null
+        this.setState(this.state);
+    }
     addRow(e) { 
+        this.state.selectedAddrId = this.state.addresses.length 
         this.state.addresses.push({
+            id: this.state.selectedAddrId,
             name:'My Practice',
             addr1:'',
             phone:'',
@@ -136,34 +213,36 @@ class RegisterProvider extends Component {
 
     render() {
         console.log("s",this.state);
+        console.log("p",this.props);
         var heads = [
             {
-                dataField:'id',
-                hidden:true,
-                text:'Name'
-            },
-            {
                 dataField:'name',
+                width:'15%',
                 text:'Name'
             },
             {
                 dataField:'phone',
+                width:'10%',
                 text:'Phone'
             },
             {
                 dataField:'addr1',
+                width:'20%',
                 text:'Address'
             },
             {
                 dataField:'city',
+                width:'15%',
                 text:'City'
             },
             {
                 dataField:'state',
+                width:'5%',
                 text:'State'
             },
             {
                 dataField:'zipcode',
+                width:'10%',
                 text:'Zip'
             }
         ]
@@ -192,6 +271,11 @@ class RegisterProvider extends Component {
                                     </Alert>
                                 )
                             }
+                            <p for="normal-field" md={12} className="text-md-right">
+                                <font style={{color:"red"}}>
+                                    {this.state.errorMessage}
+                                </font>
+                            </p>
                             <div className="form-group mb-0">
                                 Practice Name:
                                 <input className="form-control no-border" value={this.state.name} onChange={this.nameChange} required name="name" placeholder="Name" />
@@ -208,11 +292,10 @@ class RegisterProvider extends Component {
                                 Email:
                                 <input className="form-control no-border" value={this.state.email} onChange={this.emailChange} type="email" required name="email" placeholder="Email" />
                             </div>
-                            <p for="normal-field" md={12} className="text-md-right">
-                                <font style={{color:"red"}}>
-                                    {this.state.errorMessage}
-                                </font>
-                            </p>
+                            <div className="form-group mb-0">
+                                Phone:
+                                <input className="form-control no-border" value={this.state.phone} onChange={this.phoneChange} required name="phone" placeholder="Phone" />
+                            </div>
                             <div className="form-group mb-0">
                                 License Number:
                                 <input className="form-control no-border" value={this.state.license} onChange={this.licenseChange} required name="license" placeholder="License #" />
@@ -226,26 +309,100 @@ class RegisterProvider extends Component {
                         Enter your practice addresses below. These will show up when clients search for services in your area.
                     </div>
                     <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        <div style={{width:800}}>
+                        <div style={{width:1000}}>
                             <Button onClick={() => this.addRow()} 
-                                style={{marginRight:5,height:35,width:90}} color="primary">Add</Button>
-                            <BootstrapTable 
-                                keyField='id' data={this.state.addresses} 
-                                cellEdit={ cellEditFactory({ mode: 'click',blurToSave:true })}
-                                columns={heads}>
-                            </BootstrapTable>
+                                style={{marginRight:5,height:35,width:90}} color="primary" disabled={this.state.selectedAddrId !== null}>Add</Button>
+                                <table style={{width:"100%"}}>
+                                    <tr>
+                                    {heads.map((e) => { 
+                                        return (
+                                            <th style={{width:e.width}}>{e.text}</th>
+                                        )
+                                    })}
+                                    </tr>
+                                    {this.state.addresses.map((e) => {
+                                        return (
+                                        <tr>
+                                            <td style={{width:100}}>
+                                                <input className="form-control no-border" value={e.name} 
+                                                    onChange={this.officeNameChange} required name="name" placeholder="Name" />
+                                            </td>
+                                            <td style={{width:100}}>
+                                                <input className="form-control no-border" value={e.phone} 
+                                                    onChange={this.officePhoneChange} required phone="phone" placeholder="Phone" />
+                                            </td>
+                                            <td style={{width:100}}>
+                                                <input className="form-control no-border" value={e.addr} 
+                                                    onChange={this.officeAddrChange} required addr="addr" placeholder="Addr" />
+                                            </td>
+                                            <td style={{width:100}}>
+                                                <input className="form-control no-border" value={e.city} 
+                                                    onChange={this.officeCityChange} required city="city" placeholder="City" />
+                                            </td>
+                                            <td style={{width:100}}>
+                                                <input className="form-control no-border" value={e.state} 
+                                                    onChange={this.officeStateChange} required state="state" placeholder="State" />
+                                            </td>
+                                            <td style={{width:100}}>
+                                                <input className="form-control no-border" value={e.zip} 
+                                                    onChange={this.officeZipChange} required zip="zip" placeholder="Zip" />
+                                            </td>
+                                            {(this.state.selectedAddrId === null) && ( 
+                                            <td style={{width:100}}>
+                                            </td>
+                                            )}
+                                            {(this.state.selectedAddrId !== null && this.state.selectedAddrId === e.id) && ( 
+                                            <td style={{width:100}}>
+                                                <Button onClick={() => this.saveRow()} 
+                                                    style={{marginRight:5,height:35}} color="primary"><SaveIcon/></Button>
+                                            </td>
+                                            )}
+                                        </tr>
+                                        )
+                                    })}
+                                </table>
+                        </div>
+                    </div>
+                    </>
+                    )}
+                    {(this.state.page === 2) && (
+                    <>
+                    <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                        Enter your credit card info. You will not be charged until the first client. 
+                    </div>
+                    <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                        <div style={{width:800}}>
+                            {(this.props.setupIntent && this.props.setupIntent.data &&
+                              this.props.setupIntent.data.data &&
+                              this.props.setupIntent.data.data.id) && (
+                                <Elements stripe={stripePromise} options={{clientSecret:this.props.setupIntent.data.data.clientSecret}}>
+                                    <ElementsConsumer>
+                                        {(ctx) => <BillingCreditCardForm onSave={this.saveCard}
+                                            onCancel={this.cancel} intentid={this.props.setupIntent.data.data.id} {...ctx} />}
+                                    </ElementsConsumer>
+                                </Elements>
+                            )}
                         </div>
                     </div>
                     </>
                     )}
                     {(this.state.page === 0) && (
                         <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                        <div style={{border:"1px solid black"}}></div>
                         <Button type="submit" onClick={this.nextPage} color="primary" className="auth-btn mb-3" disabled={
                               !this.state.isValid} size="lg">Next</Button>
                         </div>
                     )}
                     {(this.state.page === 1) && (
                         <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                        <div style={{border:"1px solid black"}}></div>
+                        <Button type="submit" onClick={this.nextPage} color="primary" className="auth-btn mb-3" disabled={
+                              !this.state.isValid} size="lg">Next</Button>
+                        </div>
+                    )}
+                    {(this.state.page === 2 && this.state.card !== null) && (
+                        <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                        <div style={{border:"1px solid black"}}></div>
                         <Button type="submit" color="primary" className="auth-btn mb-3" onClick={this.register} disabled={
                               !this.state.isValid} size="sm">{this.props.registerProvider.isReceiving ? 'Saving...' : 'Register'}</Button>
                         </div>
@@ -262,7 +419,9 @@ class RegisterProvider extends Component {
 
 function mapStateToProps(store) {
     return {
-        registerProvider: store.registerProvider
+        registerProvider: store.registerProvider,
+        saveCard: store.saveCard,
+        setupIntent: store.setupIntent
     }
 }
 
