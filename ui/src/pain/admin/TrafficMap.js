@@ -1,48 +1,68 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { Col, Row } from 'reactstrap';
-import { Nav, NavItem, NavLink } from 'reactstrap';
-import { TabContent, TabPane } from 'reactstrap';
-import cx from 'classnames';
-import classnames from 'classnames';
+import React, { Component } from "react";
+import { Map, Marker, GoogleApiWrapper } from "google-maps-react";
+import './Map.scss';
 
-import s from '../utils/default.module.scss';
-import translate from '../utils/translate';
-import AppSpinner from '../utils/Spinner';
-
-class Traffic extends Component {
-    constructor(props) { 
-        super(props);
-        this.state = { 
-        }
-    } 
-
-    componentWillReceiveProps(p) { 
-    }
-
-    componentDidMount() {
-    }
-
-    toggleTab(e) { 
-    } 
-
-    render() {
+const MarkersList = props => {
+  const { locations, ...markerProps } = props;
+  return (
+    <span>
+      {locations.map((location, i) => {
         return (
-        <>
-            <Row md="12">
-                <Col md="12">
-                    <h4>Traffic</h4>
-                </Col>                
-            </Row>
-        </>
-        )
-    }
+          <Marker
+            key={i}
+            {...markerProps}
+            position={{ lat: 25.88106346130371, lng: -80.3885650634765 }}
+          />
+        );
+      })}
+    </span>
+  );
+};
+
+class MapContainer extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      locations: []
+    };
+    this.handleMapClick = this.handleMapClick.bind(this);
+  }
+
+  handleMapClick = (ref, map, ev) => {
+    const location = ev.latLng;
+    this.setState(prevState => ({
+      locations: [...prevState.locations, location]
+    }));
+    map.panTo(location);
+  };
+
+  render() {
+    console.log("p1",this.props);
+    return (
+      <div className="map-container">
+        <Map
+          google={this.props.google}
+          style={{width:"1000px",height:"800px"}}
+          zoom={8}
+          initialCenter={this.props.data.centerPoint}
+          onClick={this.handleMapClick}
+        >
+        {this.props.data.data.data.map((e) => {
+            if (e.category_id === 1) {
+                    console.log("coords",e.coords[0]);
+                    return (
+                      <Marker
+                        position={e.coords[0]}/>
+                    )
+                }
+        })}
+        </Map>
+      </div>
+    );
+  }
 }
 
-function mapStateToProps(store) {
-    return {
-        currentUser: store.auth.currentUser
-    }
-}
-
-export default connect(mapStateToProps)(Traffic);
+export default GoogleApiWrapper({
+  apiKey: "AIzaSyCjn4U7o_J0AHbNBvkyijucaX_KgTU-46w",
+  libraries: []
+})(MapContainer);

@@ -1,0 +1,111 @@
+import React from 'react';
+import { type CSSProperties, memo, useCallback, useMemo, useState, ChangeEventHandler } from 'react'
+import googleKey from '../../googleConfig';
+import pinIcon from '../../images/pin.svg'
+import {
+  GoogleMap,
+  PolylineF,
+  PolygonF,
+  RectangleF,
+  CircleF,
+  useJsApiLoader,
+  MarkerF,
+  OverlayViewF,
+  InfoWindowF,
+  OVERLAY_MOUSE_TARGET
+} from '@react-google-maps/api'
+
+const containerStyle = {
+  width: '1000px',
+  zIndex:5,
+  height: '800px'
+};
+
+const POLYLINE_OPTIONS = {
+  strokeColor: '#FF0000',
+  strokeOpacity: 1.0,
+  strokeWeight: 2,
+}
+
+
+function TrafficMap({data,centerPoint}) {
+
+    const [polylineOptions, setPolylineOptions] = useState(
+        JSON.stringify(POLYLINE_OPTIONS)
+    )
+    const { isLoaded } = useJsApiLoader({
+        id: 'google-map-script',
+        googleMapsApiKey: googleKey()
+    })
+
+    const po = useMemo(() => {
+        try {
+          return JSON.parse(polylineOptions)
+        } catch (e) {
+          return POLYLINE_OPTIONS
+        }
+    }, [polylineOptions])
+
+    console.log("data",data);
+    console.log("center",centerPoint);
+    const center = {
+      lat: centerPoint.lat,
+      lng: centerPoint.lon,
+    };
+
+    const [map, setMap] = React.useState(null)
+
+    const onLoad = React.useCallback(function callback(map) {
+        const bounds = new window.google.maps.LatLngBounds(center);
+        map.fitBounds(bounds);
+
+        setMap(map)
+    }, [])
+
+    const onUnmount = React.useCallback(function callback(map) {
+        setMap(null)
+    }, [])
+
+  return isLoaded ? (
+    <div style={{zIndex:5}}>
+        <GoogleMap
+            mapContainerStyle={containerStyle}
+            center={center}
+            defaultZoom={2}
+            zoom={1}
+            onLoad={onLoad}
+            onUnmount={onUnmount}>
+            { /* Child components, such as markers, info windows, etc. */ }
+            <>
+            {data.data.data.map((e) => {
+                if (e.category_id === 1) {
+                    console.log("coords",e.coords[0]);
+                    return (
+                    <MarkerF position={e.coords[0]} icon={pinIcon} />
+                    )
+                }
+                /*if (e.category_id === 6) {
+                        console.log(
+                                e.coords[0].lat,
+                                e.coords[e.coords.length-1].lat,
+                                e.coords[0].lng,
+                                e.coords[e.coords.length-1].lng
+                        )
+                    return (
+                        <RectangleF bounds={{
+                                north:e.coords[0].lat,
+                                south:e.coords[e.coords.length-1].lat,
+                                east:e.coords[0].lng,
+                                west:e.coords[e.coords.length-1].lng
+                            }}
+                        />
+                    )
+                }*/
+            })}
+            </>
+        </GoogleMap>
+    </div>
+  ) : <></>
+}
+
+export default TrafficMap;
