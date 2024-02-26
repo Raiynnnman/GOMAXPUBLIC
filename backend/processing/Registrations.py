@@ -12,6 +12,7 @@ sys.path.append(os.path.realpath(os.curdir))
 
 from util import encryption
 from util.Logging import Logging
+from processing import Stripe
 from common import settings
 from util.DBOps import Query
 from processing.SubmitDataRequest import SubmitDataRequest
@@ -180,8 +181,8 @@ class RegisterProvider(RegistrationsBase):
         insid = 0
         OT = self.getOfficeTypes()
         PL = self.getPlans()
-        db.update("insert into office (name,office_type_id,email) values (%s,%s,%s)",
-            (params['name'],OT['Provider'],params['email'])
+        db.update("insert into office (name,office_type_id,email,cust_id) values (%s,%s,%s,%s)",
+            (params['name'],OT['Provider'],params['email'],params['cust_id'])
         )
         insid = db.query("select LAST_INSERT_ID()");
         insid = insid[0]['LAST_INSERT_ID()']
@@ -232,7 +233,58 @@ class RegisterProvider(RegistrationsBase):
             """,(planid,PL[selplan]['price'],1,"%s Plan" % PL[selplan]['duration'])
                 
         )
+        if 'card' in params:
+            cust_id = params['cust_id']
+            card = params['card']['card']
+            l = db.query("""
+                select stripe_key from setupIntents where uuid=%s
+            """,(cust_id,))
+            stripe_id = l[0]['stripe_key']
+            db.update("""
+                update office set stripe_cust_id=%s where id=%s
+                """,(stripe_id,insid)
+            )
+            st = Stripe.Stripe()
+            pid = st.confirmCard(params['intentid'],cust_id,stripe_id)
+            db.update("""
+                insert into office_cards(
+                    office_id,card_id,last4,exp_month,
+                    exp_year,client_ip,payment_id,
+                    address1,address2,state,city,zip,name
+                ) values (
+                    %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s
+                )
+                """,(insid,card['id'],card['last4'],
+                     card['exp_month'],card['exp_year'],
+                     params['card']['client_ip'],pid['payment_method'],card['address_line1'],
+                     card['address_line2'],card['address_state'],card['address_city'],
+                     card['address_zip'],card['name']
+                )
+            )
         ### TODO: Send invite link
+        db.commit()
+        return ret
+
+class RegistrationSetupIntent(RegistrationsBase):
+
+    def __init__(self):
+        super().__init__()
+
+    def isDeferred(self):
+        return False
+
+    def execute(self, *args, **kwargs):
+        ret = {}
+        st = Stripe.Stripe()    
+        db = Query()
+        uuid = "cust_%s" % encryption.getSHA256()
+        cust_id = st.createCustomer(uuid)
+        ret = st.setupIntent(cust_id,uuid)
+        ret['cust_id'] = uuid
+        db.update("""
+            insert into setupIntents (uuid,stripe_key) values (%s,%s)
+        """,(uuid,cust_id)
+        )
         db.commit()
         return ret
 

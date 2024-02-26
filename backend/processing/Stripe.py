@@ -37,7 +37,7 @@ class Stripe():
             raise Exception('TOKEN_REQUIRED')
         token = arr['token']
 
-    def setupIntent(self,arr,cust_id,user_id):
+    def setupIntent(self,cust_id,user_id):
         stripe.api_key = config.getKey("stripe_key")
         r = stripe.SetupIntent.create(
             customer=cust_id,
@@ -59,44 +59,22 @@ class Stripe():
             ret = o[0]['stripe_customer_id']
         return ret
 
-    def confirmCard(self,params,user_id,stripe_id):
-        card = None
-        token = None
-        intent_id = None
-        if 'card' in params:
-            card = params['card']
-        if 'token' in params:
-            token = params['token']
-        if 'intent_id' in params:
-            intent_id = params['intent_id']
+    def confirmCard(self,intentid,user_id,stripe_id):
         stripe.api_key = config.getKey("stripe_key")
         r = stripe.SetupIntent.confirm(
-            params['intentid'],
+            intentid,
             payment_method="pm_card_visa"
         )
         return r
         
-    def createCustomer(self,arr,user_id):
+    def createCustomer(self,user_id):
         db = Query()
-        d = {}
         stripe.api_key = config.getKey("stripe_key")
-        o = db.query("""
-            select id,email,first_name,last_name,phone from users where id=%s
-            """,(user_id,))
-        d = o[0]
-        d['name'] = d['first_name'] + " " + d['last_name']
-        del d['id']
-        del d['first_name']
-        del d['last_name']
         r = stripe.Customer.create(
-            description="User %s" % d['email'].lower(),
-            email=d['email'].lower(),
-            metadata={'user_id':user_id},
-            phone=d['phone'],
-            name=d['name']
+            # description="User %s" % d['email'].lower(),
+            # email=d['email'].lower(),
+            metadata={'user_id':user_id}
+            # phone=d['phone'],
+            # name=d['name']
         )
-        db.update("update users set updated=now(),stripe_customer_id=%s where id=%s",
-            (r['id'],user_id)
-        )
-        db.commit()
         return r['id']
