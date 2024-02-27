@@ -9,7 +9,7 @@ insert into users (email,password,first_name,last_name,phone_prefix,phone) value
     '',
     ''
 );
-set @v = LAST_INSERT_ID()
+set @v = LAST_INSERT_ID();
 
 insert into user_entitlements(user_id,entitlements_id) values 
 (@v,1);
@@ -27,7 +27,7 @@ insert into users (email,password,first_name,last_name,phone_prefix,phone) value
     '',
     ''
 );
-set @v = LAST_INSERT_ID()
+set @v = LAST_INSERT_ID();
 
 insert into user_entitlements(user_id,entitlements_id) values 
 (@v,1);
@@ -45,7 +45,7 @@ insert into users (email,password,first_name,last_name,phone_prefix,phone) value
     '',
     ''
 );
-set @v = LAST_INSERT_ID()
+set @v = LAST_INSERT_ID();
 
 insert into user_entitlements(user_id,entitlements_id) values 
 (@v,1);
@@ -63,7 +63,7 @@ insert into users (email,password,first_name,last_name,phone_prefix,phone) value
     '',
     ''
 );
-set @v = LAST_INSERT_ID()
+set @v = LAST_INSERT_ID();
 
 insert into user_entitlements(user_id,entitlements_id) values 
 (@v,1);
@@ -81,7 +81,7 @@ insert into users (email,password,first_name,last_name,phone_prefix,phone) value
     '',
     ''
 );
-set @v = LAST_INSERT_ID()
+set @v = LAST_INSERT_ID();
 
 insert into user_entitlements(user_id,entitlements_id) values 
 (@v,1);
