@@ -46,7 +46,6 @@ class Map extends Component {
             changed = true;
         } 
         if (changed) { 
-            console.log("s",this.state);
             this.props.dispatch(getTraffic({date:this.state.dateSelected,zipcode:this.state.zipSelected}))
         } 
     }
@@ -56,7 +55,6 @@ class Map extends Component {
     }
 
     onCategoryChange(e) { 
-        console.log(e);
         t = [];
         var c = 0;
         for (c = 0; c < this.state.categories.length;c++) { 
@@ -66,14 +64,12 @@ class Map extends Component {
     } 
 
     onDateChange(e) { 
-        console.log(e)
         this.state.dateSelected = e.label
         this.setState(this.state);
         this.props.dispatch(getTraffic({date:this.state.dateSelected,zipcode:this.state.zipSelected}))
     } 
 
     onZipChange(e) { 
-        console.log(e)
         this.state.zipSelected = e.label
         this.setState(this.state);
         this.props.dispatch(getTraffic({date:this.state.dateSelected,zipcode:this.state.zipSelected}))
@@ -84,8 +80,6 @@ class Map extends Component {
     } 
 
     render() {
-        console.log("p",this.props);
-        console.log("s",this.state);
         return (
         <>
             {(this.props.trafficData && this.props.trafficData.isReceiving) && (
@@ -93,10 +87,11 @@ class Map extends Component {
             )}
             <div style={{zIndex:512}}>
                 <Row md="12">
-                    <Col md="2">
+                    <Col md="2" style={{zIndex:9999}}>
                       {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.config &&
                         this.props.trafficData.data.config.avail && this.state.dateSelected !== null) && (
                           <Select
+                              styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
                               closeMenuOnSelect={true}
                               isSearchable={false}
                               onChange={this.onDateChange}
@@ -114,7 +109,7 @@ class Map extends Component {
                             />
                         )}
                     </Col>                
-                    <Col md="1">
+                    <Col md="1" style={{zIndex:9999}}>
                       {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.config &&
                         this.props.trafficData.data.config.avail && this.state.dateSelected !== null) && (
                           <Select
@@ -135,7 +130,7 @@ class Map extends Component {
                             />
                         )}
                     </Col>                
-                    <Col md="7">
+                    <Col md="9" style={{zIndex:9999}}>
                       {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.config &&
                         this.props.trafficData.data.config.avail && this.state.dateSelected !== null) && (
                           <Select
@@ -181,7 +176,7 @@ class Map extends Component {
                         </NavItem>
                     </Nav>
                     {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.center) && (
-                        <TabContent className='mb-lg' activeTab={this.state.activeTab}>
+                        <TabContent style={{height:"1000px"}} className='mb-lg' activeTab={this.state.activeTab}>
                             <TabPane tabId="traffic">
                                 <TrafficMap data={this.props.trafficData} centerPoint={this.props.trafficData.data.center}/>
                             </TabPane>

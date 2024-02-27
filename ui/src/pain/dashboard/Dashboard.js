@@ -28,7 +28,6 @@ class Dashboard extends Component {
     }
 
     render() {
-        console.log("p",this);
         return (
         <>
             <Row md="12">

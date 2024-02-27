@@ -745,58 +745,76 @@ class TrafficGet(AdminBase):
         ret = {}
         job,user,off_id,params = self.getArgs(*args,**kwargs)
         today = calcdate.getYearToday()
-        if 'date' not in params:
-            params['date'] = today
-        if 'zipcode' not in params:
-            params['zipcode'] = 77089
+        if 'date' in params:
+            if params['date'] == 'All':
+                del params['date']
+        if 'zipcode' in params:
+            if params['zipcode'] == 'All':
+                del params['zipcode']
         db = Query()
         l = db.query("""
-            select count(id) as cnt,date(created) as day from traffic_incidents group by date(created) order by date(created) desc
+            select count(id) as cnt,date(ti.created) as day 
+                from traffic_incidents ti group by date(created) order by date(created) desc
             """)
         ret['config'] = {}
         ret['config']['avail'] = l
+        ret['config']['avail'].insert(0,{'id':0,'day':'All'})
         l = db.query("""
             select count(id) as cnt,zipcode as zipcode from traffic_incidents group by zipcode order by zipcode desc
             """)
         ret['config']['locations'] = l
+        ret['config']['locations'].insert(0,{'id':0,'zipcode':'All'})
+        # Temporary - Just get accidents
         l = db.query("""
-            select id,name from traffic_categories 
+            select id,name from traffic_categories where category_id = 1
             """)
         ret['config']['categories'] = l
-        l = db.query("""
-            select code1 from position_zip where zipcode = %s
-            """,(params['zipcode'],)
-        )
-        state = l[0]['code1']
-        l = db.query("""
-            select offset from traffic_cities tc, timezones t 
-            where 
-                tc.state = %s and
-                t.id = tc.tz
-            """,(state,)
-        )
-        offset = l[0]['offset']
-        l = db.query("""
+        #Incase we need to do time offsets
+        #l = db.query("""
+        #    select code1 from position_zip where zipcode = %s
+        #    """,(params['zipcode'],)
+        #)
+        #state = l[0]['code1']
+        #l = db.query("""
+        #    select offset from traffic_cities tc, timezones t 
+        #    where 
+        #        tc.state = %s and
+        #        t.id = tc.tz
+        #    """,(state,)
+        #)
+        #offset = l[0]['offset']
+        sqlp = []
+        q = """
             select
                 ti.lat as lat ,ti.lon as lon
             from
                 traffic_incidents ti,
                 traffic_coordinates tc
             where
-                date(ti.created) = %s and
-                tc.traffic_incidents_id = ti.id and
-                ti.zipcode = %s
+                1 = 1 and
+                tc.traffic_incidents_id = ti.id and 
+        """
+        if 'date' in params:
+            q += " date(ti.created) = %s and "
+            sqlp.append(params['date'])
+        if 'zipcode' in params:
+            q += " ti.zipcode = %s and "
+            sqlp.append(params['zipcode'])
+        q += """
+                1 = 1
             limit 1
-            """,(params['date'],params['zipcode'])
-        )
+        """
+        l = db.query(q,sqlp)
         if len(l) > 0:
             ret['center'] = {'lat':l[0]['lat'],'lon':l[0]['lon']}
         else:
             ret['center'] = {'lat':0,'lon':0}
-        l = db.query("""
+        q = """
             select
                 ti.uuid,ti.traffic_categories_id as category_id,
-                tcat.name as category,ti.zipcode,
+                tcat.name as category,ti.zipcode,ti.city,ti.traf_start_time,
+                ti.traf_end_time,ti.traf_num_reports,ti.lat,ti.lon,
+                ti.traf_magnitude,ti.traf_delay,ti.state,
                 json_arrayagg(
                     json_object(
                         'lat',tc.lat,
@@ -809,16 +827,28 @@ class TrafficGet(AdminBase):
                 traffic_coordinates tc,
                 traffic_categories tcat
             where
-                date(ti.created) = %s and
+                1 = 1 and
                 tc.traffic_incidents_id = ti.id and
-                ti.traffic_categories_id = tcat.id and
-                ti.zipcode = %s
+                ti.traffic_categories_id = tcat.category_id and
+        """
+        sqlp = []
+        if 'date' in params:
+            q += " date(ti.created) = %s and "
+            sqlp.append(params['date'])
+        if 'zipcode' in params:
+            q += " ti.zipcode = %s and "
+            sqlp.append(params['zipcode'])
+        if 'categories' in params:
+            q += " ti.traffic_categories_id in (%s) and " 
+            sqlp.append(params['categories'])
+        q += """
+            1 = 1
             group by
                 ti.id
             order by
                 tc.ord
-            """,(params['date'],params['zipcode'])
-        )
+        """
+        l = db.query(q,sqlp)
         ret['data'] = []
         for x in l:
             x['coords'] = json.loads(x['coords'])

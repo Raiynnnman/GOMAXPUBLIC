@@ -25,7 +25,6 @@ class Template extends Component {
     }
 
     render() {
-        console.log("p",this);
         return (
         <>
             {(this.props.offices && this.props.offices.isReceiving) && (

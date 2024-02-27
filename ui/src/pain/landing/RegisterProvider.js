@@ -72,7 +72,6 @@ class RegisterProvider extends Component {
     }
 
     componentDidMount() {
-        console.log("p",this.props);
         this.state.plan = this.props.match.params.id;
         this.props.dispatch(setupIntent()).then((e) =>  { 
             this.state.newcard = {id:0};
@@ -87,11 +86,9 @@ class RegisterProvider extends Component {
     } 
 
     cancel() { 
-        console.log("cancel");
     } 
 
     saveCard(e,i) { 
-        console.log(e);
         this.state.card = e.token;
         this.state.intentid = i;
         this.setState(this.state);
@@ -122,7 +119,6 @@ class RegisterProvider extends Component {
     } 
 
     register() { 
-        console.log("save",this.state);
         var tosend = { 
             email: this.state.email,
             first: this.state.first,
@@ -212,8 +208,6 @@ class RegisterProvider extends Component {
 
 
     render() {
-        console.log("s",this.state);
-        console.log("p",this.props);
         var heads = [
             {
                 dataField:'name',
