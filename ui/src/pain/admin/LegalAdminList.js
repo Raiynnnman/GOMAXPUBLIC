@@ -186,7 +186,6 @@ class LegalAdminList extends Component {
     } 
 
     render() {
-        console.log("p",this);
         const responsive = {
             0: { 
                 items: 1

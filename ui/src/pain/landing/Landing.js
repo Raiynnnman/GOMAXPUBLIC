@@ -64,19 +64,16 @@ class Landing extends Component {
         if (window.location.href.includes("join")) { 
             this.state.location = "/join";
         } 
-        console.log("s",this.state);
         this.setState(this.state);
     }
 
     componentDidMount() {
         this.props.dispatch(getLandingData({}));
         this.state.location = this.props.match.path;
-        console.log("s",this.state);
         this.setState(this.state);
     }
 
     selectMenu(e) { 
-        console.log(e);
         window.location = e;
         this.state.location = e;
         this.setState(this.state);
@@ -215,8 +212,6 @@ class Landing extends Component {
     } 
 
     render() {
-        console.log("s",this.state);
-        console.log("p",this.props);
         var rev = [];
         var c = this.state.index;
         if (this.props.landingData && this.props.landingData.data && this.props.landingData.data.reviews) { 

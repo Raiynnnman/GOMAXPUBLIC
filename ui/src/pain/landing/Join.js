@@ -41,7 +41,6 @@ class Join extends Component {
     } 
 
     register(e) { 
-        console.log(e)
         window.location = "/#/register-provider/" + e;
     } 
 
@@ -51,8 +50,6 @@ class Join extends Component {
 
 
     render() {
-        console.log("p",this.props);
-        console.log("s",this.state);
         var faq = [
             {id:0,'t':'How do I get my referrals?','a':'Our intake team will reach out to you with the patients & attorney information.'},
             {id:1,'t':'Will the subscription monthly fee go up?','a':'The fee will not change for the first 12 months.'},
