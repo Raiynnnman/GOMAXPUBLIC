@@ -87,11 +87,11 @@ class Map extends Component {
             )}
             <div style={{zIndex:512}}>
                 <Row md="12">
-                    <Col md="2" style={{zIndex:9999}}>
+                    <Col md="2" style={{zIndex:9995}}>
                       {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.config &&
                         this.props.trafficData.data.config.avail && this.state.dateSelected !== null) && (
                           <Select
-                              styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
+                              styles={{ menuPortal: base => ({ ...base, zIndex: 9995 }) }}
                               closeMenuOnSelect={true}
                               isSearchable={false}
                               onChange={this.onDateChange}
@@ -109,7 +109,7 @@ class Map extends Component {
                             />
                         )}
                     </Col>                
-                    <Col md="1" style={{zIndex:9999}}>
+                    <Col md="1" style={{zIndex:9995}}>
                       {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.config &&
                         this.props.trafficData.data.config.avail && this.state.dateSelected !== null) && (
                           <Select
@@ -130,7 +130,7 @@ class Map extends Component {
                             />
                         )}
                     </Col>                
-                    <Col md="9" style={{zIndex:9999}}>
+                    <Col md="7" style={{zIndex:9995}}>
                       {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.config &&
                         this.props.trafficData.data.config.avail && this.state.dateSelected !== null) && (
                           <Select
