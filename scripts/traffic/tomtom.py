@@ -19,7 +19,6 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--dryrun', dest="dryrun", action="store_true")
 parser.add_argument('--usecache', dest="usecache", action="store_true")
 parser.add_argument('--distance', dest="distance", action="store")
-parser.add_argument('--file', dest="file", action="store")
 args = parser.parse_args()
 
 
@@ -136,14 +135,14 @@ for x in TOGET:
         URL,VER,KEY,BOX[0],BOX[1],BOX[2],BOX[3],FILT
     )
     # print(U)
-    if args.file is None:
+    if not os.path.exists(F):
         r = requests.get(U)
         H=open(F,"w")
         T=json.loads(r.content)
         H.write(json.dumps(T,indent=4,sort_keys=True))
         H.close()
     else:
-        F = args.file
+        print("Loading data from existing file %s" % F)
 
     H=open(F,"r")
     R=H.read()
