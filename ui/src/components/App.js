@@ -17,7 +17,6 @@ import Login from '../pain/login';
 import Reset from '../pain/reset/Reset';
 import Forgot from '../pain/forgot/Forgot';
 import Search from '../pain/search/Search';
-import Landing from '../pain/landing/Landing';
 import Welcome from '../pain/welcome/Welcome';
 import ThankYou from '../pain/landing/ThankYou';
 import Verified from '../pain/landing/Verified';
@@ -53,12 +52,10 @@ class App extends React.PureComponent {
                       <AuthRoute path="/login" exact component={Login}/>
                       <AuthRoute path="/welcome" exact component={Welcome}/>
                       <AuthRoute path="/search" exact component={Search}/>
-                      <AuthRoute path="/landing" exact component={Landing}/>
-                      <AuthRoute path="/join" exact component={Landing}/>
                       <AuthRoute path="/thankyou" exact component={ThankYou}/>
                       <AuthRoute path="/forgot" exact component={Forgot}/>
                       <Route path="/error" exact component={ErrorPage}/>
-                      <Redirect from="*" to="/landing"/>
+                      <Redirect from="*" to="/search"/>
                   </Switch>
               </HashRouter>
             </ConnectedRouter>

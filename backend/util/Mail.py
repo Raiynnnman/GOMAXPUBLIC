@@ -35,7 +35,7 @@ class Mail:
         body = H.read()
         H.close()
         client = boto3.client(
-            'ses',region_name='us-east-2',
+            'ses',region_name='us-east-1',
             aws_access_key_id=access, aws_secret_access_key=secret, use_ssl=True
         )
         for x in data:
@@ -59,6 +59,7 @@ class Mail:
                 Source=sender 
             )
         except Exception as e:
-            log.error("Failed to send mail request to %s. Reason: " % (to,str(e)))
+            log.error("Failed to send mail request to %s. Reason: %s" % (to,str(e)))
+            return
         log.info("Successfully sent mail request to %s" % to)
         
