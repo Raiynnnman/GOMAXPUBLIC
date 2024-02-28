@@ -42,8 +42,7 @@ class RegistrationUpdate(RegistrationsBase):
         # Check params
         params = args[1][0]
         RT = self.getRegistrationTypes()
-        if 'type' not in params:
-            return {'success': True}
+        t = RT['Customer']
         if 'last_name' not in params:
             params['last_name'] = ''
         if 'first_name' not in params:
@@ -53,27 +52,34 @@ class RegistrationUpdate(RegistrationsBase):
         if 'phone' not in params:
             params['phone'] = ''
         email = params['email']
-        g = params['type']
-        if g not in RT:
-            return {'success': True}
-        t = RT[g]
+        HAVE = False
         db = Query()
+        l = db.query("""
+            select id from users where lower(email) = lower(%s)
+            """,(params['email'],)
+        )
+        for x in l:
+            HAVE=True
+        if HAVE:
+            log.info("USER_ALREADY_EXISTS")
+            return {'success': False,message:'USER_ALREADY_EXISTS'}
+        db.update("""
+            delete from registrations where lower(email) = %s
+            """,(params['email'],)
+        )
         db.update("""
             insert into registrations (
-                email,first_name,last_name,phone,registration_types_id,age,
-                addr1,city,state,zipcode,message,procs,registrations_timeframe_id,
-                genders_id
+                email,first_name,last_name,phone,registration_types_id,
+                zipcode
             ) values
                 (
-                %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s
+                lower(%s),%s,%s,%s,%s,%s
             )
             """,(
-                params['email'],params['first_name'],params['last_name'],params['phone'],t,
-                params['age'],params['addr1'],params['city'],params['state'],params['zipcode'],
-                params['comments'],params['procs'],params['timeframe'],params['gender']
+                params['email'],params['first_name'],params['last_name'],
+                params['phone'],t,params['zipcode']
             )
         )
-        db.commit()
         insid = db.query("select LAST_INSERT_ID()");
         insid = insid[0]['LAST_INSERT_ID()']
         val = encryption.encrypt(
@@ -92,8 +98,9 @@ class RegistrationUpdate(RegistrationsBase):
             '__BASE__':url
         } 
         m = Mail()
-        m.defer(email,"Registration with Direct Health Delivery","templates/mail/registration-verification.html",data)
+        m.defer(email,"Registration with #PAIN","templates/mail/registration-verification.html",data)
         db.commit()
+        log.info("HERE")
         return {'success': True}
 
 class RegistrationVerify(RegistrationsBase):
@@ -123,12 +130,40 @@ class RegistrationVerify(RegistrationsBase):
         inid = 0
         inem = ''
         try:
+            OT = self.getOfficeTypes()
+            ENT = self.getEntitlementIDs()
+            PERM = self.getPermissionIDs()
             token = base64.b64decode(token.encode('utf-8'))
             myjson = encryption.decrypt(token,config.getKey("encryption_key"))
             myjson = json.loads(myjson)
             inis = myjson['i']
             myid = inis
             inem = myjson['e']
+            l = db.query("""
+                select email,first_name,last_name,phone,zipcode
+                from registrations where token = %s
+                """,(token,))
+            u = l[0]
+            db.update("""
+                insert into users (email, first_name, last_name, phone, zipcode) values (%s,%s,%s,%s,%s)
+                """,(u['email'],u['first_name'],u['last_name'],u['phone'],u['zipcode'])
+            )
+            insid = db.query("select LAST_INSERT_ID()");
+            insid = insid[0]['LAST_INSERT_ID()']
+            db.update("insert into office (name,office_type_id) values (%s,%s)",
+                (encryption.getSHA256(l['email']),OT['Customer'])
+            )
+            offid = db.query("select LAST_INSERT_ID()");
+            office = offid[0]['LAST_INSERT_ID()']
+            db.update("insert into office_users (office_id,user_id) values (%s,%s)",
+                (offid,insid)
+            )
+            db.update("insert into user_entitlements(user_id,entitlements_id) values (%s,%s)",
+                (insid,ENT['Customer'])
+            )
+            db.update("insert into user_permissions(user_id,entitlements_id) values (%s,%s)",
+                (insid,PERM['Write'])
+            )
         except:
             log.info("TOKEN_INVALID")
             return {'success':False,'message':'INVALID_TOKEN'}
@@ -162,7 +197,16 @@ class RegistrationLandingData(RegistrationsBase):
                 start_date desc
             
         """)
-        ret['pricing'] = o
+        # Taken out for now!
+        # ret['pricing'] = o
+        l = db.query("""
+            select ot.id,otd.name,otd.description,otd.signup_description
+            from 
+                office_type ot, office_type_descriptions otd
+            where 
+                otd.office_type_id = ot.id
+            """)
+        ret['roles'] = l
         return ret
 
 class RegisterProvider(RegistrationsBase):

@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
+import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
+import { toast } from 'react-toastify';
 import Widget from '../../components/Widget';
 import { Container, Alert, Button } from 'reactstrap';
 import getVersion from '../../version.js';
 import { connect } from 'react-redux';
+import { getLandingData } from '../../actions/landingData';
 import { Col, Row } from 'reactstrap';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { TabContent, TabPane } from 'reactstrap';
@@ -23,13 +26,10 @@ class Register extends Component {
             last:'',
             phone:'',
             email:'',
-            provtype:0,
-            provtypeSel:[
-                'Customer',
-                'Provider',
-                'Legal'
-            ]
+            provtype:null,
+            provtypeId:0,
         }
+        this.setSignupType = this.setSignupType.bind(this);
         this.nameChange = this.nameChange.bind(this);
         this.nextPage = this.nextPage.bind(this);
         this.firstChange = this.firstChange.bind(this);
@@ -46,6 +46,7 @@ class Register extends Component {
     }
 
     componentDidMount() {
+        this.props.dispatch(getLandingData({}));
     }
 
     checkValid() { 
@@ -57,7 +58,20 @@ class Register extends Component {
     cancel() { 
     } 
 
+    setSignupType(e) { 
+        this.state.provtypeId = e;
+        this.setState(this.state);
+        var t = this.props.landingData.data.roles.filter((g) => g.id === e)
+        if (t.length < 1) { return; }
+        this.state.provtype = t[0].name
+        console.log("pt",this.state.provtype);
+        if (this.state.provtype === 'Chiropractor') { 
+            window.location = "https://www.poundpain.com/book-online"
+        } 
+    } 
+
     register() { 
+        console.log("registering");
         var tosend = { 
             email: this.state.email,
             first: this.state.first,
@@ -67,7 +81,7 @@ class Register extends Component {
             last: this.state.last
         } 
         this.props.dispatch(registerUser(tosend,function(err,args) { 
-              toast.success('Successfully saved office.',
+              toast.success('Successfully registered.',
                 {
                     position:"top-right",
                     autoClose:3000,
@@ -130,11 +144,39 @@ class Register extends Component {
 
 
     render() {
+        console.log("p",this.props);
+        console.log("s",this.state);
         return (
         <>
             {(this.props.registerUser && this.props.registerUser.isReceiving) && (
                 <AppSpinner/>
             )}
+            {(this.state.provtype === null && this.props.landingData && 
+              this.props.landingData.data && this.props.landingData.data.roles) && (
+                <Row md="12">
+                    {this.props.landingData.data.roles.map((e) => {
+                        return (
+                            <>
+                            <Col md="4" onClick={() => this.setSignupType(e.id)} style={{cursor:'pointer'}}>
+                                <Card 
+                                    style={{borderRadius:"25px 25px 25px 25px",margin:20,width:400,height:300}} className="mb-xlg border-1">
+                                    <CardBody>
+                                        <Row md="12">
+                                            <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                                            <font style={{fontSize:'24px'}}>
+                                                {e.signup_description}
+                                            </font>
+                                            </div>
+                                        </Row>
+                                    </CardBody>
+                                </Card>
+                            </Col>
+                            </>
+                        )
+                    })}
+                </Row>
+            )}
+            {(this.state.provtype === 'Customer') && (
             <div className="auth-page">
                 <Container>
                     <h5 className="auth-logo">
@@ -188,10 +230,11 @@ class Register extends Component {
                         </form>
                     </Widget>
                 </Container>
+            </div>
+                )}
                 <footer className="auth-footer">
                   {getVersion()} - {new Date().getFullYear()} &copy; <a rel="noopener noreferrer" target="_blank" href="https://www.poundpain.com">#PAIN</a>
                 </footer>
-            </div>
         </>
         )
     }
@@ -200,7 +243,8 @@ class Register extends Component {
 function mapStateToProps(store) {
     return {
         currentUser: store.auth.currentUser,
-        registerUser: store.registerUser
+        registerUser: store.registerUser,
+        landingData: store.landingData
     }
 }
 

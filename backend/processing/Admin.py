@@ -492,7 +492,7 @@ class WelcomeEmail(AdminBase):
             '__BASE__':url
         } 
         m = Mail()
-        m.defer(email,"Welcome to Direct Health Delivery","templates/mail/welcome.html",data)
+        m.defer(email,"Welcome to #PAIN","templates/mail/welcome.html",data)
         return ret
 
 class OfficeList(AdminBase):
