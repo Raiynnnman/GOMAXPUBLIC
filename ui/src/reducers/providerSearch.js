@@ -1,4 +1,4 @@
-import { RECEIVED_PROCS_DATA_SUCCESS, RECEIVING_PROCS_DATA } from '../actions/proceduresSearch';
+import { RECEIVED_PROCS_DATA_SUCCESS, RECEIVING_PROCS_DATA } from '../actions/providerSearch';
 
 const defaultState = {
     data: {},

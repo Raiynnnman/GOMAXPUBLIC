@@ -6,34 +6,26 @@ import 'react-toastify/dist/ReactToastify.css';
 import handleError from './handleError';
 const cookies = new Cookies();
 
-export const RECEIVED_PROCS_DATA_SUCCESS = 'RECEIVED_PROCS_DATA_SUCCESS';
-export const RECEIVING_PROCS_DATA = 'RECEIVING_PROCS_DATA';
-
-export function receiveDataRequest(params) {
-    return (dispatch) => {
-        dispatch(receivingData(params)).then(data => {
-            dispatch(receiveDataSuccess(data));
-        });
-    };
-}
+export const RECEIVED_REG_DATA_SUCCESS = 'RECEIVED_REG_DATA_SUCCESS';
+export const RECEIVING_REG_DATA = 'RECEIVING_REG_DATA';
 
 export function receiveDataSuccess(payload) {
     return {
-        type: RECEIVED_PROCS_DATA_SUCCESS,
+        type: RECEIVED_REG_DATA_SUCCESS,
         payload
     }
 }
 
-export function getProceduresSearch(params) { 
+export function registerUser(params,callback,args) { 
   return async (dispatch) => {
-    dispatch(receivingData(params));
+    dispatch(receivingData(params,callback,args));
   };
 } 
 
-export function receivingData(params) {
+export function receivingData(params,callback,args) {
   return async (dispatch) => {
     dispatch({
-        type: RECEIVING_PROCS_DATA
+        type: RECEIVING_REG_DATA
     });
     const response = await axios.create({
             baseURL: apiBaseUrl(),
@@ -42,15 +34,22 @@ export function receivingData(params) {
               Accept: "application/json",
               "Content-Type": "application/json",
             },
-        }).post('/search/get',params)
+        }).post('/register/user',params)
       .then((e) => { 
           dispatch({
-                type: RECEIVED_PROCS_DATA_SUCCESS,
+                type: RECEIVED_REG_DATA_SUCCESS,
                 payload: e.data.data
             });
+          if (callback) {
+            if (!e.data.data.success) {
+                callback(e.data.data,args);
+            } else {
+                callback(null,args,e.data.data);
+            }
+          }
       })
       .catch((e) => { 
-        handleError(e);
+        handleError(e,callback,args);
       })
       .finally(() => { 
       });

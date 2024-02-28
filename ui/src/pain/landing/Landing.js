@@ -17,7 +17,6 @@ import s from '../utils/default.module.scss';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import { getLandingData } from '../../actions/landingData';
-import { register } from '../../actions/registration';
 import createDOMPurify from 'dompurify'
 import { JSDOM } from 'jsdom'
 import AliceCarousel from 'react-alice-carousel';

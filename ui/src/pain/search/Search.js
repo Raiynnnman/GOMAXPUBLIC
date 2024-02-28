@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import SavedSearchIcon from '@mui/icons-material/SavedSearch';
 import { push } from 'connected-react-router';
+import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
 import { Col, Row } from 'reactstrap';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { TabContent, TabPane } from 'reactstrap';
@@ -14,8 +15,8 @@ import { InputGroup, InputGroupText } from 'reactstrap';
 import s from './default.module.scss';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
-import { getProcedures } from '../../actions/procedures';
-import { getProceduresSearch } from '../../actions/proceduresSearch';
+import { getProviderSearch } from '../../actions/providerSearch';
+import { searchConfig } from '../../actions/searchConfig';
 import { searchCheckRes } from '../../actions/searchCheckRes';
 import { searchRegister } from '../../actions/searchRegister';
 import makeAnimated from 'react-select/animated';
@@ -35,6 +36,7 @@ class Search extends Component {
             selected:0,
             geo: false,
             selectedProcedure:0,
+            selectedProvider:null,
             selectedAppt:null,
             apptBooked:false,
             error:'',
@@ -42,6 +44,7 @@ class Search extends Component {
             zipcode:''
         }
         this.searchOffices = this.searchOffices.bind(this);
+        this.setProviderType = this.setProviderType.bind(this);
         this.setLocation = this.setLocation.bind(this);
         this.setZip = this.setZip.bind(this);
         this.updateAppt = this.updateAppt.bind(this);
@@ -60,18 +63,17 @@ class Search extends Component {
     componentDidMount() {
         this.state.geo = true;
         this.setState(this.state);
+        this.props.dispatch(searchConfig({}))
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition((position) => {
               this.state.geo = false;
               this.setState(this.state);
               var params = {location:{lat:position.coords.latitude,lon:position.coords.longitude }} 
-              this.props.dispatch(getProcedures(params))
               this.setLocation(position.coords.latitude, position.coords.longitude);
             },this.getWithoutPermission);
         } else {
               this.state.geo = false;
               this.setState(this.state);
-            this.props.dispatch(getProcedures({}))
         }
     }
 
@@ -84,17 +86,20 @@ class Search extends Component {
         }
     }
 
+
     changeZip(e) { 
         this.state.zipchange = true;
         this.state.zipcode = e.target.value;
         this.setState(this.state);
     } 
+
     updateAppt(e,t) { 
         this.state.apptBooked = true;
         this.state.selectedAppt = e;
         this.state.selectedAppt['schedule'] = t;
         this.setState(this.state);
     } 
+
     scheduleAppt(p,e) {
         var params = {
             id: e.id,
@@ -107,6 +112,16 @@ class Search extends Component {
             args[0].updateAppt(args[1],args[2])
         },[this,p,e]))
     }
+
+    setProviderType(e) { 
+        this.state.selectedProvider = e;
+        this.setState(this.state);
+        this.props.dispatch(getProviderSearch(
+            {type:this.state.selectedProvider,
+             location:this.state.mylocation
+        }))
+    } 
+
     setZip(lat,lon) {
         this.state.mylocation={lat:lat,lon:lon}
         this.setState(this.state);
@@ -133,15 +148,16 @@ class Search extends Component {
     getWithoutPermission(e,t) { 
         this.state.geo = false;
         this.setState(this.state);
-        this.props.dispatch(getProcedures({}))
     } 
 
     login() { 
         this.props.dispatch(push('/login'));
     } 
+
     aboutus() { 
-        window.open('https://poundpain.com', '_blank', 'noreferrer')
+        window.open('https://poundpain.com/about-us', '_blank', 'noreferrer')
     } 
+
     setProcedure(e) { 
         if (!e.target) { 
             this.state.selectedProcedure = e.value;
@@ -149,6 +165,7 @@ class Search extends Component {
         if (this.state.zipcode.length !== 5) { return; }
         this.searchOffices();
     } 
+
     searchOffices() { 
         this.state.error = '';
         if (this.state.zipcode.length !== 5) { 
@@ -194,20 +211,11 @@ class Search extends Component {
             width: 325
             })
         }
-        var selections = []
-        if (this.props.procedures && this.props.procedures.data && this.props.procedures.data.procedures) { 
-            this.props.procedures.data.procedures.map((e) => { 
-                e.sub.map((g) => { 
-                    selections.push({value:g.id,label:g.name})
-                })
-            })
-        } 
+        console.log("p",this.props);
+        console.log("s",this.state);
         return (
         <>
-            {(this.props.procedures && this.props.procedures.isReceiving) && (
-                <AppSpinner/>
-            )}
-            {(this.props.proceduresSearch && this.props.proceduresSearch.isReceiving) && (
+            {(this.props.providerSearch && this.props.providerSearch.isReceiving) && (
                 <AppSpinner/>
             )}
             {(this.state.geo) && (
@@ -218,14 +226,14 @@ class Search extends Component {
             )}
             {(Login.isAuthenticated()) && ( 
                 <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                    <h5>Find the best price for the highest quality physicians. Book an appointment in minutes.</h5>
+                    <h5>Find the best price for the highest quality providers. Book an appointment in minutes.</h5>
                 </div>
             )}
             {(!Login.isAuthenticated()) && ( 
             <>
             <Row md="12">
                 <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'space-evenly'}}>
-                        <img src="/direct-health-delivery.png" width="133px" height="76px"/>
+                        <img src="/poundpain.png" width="133px" height="76px"/>
                         <font style={{textAlign:"center", fontSize:window.innerWidth < 1024 ? 15 : 30}}>#PAIN</font>
                         <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                         <Button color="primary"onClick={this.login}>Login</Button>
@@ -246,93 +254,53 @@ class Search extends Component {
                     <br/>
                     <div style={{height:50,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                         <font style={{textAlign:"center", fontSize:20}}>
-                            Find the best price for the highest quality physicians. Book an appointment in minutes.
+                            Find the best price for the highest quality providers. Book an appointment in minutes.
                         </font>
                     </div>
                 </Col>
             </Row>
             )}
-            {(this.props.procedures && this.props.procedures.data && 
-              this.props.procedures.data.procedures && this.state.selectedAppt === null) && (
-            <Row md="12" style={{marginTop:20}}>
-                {(window.innerWidth < 1024) && (
-                    <>
-                    <div style={{height:50,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                      <Select
-                          styles={styles}
-                          closeMenuOnSelect={true}
-                          onChange={this.setProcedure}
-                          components={animatedComponents}
-                          options={selections}
-                        />
-                    </div>
-                    <br/>
-                    <div style={{height:50,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                      <Input style={{marginLeft:10,width:100,height:38}} type="text" id="normal-field" 
-                                onChange={this.changeZip} value={this.state.zipcode} placeholder="Zipcode" />
-                      <Button color="primary" style={{marginLeft:10}} onClick={this.searchOffices}>
-                        <SavedSearchIcon style={{color:"white"}}/>
-                      </Button>
-                    </div>
-                    </>
-                )}
-                {(window.innerWidth > 1024) && (
-                    <>
-                    <Col md="12" style={{padding:0,margin:0}}>
-                    <div style={{height:50,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                      <Select
-                          styles={styles}
-                          closeMenuOnSelect={true}
-                          onChange={this.setProcedure}
-                          components={animatedComponents}
-                          options={selections.sort((a, b) => {
-                            const labelA = a.label || "";
-                            const labelB = b.label || "";
-                            return labelA.localeCompare(labelB);
-                          })}
-                        />
-                      <Input style={{marginLeft:10,width:100,height:38}} type="text" id="normal-field" 
-                                onChange={this.changeZip} value={this.state.zipcode} placeholder="Zipcode" />
-                      <Button color="primary" style={{marginLeft:10}} onClick={this.searchOffices}>
-                        <SavedSearchIcon style={{color:"white"}}/>
-                      </Button>
-                    </div>
-                    </Col>
-                    </>
-                )}
-            </Row>
+            {(this.props.searchConfig && this.props.searchConfig.data && this.props.searchConfig.data.types && 
+              this.state.selectedProvider === null) && ( 
+                <Row md="12" style={{marginTop:20}}>
+                    {this.props.searchConfig.data.types.map((e) => { 
+                        return (
+                            <>
+                            <Col md="4" onClick={() => this.setProviderType(e.id)} style={{cursor:'pointer'}}>
+                                <Card 
+                                    style={{borderRadius:"25px 25px 25px 25px",margin:20,width:400,height:300}} className="mb-xlg border-1">
+                                    <CardBody>
+                                        <Row md="12">
+                                            <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                                            <font style={{fontSize:'24px'}}>
+                                                {e.description}
+                                            </font>
+                                            </div>
+                                        </Row>
+                                    </CardBody>
+                                </Card>
+                            </Col>
+                            </>
+                        )
+                    })}
+                </Row>
             )}
-            {(this.props.procedures && this.props.procedures.data && 
-              this.props.procedures.data.procedures && this.state.selectedAppt === null && 
-              this.state.error.length > 0) && (
-            <Row md="12" style={{marginTop:20}}>
-                <Col md="4"></Col>
-                <Col md="4">
-                    <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        <font style={{color:"red"}}>
-                            {this.state.error}
-                        </font>
-                    </div>
-                </Col>
-                <Col md="4"></Col>
-            </Row>
-            )}
-            {(this.props.proceduresSearch && this.props.proceduresSearch.data && 
-                this.props.proceduresSearch.data && this.props.proceduresSearch.data.physicians &&
-                this.props.proceduresSearch.data.physicians.length > 0 && this.state.selectedAppt === null) && (
+            {(this.props.providerSearch && this.props.providerSearch.data && 
+                this.props.providerSearch.data && this.props.providerSearch.data.providers &&
+                this.props.providerSearch.data.providers.length > 0 && this.state.provider !== null) && (
                 <AliceCarousel animationType="fadeout" animationDuration={3} autoWidth={true} innerWidth={10}
                     autoPlay={false} disableDotsControls={true} infinite={false}
                     disableButtonsControls={false} responsive={responsive}
                     disableSlideInfo={false}
-                    mouseTracking items={this.props.proceduresSearch.data.physicians.map((e) => { 
+                    mouseTracking items={this.props.providerSearch.data.providers.map((e) => { 
                         return (
-                            <PhysicianCard procedure={this.state.selectedProcedure} onScheduleAppt={this.scheduleAppt} physician={e}/>
+                            <PhysicianCard onScheduleAppt={this.scheduleAppt} provider={e}/>
                         )
                     })} />
             )}
-            {(this.props.proceduresSearch && this.props.proceduresSearch.data && 
-                this.props.proceduresSearch.data && this.props.proceduresSearch.data.physicians &&
-                this.props.proceduresSearch.data.physicians.length < 1 && this.state.selectedAppt === null) && (
+            {(this.props.providerSearch && this.props.providerSearch.data && 
+                this.props.providerSearch.data && this.props.providerSearch.data.providers &&
+                this.props.providerSearch.data.providers.length < 1 && this.state.provider !== null) && (
                 <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                     <h4>There are currently no service providers in this area.</h4>
                 </div>
@@ -352,8 +320,8 @@ class Search extends Component {
 function mapStateToProps(store) {
     return {
         currentUser: store.auth.currentUser,
-        procedures: store.procedures,
-        proceduresSearch: store.proceduresSearch,
+        searchConfig:store.searchConfig,
+        providerSearch: store.providerSearch,
         searchCheckRes: store.searchCheckRes
     }
 }

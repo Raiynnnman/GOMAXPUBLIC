@@ -8,7 +8,7 @@ from rest import RegistrationRest
 
 registrations = Blueprint('registrations', __name__)
 
-@registrations.route('/registrations/update', methods=['POST'])
+@registrations.route('/register/user', methods=['POST'])
 @swag_from(docs_dir + 'registrationupdate.yaml')
 def regupdate(*args, **kwargs):
     po = RegistrationRest.RegistrationUpdateRest()

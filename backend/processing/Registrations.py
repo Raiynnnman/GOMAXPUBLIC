@@ -88,7 +88,7 @@ class RegistrationUpdate(RegistrationsBase):
         )
         url = config.getKey("host_url")
         data = { 
-            '__LINK__':"%s/#/register/%s" % (url,val.decode('utf-8')),
+            '__LINK__':"%s/#/verify/%s" % (url,val.decode('utf-8')),
             '__BASE__':url
         } 
         m = Mail()

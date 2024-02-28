@@ -4,7 +4,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { apiBaseUrl } from '../globalConfig';
 
 export const handleError = function(er,callback,args) { 
-    if (er.constructor == Object) {
+    if (er.constructor === Object) {
         console.log("er",JSON.stringify(er));
     } else { 
         console.log(er);

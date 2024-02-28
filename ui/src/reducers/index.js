@@ -1,9 +1,10 @@
 import { combineReducers } from 'redux';
 import auth from './auth';
+import searchConfig from './searchConfig';
 import review from './review';
 import registrationsAdminList from './registrationsAdminList';
 import trafficData from './trafficGet';
-import registration from './registration';
+import registerUser from './registerUser';
 import registerVerify from './registerVerify';
 import landingData from './landingData';
 import myDayApptSave from './mydayApptSave';
@@ -46,7 +47,7 @@ import userDocumentsUpdate from './userDocumentsUpdate';
 import phy from './phy';
 import procedures from './procedures';
 import searchRegister from './searchRegister';
-import proceduresSearch from './proceduresSearch';
+import providerSearch from './providerSearch';
 import phySave from './phySave';
 import myday from './myday';
 import mydaySchedSave from './mydaySchedSave';
@@ -119,7 +120,7 @@ export default (history) =>
     phy,
     phySave,
     procedures,
-    proceduresSearch,
+    providerSearch,
     saveCard,
     searchCheckRes,
     searchRegister,
@@ -137,7 +138,7 @@ export default (history) =>
     corporationAdminSave,
     corporationUsers,
     mydayApptSave,
-    registration,
+    registerUser,
     corporationUsersSave,
     review,
     registrationsAdminList,
@@ -146,6 +147,7 @@ export default (history) =>
     userDefaultCard,
     landingData,
     trafficData,
+    searchConfig,
     mydayReceiptSave,
     userDocumentsUpdate,
     chat,

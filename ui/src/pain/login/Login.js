@@ -133,10 +133,10 @@ class Login extends React.Component {
                                 </Button>
                             </div>*/}
                         </form>
-                        {/*<p className="widget-auth-info">
+                        <p className="widget-auth-info">
                             Don't have an account? Sign up now!
                         </p>
-                        <Link className="d-block text-center" to="register">Create an Account</Link>*/}
+                        <Link className="d-block text-center" to="register">Create an Account</Link>
                     </Widget>
                 </Container>
                 <footer className="auth-footer">

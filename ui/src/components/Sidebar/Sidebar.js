@@ -138,39 +138,6 @@ class Sidebar extends React.Component {
           />
           )}
           {(this.props.currentUser && this.props.currentUser.entitlements && 
-            this.props.currentUser.entitlements.includes("Customer")) && (
-          <LinksGroup
-            header="Appointments"
-            link="/app/main/myhealth/appointments"
-            isHeader
-            iconElement={<CalendarMonthIcon/>}
-            iconName="flaticon-users"
-            labelColor="info"
-          />
-          )}
-          {(this.props.currentUser && this.props.currentUser.entitlements && 
-            this.props.currentUser.entitlements.includes("Customer")) && (
-          <LinksGroup
-            header="Documents"
-            link="/app/main/myhealth/documents"
-            isHeader
-            iconElement={<ArticleIcon/>}
-            iconName="flaticon-users"
-            labelColor="info"
-          />
-          )}
-          {(this.props.currentUser && this.props.currentUser.entitlements && 
-            this.props.currentUser.entitlements.includes("Customer")) && (
-          <LinksGroup
-            header="Invoices"
-            link="/app/main/myhealth/billing"
-            isHeader
-            iconElement={<AccountBalanceIcon/>}
-            iconName="flaticon-users"
-            labelColor="info"
-          />
-          )}
-          {(this.props.currentUser && this.props.currentUser.entitlements && 
             this.props.currentUser.entitlements.includes("Admin")) && (
           <LinksGroup
             header="Map"
