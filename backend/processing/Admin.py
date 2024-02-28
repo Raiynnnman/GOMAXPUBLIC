@@ -19,7 +19,7 @@ from common import settings
 from util.DBOps import Query
 from processing.SubmitDataRequest import SubmitDataRequest
 from processing.Audit import Audit
-from processing import Search,Office,Bundles
+from processing import Search,Office
 from common.DataException import DataException
 from common.InvalidCredentials import InvalidCredentials
 from util.Permissions import check_admin
