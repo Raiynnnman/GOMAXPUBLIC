@@ -56,10 +56,10 @@ app.config['SWAGGER'] = {
             "version": "%s.%s.%s.%s-%s" % (
                 version.MAJOR, version.MINOR, version.BUILD,
                 version.RELEASE, version.COMMIT[0:7]),
-            "title": "DHD API: %s.%s.%s.%s-%s" % (
+            "title": "PAIN API: %s.%s.%s.%s-%s" % (
                 version.MAJOR, version.MINOR, version.RELEASE, version.BUILD,
                 version.COMMIT[0:7]),
-            "description": "DHD internal API, v%s.%s.%s.%s-%s" % (
+            "description": "PAIN internal API, v%s.%s.%s.%s-%s" % (
                 version.MAJOR, version.MINOR, version.RELEASE, version.BUILD,
                 version.COMMIT[0:7]),
             "endpoint": 'v3_0',
