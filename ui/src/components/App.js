@@ -14,7 +14,6 @@ import ErrorPage from '../pages/error';
 import '../styles/theme.scss';
 import LayoutComponent from '../components/Layout';
 import Login from '../pain/login';
-import Register from '../pages/auth/register';
 import Reset from '../pain/reset/Reset';
 import Forgot from '../pain/forgot/Forgot';
 import Search from '../pain/search/Search';
@@ -22,6 +21,7 @@ import Landing from '../pain/landing/Landing';
 import Welcome from '../pain/welcome/Welcome';
 import ThankYou from '../pain/landing/ThankYou';
 import Verified from '../pain/landing/Verified';
+import Register from '../pain/landing/Register';
 import RegisterProvider from '../pain/landing/RegisterProvider';
 
 const CloseButton = ({closeToast}) => <i onClick={closeToast} className="la la-close notifications-close"/>
@@ -47,7 +47,8 @@ class App extends React.PureComponent {
                       <Route path="/app" exact render={() => <Redirect to="/app/main"/>}/>
                       <UserRoute path="/app" dispatch={this.props.dispatch} component={LayoutComponent}/>
                       <Route path="/reset/:token" exact component={Reset}/>
-                      <Route path="/register/:token" exact component={Verified}/>
+                      <Route path="/verify/:token" exact component={Verified}/> 
+                      <Route path="/register" exact component={Register}/> */}
                       <Route path="/register-provider/:id" exact component={RegisterProvider}/>
                       <AuthRoute path="/login" exact component={Login}/>
                       <AuthRoute path="/welcome" exact component={Welcome}/>

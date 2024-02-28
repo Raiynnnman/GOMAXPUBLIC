@@ -1,4 +1,4 @@
-import { RECEIVED_REG_DATA_SUCCESS, RECEIVING_REG_DATA } from '../actions/registration';
+import { RECEIVED_REG_DATA_SUCCESS, RECEIVING_REG_DATA } from '../actions/registerUser';
 
 const defaultState = {
     data: {},

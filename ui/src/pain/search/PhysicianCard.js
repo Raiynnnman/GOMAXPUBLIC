@@ -38,8 +38,8 @@ class PhysicianCard extends Component {
     } 
 
     componentWillReceiveProps(np) { 
-        if (this.state.selected === null && np.physician && np.physician.about) { 
-            this.state.selected = np.physician;
+        if (this.state.selected === null && np.provider && np.provider.about) { 
+            this.state.selected = np.provider;
             this.setState(this.state);
         }
     }
@@ -53,11 +53,6 @@ class PhysicianCard extends Component {
         this.state.dateSelected = date2
         this.state.dateSelectedForRest = date;
         this.setState(this.state)
-        var params = {
-            date: this.state.dateSelectedForRest,
-            id: this.props.physician.phy_id
-        }
-        this.props.dispatch(getMoreSchedules(params));
     }
 
     selectDay() { 
@@ -84,12 +79,12 @@ class PhysicianCard extends Component {
         this.state.dateSelectedForRest = date;
         var params = {
             date: this.state.dateSelectedForRest,
-            id: this.props.physician.phy_id
+            id: this.props.provider.phy_id
         }
-        this.state.lastMore = this.props.physician.phy_id;
+        this.state.lastMore = this.props.provider.phy_id;
         this.props.dispatch(getMoreSchedules(params));
-        this.state.more[this.props.physician.phy_id] = false;
-        this.state.inMore = this.props.physician.phy_id;
+        this.state.more[this.props.provider.phy_id] = false;
+        this.state.inMore = this.props.provider.phy_id;
         this.setState(this.state)
     } 
 
@@ -107,8 +102,8 @@ class PhysicianCard extends Component {
     } 
 
     scheduleAppt(e) { 
-        this.moreToggle(this.props.physician.phy_id);
-        this.props.onScheduleAppt(this.props.physician,e)
+        this.moreToggle(this.props.provider.phy_id);
+        this.props.onScheduleAppt(this.props.provider,e)
     } 
 
     getDate() { 
@@ -118,14 +113,16 @@ class PhysicianCard extends Component {
     } 
 
     render() {
+        console.log('s3',this.state);
+        console.log('p3',this.props);
         if (this.state.inMore > 0 && !this.props.moreSchedules.isReceiving)  {
-            this.state.more[this.props.physician.phy_id] = true;
+            this.state.more[this.props.provider.phy_id] = true;
             this.state.inMore = 0;
             this.setState(this.state)
         } 
         return (
         <>
-        {(this.props.physician && this.props.physician.schedule) && (
+        {(this.props.provider) && (
             <Card style={{
                 margin:20,width:250,height:375,
                 borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}} className="mb-xlg border-1">
@@ -133,10 +130,10 @@ class PhysicianCard extends Component {
                     <Row md="12">
                         <Col md="12">
                             <font style={{fontSize:"14pt",fontWeight:"bold"}}>
-                            {this.props.physician.title + " " + this.props.physician.first_name + " " + this.props.physician.last_name}
+                            {this.props.provider.title + " " + this.props.provider.first_name + " " + this.props.provider.last_name}
                             </font>
                             <br/>
-                            {(this.props.physician.rating === 5) && (
+                            {(this.props.provider.rating === 5) && (
                             <>
                                 <i style={{color:"gold"}} className="fa fa-star me-2" />
                                 <i style={{color:"gold"}} className="fa fa-star me-2" />
@@ -145,7 +142,7 @@ class PhysicianCard extends Component {
                                 <i style={{color:"gold"}} className="fa fa-star me-2" />
                             </>
                             )}
-                            {(this.props.physician.rating >= 4) && (
+                            {(this.props.provider.rating >= 4) && (
                             <>
                                 <i style={{color:"gold"}} className="fa fa-star me-2" />
                                 <i style={{color:"gold"}} className="fa fa-star me-2" />
@@ -154,7 +151,7 @@ class PhysicianCard extends Component {
                                 <i style={{color:"lightgrey"}} className="fa fa-star me-2" />
                             </>
                             )}
-                            {(this.props.physician.rating >= 3 && this.props.physician.rating < 4) && (
+                            {(this.props.provider.rating >= 3 && this.props.provider.rating < 4) && (
                             <>
                                 <i style={{color:"gold"}} className="fa fa-star me-2" />
                                 <i style={{color:"gold"}} className="fa fa-star me-2" />
@@ -163,7 +160,7 @@ class PhysicianCard extends Component {
                                 <i style={{color:"lightgrey"}} className="fa fa-star me-2" />
                             </>
                             )}
-                            {(this.props.physician.rating >= 2 && this.props.physician.rating < 3) && (
+                            {(this.props.provider.rating >= 2 && this.props.provider.rating < 3) && (
                             <>
                                 <i style={{color:"gold"}} className="fa fa-star me-2" />
                                 <i style={{color:"gold"}} className="fa fa-star me-2" />
@@ -172,7 +169,7 @@ class PhysicianCard extends Component {
                                 <i style={{color:"lightgrey"}} className="fa fa-star me-2" />
                             </>
                             )}
-                            {(this.props.physician.rating >= 1 && this.props.physician.rating < 2) && (
+                            {(this.props.provider.rating >= 1 && this.props.provider.rating < 2) && (
                             <>
                                 <i style={{color:"gold"}} className="fa fa-star me-2" />
                                 <i style={{color:"lightgrey"}} className="fa fa-star me-2" />
@@ -182,7 +179,7 @@ class PhysicianCard extends Component {
                                 <i style={{color:"lightgrey"}} className="fa fa-star me-2" />
                             </>
                             )}
-                            {(this.props.physician.rating >= 0 && this.props.physician.rating < 1) && (
+                            {(this.props.provider.rating >= 0 && this.props.provider.rating < 1) && (
                             <>
                                 <i style={{color:"lightgrey"}} className="fa fa-star me-2" />
                                 <i style={{color:"lightgrey"}} className="fa fa-star me-2" />
@@ -192,7 +189,7 @@ class PhysicianCard extends Component {
                                 <i style={{color:"lightgrey"}} className="fa fa-star me-2" />
                             </>
                             )}
-                            {this.props.physician.rating.toFixed(1)}
+                            {this.props.provider.rating.toFixed(1)}
                         </Col>
                         <Col md="2"></Col>
                         <Col md="4" class="pull-right">
@@ -201,15 +198,15 @@ class PhysicianCard extends Component {
                     <hr/>
                     <div style={{height:130,marginBottom:10,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                     <>
-                        {(this.props.physician.headshot) && (<img style={{width:140,height:130,objectFit:"fill"}} src={this.props.physician.headshot}/>)}
-                        {(!this.props.physician.headshot) && (<img style={{width:140,height:130,objectFit:"fill"}} src="/headshot.png"/>)}
+                        {(this.props.provider.headshot) && (<img style={{width:140,height:130,objectFit:"fill"}} src={this.props.provider.headshot}/>)}
+                        {(!this.props.provider.headshot) && (<img style={{width:140,height:130,objectFit:"fill"}} src="/headshot.png"/>)}
                     </>
                     </div>
-                    <Row md="12"> <Col md="12">{this.props.physician.miles.toFixed(2)} miles</Col> </Row>
-                    <Row md="12"> <Col md="12">{this.props.physician.addr[0][0].addr1}</Col> </Row>
-                    <Row md="12"> <Col md="12">{this.props.physician.addr[0][0].addr2}</Col> </Row>
+                    <Row md="12"> <Col md="12">{this.props.provider.miles.toFixed(2)} miles</Col> </Row>
+                    <Row md="12"> <Col md="12">{this.props.provider.addr[0][0].addr1}</Col> </Row>
+                    <Row md="12"> <Col md="12">{this.props.provider.addr[0][0].addr2}</Col> </Row>
                     <Row md="12">
-                        <Col md="12">{this.props.physician.addr[0][0].city},{this.props.physician.addr[0][0].state} {this.props.physician.addr[0][0].zipcode}
+                        <Col md="12">{this.props.provider.addr[0][0].city},{this.props.provider.addr[0][0].state} {this.props.provider.addr[0][0].zipcode}
                         </Col> 
                     </Row>
                     {(false) && ( <Row md="12"> 
@@ -222,84 +219,6 @@ class PhysicianCard extends Component {
                     </Row>
                     )}
                     <hr/>
-                    <Row md="12">
-                        <Col md="12">
-                        <div style={{marginTop:10,height:10,display: 'flex', alignItems: 'center', justifyContent: 'space-evenly',textAlign:"center"}}>
-                        {(false && this.props.physician && this.props.physician.scheduled && this.props.physician.scheduled.slice) &&
-                        this.props.physician.schedule.slice(0,4).map((g) => { 
-                            return (
-                                <Button onClick={() => this.scheduleAppt(g)} color="primary">{g.time}</Button>
-                            )
-                        })}
-                        <Button id={"more-schedule-" + this.props.physician.phy_id} color="primary">Schedule</Button>
-                        <Popover style={{width:375,height:330,backgroundColor:"white"}} placement="top" 
-                            isOpen={this.state.more[this.props.physician.phy_id]} target={"more-schedule-" + this.props.physician.phy_id} toggle={() => this.moreToggle(this.props.physician.phy_id)}>
-                            <PopoverBody> 
-                                <Card style={{border:"1px solid #e3e3e3",width:375,height:330,backgroundColor:"white"}}>
-                                    <font style={{height:30,display: 'flex',  fontSize:"14pt",fontWeight:"bold",
-                                        alignItems: 'center', justifyContent: 'center',textAlign:"center"}}>
-                                            {this.state.dateSelected}
-                                    </font>
-                                    <hr style={{marginTop:5,marginBottom:5}}/>
-                                    {(this.props.moreSchedules && this.props.moreSchedules.isReceiving) && (
-                                        <div style={{border:"1px solid black",height:300,
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                                            <div style={{marginLeft:0}}>
-                                                <AppSpinnerInternal/>
-                                            </div>
-                                        </div>
-                                    )}
-                                    {(this.props.moreSchedules && !this.props.moreSchedules.isReceiving) && (
-                                    <>
-                                    {(this.state.pickDay) && (
-                                            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                                                <Calendar
-                                                  value={this.state.dateSelected}
-                                                  initialDay={new Date()}
-                                                  onChange={this.onDateChange}
-                                                />
-                                            </div>
-                                    )}
-                                    {(!this.state.pickDay) && (
-                                    <>
-                                        {(this.props.moreSchedules.data && this.props.moreSchedules.data.schedule && 
-                                          this.props.moreSchedules.data.schedule.length < 1) && (
-                                            <>
-                                            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                                            No appointments available.
-                                            </div>
-                                            <Button style={{margin:5}} onClick={this.selectDay} 
-                                                color="primary" outline>Select Day</Button>
-                                            </>
-                                        )}
-                                        {(this.props.moreSchedules.data && this.props.moreSchedules.data.schedule && 
-                                          this.state.inMore === 0 && 
-                                          this.props.moreSchedules.data.schedule.length > 0) && (
-                                            <>
-                                            <Button style={{margin:5}} onClick={this.selectDay} 
-                                                color="primary" outline>Select Day</Button>
-                                            <div> 
-                                            <div style={{marginLeft:20}}>
-                                            {this.props.moreSchedules.data.schedule.map((g) => { 
-                                                return (
-                                                    <Button style={{margin:5,width:100}} onClick={() => this.scheduleAppt(g)} 
-                                                        color="primary">{g.time}</Button>
-                                                )
-                                            })}
-                                            </div>
-                                            </div>
-                                            </>
-                                        )}
-                                    </>
-                                    )}
-                                    </>
-                                    )}
-                                </Card>
-                            </PopoverBody>
-                        </Popover>
-                        </div>
-                        </Col>
-                    </Row>
                 </CardBody>
             </Card>
         )}

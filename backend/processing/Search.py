@@ -65,32 +65,15 @@ class SearchConfig(SearchBase):
                 lat = a['location']['lat']
                 lon = a['location']['lon']
         db = Query()
-        o = db.query(
-            """
-            select 
-                s.id as id,p.name as parent,
-                json_arrayagg(
-                    json_object(
-                        'id',s.id,'name',s.name
-                    )
-                ) as procedures
-                from 
-                    procedures p
-                left join subprocedures s on s.procedures_id=p.id
-                group by p.id
-            """
-        )
-        ret["procedures"] = []
-        for x in o:
-            p = x['parent']
-            i = x['id']
-            sub = json.loads(x['procedures'])
-            ret["procedures"].append({
-                'name': p,
-                'id': i,
-                'sub': sub
-            })
-        ret['zipcode'] = self.getZipFromLat(lat,lon)
+        l = db.query("""
+            select ot.id,otd.name,otd.description 
+            from 
+                office_type ot, office_type_descriptions otd
+            where 
+                ot.name <> 'Patient' and
+                otd.office_type_id = ot.id
+            """)
+        ret['types'] = l
         return ret
 
 class SearchGet(SearchBase):
@@ -123,9 +106,9 @@ class SearchGet(SearchBase):
     def execute(self, *args, **kwargs):
         ret = []
         params = args[1][0]
-        if 'procedure' not in params:
-            return { 'physicians':ret }
-        procedure = params['procedure']
+        if 'type' not in params:
+            return { 'providers':ret }
+        provtype = params['type']
         zipcode = 0
         lat = 0
         lon = 0
@@ -151,22 +134,20 @@ class SearchGet(SearchBase):
                 pm.headshot,pm.video,u.id as phy_id,
                 round(st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192,2) as miles
             from
-                procedures_phy pp,users u,office_user ou,
-                office o,office_addresses oa,procedures p,
-                subprocedures s,physician_media pm
+                users u,office_user ou,
+                office o,office_addresses oa,
+                physician_media pm
             where
-                s.procedures_id = p.id and 
                 pm.user_id = u.id and 
-                pp.user_id = u.id and 
                 ou.user_id = u.id and
                 ou.office_id = o.id and
                 ou.office_id = oa.office_id and 
                 oa.office_id = o.id and
                 st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192 < 50 and
-                pp.subprocedures_id = %s
+                o.office_type_id = %s
             group by 
                 u.id
-            """,(lon,lat,lon,lat,procedure)
+            """,(lon,lat,lon,lat,provtype)
         )
         for x in o:
             q = db.query("""
@@ -182,22 +163,6 @@ class SearchGet(SearchBase):
             x['addr'] = []
             x['rating'] = db.query(
                 "select ifnull(round(avg(rating),2),0) as avg from ratings where user_id=%s",(x['phy_id'],)
-            )
-            x['schedule'] = db.query(
-                """
-                    select ps.id,ps.day,time_format(ps.time,'%h:%i%p') as time,%s as proc
-                    from 
-                        physician_schedule ps
-                    left outer join physician_schedule_scheduled pss on pss.physician_schedule_id = ps.id
-                    where 
-                        ps.user_id=%s and 
-                        day = %s and 
-                        active = 1 and
-                        tstamp > now() and
-                        pss.id is null
-                    order by 
-                        tstamp
-                """,(procedure,x['phy_id'],today)
             )
             x['about'] = db.query(
                 "select text from physician_about where user_id=%s",(x['phy_id'],)
@@ -215,12 +180,12 @@ class SearchGet(SearchBase):
             ret.append(x)
         vid = 0
         if 'novisit' not in params:
-            db.update("insert into visits (subprocedures_id) values (%s)",(procedure,))
+            db.update("insert into visits (office_type_id) values (%s)",(provtype,))
             vid = db.query("select LAST_INSERT_ID()");
             vid = vid[0]['LAST_INSERT_ID()']
             db.commit()
         myret = {
-            'physicians':ret,
+            'providers':ret,
             'visit_id': vid
         } 
         return myret
