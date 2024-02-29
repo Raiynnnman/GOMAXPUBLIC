@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import moment from 'moment';
 import { Badge } from 'reactstrap';
 import { Button } from 'reactstrap'; 
+import cellEditFactory from 'react-bootstrap-table2-editor';
 import { connect } from 'react-redux';
 import { Col, Row } from 'reactstrap';
 import { Nav, NavItem, NavLink } from 'reactstrap';
@@ -14,6 +15,7 @@ import s from '../utils/default.module.scss';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import { getRegistrations } from '../../actions/registrationsAdminList';
+import { getPlansList } from '../../actions/plansList';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 
@@ -23,10 +25,14 @@ class Registrations extends Component {
         this.state = { 
             selected: null,
             activeTab: "registrations",
+            subTab: "plans",
         }
         this.close = this.close.bind(this);
+        this.save = this.save.bind(this);
         this.edit = this.edit.bind(this);
+        this.addInvoiceRow = this.addInvoiceRow.bind(this);
         this.toggleTab = this.toggleTab.bind(this);
+        this.toggleSubTab = this.toggleSubTab.bind(this);
     } 
 
     componentWillReceiveProps(p) { 
@@ -34,10 +40,24 @@ class Registrations extends Component {
 
     componentDidMount() {
         this.props.dispatch(getRegistrations({}));
+        this.props.dispatch(getPlansList({}));
     }
-
+    addInvoiceRow() { 
+        this.state.selected.invoice.items.push({
+            price:0,
+            quantity:1,
+            description:''
+        })
+        this.setState(this.state);
+    } 
+    save() { 
+    } 
     close() { 
         this.state.selected = null;
+        this.setState(this.state);
+    } 
+    toggleSubTab(e) { 
+        this.state.subTab = e;
         this.setState(this.state);
     } 
     toggleTab(e) { 
@@ -51,16 +71,123 @@ class Registrations extends Component {
     } 
 
     render() {
+        console.log("p",this.props)
+        console.log("s",this.state)
         var fields = [
             {name:'Email',value:'email'},
             {name:'First',value:'first_name'},
             {name:'Last',value:'last_name'},
-            {name:'Age',value:'age'},
             {name:'Phone',value:'phone'},
-            {name:'Address',value:'addr1'},
-            {name:'City',value:'city'},
-            {name:'State',value:'state'},
-            {name:'Zipcode',value:'zipcode'},
+            {name:'Status',value:'status'},
+        ]
+        var offheads = [
+            {
+                dataField:'id',
+                sort:true,
+                hidden:true,
+                text:'ID'
+            },
+            {
+                dataField:'name',
+                text:'Name'
+            },
+            {
+                dataField:'Phone',
+                text:'Phone'
+            },
+            {
+                dataField:'addr1',
+                text:'Address'
+            },
+            {
+                dataField:'city',
+                text:'City'
+            },
+            {
+                dataField:'state',
+                text:'state'
+            },
+            {
+                dataField:'zipcode',
+                text:'Zipcode'
+            },
+        ]
+        var planheads = [
+            {
+                dataField:'id',
+                sort:true,
+                hidden:true,
+                text:'ID'
+            },
+            {
+                dataField:'description',
+                text:'Description'
+            },
+            {
+                dataField:'price',
+                text:'Price',
+                align:'right',
+                formatter: (cellContent,row) => (
+                    <div>
+                        ${row.price.toFixed(2)}
+                    </div>
+                )
+            },
+            {
+                dataField:'quantity',
+                align:'center',
+                width:50,
+                text:'quantity'
+            },
+            {
+                dataField:'total',
+                align:'right',
+                text:'Total',
+                editable:false,
+                formatter: (cellContent,row) => (
+                    <div>
+                        ${(row.price*row.quantity).toFixed(2)}
+                    </div>
+                )
+            },
+        ]
+        var invheads = [
+            {
+                dataField:'id',
+                sort:true,
+                hidden:true,
+                text:'ID'
+            },
+            {
+                dataField:'description',
+                text:'Description'
+            },
+            {
+                dataField:'price',
+                text:'Price',
+                align:'right',
+                formatter: (cellContent,row) => (
+                    <div>
+                        {row.price.toFixed ? '$' + row.price.toFixed(2) : row.price}
+                    </div>
+                )
+            },
+            {
+                dataField:'quantity',
+                align:'center',
+                text:'quantity'
+            },
+            {
+                dataField:'total',
+                text:'Total',
+                editable:false,
+                align:'right',
+                formatter: (cellContent,row) => (
+                    <div>
+                        ${(row.price*row.quantity).toFixed(2)}
+                    </div>
+                )
+            },
         ]
         var regheads = [
             {
@@ -130,6 +257,12 @@ class Registrations extends Component {
         ]
         return (
         <>
+            {(this.props.plansList && this.props.plansList.isReceiving) && (
+                <AppSpinner/>
+            )}
+            {(this.props.registrationAdminList && this.props.registrationAdminList.isReceiving) && (
+                <AppSpinner/>
+            )}
             <Row md="12">
                 <Col md="12">
                     <Nav tabs  className={`${s.coloredNav}`} style={{backgroundColor:"#e8ecec"}}>
@@ -176,11 +309,11 @@ class Registrations extends Component {
                                                     </Label>
                                                     <Col md={5}>
                                                       {(e.name !== 'Comments') && (
-                                                        <Input type="text" id="normal-field" readOnly 
+                                                        <Input type="text" id="normal-field" 
                                                         placeholder={e.name} value={this.state.selected[e.value]}/>
                                                       )} 
                                                       {(e.name === 'Comments') && (
-                                                        <Input type="textarea" rows={3} id="normal-field" readOnly 
+                                                        <Input type="textarea" rows={3} id="normal-field" 
                                                         placeholder={e.name} value={this.state.selected[e.value]}/>
                                                       )} 
                                                     </Col>
@@ -191,7 +324,61 @@ class Registrations extends Component {
                                     })}
                                     <Row md="12">
                                         <Col md="12">
+                                            <Nav tabs  className={`${s.coloredNav}`} style={{backgroundColor:"#e8ecec"}}>
+                                                <NavItem>
+                                                    <NavLink className={classnames({ active: this.state.subTab === 'plans' })}
+                                                        onClick={() => { this.toggleSubTab('plans') }}>
+                                                        <span>{translate('Plans')}</span>
+                                                    </NavLink>
+                                                </NavItem>
+                                                <NavItem>
+                                                    <NavLink className={classnames({ active: this.state.subTab === 'offices' })}
+                                                        onClick={() => { this.toggleSubTab('offices') }}>
+                                                        <span>{translate('Offices')}</span>
+                                                    </NavLink>
+                                                </NavItem>
+                                                <NavItem>
+                                                    <NavLink className={classnames({ active: this.state.subTab === 'invoices' })}
+                                                        onClick={() => { this.toggleSubTab('invoices') }}>
+                                                        <span>{translate('Invoice')}</span>
+                                                    </NavLink>
+                                                </NavItem>
+                                            </Nav>
+                                            <TabContent className='mb-lg' activeTab={this.state.subTab}>
+                                                <TabPane tabId="plans">
+                                                    {(this.state.selected.plans && this.state.selected.plans.items) && (
+                                                    <BootstrapTable 
+                                                        keyField='id' data={this.state.selected.plans.items} 
+                                                        columns={planheads}>
+                                                    </BootstrapTable>
+                                                    )}
+                                                </TabPane>
+                                                <TabPane tabId="offices">
+                                                    {(this.state.selected.addr && this.state.selected.addr) && (
+                                                    <BootstrapTable 
+                                                        keyField='id' data={this.state.selected.addr} 
+                                                        columns={offheads}>
+                                                    </BootstrapTable>
+                                                    )}
+                                                </TabPane>
+                                                <TabPane tabId="invoices">
+                                                    <Button onClick={() => this.addInvoiceRow({id:"new"})} 
+                                                        style={{marginRight:5,marginBottom:10,height:35,width:90}} color="primary">Add</Button>
+                                                    {(this.state.selected.invoice && this.state.selected.invoice.items) && (
+                                                        <BootstrapTable 
+                                                            keyField='id' data={this.state.selected.invoice.items} 
+                                                            cellEdit={ cellEditFactory({ mode: 'click',blurToSave:true })}
+                                                            columns={invheads}>
+                                                        </BootstrapTable>
+                                                    )}
+                                                </TabPane>
+                                            </TabContent>
+                                        </Col>
+                                    </Row>
+                                    <Row md="12">
+                                        <Col md="12">
                                             <Col md="6">
+                                                <Button onClick={this.save} color="primary">Save</Button>
                                                 <Button outline style={{marginLeft:10}} onClick={this.close} 
                                                     color="secondary">Close</Button>
                                             </Col>
@@ -212,7 +399,8 @@ class Registrations extends Component {
 function mapStateToProps(store) {
     return {
         currentUser: store.auth.currentUser,
-        registrationsAdminList: store.registrationsAdminList
+        registrationsAdminList: store.registrationsAdminList,
+        plansList: store.plansList
     }
 }
 

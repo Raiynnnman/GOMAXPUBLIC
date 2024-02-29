@@ -122,6 +122,13 @@ class CorporationUpdateRest(RestBase):
         ret = u.process(args[0])
         return ret
 
+class RegistrationUpdateRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Admin.RegistrationUpdate()
+        ret = u.process(args[0])
+        return ret
+
 class RegistrationListRest(RestBase):
 
     def post(self, *args, **kwargs):
@@ -133,5 +140,12 @@ class TrafficGetRest(RestBase):
 
     def post(self, *args, **kwargs):
         u = Admin.TrafficGet()
+        ret = u.process(args[0])
+        return ret
+
+class PlansGetRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Admin.PlansList()
         ret = u.process(args[0])
         return ret

@@ -128,9 +128,23 @@ def reglist(*args, **kwargs):
     po = AdminRest.RegistrationListRest()
     return po.postWrapper(*args,**kwargs)
 
+@admin.route('/admin/registrations/update', methods=['POST'])
+@token_required
+@swag_from(docs_dir + 'registrationlist.yaml')
+def regupdate(*args, **kwargs):
+    po = AdminRest.RegistrationUpdateRest()
+    return po.postWrapper(*args,**kwargs)
+
 @admin.route('/admin/traffic/get', methods=['POST'])
 @token_required
 @swag_from(docs_dir + 'registrationlist.yaml')
 def trafficlist(*args, **kwargs):
     po = AdminRest.TrafficGetRest()
+    return po.postWrapper(*args,**kwargs)
+
+@admin.route('/admin/plans/get', methods=['POST'])
+@token_required
+@swag_from(docs_dir + 'registrationlist.yaml')
+def planslist(*args, **kwargs):
+    po = AdminRest.PlansGetRest()
     return po.postWrapper(*args,**kwargs)

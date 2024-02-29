@@ -1,5 +1,7 @@
 import { combineReducers } from 'redux';
 import auth from './auth';
+import registrationAdminUpdate from './registrationAdminUpdate.js';
+import plansList from './plansList';
 import searchConfig from './searchConfig';
 import review from './review';
 import registrationsAdminList from './registrationsAdminList';
@@ -142,11 +144,13 @@ export default (history) =>
     corporationUsersSave,
     review,
     registrationsAdminList,
+    plansList,
     registerVerify,
     userDashboard,
     userDefaultCard,
     landingData,
     trafficData,
+    registrationAdminUpdate,
     searchConfig,
     mydayReceiptSave,
     userDocumentsUpdate,
