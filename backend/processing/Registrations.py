@@ -225,7 +225,7 @@ class RegisterProvider(RegistrationsBase):
         insid = 0
         OT = self.getOfficeTypes()
         PL = self.getPlans()
-        db.update("insert into office (name,office_type_id,email,cust_id) values (%s,%s,%s,%s)",
+        db.update("insert into office (name,office_type_id,email,cust_id,active) values (%s,%s,%s,%s,0)",
             (params['name'],OT['Chiropractor'],params['email'],params['cust_id'])
         )
         insid = db.query("select LAST_INSERT_ID()");

@@ -6,6 +6,16 @@ class ProcessingBase:
     def __init__(self):
         pass
         
+    def getProviderQueueStatus(self):
+        db = Query()
+        ret = {}
+        o = db.query("select id,name from provider_queue_status")
+        for x in o:
+            n = x['name']
+            i = x['id']
+            ret[n] = i
+        return ret 
+
     def getPlans(self):
         db = Query()
         ret = {}
