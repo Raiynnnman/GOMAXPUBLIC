@@ -274,7 +274,7 @@ class RegisterProvider(RegistrationsBase):
                 office_plans_id,price,quantity,description) 
             values 
                 (%s,%s,%s,%s)
-            """,(planid,PL[selplan]['price'],1,"%s Plan" % PL[selplan]['duration'])
+            """,(planid,PL[selplan]['price'],1,PL[selplan]['description'])
                 
         )
         if 'card' in params:

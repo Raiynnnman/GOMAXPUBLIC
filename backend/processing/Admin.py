@@ -495,6 +495,41 @@ class WelcomeEmail(AdminBase):
         m.defer(email,"Welcome to #PAIN","templates/mail/welcome.html",data)
         return ret
 
+class PlansList(AdminBase):
+
+    def __init__(self):
+        super().__init__()
+
+    def isDeferred(self):
+        return False
+
+    @check_admin
+    def execute(self, *args, **kwargs):
+        ret = []
+        job,user,off_id,params = self.getArgs(*args,**kwargs)
+        limit = 10000
+        offset = 0
+        if 'limit' in params:
+            limit = int(params['limit'])
+        if 'offset' in params:
+            offset = int(params['offset'])
+        db = Query()
+        OT = self.getOfficeTypes()
+        db.query(
+            """
+            select 
+                id,price,locations,duration,slot,
+                start_date,end_date,active,created,updated
+            from
+                pricing_data 
+            where
+                end_date > now()
+            order by
+                id
+            """
+        )
+        return ret
+
 class OfficeList(AdminBase):
 
     def __init__(self):
@@ -662,6 +697,23 @@ class CorporationUpdate(AdminBase):
         db.commit()        
         return ret
 
+class RegistrationUpdate(AdminBase):
+
+    def __init__(self):
+        super().__init__()
+
+    def isDeferred(self):
+        return False
+
+    @check_admin
+    def execute(self, *args, **kwargs):
+        ret = {}
+        job,user,off_id,params = self.getArgs(*args,**kwargs)
+        limit = 10000
+        offset = 0
+        db = Query()
+        return ret
+
 class RegistrationList(AdminBase):
 
     def __init__(self):
@@ -679,7 +731,8 @@ class RegistrationList(AdminBase):
         db = Query()
         o = db.query("""
             select 
-                pq.id,pqs.name,o.name,o.id as office_id,
+                pq.id,pqs.name,o.name,o.id as office_id,pqs.name as status,
+                pq.provider_queue_status_id,
                 JSON_ARRAYAGG(
                     JSON_OBJECT(
                         'id',oa.id,'addr1',oa.addr1,'addr2',oa.addr2,'phone',oa.phone,
@@ -710,7 +763,8 @@ class RegistrationList(AdminBase):
                     op.id,start_date,end_date,
                     JSON_ARRAYAGG(
                         JSON_OBJECT(
-                            'id',opi.id,'price',opi.price,'description',opi.description,'quantity',opi.quantity
+                            'id',opi.id,'price',opi.price,'description',
+                            opi.description,'quantity',opi.quantity
                         )
                     ) as items
                 from 
@@ -721,14 +775,43 @@ class RegistrationList(AdminBase):
                     office_id = %s 
             """,(x['office_id'],)
             )
-            x['items'] = []
+            x['plans'] = {}
             for j in t:
                 if j['id'] is None:
                     continue
-                p = j
-                p['items'] = json.loads(p['items'])
-                x['items'].append(p)
+                x['plans'] = j
+                x['plans']['items'] = json.loads(x['plans']['items'])
+            t = db.query("""
+                select 
+                    i.id,i.invoice_status_id,isi.name,i.total,
+                    JSON_ARRAYAGG(
+                        JSON_OBJECT(
+                            'id',ii.id,'price',ii.price,
+                            'description',ii.description,'quantity',ii.quantity
+                        )
+                    ) as items
+                
+                from
+                    invoices i,
+                    invoice_status isi,
+                    invoice_items ii
+                where
+                    i.invoice_status_id = isi.id and
+                    ii.invoices_id = i.id and
+                    i.office_id = %s
+                group by
+                    i.id
+                """,(x['office_id'],)
+            )
+            x['invoice'] = {}
+            for j in t:
+                if j['id'] is None:
+                    continue
+                x['invoice'] = j
+                x['invoice']['items'] = json.loads(x['invoice']['items'])
             k.append(x)
+        ret['config'] = {}
+        ret['config']['status'] = db.query("select id,name from provider_queue_status")
         ret['registrations'] = k
         return ret
 
