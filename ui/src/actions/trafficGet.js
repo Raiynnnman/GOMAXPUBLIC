@@ -27,7 +27,6 @@ export function receivingData(params,callback,args) {
     dispatch({
         type: RECEIVING_TRAFF_DATA
     });
-    console.log("params",params)
     const response = await axios.create({
             baseURL: apiBaseUrl(),
             withCredentials: true,

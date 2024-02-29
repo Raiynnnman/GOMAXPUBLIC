@@ -35,8 +35,6 @@ export function receivingData(params,callback,args) {
     dispatch({
         type: RECEIVING_REGPROV_DATA
     });
-    console.log(params);
-    console.log(callback);
     const response = await axios.create({
             baseURL: apiBaseUrl(),
             withCredentials: true,
@@ -46,7 +44,6 @@ export function receivingData(params,callback,args) {
             },
         }).post('/register/provider',params)
       .then((e) => { 
-          console.log(e)
           dispatch({
                 type: RECEIVED_REGPROV_DATA_SUCCESS,
                 payload: e.data.data
@@ -60,7 +57,6 @@ export function receivingData(params,callback,args) {
           }
       })
       .catch((e) => { 
-        console.log("err",e)
         handleError(e,callback,args);
       })
       .finally(() => { 
