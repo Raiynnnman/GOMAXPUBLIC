@@ -113,8 +113,6 @@ class PhysicianCard extends Component {
     } 
 
     render() {
-        console.log('s3',this.state);
-        console.log('p3',this.props);
         if (this.state.inMore > 0 && !this.props.moreSchedules.isReceiving)  {
             this.state.more[this.props.provider.phy_id] = true;
             this.state.inMore = 0;

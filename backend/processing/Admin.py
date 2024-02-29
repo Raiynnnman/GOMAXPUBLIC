@@ -518,7 +518,7 @@ class OfficeList(AdminBase):
         o = db.query(
             """
                 select 
-                    o.id,c.name,active,email,
+                    o.id,o.name,active,email,
                     JSON_ARRAYAGG(
                         JSON_OBJECT(
                             'id',oa.id,'addr1',addr1,'addr2',addr2,'phone',phone,
@@ -531,7 +531,7 @@ class OfficeList(AdminBase):
                 group by 
                     o.id
                 limit %s offset %s
-            """, (OT['Provider'],limit,offset)
+            """, (OT['Chiropractor'],limit,offset)
         )
         ret = []
         for x in o:

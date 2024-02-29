@@ -211,8 +211,6 @@ class Search extends Component {
             width: 325
             })
         }
-        console.log("p",this.props);
-        console.log("s",this.state);
         return (
         <>
             {(this.props.providerSearch && this.props.providerSearch.isReceiving) && (

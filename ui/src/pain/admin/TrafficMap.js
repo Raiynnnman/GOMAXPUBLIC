@@ -31,7 +31,6 @@ class MapContainer extends React.Component {
   }; 
 
   render() {
-    console.log("p1",this.props);
     return (
       <div style={{zIndex:1,borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}} className="map-container">
         <Row md="12">
@@ -45,7 +44,6 @@ class MapContainer extends React.Component {
                 >
                 {this.props.data.data.data.map((e) => {
                     if (e.category_id === 1) {
-                            console.log("coords",e.coords[0]);
                             return (
                               <Marker onClick={this.handleMarkerClick}
                                 data={e}

@@ -64,14 +64,12 @@ class Register extends Component {
         var t = this.props.landingData.data.roles.filter((g) => g.id === e)
         if (t.length < 1) { return; }
         this.state.provtype = t[0].name
-        console.log("pt",this.state.provtype);
         if (this.state.provtype === 'Chiropractor') { 
             window.location = "https://www.poundpain.com/book-online"
         } 
     } 
 
     register() { 
-        console.log("registering");
         var tosend = { 
             email: this.state.email,
             first: this.state.first,
@@ -144,8 +142,6 @@ class Register extends Component {
 
 
     render() {
-        console.log("p",this.props);
-        console.log("s",this.state);
         return (
         <>
             {(this.props.registerUser && this.props.registerUser.isReceiving) && (

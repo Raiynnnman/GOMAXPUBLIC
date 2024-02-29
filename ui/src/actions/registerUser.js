@@ -27,7 +27,6 @@ export function receivingData(params,callback,args) {
     dispatch({
         type: RECEIVING_REG_DATA
     });
-    console.log("here",params);
     const response = await axios.create({
             baseURL: apiBaseUrl(),
             withCredentials: true,
@@ -43,10 +42,8 @@ export function receivingData(params,callback,args) {
             });
           if (callback) {
             if (!e.data.data.success) {
-                console.log("h");
                 callback(e.data.data,args);
             } else {
-                console.log("y");
                 callback(null,args,e.data.data);
             }
           }
