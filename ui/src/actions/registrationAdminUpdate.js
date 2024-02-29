@@ -42,7 +42,7 @@ export function receivingData(params,callback,args) {
               Accept: "application/json",
               "Content-Type": "application/json",
             },
-        }).post('/admin/registration/update',params)
+        }).post('/admin/registrations/update',params)
       .then((e) => { 
           dispatch({
                 type: RECEIVED_REGUP_DATA_SUCCESS,

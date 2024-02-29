@@ -25,30 +25,30 @@ db = Query()
 
 l = db.query("""
     select 
-        u.id,u.first_name,u.last_name,u.email,u.phone
+        o.name,o.id,o.email
     from 
-        users u
+        office o
     where 
-        u.id in (
-            select user_id from entitlements e,user_entitlements eu
-            where eu.entitlements_id=e.id and e.name='Customer'
-        ) and
-        u.stripe_customer_id is null
+        o.active = 1 and
+        o.stripe_cust_id is null
     """
 )
 
 for x in l:
-    user_id = x['id']
+    uuid = encryption.getSHA256("%s-%s-%s" % (x['id'],x['name'],x['email']))
+    email = "pain-%s@poundpain.com" % (uuid[:10],)
     try:
         r = stripe.Customer.create(
-            description="User %s" % x['email'],
-            email=x['email'],
-            metadata={'user_id':user_id},
-            phone=x['phone'],
-            name=x['first_name'] + " " + x['last_name']
+            description="Customer %s-%s" % (x['name'],x['id']),
+            email=email,
+            metadata={'office_id':x['id']},
+            name="%s-%s" % (x['name'],x['id'])
         )
-        db.update("update users set stripe_customer_id=%s where id=%s",
-            (r['id'],user_id)
+        db.update("update office set stripe_cust_id=%s where id=%s",
+            (r['id'],x['id'])
+        )
+        print("update office set stripe_cust_id=%s where id=%s" % 
+            (r['id'],x['id'])
         )
         db.commit()
     except Exception as e:

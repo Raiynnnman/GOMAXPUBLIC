@@ -6,19 +6,10 @@ if [ -f stripe/__init__c ]; then
 fi
 
 T="stripe/stripe_customers \
-    stripe/stripe_accounts_consultants \
-    stripe/stripe_accounts_offices \
-    stripe/stripe_tos \
     stripe/generate_invoices \
     stripe/invoice_submit \
     stripe/stripe_invoice_status \
-    stripe/stripe_progress_invoice \
-    stripe/office_fee_geninvoice \
-    stripe/consultant_fee_geninvoice \
-    stripe/office_transfer_funds \
-    stripe/consultant_transfer_funds \
-    stripe/office_payout_funds \
-    stripe/consultant_payout_funds \
+    stripe/stripe_progress_invoice 
 "
 
 for x in $T; do

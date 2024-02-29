@@ -709,9 +709,92 @@ class RegistrationUpdate(AdminBase):
     def execute(self, *args, **kwargs):
         ret = {}
         job,user,off_id,params = self.getArgs(*args,**kwargs)
-        limit = 10000
-        offset = 0
+        print(params)
         db = Query()
+        PQS = self.getProviderQueueStatus()
+        INV = self.getInvoiceIDs()
+        # TODO: Check params here
+        email = params['email']
+        INSERT = False
+        insid = 0
+        offid = 0
+        userid = 0
+        l = db.query("""
+            select 
+                pq.id,pqs.name,o.name,o.id as office_id,pqs.name as status,
+                pq.provider_queue_status_id,
+                JSON_ARRAYAGG(
+                    JSON_OBJECT(
+                        'id',oa.id,'addr1',oa.addr1,'addr2',oa.addr2,'phone',oa.phone,
+                        'city',oa.city,'state',oa.state,'zipcode',oa.zipcode)
+                ) as addr,u.first_name,u.last_name,u.email,u.phone,u.id as uid
+            from
+                provider_queue pq,
+                provider_queue_status pqs,
+                office o,
+                office_addresses oa,
+                users u,
+                office_user ou
+            where
+                pq.provider_queue_status_id = pqs.id and
+                pq.office_id = o.id and
+                oa.office_id = o.id and
+                ou.office_id = o.id and
+                ou.user_id = u.id and
+                o.id = %s
+            group by 
+                o.id
+            """,(params['office_id'],)
+        )
+        offid = params['office_id']
+        for x in l:
+            insid = x['id']
+            userid = x['uid']
+        if insid == 0:
+            pass
+        else:
+            db.update("""
+            update users set 
+                email = %s,first_name=%s,last_name=%s,phone=%s
+            where
+                id = %s
+                """,(
+                    params['email'],params['first_name'],
+                    params['last_name'],params['phone'],
+                    userid
+                    )
+            )
+            print(params['initial_payment'])
+            db.update("""
+                update provider_queue set 
+                    provider_queue_status_id=%s,
+                    initial_payment=%s
+                where 
+                    id = %s
+                """,(params['status'],params['initial_payment'],insid)
+            )
+        invid = params['invoice_id']
+        db.update("""
+            delete from invoice_items where invoices_id = %s
+            """,(invid,)
+        )
+        for y in params['invoice_items']:
+            db.update("""
+                insert into invoice_items (invoices_id,description,price,quantity)
+                    values (%s,%s,%s,%s)
+                """,(invid,y['description'],y['price'],y['quantity'])
+            )
+        if params['status'] == PQS['APPROVED']:
+            db.update("""
+                update office set active = 1 where id = %s
+                """,(offid,)
+            )
+            db.update("""
+                update invoices set status = %s where id = %s
+            """,(INV['APPROVED'],invid)
+            )
+        db.commit()
+        # TODO: Send welcome mail here
         return ret
 
 class RegistrationList(AdminBase):
@@ -729,6 +812,7 @@ class RegistrationList(AdminBase):
         limit = 10000
         offset = 0
         db = Query()
+        PQS = self.getProviderQueueStatus()
         o = db.query("""
             select 
                 pq.id,pqs.name,o.name,o.id as office_id,pqs.name as status,
@@ -750,10 +834,11 @@ class RegistrationList(AdminBase):
                 pq.office_id = o.id and
                 oa.office_id = o.id and
                 ou.office_id = o.id and
-                ou.user_id = u.id
+                ou.user_id = u.id and
+                pq.provider_queue_status_id <> %s
             group by 
                 o.id
-        """
+        """,(PQS['APPROVED'],)
         )
         k = [] 
         for x in o:

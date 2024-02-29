@@ -144,6 +144,7 @@ class SearchGet(SearchBase):
                 ou.office_id = oa.office_id and 
                 oa.office_id = o.id and
                 st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192 < 50 and
+                o.active = 1 and 
                 o.office_type_id = %s
             group by 
                 u.id

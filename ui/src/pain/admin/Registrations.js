@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { toast } from 'react-toastify';
+import Select from 'react-select';
 import moment from 'moment';
 import { Badge } from 'reactstrap';
 import { Button } from 'reactstrap'; 
@@ -16,6 +18,7 @@ import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import { getRegistrations } from '../../actions/registrationsAdminList';
 import { getPlansList } from '../../actions/plansList';
+import { registrationAdminUpdate } from '../../actions/registrationAdminUpdate';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 
@@ -28,14 +31,40 @@ class Registrations extends Component {
             subTab: "plans",
         }
         this.close = this.close.bind(this);
+        this.onStatusChange = this.onStatusChange.bind(this);
         this.save = this.save.bind(this);
         this.edit = this.edit.bind(this);
         this.addInvoiceRow = this.addInvoiceRow.bind(this);
         this.toggleTab = this.toggleTab.bind(this);
         this.toggleSubTab = this.toggleSubTab.bind(this);
+        this.updatePhone = this.updatePhone.bind(this);
+        this.updateEmail = this.updateEmail.bind(this);
+        this.updateFirst = this.updateFirst.bind(this);
+        this.updateInitial = this.updateInitial.bind(this);
+        this.updateLast = this.updateLast.bind(this);
     } 
 
     componentWillReceiveProps(p) { 
+    }
+    updateFirst(e) { 
+        this.state.selected.first_name = e.target.value;
+        this.setState(this.state);
+    }
+    updateInitial(e) { 
+        this.state.selected.initial_payment = e.target.value;
+        this.setState(this.state);
+    }
+    updateLast(e) { 
+        this.state.selected.last_name = e.target.value;
+        this.setState(this.state);
+    }
+    updatePhone(e) { 
+        this.state.selected.phone = e.target.value;
+        this.setState(this.state);
+    }
+    updateEmail(e) { 
+        this.state.selected.email = e.target.value;
+        this.setState(this.state);
     }
 
     componentDidMount() {
@@ -51,6 +80,34 @@ class Registrations extends Component {
         this.setState(this.state);
     } 
     save() { 
+        var tosend = { 
+            email:this.state.selected.email,
+            first_name:this.state.selected.first_name,
+            initial_payment:this.state.selected.initial_payment,
+            last_name:this.state.selected.last_name,
+            phone: this.state.selected.phone,
+            office_id: this.state.selected.office_id,
+            status: this.state.selected.provider_queue_status_id,
+            invoice_id:this.state.selected.invoice.id,
+            invoice_items:this.state.selected.invoice.items
+        } 
+        this.props.dispatch(registrationAdminUpdate(tosend,function(err,args) { 
+            args.props.dispatch(getRegistrations({page:0,limit:10000},function(err,args) { 
+              toast.success('Successfully saved registration.',
+                {
+                    position:"top-right",
+                    autoClose:3000,
+                    hideProgressBar:true
+                }
+              );
+              args.close()
+            },args))
+        },this));
+    } 
+    onStatusChange(e) { 
+        console.log(e)
+        this.state.selected.provider_queue_status_id = e.value;
+        this.setState(this.state);
     } 
     close() { 
         this.state.selected = null;
@@ -260,6 +317,9 @@ class Registrations extends Component {
             {(this.props.plansList && this.props.plansList.isReceiving) && (
                 <AppSpinner/>
             )}
+            {(this.props.registrationAdminUpdate && this.props.registrationAdminUpdate.isReceiving) && (
+                <AppSpinner/>
+            )}
             {(this.props.registrationAdminList && this.props.registrationAdminList.isReceiving) && (
                 <AppSpinner/>
             )}
@@ -274,6 +334,9 @@ class Registrations extends Component {
                         </NavItem>
                     </Nav>
                     <TabContent className='mb-lg' activeTab={this.state.activeTab}>
+                        {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
+                          this.props.registrationsAdminList.data.registrations && 
+                          this.props.registrationsAdminList.data.registrations.length > 0)&& ( 
                         <TabPane tabId="registrations">
                             {(this.state.selected === null) && (
                             <Row md="12" style={{marginTop:10}}>
@@ -284,7 +347,7 @@ class Registrations extends Component {
                                       this.props.registrationsAdminList.data.registrations.length > 0)&& ( 
                                     <BootstrapTable 
                                         keyField='id' data={this.props.registrationsAdminList.data.registrations} 
-                                        columns={regheads} pagination={ paginationFactory()}>
+                                        columns={regheads}>
                                     </BootstrapTable>
                                     )}
                                     {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
@@ -299,29 +362,81 @@ class Registrations extends Component {
                             {(this.state.selected !== null) && (
                             <Row md="12" style={{marginTop:10}}>
                                 <Col md="12">
-                                    {fields.map((e) => { 
-                                        return (
-                                            <Row md="12">
-                                                <Col md="12">
-                                                  <FormGroup row>
-                                                    <Label for="normal-field" md={1} className="text-md-right">
-                                                      {e.name}:
-                                                    </Label>
-                                                    <Col md={5}>
-                                                      {(e.name !== 'Comments') && (
-                                                        <Input type="text" id="normal-field" 
-                                                        placeholder={e.name} value={this.state.selected[e.value]}/>
-                                                      )} 
-                                                      {(e.name === 'Comments') && (
-                                                        <Input type="textarea" rows={3} id="normal-field" 
-                                                        placeholder={e.name} value={this.state.selected[e.value]}/>
-                                                      )} 
-                                                    </Col>
-                                                  </FormGroup>
-                                                </Col>
-                                            </Row>
-                                        )
-                                    })}
+                                    <Row md="12">
+                                        <Col md="12" style={{zIndex:9999}}>
+                                          <FormGroup row>
+                                            <Label for="normal-field" md={1} className="text-md-right">
+                                              Email
+                                            </Label>
+                                            <Col md={5}>
+                                                <Input type="text" id="normal-field" onChange={this.updateEmail}
+                                                placeholder="Email" value={this.state.selected.email}/>
+                                            </Col>
+                                          </FormGroup>
+                                          <FormGroup row>
+                                            <Label for="normal-field" md={1} className="text-md-right">
+                                              First
+                                            </Label>
+                                            <Col md={5}>
+                                                <Input type="text" id="normal-field" onChange={this.updateFirst}
+                                                placeholder="First" value={this.state.selected.first_name}/>
+                                            </Col>
+                                          </FormGroup>
+                                          <FormGroup row>
+                                            <Label for="normal-field" md={1} className="text-md-right">
+                                              Last
+                                            </Label>
+                                            <Col md={5}>
+                                                <Input type="text" id="normal-field" onChange={this.updateLast}
+                                                placeholder="Last" value={this.state.selected.last_name}/>
+                                            </Col>
+                                          </FormGroup>
+                                          <FormGroup row>
+                                            <Label for="normal-field" md={1} className="text-md-right">
+                                              Phone
+                                            </Label>
+                                            <Col md={5}>
+                                                <Input type="text" id="normal-field" onChange={this.updatePhone}
+                                                placeholder='Phone' value={this.state.selected.phone}/>
+                                            </Col>
+                                          </FormGroup>
+                                          <FormGroup row>
+                                            <Label for="normal-field" md={1} className="text-md-right">
+                                              Initial Payment
+                                            </Label>
+                                            <Col md={5}>
+                                                <Input type="text" id="normal-field" onChange={this.updateInitial}
+                                                placeholder='$' value={this.state.selected.initial_payment}/>
+                                            </Col>
+                                          </FormGroup>
+                                          <FormGroup row>
+                                            <Label for="normal-field" md={1} className="text-md-right">
+                                              Status
+                                            </Label>
+                                            <Col md={5}>
+                                              <Select
+                                                  closeMenuOnSelect={true}
+                                                  isSearchable={false}
+                                                  onChange={this.onStatusChange}
+                                                  value={{
+                                                    label:
+                                                        this.props.registrationsAdminList.data.config.status.filter((g) => 
+                                                            this.state.selected.provider_queue_status_id == g.id
+                                                    )[0].name
+                                                  }}
+                                                  options={this.props.registrationsAdminList.data.config.status.map((g) => { 
+                                                    return (
+                                                        { 
+                                                        label: g.name,
+                                                        value: g.id
+                                                        }
+                                                    )
+                                                  })}
+                                                />
+                                            </Col>
+                                          </FormGroup>
+                                        </Col>
+                                    </Row>
                                     <Row md="12">
                                         <Col md="12">
                                             <Nav tabs  className={`${s.coloredNav}`} style={{backgroundColor:"#e8ecec"}}>
@@ -388,6 +503,7 @@ class Registrations extends Component {
                             </Row>
                             )}
                         </TabPane>
+                        )}
                     </TabContent>
                 </Col>                
             </Row>
@@ -400,6 +516,7 @@ function mapStateToProps(store) {
     return {
         currentUser: store.auth.currentUser,
         registrationsAdminList: store.registrationsAdminList,
+        registrationAdminUpdate: store.registrationAdminUpdate,
         plansList: store.plansList
     }
 }
