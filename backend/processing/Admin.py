@@ -955,7 +955,9 @@ class TrafficGet(AdminBase):
         ret['config']['avail'] = l
         ret['config']['avail'].insert(0,{'id':0,'day':'All'})
         l = db.query("""
-            select count(id) as cnt,zipcode as zipcode from traffic_incidents group by zipcode order by zipcode desc
+            select count(id) as cnt,zipcode as zipcode 
+            from traffic_incidents 
+            group by zipcode order by zipcode desc
             """)
         ret['config']['locations'] = l
         ret['config']['locations'].insert(0,{'id':0,'zipcode':'All'})
@@ -964,6 +966,8 @@ class TrafficGet(AdminBase):
             select id,name from traffic_categories where category_id = 1
             """)
         ret['config']['categories'] = l
+        if 'categories' not in params or len(params['categories']) == 0:
+            return ret
         #Incase we need to do time offsets
         #l = db.query("""
         #    select code1 from position_zip where zipcode = %s
@@ -1035,7 +1039,7 @@ class TrafficGet(AdminBase):
             sqlp.append(params['zipcode'])
         if 'categories' in params:
             q += " ti.traffic_categories_id in (%s) and " 
-            sqlp.append(params['categories'])
+            sqlp.append(",".join(map(str,params['categories'])))
         q += """
             1 = 1
             group by
