@@ -41,6 +41,7 @@ l = db.query("""
     """
 )
 
+CNT = 0
 for x in l:
     r = stripe.Customer.retrieve(x['stripe_cust_id'])
     CHANGE = False
@@ -52,6 +53,7 @@ for x in l:
     if r['phone'] != x['phone']:
         CHANGE = True
     if CHANGE:
+        CNT += 1
         print("Modifying customer %s" % (x['id'],))
         stripe.Customer.modify(
             x['stripe_cust_id'],
@@ -59,3 +61,4 @@ for x in l:
             email=x['email'],
             phone=x['phone']
         )
+print("Processed %s records" % CNT)

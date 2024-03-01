@@ -47,7 +47,9 @@ l = db.query("""
     group by
         op.id
     """)
+CNT = 0
 for x in l:
+    CNT += 1
     print(x)
     x['items'] = json.loads(x['items'])
     o = db.update("""
@@ -95,3 +97,4 @@ for x in l:
     db.commit()
 
 
+print("Processed %s records" % CNT)

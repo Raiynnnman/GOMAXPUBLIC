@@ -24,8 +24,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--dryrun', dest="dryrun", action="store_true")
 args = parser.parse_args()
 
-APT = getIDs.getAppointStatus()
 INV = getIDs.getInvoiceIDs()
+PQS = getIDs.getProviderQueueStatus()
 db = Query()
 l = db.query("""
     select 
@@ -49,18 +49,17 @@ l = db.query("""
         pq.office_id = op.office_id and 
         op.end_date > now() and
         op.office_id in (select office_id from invoices) and
-        pq.initial_payment > 0
+        pq.initial_payment > 0 and
+        pq.provider_queue_status_id = %s
     group by
         op.id
-    """)
+    """,(PQS['APPROVED'],)
+    )
 
 for x in l:
-    print(x)
     x['items'] = json.loads(x['items'])
     total_val = x['price']*x['duration']
-    print(total_val)
     months = int(x['initial_payment'] / x['price'])
-    print(months)
     for t in range(0,months):
         j = db.query("""
             select
