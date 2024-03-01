@@ -67,7 +67,6 @@ for x in q:
             month(billing_period) = month(now())
         """,(x['office_id'],)
     )
-    print(o)
     HAVE = False
     for t in o:
         HAVE=True

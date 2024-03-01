@@ -217,7 +217,7 @@ class RegisterProvider extends Component {
             },
             {
                 dataField:'phone',
-                width:'10%',
+                width:'15%',
                 text:'Phone'
             },
             {
@@ -233,7 +233,7 @@ class RegisterProvider extends Component {
             {
                 dataField:'state',
                 width:'5%',
-                text:'State'
+                text:'FL'
             },
             {
                 dataField:'zipcode',
@@ -349,7 +349,7 @@ class RegisterProvider extends Component {
                                             {(this.state.selectedAddrId !== null && this.state.selectedAddrId === e.id) && ( 
                                             <td style={{width:100}}>
                                                 <Button onClick={() => this.saveRow()} 
-                                                    style={{marginRight:5,height:35}} color="primary"><SaveIcon/></Button>
+                                                    style={{marginRight:10,height:35}} color="primary"><SaveIcon/></Button>
                                             </td>
                                             )}
                                         </tr>

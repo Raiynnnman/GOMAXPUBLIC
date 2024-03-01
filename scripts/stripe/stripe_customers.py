@@ -34,9 +34,11 @@ l = db.query("""
     """
 )
 
+CNT = 0
 for x in l:
     uuid = encryption.getSHA256("%s-%s-%s" % (x['id'],x['name'],x['email']))
     email = "pain-%s@poundpain.com" % (uuid[:10],)
+    CNT += 1
     try:
         r = stripe.Customer.create(
             description="Customer %s-%s" % (x['name'],x['id']),
@@ -53,3 +55,5 @@ for x in l:
         db.commit()
     except Exception as e:
         print("ERROR: %s has an issue: %s" % (x['email'],str(e)))
+
+print("Processed %s records" % CNT)
