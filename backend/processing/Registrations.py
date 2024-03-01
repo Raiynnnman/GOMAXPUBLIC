@@ -264,8 +264,9 @@ class RegisterProvider(RegistrationsBase):
         )
         selplan = int(params['plan'])
         db.update("""
-            insert into office_plans (office_id,start_date,end_date) values (%s,now(),date_add(now(),INTERVAL %s MONTH))
-            """,(insid,PL[selplan]['duration'])
+            insert into office_plans (office_id,start_date,end_date,pricing_data_id) 
+                values (%s,now(),date_add(now(),INTERVAL %s MONTH),%s)
+            """,(insid,PL[selplan]['duration'],selplan)
         )
         planid = db.query("select LAST_INSERT_ID()");
         planid = planid[0]['LAST_INSERT_ID()']
