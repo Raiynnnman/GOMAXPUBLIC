@@ -29,43 +29,34 @@ INV = getIDs.getInvoiceIDs()
 db = Query()
 q = db.query("""
     select
-        ab.id,pss.physician_schedule_id,u.id as user_id,
-        b.name as bundle_name,u.first_name as uname,u.email,
-        u.last_name,u.stripe_customer_id,ps.id as appt_id,
-        o.name as office_name,o.id as office_id,b.id as bundle_id,
-        json_arrayagg(
-            json_object(
-                'id',bi.id,'code',bi.code,
-                'assigned',bi.user_id,
-                'desc',bi.description,
-                'office_id', bi.office_id,
-                'price', round(bi.price,2),
-                'quantity', bi.quantity
+        office_id,op.id,start_date,end_date,
+        JSON_ARRAYAGG(
+            JSON_OBJECT(
+                'id',opi.id,'price',opi.price,'description',
+                opi.description,'quantity',opi.quantity
             )
-        ) as items,o.dhd_markup,b.markup
+        ) as items
+        
     from 
-        appt_bundle ab,bundle_items bi,
-        physician_schedule_scheduled pss,
-        physician_schedule ps,
-        bundle b,users u,office o,office_user ou
+        office_plans op,
+        office_plan_items opi,
+        office o
     where
-        ps.id = pss.physician_schedule_id and
-        ou.user_id = ps.user_id and 
-        o.id = ou.office_id and
-        o.id = pss.office_id and
-        pss.user_id = u.id and 
-        b.id=bi.bundle_id and 
-        ab.physician_schedule_scheduled_id = pss.physician_schedule_id and
-        bi.bundle_id=ab.bundle_id and
-        pss.appt_status_id = %s 
-    group by 
-        pss.physician_schedule_id
-    """,(APT['APPOINTMENT_SCHEDULED'],)
+        1 = 1  and
+        o.id = op.office_id and
+        o.active = 1 and
+        date(op.expires) > now() and
+        opi.office_plans_id = op.id 
+    """
 )
 
 for x in q:
-    print("Processing invoice for %s" % x['appt_id'])
+    print(json.dumps(x,indent=4))
     x['items'] = json.loads(x['items'])
+
+
+
+    continue
     insid = 0
     o = db.query("""
         select id from invoices where 

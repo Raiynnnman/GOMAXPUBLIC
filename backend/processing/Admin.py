@@ -764,7 +764,6 @@ class RegistrationUpdate(AdminBase):
                     userid
                     )
             )
-            print(params['initial_payment'])
             db.update("""
                 update provider_queue set 
                     provider_queue_status_id=%s,
@@ -779,11 +778,20 @@ class RegistrationUpdate(AdminBase):
             """,(invid,)
         )
         for y in params['invoice_items']:
-            db.update("""
-                insert into invoice_items (invoices_id,description,price,quantity)
-                    values (%s,%s,%s,%s)
-                """,(invid,y['description'],y['price'],y['quantity'])
-            )
+            if params['initial_payment'] > 0:
+                # If there is an initial payment, charge that upfront
+                db.update("""
+                    insert into invoice_items (invoices_id,description,price,quantity)
+                        values (%s,%s,%s,%s)
+                    """,(invid,'Subscription Start Payment',params['initial_payment'],1)
+                )
+                break
+            else:
+                db.update("""
+                    insert into invoice_items (invoices_id,description,price,quantity)
+                        values (%s,%s,%s,%s)
+                    """,(invid,y['description'],y['price'],y['quantity'])
+                )
         if params['status'] == PQS['APPROVED']:
             db.update("""
                 update office set active = 1 where id = %s
