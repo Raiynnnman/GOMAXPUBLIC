@@ -39,6 +39,7 @@ inv = db.query("""
             left outer join user_cards uc on uc.user_id=i.user_id
          where 
             o.id = i.office_id and 
+            i.billing_period < now() and
             invoice_status_id=%s
     """,(INV['APPROVED'],)
     )
@@ -58,8 +59,8 @@ for x in inv:
     cards = db.query("""
         select
             uc.id,uc.card_id,uc.is_default,uc.payment_id
-        from user_cards uc where user_id=%s
-        """,(x['user_id'],)
+        from office_cards uc where office_id=%s
+        """,(x['office_id'],)
     )
     card_id = None
     for g in cards:

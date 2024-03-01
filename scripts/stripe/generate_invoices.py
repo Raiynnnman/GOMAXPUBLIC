@@ -63,7 +63,8 @@ for x in q:
             invoices 
         where 
             office_id = %s and 
-            month(created) = month(now())
+            year(billing_period) = year(now()) and
+            month(billing_period) = month(now())
         """,(x['office_id'],)
     )
     print(o)
@@ -73,30 +74,11 @@ for x in q:
     if HAVE:
         print("Office %s already has an invoice for this month, skipping"%x['office_id'])
         continue
-    continue
     insid = 0
-    o = db.query("""
-        select id from invoices where 
-            physician_schedule_id = %s
-        """,(x['appt_id'],)
-    )
-    if len(o) > 0:
-        insid=o[0]['id']
-        # Something went wrong, regenerate
-        db.update("delete from stripe_invoice_status where invoices_id = %s",(insid,))
-        db.commit()
-        db.update("delete from invoice_items where invoices_id = %s",(insid,))
-        db.commit()
-        db.update("delete from invoice_history where invoices_id = %s",(insid,))
-        db.commit()
-        db.update("delete from invoices_comment where invoices_id = %s",(insid,))
-        db.commit()
-        db.update("delete from invoices where id = %s",(insid,))
-        db.commit()
     db.update("""
-    insert into invoices(office_id,physician_schedule_id,invoice_status_id) values
-        (%s,%s,%s)
-        """,(x['office_id'],x['appt_id'],INV['CREATED'])
+    insert into invoices(office_id,physician_schedule_id,invoice_status_id,billing_period) values
+        (%s,%s,%s,date(%s))
+        """,(x['office_id'],x['appt_id'],INV['CREATED'],x['start_date'])
     )
     insid = db.query("select LAST_INSERT_ID()")
     insid = insid[0]['LAST_INSERT_ID()']

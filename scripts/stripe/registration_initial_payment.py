@@ -76,7 +76,7 @@ for x in l:
             o = db.update("""
                 insert into invoices (office_id,invoice_status_id,office_plans_id,billing_period) 
                     values (%s,%s,%s,date_add(%s,interval %s month))
-                """,(x['office_id'],INV['PAID'],x['id'],x['start_date'],t)
+                """,(x['office_id'],INV['CREATED'],x['id'],x['start_date'],t)
             )
             insid = db.query("select LAST_INSERT_ID()")
             insid = insid[0]['LAST_INSERT_ID()']
