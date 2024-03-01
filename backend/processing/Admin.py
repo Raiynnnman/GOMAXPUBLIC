@@ -1024,7 +1024,7 @@ class TrafficGet(AdminBase):
             where
                 1 = 1 and
                 tc.traffic_incidents_id = ti.id and
-                ti.traffic_categories_id = tcat.category_id and
+                ti.traffic_categories_id = tcat.id and
         """
         sqlp = []
         if 'date' in params:
