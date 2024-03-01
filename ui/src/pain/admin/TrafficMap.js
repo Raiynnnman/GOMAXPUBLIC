@@ -43,7 +43,7 @@ class MapContainer extends React.Component {
                   onClick={this.handleMapClick}
                 >
                 {this.props.data.data.data.map((e) => {
-                    if (e.category_id === 1) {
+                    if (e.category_id === 2) {
                             return (
                               <Marker onClick={this.handleMarkerClick}
                                 data={e}

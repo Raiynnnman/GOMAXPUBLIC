@@ -46,7 +46,20 @@ class Map extends Component {
             changed = true;
         } 
         if (changed) { 
-            this.props.dispatch(getTraffic({date:this.state.dateSelected,zipcode:this.state.zipSelected}))
+            var t = [];
+            var c = 0;
+            for (c = 0; c < this.state.categories.length;c++) { 
+                t.push(this.state.categories[c].id);
+            } 
+            this.props.dispatch(
+                getTraffic(
+                    {
+                        date:this.state.dateSelected,
+                        categories:t,
+                        zipcode:this.state.zipSelected
+                    }
+                )
+            )
         } 
     }
 
@@ -58,7 +71,7 @@ class Map extends Component {
         t = [];
         var c = 0;
         for (c = 0; c < this.state.categories.length;c++) { 
-            t.append(this.state.categories[c].id);
+            t.push(this.state.categories[c].id);
         } 
         this.props.dispatch(getTraffic({categories:t,date:this.state.dateSelected,zipcode:this.state.zipSelected}))
     } 
