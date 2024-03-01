@@ -231,7 +231,7 @@ class Search extends Component {
             <>
             <Row md="12">
                 <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'space-evenly'}}>
-                        <img src="/poundpain.png" width="133px" height="76px"/>
+                        <img src="/painlogo.png" width="200px" height="200px"/>
                         <font style={{textAlign:"center", fontSize:window.innerWidth < 1024 ? 15 : 30}}>#PAIN</font>
                         <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                         <Button color="primary"onClick={this.login}>Login</Button>

@@ -233,7 +233,7 @@ class RegisterProvider extends Component {
             {
                 dataField:'state',
                 width:'5%',
-                text:'FL'
+                text:'State'
             },
             {
                 dataField:'zipcode',
@@ -336,7 +336,7 @@ class RegisterProvider extends Component {
                                             </td>
                                             <td style={{width:100}}>
                                                 <input className="form-control no-border" value={e.state} 
-                                                    onChange={this.officeStateChange} required state="state" placeholder="State" />
+                                                    onChange={this.officeStateChange} required state="state" placeholder="FL" />
                                             </td>
                                             <td style={{width:100}}>
                                                 <input className="form-control no-border" value={e.zip} 
