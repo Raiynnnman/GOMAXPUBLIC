@@ -30,12 +30,15 @@ db = Query()
 
 inv = db.query("""
         select 
-            i.id,u.stripe_customer_id,u.id as user_id,i.office_id as office_id
+            i.id,o.stripe_cust_id,i.office_id as office_id,
+            u.id as user_id
         from 
             invoices i
-            left join users u on i.user_id = u.id
+            left join office o on i.office_id = o.id 
+            left join users u on o.user_id = u.id
             left outer join user_cards uc on uc.user_id=i.user_id
          where 
+            o.id = i.office_id and 
             invoice_status_id=%s
     """,(INV['APPROVED'],)
     )
@@ -48,10 +51,10 @@ for x in inv:
         select description,price,code,quantity from invoice_items where invoices_id=%s
         """,(x['id'],)
     )
-    if x['stripe_customer_id'] is None:
+    if x['stripe_cust_id'] is None:
         print("Failed to move invoice (%s), customer has no stripe id" % (x['id'],))
         continue
-    cust_id = x['stripe_customer_id']
+    cust_id = x['stripe_cust_id']
     cards = db.query("""
         select
             uc.id,uc.card_id,uc.is_default,uc.payment_id
@@ -83,9 +86,7 @@ for x in inv:
             collection_method=mode
             )
     for i in items:
-        desc = "%s - %s" % (i['code'],i['description'])
-        if i['code'] is None:
-            desc = "%s" % (i['description'],)
+        desc = "%s" % (i['description'],)
         stripe.InvoiceItem.create(
             customer=cust_id,
             description=desc,

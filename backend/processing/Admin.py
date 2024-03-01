@@ -316,11 +316,15 @@ class InvoicesUpdate(AdminBase):
                     (%s,%s,%s)
                     """,(user['user_id'],params['id'],bb2)
                 )
+                db.update("""
+                    insert into invoice_history (invoices_id,user_id,text) values
+                        (%s,%s,%s)""",(params['id'],user['id'],"ADDED_COMMENT")
+                )
             db.commit()
         if 'invoice_status_id' in params:
             db.update("""
                 update invoices set updated=now(),invoice_status_id=%s where id=%s
-                """,(params['id'],)
+                """,(params['invoice_status_id'],params['id'])
              )
         db.commit()
         return ret
@@ -351,9 +355,10 @@ class InvoicesList(AdminBase):
             select
                 i.id,ist.name as invoice_status,i.physician_schedule_id,
                 i.nextcheck,stripe_invoice_number as number,
-                u.first_name,u.last_name,ps.day,ps.time,
-                stripe_invoice_number, from_unixtime(due) as due,u.id as user_id,
-                o.id as office_id,o.name as office_name,u.email,u.phone,
+                stripe_invoice_number, 
+                from_unixtime(due) as due,
+                o.id as office_id,o.name as office_name,o.email,
+                u.first_name,u.last_name,u.phone,
                 json_arrayagg(
                     json_object(
                         'id',ii.id,'code',ii.code,
@@ -362,22 +367,18 @@ class InvoicesList(AdminBase):
                         'price', round(ii.price,2),
                         'quantity', ii.quantity
                     )
-                ) as items,i.invoice_status_id,
+                ) as items,i.invoice_status_id,i.created,i.updated,
                 round(i.total,2)
             from
                 invoices i,
                 invoice_items ii,
-                users u,
                 stripe_invoice_status sis,
-                physician_schedule ps,
-                physician_schedule_scheduled pss,
+                users u,
                 office o,
                 invoice_status ist
             where
-                u.id = i.user_id and
-                pss.physician_schedule_id = ps.id and
-                i.physician_schedule_id = ps.id and
                 i.id = ii.invoices_id and
+                o.user_id = u.id and
                 o.id = i.office_id and
                 sis.invoices_id = i.id and 
                 ist.id = i.invoice_status_id 
@@ -391,20 +392,20 @@ class InvoicesList(AdminBase):
         for x in o:
             x['items'] = json.loads(x['items'])
             x['assignee'] = db.query("""
-                    select 
+                    select
                         u.id,u.first_name,u.last_name
                     from
                         office_user ou, users u
-                    where 
-                        ou.user_id=u.id    
+                    where
+                        ou.user_id=u.id
                         and office_id=%s
                     UNION
-                    select 
-                        u.id,u.first_name,u.last_name 
-                    from users u 
-                    where id in 
-                    (select user_id 
-                        from user_entitlements ue,entitlements e 
+                    select
+                        u.id,u.first_name,u.last_name
+                    from users u
+                    where id in
+                    (select user_id
+                        from user_entitlements ue,entitlements e
                         where ue.entitlements_id=e.id and e.name='Admin')
                     """,(x['office_id'],)
             )
@@ -422,11 +423,6 @@ class InvoicesList(AdminBase):
             )
             if len(x['stripe']) > 0:
                 x['stripe'] = x['stripe'][0]
-            x['address'] = db.query("""
-                select addr1,addr2,phone,city,state,zipcode from user_addresses
-                where user_id=%s
-                """,(x['user_id'],)
-            )
             x['comments'] = []
             comms = db.query("""
                 select 
@@ -709,7 +705,6 @@ class RegistrationUpdate(AdminBase):
     def execute(self, *args, **kwargs):
         ret = {}
         job,user,off_id,params = self.getArgs(*args,**kwargs)
-        print(params)
         db = Query()
         PQS = self.getProviderQueueStatus()
         INV = self.getInvoiceIDs()
@@ -727,16 +722,19 @@ class RegistrationUpdate(AdminBase):
                     JSON_OBJECT(
                         'id',oa.id,'addr1',oa.addr1,'addr2',oa.addr2,'phone',oa.phone,
                         'city',oa.city,'state',oa.state,'zipcode',oa.zipcode)
-                ) as addr,u.first_name,u.last_name,u.email,u.phone,u.id as uid
+                ) as addr,u.first_name,u.last_name,u.email,u.phone,u.id as uid,
+                pq.initial_payment
             from
                 provider_queue pq,
                 provider_queue_status pqs,
                 office o,
                 office_addresses oa,
+                office_plans op,
                 users u,
                 office_user ou
             where
                 pq.provider_queue_status_id = pqs.id and
+                op.office_id = o.id and
                 pq.office_id = o.id and
                 oa.office_id = o.id and
                 ou.office_id = o.id and
@@ -772,33 +770,49 @@ class RegistrationUpdate(AdminBase):
                     id = %s
                 """,(params['status'],params['initial_payment'],insid)
             )
-        invid = params['invoice_id']
-        db.update("""
-            delete from invoice_items where invoices_id = %s
-            """,(invid,)
-        )
-        for y in params['invoice_items']:
-            if params['initial_payment'] > 0:
-                # If there is an initial payment, charge that upfront
-                db.update("""
-                    insert into invoice_items (invoices_id,description,price,quantity)
-                        values (%s,%s,%s,%s)
-                    """,(invid,'Subscription Start Payment',params['initial_payment'],1)
-                )
-                break
-            else:
-                db.update("""
-                    insert into invoice_items (invoices_id,description,price,quantity)
-                        values (%s,%s,%s,%s)
-                    """,(invid,y['description'],y['price'],y['quantity'])
-                )
         if params['status'] == PQS['APPROVED']:
+            if 'invoice_id' in params:
+                invid = params['invoice_id']
+                db.update("""
+                    delete from invoice_items where invoices_id = %s
+                    """,(invid,)
+                )
+                sum = 0
+                for y in params['invoice_items']:
+                    if float(params['initial_payment']) > 0:
+                        # If there is an initial payment, charge that upfront
+                        desc = 'Subscription Start Payment'
+                        if y['description'] != desc:
+                            desc = y['description']
+                        db.update("""
+                            insert into invoice_items (invoices_id,description,price,quantity)
+                                values (%s,%s,%s,%s)
+                            """,(invid,desc,params['initial_payment'],1)
+                        )
+                        sum += float(params['initial_payment'])
+                        break
+                    else:
+                        sum += y['price'] * y['quantity']
+                        db.update("""
+                            insert into invoice_items (invoices_id,description,price,quantity)
+                                values (%s,%s,%s,%s)
+                            """,(invid,y['description'],y['price'],y['quantity'])
+                        )
+            db.update("""
+                update invoices set total = %s where id = %s
+                """,(sum,invid)
+            )
+            db.update("""
+                insert into invoice_history (invoices_id,user_id,text) values
+                    (%s,%s,%s)
+                """,(invid,user['id'],'Updated Invoice' )
+            )
             db.update("""
                 update office set active = 1 where id = %s
                 """,(offid,)
             )
             db.update("""
-                update invoices set status = %s where id = %s
+                update invoices set invoice_status_id = %s where id = %s
             """,(INV['APPROVED'],invid)
             )
         db.commit()
@@ -829,16 +843,19 @@ class RegistrationList(AdminBase):
                     JSON_OBJECT(
                         'id',oa.id,'addr1',oa.addr1,'addr2',oa.addr2,'phone',oa.phone,
                         'city',oa.city,'state',oa.state,'zipcode',oa.zipcode)
-                ) as addr,u.first_name,u.last_name,u.email,u.phone
+                ) as addr,u.first_name,u.last_name,u.email,u.phone,pq.created,pq.updated,
+                pq.initial_payment,ot.name as office_type
             from
                 provider_queue pq,
                 provider_queue_status pqs,
                 office o,
+                office_type ot,
                 office_addresses oa,
                 users u,
                 office_user ou
             where
                 pq.provider_queue_status_id = pqs.id and
+                o.office_type_id = ot.id and
                 pq.office_id = o.id and
                 oa.office_id = o.id and
                 ou.office_id = o.id and

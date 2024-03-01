@@ -274,11 +274,11 @@ class Registrations extends Component {
                 text:'Phone'
             },
             {
-                dataField:'reg_type',
+                dataField:'office_type',
                 sort:true,
                 text:'Type'
             },
-            {
+            /*{
                 dataField:'verified',
                 sort:true,
                 text:'Verified',
@@ -288,13 +288,14 @@ class Registrations extends Component {
                         {(row.verified === 0) && (<Badge color="danger">Not Verified</Badge>)}
                     </div>
                 )
-            },
+            },*/
             {
-                dataField:'created',
+                dataField:'updated',
                 sort:true,
-                text:'Created',
+                text:'Updated',
                 formatter:(cellContent,row) => (
                     <div>
+                        {console.log(row)}
                         {moment(row['updated']).format('LLL')} 
                     </div>
                 )

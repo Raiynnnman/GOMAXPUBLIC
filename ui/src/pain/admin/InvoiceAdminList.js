@@ -164,6 +164,11 @@ class InvoiceAdminList extends Component {
                 text:'Description'
             },
             {
+                dataField:'quantity',
+                text:'Quantity',
+                align:'center',
+            },
+            {
                 dataField:'price',
                 text:'Price',
                 align:'right',
@@ -172,11 +177,6 @@ class InvoiceAdminList extends Component {
                         ${row.price.toFixed(2)}
                     </div>
                 )
-            },
-            {
-                dataField:'quantity',
-                text:'Quantity',
-                align:'center',
             },
         ]
         var historyheads = [
@@ -218,17 +218,6 @@ class InvoiceAdminList extends Component {
                 dataField:'office_name',
                 editable: false,
                 text:'office name',
-            },
-            {
-                dataField:'id',
-                editable: false,
-                text:'Procedure',
-                formatter:(cellContent,row) => (
-                    <div>
-                        {row.subprocedure_name}: {row.day}@{row.time} for {row.first_name} {row.last_name}
-                    </div>
-                )
-                
             },
             {
                 dataField:'number',
@@ -310,10 +299,10 @@ class InvoiceAdminList extends Component {
                 <Col md="5">
                     <Row md="12" style={{marginBottom: 5}}>
                         <Col md="4">
-                            ID/Appt:
+                            ID:
                         </Col>
                         <Col md="7">
-                            {this.state.selected.id} / {this.state.selected.physician_schedule_id}
+                            {this.state.selected.id} 
                         </Col>
                     </Row>
                     <Row md="12" style={{marginBottom: 5}}>
@@ -337,23 +326,6 @@ class InvoiceAdminList extends Component {
                                     )
                                   })}
                                 />
-                        </Col>
-                    </Row>
-                    <Row md="12">
-                        <Col md="12">
-                          <FormGroup row>
-                            <Label for="normal-field" md={4} className="text-md-right">
-                              Procedure
-                            </Label>
-                            <Col md={7}>
-                              <Input type="text" id="normal-field" readOnly 
-                                onChange={this.phoneChange} placeholder="procedure" 
-                                value={
-                                    this.state.selected.subprocedure_name + ": " + 
-                                    this.state.selected.day + "@" + this.state.selected.time
-                                }/>
-                            </Col>
-                          </FormGroup>
                         </Col>
                     </Row>
                     <Row md="12">
