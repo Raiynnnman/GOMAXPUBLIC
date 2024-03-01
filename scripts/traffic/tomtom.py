@@ -7,7 +7,7 @@ import time
 import json
 sys.path.append(os.getcwd())  # noqa: E402
 from common import settings
-from util import encryption,calcdate
+from util import encryption,calcdate,getIDs
 import argparse
 import requests
 from util.DBOps import Query
@@ -120,6 +120,7 @@ FILT="{incidents{type,geometry{type,coordinates},properties{id,iconCategory,"\
      "magnitudeOfDelay,events{description,code,iconCategory},startTime,endTime,from,to,"\
      "length,delay,roadNumbers,timeValidity,probabilityOfOccurrence,numberOfReports"\
      "}}}"
+TC=getIDs.getTrafficCategories()
 VER=5
 JS=[]
 NEW=0
@@ -169,6 +170,7 @@ for x in TOGET:
             SKIP += 1
             continue
         NEW += 1
+        cat = TC[props['iconCategory']]
         db.update("""
             insert into traffic_incidents (
                 uuid,traf_delay,traf_end_time,traf_from,
@@ -182,7 +184,7 @@ for x in TOGET:
             )
         """,(
             uuid,props['delay'],props['endTime'],props['from'],
-            props['iconCategory'],props['id'],props['length'],
+            cat,props['id'],props['length'],
             props['magnitudeOfDelay'],
             props['numberOfReports'] if props['numberOfReports'] is not None else 0,
             props['probabilityOfOccurrence'], props['startTime'],

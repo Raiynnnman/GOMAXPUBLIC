@@ -1,5 +1,15 @@
 from util.DBOps import Query
 
+def getTrafficCategories():
+    db = Query()
+    ret = {}
+    o = db.query("select category_id,id from traffic_categories")
+    for x in o:
+        n = x['category_id']
+        i = x['id']
+        ret[n] = i
+    return ret
+
 def getProviderQueueStatus():
     db = Query()
     ret = {}
