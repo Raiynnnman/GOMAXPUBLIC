@@ -231,6 +231,12 @@ class InvoiceAdminList extends Component {
                 text:'Status',
             },
             {
+                dataField:'billing_period',
+                sort:true,
+                editable:false,
+                text:'Period',
+            },
+            {
                 dataField:'updated',
                 sort:true,
                 editable: false,
@@ -395,9 +401,11 @@ class InvoiceAdminList extends Component {
                             {(this.state.selected.stripe && this.state.selected.stripe.amount_due) && (
                             <>
                               {Object.entries(this.state.selected.stripe).sort((a,b) => (a[0] > b[0] ? 1:-1)).map((e) => { 
-                                var isurl = false;
+                                var isurl = false; var isdollar = false;
                                 var isnull = false;
                                 if (e[0].includes('url')) { isurl = true }
+                                if (e[0].includes('amount')) { isdollar = true }
+                                if (e[0].includes('fee')) { isdollar = true }
                                 if (e[1] === null) { isnull = true;  }
                                 return (
                                     <Row md="12">
@@ -412,9 +420,14 @@ class InvoiceAdminList extends Component {
                                             {(!isnull && isurl) && (
                                                 <a href={e[1]} target='_blank'>Link</a>
                                             )}
-                                            {(!isnull && !isurl) && (
+                                            {(!isnull && !isurl && !isdollar) && (
                                             <>
                                                 {e[1]}
+                                            </>
+                                            )}
+                                            {(!isnull && !isurl && isdollar) && (
+                                            <>
+                                                ${e[1].toFixed(2)}
                                             </>
                                             )}
                                             </>

@@ -355,7 +355,7 @@ class InvoicesList(AdminBase):
             select
                 i.id,ist.name as invoice_status,i.physician_schedule_id,
                 i.nextcheck,stripe_invoice_number as number,
-                stripe_invoice_number, 
+                stripe_invoice_number, billing_period,
                 from_unixtime(due) as due,
                 o.id as office_id,o.name as office_name,o.email,
                 u.first_name,u.last_name,u.phone,
@@ -378,6 +378,8 @@ class InvoicesList(AdminBase):
                 invoice_status ist
             where
                 i.id = ii.invoices_id and
+                month(i.billing_period) = month(now()) and
+                year(i.billing_period) = year(now()) and
                 o.user_id = u.id and
                 o.id = i.office_id and
                 sis.invoices_id = i.id and 
