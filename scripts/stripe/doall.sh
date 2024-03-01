@@ -6,6 +6,9 @@ if [ -f stripe/__init__c ]; then
 fi
 
 T="stripe/stripe_customers \
+    stripe/stripe_customer_update.py \
+    stripe/registration_invoices.py \
+    stripe/registration_initial_payment.py \
     stripe/generate_invoices \
     stripe/invoice_submit \
     stripe/stripe_invoice_status \

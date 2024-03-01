@@ -94,7 +94,7 @@ class Profile(SubmitDataRequest):
         if 'Admin' in A:
             c = db.query("""
                 select o.id,o.name,ot.name as type from context c,office o,office_type ot
-                where ot.id=o.office_type_id and user_id=%s and c.office_id=o.id 
+                where ot.id=o.office_type_id and c.user_id=%s and c.office_id=o.id 
                 /* and timestampdiff(second,c.created,now()) < 3600 */
             """,(user_id,))
             if len(c) > 0:

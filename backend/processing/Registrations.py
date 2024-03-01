@@ -259,6 +259,10 @@ class RegisterProvider(RegistrationsBase):
             uid = db.query("select LAST_INSERT_ID()");
             uid = uid[0]['LAST_INSERT_ID()']
         db.update("""
+            update office set user_id=%s where id=%s
+            """,(uid,insid)
+        )
+        db.update("""
             insert into office_user (office_id,user_id) values (%s,%s)
             """,(insid,uid)
         )
