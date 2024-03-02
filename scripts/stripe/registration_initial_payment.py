@@ -60,6 +60,7 @@ for x in l:
     x['items'] = json.loads(x['items'])
     total_val = x['price']*x['duration']
     months = int(x['initial_payment'] / x['price'])
+    print("months=%s" % months)
     for t in range(0,months):
         j = db.query("""
             select

@@ -18,3 +18,5 @@ tmp/*
 common/version.py
 *.sql
 *.json
+*.xlsx
+log
