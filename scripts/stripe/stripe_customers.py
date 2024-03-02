@@ -36,8 +36,7 @@ l = db.query("""
 
 CNT = 0
 for x in l:
-    uuid = encryption.getSHA256("%s-%s-%s" % (x['id'],x['name'],x['email']))
-    email = "pain-%s@poundpain.com" % (uuid[:10],)
+    email = x['email']
     CNT += 1
     try:
         r = stripe.Customer.create(
