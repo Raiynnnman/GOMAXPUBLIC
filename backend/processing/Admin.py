@@ -67,6 +67,18 @@ class AdminDashboard(AdminBase):
         )
         return o[0]
 
+    def getTrafficMonth(self):
+        db = Query()
+        o = db.query("""
+            select 
+                0 as num1, /* num accidents */
+                0 num2, /* providers selected */
+                0 num3, /* sales */
+                0 num4  /* */
+            """
+        )
+        return o[0]
+
     def getLeadsRevenueMonth(self):
         db = Query()
         o = db.query("""
@@ -513,19 +525,21 @@ class PlansList(AdminBase):
             offset = int(params['offset'])
         db = Query()
         OT = self.getOfficeTypes()
-        db.query(
+        o = db.query(
             """
             select 
-                id,price,locations,duration,slot,
+                id,price,locations,duration,slot,description,
                 start_date,end_date,active,created,updated
             from
                 pricing_data 
             where
-                end_date > now()
+                end_date > now() and
+                active = 1
             order by
-                id
+                start_date
             """
         )
+        ret = o
         return ret
 
 class OfficeList(AdminBase):
@@ -663,6 +677,7 @@ class CorporationUpdate(AdminBase):
         job,user,off_id,params = self.getArgs(*args,**kwargs)
         db = Query()
         OT = self.getOfficeTypes()
+        PL = self.getPlans()
         insid = 0
         if 'id' in params:
             db.update("""
@@ -710,12 +725,16 @@ class RegistrationUpdate(AdminBase):
         db = Query()
         PQS = self.getProviderQueueStatus()
         INV = self.getInvoiceIDs()
+        ENT = self.getEntitlementIDs()
+        PERM = self.getPermissionIDs()
+        OT = self.getOfficeTypes()
+        PL = self.getPlans()
         # TODO: Check params here
         email = params['email']
-        INSERT = False
-        insid = 0
         offid = 0
         userid = 0
+        pqid = 0
+        planid = 0
         l = db.query("""
             select 
                 pq.id,pqs.name,o.name,o.id as office_id,pqs.name as status,
@@ -725,7 +744,7 @@ class RegistrationUpdate(AdminBase):
                         'id',oa.id,'addr1',oa.addr1,'addr2',oa.addr2,'phone',oa.phone,
                         'city',oa.city,'state',oa.state,'zipcode',oa.zipcode)
                 ) as addr,u.first_name,u.last_name,u.email,u.phone,u.id as uid,
-                pq.initial_payment
+                pq.initial_payment,op.id as planid
             from
                 provider_queue pq,
                 provider_queue_status pqs,
@@ -746,69 +765,143 @@ class RegistrationUpdate(AdminBase):
                 o.id
             """,(params['office_id'],)
         )
-        offid = params['office_id']
         for x in l:
-            insid = x['id']
+            offid = x['office_id']
+            pqid = x['id']
             userid = x['uid']
-        if insid == 0:
-            pass
-        else:
+            planid = x['planid']
+        if pqid == 0:
             db.update("""
+            insert into users (email,first_name,last_name,phone) values
+                (%s,%s,%s,%s)
+                """,(
+                    params['email'],params['first_name'],
+                    params['last_name'],params['phone']
+                    )
+            )
+            userid = db.query("select LAST_INSERT_ID()");
+            userid = userid[0]['LAST_INSERT_ID()']
+            db.update("""
+                insert into office(office_type_id,email,user_id) values
+                    (%s,%s,%s)
+                """,
+                (OT['Chiropractor'],params['email'],userid
+                )
+            )
+            offid = db.query("select LAST_INSERT_ID()");
+            offid = offid[0]['LAST_INSERT_ID()']
+            db.update("""
+                insert into provider_queue(office_id) values (%s)
+                """,(offid,)
+            )
+            db.update("""
+                insert into office_user(office_id,user_id) values
+                    (%s,%s)
+                """,
+                (offid,userid
+                )
+            )
+            db.update("""
+                insert into user_entitlements (user_id,entitlements_id) values (%s,%s)
+                """,(userid,ENT['Provider'])
+            )
+            db.update("""
+                insert into user_permissions (user_id,permissions_id) values (%s,%s)
+                """,(userid,PERM['Admin'])
+            )
+            db.update("""
+                insert into office_plans (office_id,start_date,end_date,pricing_data_id) 
+                    values (%s,now(),date_add(now(),INTERVAL %s MONTH),%s)
+                """,(offid,PL[selplan]['duration'],selplan)
+            )
+            planid = db.query("select LAST_INSERT_ID()");
+            planid = planid[0]['LAST_INSERT_ID()']
+            
+        db.update("""
             update users set 
                 email = %s,first_name=%s,last_name=%s,phone=%s
             where
-                id = %s
-                """,(
-                    params['email'],params['first_name'],
-                    params['last_name'],params['phone'],
-                    userid
-                    )
-            )
-            db.update("""
-                update provider_queue set 
-                    provider_queue_status_id=%s,
-                    initial_payment=%s
-                where 
-                    id = %s
-                """,(params['status'],params['initial_payment'],insid)
-            )
-        if params['status'] == PQS['APPROVED']:
-            if 'invoice_id' in params:
-                invid = params['invoice_id']
-                db.update("""
-                    delete from invoice_items where invoices_id = %s
-                    """,(invid,)
+            id = %s
+            """,(
+                params['email'],params['first_name'],
+                params['last_name'],params['phone'],
+                userid
                 )
-                sum = 0
-                for y in params['invoice_items']:
-                    if float(params['initial_payment']) > 0:
-                        # If there is an initial payment, charge that upfront
-                        desc = 'Subscription Start Payment'
-                        if y['description'] != desc:
-                            desc = y['description']
-                        db.update("""
-                            insert into invoice_items (invoices_id,description,price,quantity)
-                                values (%s,%s,%s,%s)
-                            """,(invid,desc,params['initial_payment'],1)
-                        )
-                        sum += float(params['initial_payment'])
-                        break
-                    else:
-                        sum += y['price'] * y['quantity']
-                        db.update("""
-                            insert into invoice_items (invoices_id,description,price,quantity)
-                                values (%s,%s,%s,%s)
-                            """,(invid,y['description'],y['price'],y['quantity'])
-                        )
-            db.update("""
-                update invoices set total = %s where id = %s
-                """,(sum,invid)
+        )
+        db.update("""
+            update provider_queue set 
+                provider_queue_status_id=%s,
+                initial_payment=%s,updated=now()
+            where 
+                id = %s
+            """,(params['status'],params['initial_payment'],pqid)
+        )
+        db.update("""
+            update office_plans set pricing_data_id=%s where office_id=%s
+            """,(params['pricing_id'],offid)
+        )
+        db.update("""
+            delete from office_plan_items where office_plans_id=%s
+            """,(planid,)
+        )
+        selplan = int(params['pricing_id'])
+        db.update("""
+            insert into office_plan_items (
+                office_plans_id,price,quantity,description) 
+            values 
+                (%s,%s,%s,%s)
+            """,(planid,PL[selplan]['price'],1,PL[selplan]['description'])
+                
+        )
+        db.update("""
+            delete from office_addresses where office_id=%s
+            """,(offid,)
+        )
+        for a in params['addr']:
+            db.update(
+                """
+                    insert into office_addresses (
+                        office_id,name,addr1,phone,city,state,zipcode
+                    ) values (%s,%s,%s,%s,%s,%s,%s)
+                """,(offid,a['name'],a['addr1'],a['phone'],a['city'],a['state'],a['zipcode'])
             )
+        if 'invoice_id' in params:
+            invid = params['invoice_id']
             db.update("""
-                insert into invoice_history (invoices_id,user_id,text) values
-                    (%s,%s,%s)
-                """,(invid,user['id'],'Updated Invoice' )
+                delete from invoice_items where invoices_id = %s
+                """,(invid,)
             )
+            sum = 0
+            for y in params['invoice_items']:
+                if float(params['initial_payment']) > 0:
+                    # If there is an initial payment, charge that upfront
+                    desc = 'Subscription Start Payment'
+                    if y['description'] != desc:
+                        desc = y['description']
+                    db.update("""
+                        insert into invoice_items (invoices_id,description,price,quantity)
+                            values (%s,%s,%s,%s)
+                        """,(invid,desc,params['initial_payment'],1)
+                    )
+                    sum += float(params['initial_payment'])
+                    break
+                else:
+                    sum += y['price'] * y['quantity']
+                    db.update("""
+                        insert into invoice_items (invoices_id,description,price,quantity)
+                            values (%s,%s,%s,%s)
+                        """,(invid,y['description'],y['price'],y['quantity'])
+                    )
+                db.update("""
+                    update invoices set total = %s where id = %s
+                    """,(sum,invid)
+                )
+                db.update("""
+                    insert into invoice_history (invoices_id,user_id,text) values
+                        (%s,%s,%s)
+                    """,(invid,user['id'],'Updated Invoice' )
+                )
+        if params['status'] == PQS['APPROVED']:
             db.update("""
                 update office set active = 1 where id = %s
                 """,(offid,)
@@ -844,19 +937,22 @@ class RegistrationList(AdminBase):
                 JSON_ARRAYAGG(
                     JSON_OBJECT(
                         'id',oa.id,'addr1',oa.addr1,'addr2',oa.addr2,'phone',oa.phone,
-                        'city',oa.city,'state',oa.state,'zipcode',oa.zipcode)
+                        'city',oa.city,'state',oa.state,'zipcode',oa.zipcode,'name',oa.name
+                    )
                 ) as addr,u.first_name,u.last_name,u.email,u.phone,pq.created,pq.updated,
-                pq.initial_payment,ot.name as office_type
+                pq.initial_payment,ot.name as office_type,op.pricing_data_id as pricing_id
             from
                 provider_queue pq,
                 provider_queue_status pqs,
                 office o,
+                office_plans op,
                 office_type ot,
                 office_addresses oa,
                 users u,
                 office_user ou
             where
                 pq.provider_queue_status_id = pqs.id and
+                op.office_id = o.id and
                 o.office_type_id = ot.id and
                 pq.office_id = o.id and
                 oa.office_id = o.id and
@@ -865,6 +961,8 @@ class RegistrationList(AdminBase):
                 pq.provider_queue_status_id <> %s
             group by 
                 o.id
+            order by
+                updated desc
         """,(PQS['APPROVED'],)
         )
         k = [] 

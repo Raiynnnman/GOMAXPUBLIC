@@ -5,6 +5,8 @@ import moment from 'moment';
 import { Badge } from 'reactstrap';
 import { Button } from 'reactstrap'; 
 import cellEditFactory from 'react-bootstrap-table2-editor';
+
+import { Type } from 'react-bootstrap-table2-editor';
 import { connect } from 'react-redux';
 import { Col, Row } from 'reactstrap';
 import { Nav, NavItem, NavLink } from 'reactstrap';
@@ -32,8 +34,11 @@ class Registrations extends Component {
         }
         this.close = this.close.bind(this);
         this.onStatusChange = this.onStatusChange.bind(this);
+        this.onPlansChange = this.onPlansChange.bind(this);
+        this.addAddress = this.addAddress.bind(this);
         this.save = this.save.bind(this);
         this.edit = this.edit.bind(this);
+        this.add = this.add.bind(this);
         this.addInvoiceRow = this.addInvoiceRow.bind(this);
         this.toggleTab = this.toggleTab.bind(this);
         this.toggleSubTab = this.toggleSubTab.bind(this);
@@ -50,6 +55,18 @@ class Registrations extends Component {
         this.state.selected.first_name = e.target.value;
         this.setState(this.state);
     }
+    addAddress() { 
+        this.state.selected.addr.push({
+            id:0,
+            name:'My Location',
+            addr1:'',
+            city:'',
+            state:'',
+            zipcode:'',
+            phone:''
+        })
+        this.setState(this.state);
+    } 
     updateInitial(e) { 
         this.state.selected.initial_payment = e.target.value;
         this.setState(this.state);
@@ -79,18 +96,42 @@ class Registrations extends Component {
         })
         this.setState(this.state);
     } 
+    add() { 
+        this.state.selected = {
+            email:'',
+            first_name:'',
+            initial_payment:0,
+            last_name:'',
+            phone: '',
+            office_id: 0,
+            addr:[],
+            provider_queue_status_id: 1,
+            invoice_id:0,
+            pricing_id:0,
+            invoice_items:[]
+        }
+        this.state.selected.plans = {}
+        this.state.selected.plans.items = [{
+            id:0,description:'',price:0,quantity:1,total:0
+        }]
+        this.setState(this.state);
+    } 
     save() { 
         var tosend = { 
             email:this.state.selected.email,
             first_name:this.state.selected.first_name,
             initial_payment:this.state.selected.initial_payment,
             last_name:this.state.selected.last_name,
+            addr:this.state.selected.addr,
             phone: this.state.selected.phone,
             office_id: this.state.selected.office_id,
+            pricing_id: this.state.selected.pricing_id,
             status: this.state.selected.provider_queue_status_id,
-            invoice_id:this.state.selected.invoice.id,
-            invoice_items:this.state.selected.invoice.items
         } 
+        if (this.state.selected.invoice && this.state.selected.invoice.id) { 
+            tosend.invoice_id = this.state.selected.invoice.id,
+            tosend.invoice_items = this.state.selected.invoice.items
+        }
         this.props.dispatch(registrationAdminUpdate(tosend,function(err,args) { 
             args.props.dispatch(getRegistrations({page:0,limit:10000},function(err,args) { 
               toast.success('Successfully saved registration.',
@@ -104,8 +145,16 @@ class Registrations extends Component {
             },args))
         },this));
     } 
+    onPlansChange(e) { 
+        this.state.selected.pricing_id = e.value;
+        var t = this.props.plansList.data.filter((g) => this.state.selected.pricing_id === g.id)
+        t[0].quantity = 1
+        this.state.selected.plans = {}
+        this.state.selected.plans.items = [t[0]]
+        this.state.selected.pricing_id = t[0].id
+        this.setState(this.state);
+    } 
     onStatusChange(e) { 
-        console.log(e)
         this.state.selected.provider_queue_status_id = e.value;
         this.setState(this.state);
     } 
@@ -128,8 +177,6 @@ class Registrations extends Component {
     } 
 
     render() {
-        console.log("p",this.props)
-        console.log("s",this.state)
         var fields = [
             {name:'Email',value:'email'},
             {name:'First',value:'first_name'},
@@ -149,7 +196,7 @@ class Registrations extends Component {
                 text:'Name'
             },
             {
-                dataField:'Phone',
+                dataField:'phone',
                 text:'Phone'
             },
             {
@@ -178,35 +225,28 @@ class Registrations extends Component {
             },
             {
                 dataField:'description',
+                editable:true,
                 text:'Description'
-            },
-            {
-                dataField:'price',
-                text:'Price',
-                align:'right',
-                formatter: (cellContent,row) => (
-                    <div>
-                        ${row.price.toFixed(2)}
-                    </div>
-                )
             },
             {
                 dataField:'quantity',
                 align:'center',
+                editable:true,
                 width:50,
                 text:'quantity'
             },
             {
-                dataField:'total',
+                dataField:'price',
+                text:'Price',
+                editable:true,
                 align:'right',
-                text:'Total',
-                editable:false,
                 formatter: (cellContent,row) => (
                     <div>
-                        ${(row.price*row.quantity).toFixed(2)}
+                        ${row.price.toFixed ?  row.price.toFixed(2) : row.price}
                     </div>
                 )
             },
+            
         ]
         var invheads = [
             {
@@ -295,7 +335,6 @@ class Registrations extends Component {
                 text:'Updated',
                 formatter:(cellContent,row) => (
                     <div>
-                        {console.log(row)}
                         {moment(row['updated']).format('LLL')} 
                     </div>
                 )
@@ -340,6 +379,15 @@ class Registrations extends Component {
                           this.props.registrationsAdminList.data.registrations.length > 0)&& ( 
                         <TabPane tabId="registrations">
                             {(this.state.selected === null) && (
+                            <>
+                            <Row md="12">
+                                <Col md="12">
+                                    <Col md="6">
+                                        <Button style={{marginLeft:10}} onClick={this.add} 
+                                            color="primary">Add</Button>
+                                    </Col>
+                                </Col>
+                            </Row>
                             <Row md="12" style={{marginTop:10}}>
                                 <Col md="12">
                                     <>
@@ -359,6 +407,7 @@ class Registrations extends Component {
                                     </>
                                 </Col>
                             </Row>
+                            </>
                             )}
                             {(this.state.selected !== null) && (
                             <Row md="12" style={{marginTop:10}}>
@@ -462,19 +511,48 @@ class Registrations extends Component {
                                             </Nav>
                                             <TabContent className='mb-lg' activeTab={this.state.subTab}>
                                                 <TabPane tabId="plans">
+                                                    <Row md="12" style={{marginBottom:20}}>
+                                                        <Col md="5">
+                                                          <Select
+                                                              closeMenuOnSelect={true}
+                                                              isSearchable={false}
+                                                              onChange={this.onPlansChange}
+                                                              value={{
+                                                                label:
+                                                                    this.props.plansList.data.filter((g) => 
+                                                                        this.state.selected.pricing_id === g.id).length > 0 ?
+                                                                        this.props.plansList.data.filter((g) => 
+                                                                            this.state.selected.pricing_id === g.id)[0].description : ''
+                                                              }}
+                                                              options={
+                                                                    this.props.plansList.data.map((g) => {
+                                                                        return ({label:g.description,value:g.id})
+                                                                    })
+                                                                }
+                                                            />
+                                                        </Col>
+                                                    </Row>
                                                     {(this.state.selected.plans && this.state.selected.plans.items) && (
+                                                    <>
                                                     <BootstrapTable 
                                                         keyField='id' data={this.state.selected.plans.items} 
+                                                        cellEdit={ cellEditFactory({ mode: 'click',blurToSave:true })}
                                                         columns={planheads}>
                                                     </BootstrapTable>
+                                                    </>
                                                     )}
                                                 </TabPane>
                                                 <TabPane tabId="offices">
+                                                    <Button style={{marginBottom:10}} onClick={this.addAddress} 
+                                                        color="primary">Add</Button>
                                                     {(this.state.selected.addr && this.state.selected.addr) && (
+                                                    <>
                                                     <BootstrapTable 
+                                                        cellEdit={ cellEditFactory({ mode: 'click',blurToSave:true })}
                                                         keyField='id' data={this.state.selected.addr} 
                                                         columns={offheads}>
                                                     </BootstrapTable>
+                                                    </>
                                                     )}
                                                 </TabPane>
                                                 <TabPane tabId="invoices">

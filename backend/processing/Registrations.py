@@ -266,6 +266,14 @@ class RegisterProvider(RegistrationsBase):
             insert into office_user (office_id,user_id) values (%s,%s)
             """,(insid,uid)
         )
+        db.update("""
+            insert into user_entitlements (user_id,entitlement_id) values (%s,%s)
+            """,(userid,ENT['Provider'])
+        )
+        db.update("""
+            insert into user_permissions (user_id,permission_id) values (%s,%s)
+            """,(userid,PERM['Admin'])
+        )
         selplan = int(params['plan'])
         db.update("""
             insert into office_plans (office_id,start_date,end_date,pricing_data_id) 
