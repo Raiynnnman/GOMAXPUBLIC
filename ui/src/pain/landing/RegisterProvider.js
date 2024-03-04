@@ -132,7 +132,6 @@ class RegisterProvider extends Component {
             license: this.state.license,
             addresses: this.state.addresses
         } 
-        console.log("ts",tosend);
         this.props.dispatch(registerProvider(tosend,function(err,args) { 
               toast.success('Successfully saved office.',
                 {
