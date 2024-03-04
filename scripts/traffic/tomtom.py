@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import requests
+import random
 import os
 import sys
 import math
@@ -91,13 +92,15 @@ for x in CITIES:
     l = []
     if x['zipcode'] != 0:
         l = db.query("""
-            select lat,lon,zipcode from position_zip where zipcode=%s limit 5
+            select lat,lon,zipcode from position_zip where zipcode=%s 
         """,(x['zipcode'],)
         )
     else:
         l = db.query("""
             select lat,lon,zipcode from position_zip where name=%s and code1=%s limit 5
         """,(x['city'],x['state']))
+    random.shuffle(l)
+    l = l[:5]
     for y in l:
         # print(l)
         i = "%s+%s" % (x['city'],y['zipcode'])
