@@ -155,7 +155,7 @@ class UserList(AdminBase):
                 """,(x['id'],))
             x['offices'] = db.query("""
                  select e.id,e.name from office_user ue,office e
-                 where user_id=%s and e.id=ue.office_id
+                 where ue.user_id=%s and e.id=ue.office_id
                 """,(x['id'],))
             ret['users'].append(x)
         return ret
