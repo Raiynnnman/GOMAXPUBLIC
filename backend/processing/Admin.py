@@ -809,6 +809,7 @@ class RegistrationUpdate(AdminBase):
                 insert into user_permissions (user_id,permissions_id) values (%s,%s)
                 """,(userid,PERM['Admin'])
             )
+            selplan = int(params['pricing_id'])
             db.update("""
                 insert into office_plans (office_id,start_date,end_date,pricing_data_id) 
                     values (%s,now(),date_add(now(),INTERVAL %s MONTH),%s)
