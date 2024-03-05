@@ -268,11 +268,11 @@ class RegisterProvider(RegistrationsBase):
         )
         db.update("""
             insert into user_entitlements (user_id,entitlement_id) values (%s,%s)
-            """,(userid,ENT['Provider'])
+            """,(uid,ENT['Provider'])
         )
         db.update("""
             insert into user_permissions (user_id,permission_id) values (%s,%s)
-            """,(userid,PERM['Admin'])
+            """,(uid,PERM['Admin'])
         )
         selplan = int(params['plan'])
         db.update("""
