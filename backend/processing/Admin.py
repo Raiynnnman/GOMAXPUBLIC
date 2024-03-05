@@ -964,10 +964,8 @@ class RegistrationList(AdminBase):
             order by
                 updated desc
         """
-        print(q)
         o = []
         o = db.query(q)
-        print(json.dumps(o,indent=4))
         k = [] 
         for x in o:
             x['addr'] = db.query("""
