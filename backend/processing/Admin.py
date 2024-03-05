@@ -911,8 +911,13 @@ class RegistrationUpdate(AdminBase):
                 update invoices set invoice_status_id = %s where id = %s
             """,(INV['APPROVED'],invid)
             )
+            db.update("""
+                update provider_queue set 
+                    provider_queue_status_id = %s where office_id = %s
+            """,(PQS['INVITED'],offid)
+            )
+            # TODO: Send welcome mail here
         db.commit()
-        # TODO: Send welcome mail here
         return ret
 
 class RegistrationList(AdminBase):
@@ -931,44 +936,60 @@ class RegistrationList(AdminBase):
         offset = 0
         db = Query()
         PQS = self.getProviderQueueStatus()
-        o = db.query("""
+        q = """
             select 
                 pq.id,pqs.name,o.name,o.id as office_id,pqs.name as status,
                 pq.provider_queue_status_id,
+                u.first_name,u.last_name,u.email,u.phone,pq.created,pq.updated,
+                pq.initial_payment,ot.name as office_type,op.pricing_data_id as pricing_id
+            from
+                provider_queue pq
+                left outer join office o on pq.office_id = o.id
+                left outer join provider_queue_status pqs on pqs.id=pq.provider_queue_status_id
+                left outer join office_plans op on op.office_id = o.id
+                left outer join office_type ot on ot.id=o.office_type_id
+                left outer join office_addresses oa on oa.office_id=o.id
+                left outer join users u on o.user_id = u.id
+                left outer join office_user ou on ou.office_id = o.id
+        """
+        status_ids = []
+        if 'status' in params:
+            q += " where ("
+            arr = []
+            for z in params['status']:
+                arr.append("provider_queue_status_id = %s " % z)
+            q += " or ".join(arr)
+            q += ")"
+        q += """
+            order by
+                updated desc
+        """
+        print(q)
+        o = []
+        o = db.query(q)
+        print(json.dumps(o,indent=4))
+        k = [] 
+        for x in o:
+            x['addr'] = db.query("""
+                select 
                 JSON_ARRAYAGG(
                     JSON_OBJECT(
                         'id',oa.id,'addr1',oa.addr1,'addr2',oa.addr2,'phone',oa.phone,
                         'city',oa.city,'state',oa.state,'zipcode',oa.zipcode,'name',oa.name
                     )
-                ) as addr,u.first_name,u.last_name,u.email,u.phone,pq.created,pq.updated,
-                pq.initial_payment,ot.name as office_type,op.pricing_data_id as pricing_id
-            from
-                provider_queue pq,
-                provider_queue_status pqs,
-                office o,
-                office_plans op,
-                office_type ot,
-                office_addresses oa,
-                users u,
-                office_user ou
-            where
-                pq.provider_queue_status_id = pqs.id and
-                op.office_id = o.id and
-                o.office_type_id = ot.id and
-                pq.office_id = o.id and
-                oa.office_id = o.id and
-                ou.office_id = o.id and
-                ou.user_id = u.id and
-                pq.provider_queue_status_id <> %s
-            group by 
-                o.id
-            order by
-                updated desc
-        """,(PQS['APPROVED'],)
-        )
-        k = [] 
-        for x in o:
-            x['addr'] = json.loads(x['addr'])
+                ) as addr
+                from 
+                    office_addresses oa where office_id=%s
+                limit 1
+                """,(x['office_id'],)
+            )
+            if len(x['addr']) < 1 or x['addr'][0]['addr'] == None:
+                x['addr'] = []
+            else:
+                j = x['addr']
+                x['addr'] = []
+                for a in j:
+                    x['addr'].append(json.loads(a['addr']))
             t = db.query("""
                 select 
                     op.id,start_date,end_date,
