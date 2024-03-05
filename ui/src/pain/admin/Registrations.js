@@ -30,11 +30,13 @@ class Registrations extends Component {
         this.state = { 
             selected: null,
             activeTab: "registrations",
+            statusSelected:null,
             subTab: "plans",
         }
         this.close = this.close.bind(this);
         this.onStatusChange = this.onStatusChange.bind(this);
         this.onPlansChange = this.onPlansChange.bind(this);
+        this.onStatusFilter = this.onStatusFilter.bind(this);
         this.addAddress = this.addAddress.bind(this);
         this.save = this.save.bind(this);
         this.edit = this.edit.bind(this);
@@ -50,11 +52,32 @@ class Registrations extends Component {
     } 
 
     componentWillReceiveProps(p) { 
+        if (p.registrationsAdminList.data && p.registrationsAdminList.data.config && 
+            p.registrationsAdminList.data.config.status && this.state.statusSelected === null) { 
+            var c = 0;
+            var t = [];
+            for (c = 0; c < p.registrationsAdminList.data.config.status.length; c++) { 
+                t.push(p.registrationsAdminList.data.config.status[c].id); 
+            } 
+            this.state.statusSelected = t;
+            this.setState(this.state);
+        } 
     }
     updateFirst(e) { 
         this.state.selected.first_name = e.target.value;
         this.setState(this.state);
     }
+    onStatusFilter(e,t) { 
+        if (e.length <2 ) { return; }
+        var c = 0;
+        var t = [];
+        for (c = 0; c < e.length; c++) { 
+            t.push(e[c].value); 
+        } 
+        this.state.statusSelected = t;
+        this.props.dispatch(getRegistrations({status:t}));
+        this.setState(this.state)
+    } 
     addAddress() { 
         this.state.selected.addr.push({
             id:0,
@@ -330,6 +353,20 @@ class Registrations extends Component {
                 )
             },*/
             {
+                dataField:'status',
+                sort:true,
+                text:'Status',
+                formatter:(cellContent,row) => (
+                    <div>
+                        {(row.status === 'INVITED') && (<Badge color="primary">INVITED</Badge>)}
+                        {(row.status === 'APPROVED') && (<Badge color="primary">APPROVED</Badge>)}
+                        {(row.status === 'QUEUED') && (<Badge color="secondary">QUEUED</Badge>)}
+                        {(row.status === 'WAITING') && (<Badge color="danger">WAITING</Badge>)}
+                        {(row.status === 'DENIED') && (<Badge color="danger">DENIED</Badge>)}
+                    </div>
+                )
+            },
+            {
                 dataField:'updated',
                 sort:true,
                 text:'Updated',
@@ -360,7 +397,7 @@ class Registrations extends Component {
             {(this.props.registrationAdminUpdate && this.props.registrationAdminUpdate.isReceiving) && (
                 <AppSpinner/>
             )}
-            {(this.props.registrationAdminList && this.props.registrationAdminList.isReceiving) && (
+            {(this.props.registrationsAdminList && this.props.registrationsAdminList.isReceiving) && (
                 <AppSpinner/>
             )}
             <Row md="12">
@@ -380,6 +417,38 @@ class Registrations extends Component {
                         <TabPane tabId="registrations">
                             {(this.state.selected === null) && (
                             <>
+                            <div style={{zIndex:512}}>
+                                <Row md="12">
+                                    <Col md="5" style={{zIndex:9995}}>
+                                      {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
+                                        this.props.registrationsAdminList.data.config &&
+                                        this.props.registrationsAdminList.data.config.status && this.state.statusSelected !== null) && (
+                                          <Select
+                                              closeMenuOnSelect={true}
+                                              isSearchable={false}
+                                              isMulti
+                                              onChange={this.onStatusFilter}
+                                              value={this.state.statusSelected.map((g) => { 
+                                                return (
+                                                    {
+                                                    label:this.props.registrationsAdminList.data.config.status.filter((f) => f.id === g)[0].name,
+                                                    value:this.props.registrationsAdminList.data.config.status.filter((f) => f.id === g)[0].id
+                                                    }
+                                                )
+                                              })}
+                                              options={this.props.registrationsAdminList.data.config.status.map((e) => { 
+                                                return (
+                                                    { 
+                                                    label: e.name,
+                                                    value: e.id
+                                                    }
+                                                )
+                                              })}
+                                            />
+                                        )}
+                                    </Col>                
+                                </Row>
+                            </div>
                             <Row md="12">
                                 <Col md="12">
                                     <Col md="6">
@@ -414,6 +483,15 @@ class Registrations extends Component {
                                 <Col md="12">
                                     <Row md="12">
                                         <Col md="12" style={{zIndex:9999}}>
+                                          <FormGroup row>
+                                            <Label for="normal-field" md={1} className="text-md-right">
+                                              ID 
+                                            </Label>
+                                            <Col md={5}>
+                                                <Input type="text" id="normal-field" readONly 
+                                                placeholder="ID" value={this.state.selected.id}/>
+                                            </Col>
+                                          </FormGroup>
                                           <FormGroup row>
                                             <Label for="normal-field" md={1} className="text-md-right">
                                               Email

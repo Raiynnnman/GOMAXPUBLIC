@@ -53,8 +53,8 @@ for x in l:
     print(x)
     x['items'] = json.loads(x['items'])
     o = db.update("""
-        insert into invoices (office_id,invoice_status_id,office_plans_id,billing_period) 
-            values (%s,%s,%s,date(now()))
+        insert into invoices (office_id,invoice_status_id,office_plans_id,billing_period,stripe_tax_code) 
+            values (%s,%s,%s,date(now()),'txcd_10000000')
         """,(x['office_id'],INV['CREATED'],x['id'])
     )
     insid = db.query("select LAST_INSERT_ID()")

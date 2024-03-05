@@ -75,9 +75,12 @@ for x in q:
         continue
     insid = 0
     db.update("""
-    insert into invoices(office_id,physician_schedule_id,invoice_status_id,billing_period) values
-        (%s,%s,%s,date(%s))
-        """,(x['office_id'],x['appt_id'],INV['CREATED'],x['start_date'])
+    insert into invoices(
+        office_id,invoice_status_id,billing_period,stripe_tax_code
+        ) 
+        values
+        (%s,%s,date(%s),'txcd_10000000')
+        """,(x['office_id'],INV['CREATED'],x['start_date'])
     )
     insid = db.query("select LAST_INSERT_ID()")
     insid = insid[0]['LAST_INSERT_ID()']

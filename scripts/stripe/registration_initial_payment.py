@@ -50,10 +50,11 @@ l = db.query("""
         op.end_date > now() and
         op.office_id in (select office_id from invoices) and
         pq.initial_payment > 0 and
-        pq.provider_queue_status_id = %s
+        (pq.provider_queue_status_id = %s or 
+        (pq.provider_queue_status_id = %s)
     group by
         op.id
-    """,(PQS['APPROVED'],)
+    """,(PQS['APPROVED'],PQS['QUEUED'])
     )
 
 for x in l:
