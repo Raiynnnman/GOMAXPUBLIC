@@ -60,6 +60,7 @@ install: build
         --exclude ui/src --exclude .git --exclude src \
         --exclude node_modules \
 		.)
+	rm -f pre/bin/*.py
 	mkdir -p targets/package
 	echo '#!/bin/bash' > targets/package/install.sh
 	cat ./scripts/install.sh >> targets/package/install.sh
