@@ -33,6 +33,9 @@ install: build
         --exclude ui/src --exclude .git --exclude src \
         --exclude node_modules \
 		.)
+	cp stripe/doall.sh pre/stripe
+	mkdir -p pre/tests
+	cp tests/current_subs_feb_2024.xlsx pre/tests
 	mkdir -p targets/package
 	echo '#!/bin/bash' > targets/package/install.sh
 	cat ../backend/scripts/install.sh >> targets/package/install.sh
