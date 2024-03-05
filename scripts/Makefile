@@ -28,14 +28,14 @@ install: build
 	if [ -f version.sh ]; then cp version.sh pre; fi
 	if [ -d bin ]; then cp -r bin pre; rm -f pre/bin/dev*; fi
 	if [ -d docs ]; then cp -r docs pre; fi
+	cp stripe/doall.sh pre/stripe
+	mkdir -p pre/tests
+	cp tests/current_subs_feb_2024.xlsx pre/tests
 	(cd pre && tar cfz ../targets/install.tar.gz  --exclude p \
 		--exclude targets \
         --exclude ui/src --exclude .git --exclude src \
         --exclude node_modules \
 		.)
-	cp stripe/doall.sh pre/stripe
-	mkdir -p pre/tests
-	cp tests/current_subs_feb_2024.xlsx pre/tests
 	mkdir -p targets/package
 	echo '#!/bin/bash' > targets/package/install.sh
 	cat ../backend/scripts/install.sh >> targets/package/install.sh
