@@ -1082,6 +1082,8 @@ class TrafficGet(AdminBase):
         # Temporary - Just get accidents
         l = db.query("""
             select id,name from traffic_categories where category_id = 1
+            UNION ALL
+            select 99,'Location'
             """)
         ret['config']['categories'] = l
         if 'categories' not in params or len(params['categories']) == 0:
@@ -1170,6 +1172,25 @@ class TrafficGet(AdminBase):
         for x in l:
             x['coords'] = json.loads(x['coords'])
             ret['data'].append(x)
+        ret['locations'] = []
+        if 99 in params['categories']:
+            o = db.query("""
+                select 
+                    oa.id,oa.name,oa.addr1,'' as uuid,
+                    oa.city,oa.state,oa.zipcode,99 as category_id,
+                    'Location' as category, oa.lat, oa.lon,
+                    json_arrayagg(
+                        json_object('lat',oa.lat,'lng',oa.lon)) as coords
+                from 
+                    office_addresses oa
+                where
+                    lat <> 0
+                group by 
+                    oa.id
+                """)
+            for t in o:
+                t['coords'] = json.loads(t['coords'])
+                ret['data'].append(t) 
         return ret
 
 

@@ -5,6 +5,8 @@ import sys
 import time
 import json
 import pandas as pd
+import googlemaps
+from datetime import datetime
 
 sys.path.append(os.getcwd())  # noqa: E402
 
@@ -31,34 +33,35 @@ parser.add_argument('--force', dest="force", action="store_true")
 parser.add_argument('--use-cache', dest="usecache", action="store_true")
 args = parser.parse_args()
 
-LEADS={}
+api_key=config.getKey("google_api_key")
+gmaps = googlemaps.Client(key=api_key)
 
 db = Query()
 
 o = db.query("""
     select 
-        o.id,oa.zipcode 
+        oa.id,oa.zipcode,oa.state,oa.city,addr1
     from 
-        office o, office_addresses oa
+        office_addresses oa
     where
-        o.id = oa.office_id and
         lat = 0
-    
     """)
 
 for x in o:
     print(x)
-    zipc = x['zipcode']
-    g = db.query("""
-        select lat,lon
-        from position_zip
-        where zipcode = %s
-        """,(zipc,)
+    res = gmaps.geocode('%s, %s, %s' % (x['addr1'],x['city'],x['state']))
+    if len(res) < 1:
+        print("Unable to find coordinates for %s" % x['id'])
+        continue
+    res = res[0]
+    #print(json.dumps(res,indent=4))
+    #print("=----")
+    #print(json.dumps(res['geometry'],indent=4))
+    lat = res['geometry']['location']['lat']
+    lon = res['geometry']['location']['lng']
+    db.update("""
+        update office_addresses set lat=%s,lon=%s
+        where id=%s
+        """,(lat,lon,x['id'])
     )
-    if len(g) > 0:
-        db.update("""
-            update office_addresses set lat=%s,lon=%s
-            where office_id=%s
-            """,(g[0]['lat'],g[0]['lon'],x['id'])
-        )
-        db.commit()
+    db.commit()
