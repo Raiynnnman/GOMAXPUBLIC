@@ -22,12 +22,13 @@ key = config.getKey("stripe_key")
 stripe.api_key = key
 parser = argparse.ArgumentParser()
 parser.add_argument('--dryrun', dest="dryrun", action="store_true")
+parser.add_argument('--force', dest="force", action="store_true")
 args = parser.parse_args()
 
 APT = getIDs.getAppointStatus()
 INV = getIDs.getInvoiceIDs()
 db = Query()
-l = db.query("""
+q = """
     select 
         o.name,o.id,u.email,o.name,
         u.phone,o.stripe_cust_id
@@ -37,10 +38,14 @@ l = db.query("""
     where 
         o.user_id = u.id and
         o.active = 1 and
-        (o.stripe_next_check is null or o.stripe_next_check < now()) and
         o.stripe_cust_id is not null
     """
-)
+if not args.force:
+    q += " and (o.stripe_next_check is null or o.stripe_next_check < now()) "
+
+l = db.query(q)
+
+override = config.getKey("email_to_override")
 
 CNT = 0
 for x in l:
@@ -48,8 +53,11 @@ for x in l:
         r = stripe.Customer.retrieve(x['stripe_cust_id'])
         CHANGE = False
         name="%s-%s" % (x['name'],x['id'])
-        if r['email'] != x['email']:
-            CHANGE = True
+        email = x['email']
+        if override is not None:
+            email = override
+        if r['email'] != email:
+                CHANGE = True
         if r['name'] != name:
             CHANGE = True
         if r['phone'] != x['phone']:
@@ -60,7 +68,7 @@ for x in l:
             stripe.Customer.modify(
                 x['stripe_cust_id'],
                 name=name,
-                email=x['email'],
+                email=email,
                 phone=x['phone']
             )
     except Exception as e:

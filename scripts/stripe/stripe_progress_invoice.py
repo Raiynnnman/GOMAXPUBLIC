@@ -36,6 +36,7 @@ l = db.query("""
     where 
         i.id = sis.invoices_id and
         ist.id = i.invoice_status_id and
+        i.stripe_invoice_id is not null and
         date_add(sis.created,interval 160 day) > now() 
     """
 )

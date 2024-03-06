@@ -60,8 +60,13 @@ for x in l:
     x['items'] = json.loads(x['items'])
     total_val = x['price']*x['duration']
     months = int(x['initial_payment'] / x['price'])
-    print("Creating %s months of $0 invoices for %s" % (months,x['office_id']))
     for t in range(0,months):
+        j = db.query("""
+            select
+                date_add(%s, INTERVAL %s month) as bp
+            """,(x['start_date'],t)
+        )
+        bp = j[0]['bp']
         j = db.query("""
             select
                 id
@@ -73,6 +78,7 @@ for x in l:
             """,(x['office_id'],x['start_date'],t)
         )
         if len(j) < 1:
+            print("Creating billing period %s ($0 invoice) for %s" % (bp,x['office_id']))
             o = db.update("""
                 insert into invoices (office_id,invoice_status_id,office_plans_id,billing_period) 
                     values (%s,%s,%s,date_add(%s,interval %s month))

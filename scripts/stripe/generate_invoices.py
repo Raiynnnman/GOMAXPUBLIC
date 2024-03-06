@@ -71,9 +71,10 @@ for x in q:
     for t in o:
         HAVE=True
     if HAVE:
-        print("Office %s already has an invoice for this month, skipping"%x['office_id'])
+        # print("Office %s already has an invoice for this month, skipping"%x['office_id'])
         continue
     insid = 0
+    print("Generating invoice for this month for %s" % x['office_id'])
     db.update("""
     insert into invoices(
         office_id,invoice_status_id,billing_period,stripe_tax_code
