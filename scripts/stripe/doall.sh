@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ext=.py
-if [ -f stripe/__init__c ]; then
+if [ -f stripe/__init__.pyc ]; then
     ext=.pyc
 fi
 
