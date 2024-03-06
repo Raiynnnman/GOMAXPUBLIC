@@ -224,6 +224,8 @@ class RegisterProvider(RegistrationsBase):
         db = Query()
         insid = 0
         OT = self.getOfficeTypes()
+        ENT = self.getEntitlementIDs()
+        PERM = self.getPermissionIDs()
         PL = self.getPlans()
         db.update("insert into office (name,office_type_id,email,cust_id,active) values (%s,%s,%s,%s,0)",
             (params['name'],OT['Chiropractor'],params['email'],params['cust_id'])
@@ -267,11 +269,11 @@ class RegisterProvider(RegistrationsBase):
             """,(insid,uid)
         )
         db.update("""
-            insert into user_entitlements (user_id,entitlement_id) values (%s,%s)
+            insert into user_entitlements (user_id,entitlements_id) values (%s,%s)
             """,(uid,ENT['Provider'])
         )
         db.update("""
-            insert into user_permissions (user_id,permission_id) values (%s,%s)
+            insert into user_permissions (user_id,permissions_id) values (%s,%s)
             """,(uid,PERM['Admin'])
         )
         selplan = int(params['plan'])

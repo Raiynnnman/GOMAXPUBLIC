@@ -37,6 +37,7 @@ l = db.query("""
     where 
         o.user_id = u.id and
         o.active = 1 and
+        (o.stripe_next_check is null or o.stripe_next_check < now()) and
         o.stripe_cust_id is not null
     """
 )
@@ -64,4 +65,12 @@ for x in l:
             )
     except Exception as e:
         print("ERROR: %s for user %s" % (str(e),x['stripe_cust_id']))
+
+    db.update("""
+        update office set stripe_next_check = date_add(now(),INTERVAL 1 day)
+            where id = %s
+        """,(x['id'],)
+    )
+    db.commit()
+
 print("Processed %s records" % CNT)

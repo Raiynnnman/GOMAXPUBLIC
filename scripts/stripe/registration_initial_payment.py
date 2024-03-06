@@ -50,8 +50,7 @@ l = db.query("""
         op.end_date > now() and
         op.office_id in (select office_id from invoices) and
         pq.initial_payment > 0 and
-        (pq.provider_queue_status_id = %s or 
-        (pq.provider_queue_status_id = %s)
+        (pq.provider_queue_status_id = %s or pq.provider_queue_status_id = %s)
     group by
         op.id
     """,(PQS['APPROVED'],PQS['QUEUED'])
@@ -61,7 +60,7 @@ for x in l:
     x['items'] = json.loads(x['items'])
     total_val = x['price']*x['duration']
     months = int(x['initial_payment'] / x['price'])
-    print("months=%s" % months)
+    print("Creating %s months of $0 invoices for %s" % (months,x['office_id']))
     for t in range(0,months):
         j = db.query("""
             select
@@ -94,11 +93,6 @@ for x in l:
                 insert into invoice_history (invoices_id,user_id,text) values 
                     (%s,%s,%s)
                 """,(insid,1,'Generated invoice' )
-            )
-            db.update("""
-                insert into invoice_history (invoices_id,user_id,text) values 
-                    (%s,%s,%s)
-                """,(insid,1,'Marked as paid' )
             )
             db.update("""
                 insert into stripe_invoice_status (office_id,invoices_id,status) values (%s,%s,%s)

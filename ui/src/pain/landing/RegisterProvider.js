@@ -58,7 +58,7 @@ class RegisterProvider extends Component {
         this.officeZipChange = this.officeZipChange.bind(this);
         this.officeCityChange = this.officeCityChange.bind(this);
         this.officePhoneChange = this.officePhoneChange.bind(this);
-        this.officeAddr1Change = this.officePhoneChange.bind(this);
+        this.officeAddr1Change = this.officeAddr1Change.bind(this);
         this.provtypeChange = this.provtypeChange.bind(this);
         this.addRow = this.addRow.bind(this);
         this.saveRow = this.saveRow.bind(this);
@@ -114,6 +114,7 @@ class RegisterProvider extends Component {
         this.setState(this.state);
     } 
     officeAddr1Change(e) {
+        console.log(e.target.value)
         this.state.addresses[this.state.selectedAddrId].addr1 = e.target.value;
         this.setState(this.state);
     } 
@@ -132,6 +133,7 @@ class RegisterProvider extends Component {
             license: this.state.license,
             addresses: this.state.addresses
         } 
+        console.log("ts",tosend);
         this.props.dispatch(registerProvider(tosend,function(err,args) { 
               toast.success('Successfully saved office.',
                 {
@@ -186,7 +188,7 @@ class RegisterProvider extends Component {
         this.state.selectedAddrId = this.state.addresses.length 
         this.state.addresses.push({
             id: this.state.selectedAddrId,
-            name:'My Practice',
+            name:'',
             addr1:'',
             phone:'',
             city:'',
@@ -326,8 +328,8 @@ class RegisterProvider extends Component {
                                                     onChange={this.officePhoneChange} required phone="phone" placeholder="Phone" />
                                             </td>
                                             <td style={{width:100}}>
-                                                <input className="form-control no-border" value={e.addr} 
-                                                    onChange={this.officeAddrChange} required addr="addr" placeholder="Addr" />
+                                                <input className="form-control no-border" value={e.addr1} 
+                                                    onChange={this.officeAddr1Change} required addr="addr" placeholder="Address" />
                                             </td>
                                             <td style={{width:100}}>
                                                 <input className="form-control no-border" value={e.city} 

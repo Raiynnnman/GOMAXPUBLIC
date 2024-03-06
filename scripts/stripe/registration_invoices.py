@@ -53,7 +53,7 @@ for x in l:
     print(x)
     x['items'] = json.loads(x['items'])
     o = db.update("""
-        insert into invoices (office_id,invoice_status_id,office_plans_id,billing_period,stripe_tax_code) 
+        insert into invoices (office_id,invoice_status_id,office_plans_id,billing_period,stripe_tax_id) 
             values (%s,%s,%s,date(now()),'txcd_10000000')
         """,(x['office_id'],INV['CREATED'],x['id'])
     )

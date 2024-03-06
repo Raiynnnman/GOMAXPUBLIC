@@ -66,7 +66,7 @@ for x in inv:
     for g in cards:
         if g['id'] is None:
             continue
-        if g['default'] == 1:
+        if g['is_default'] == 1:
             card_id = g['payment_id']
     mode = "charge_automatically"
     if card_id is None:

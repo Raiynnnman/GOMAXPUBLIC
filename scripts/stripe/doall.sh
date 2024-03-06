@@ -9,6 +9,7 @@ T="stripe/stripe_customers \
     stripe/stripe_customer_update \
     stripe/registration_invoices \
     stripe/registration_initial_payment \
+    stripe/invoice_totals \
     stripe/generate_invoices \
     stripe/invoice_submit \
     stripe/stripe_invoice_status \

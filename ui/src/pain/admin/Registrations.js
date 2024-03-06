@@ -81,7 +81,7 @@ class Registrations extends Component {
     addAddress() { 
         this.state.selected.addr.push({
             id:0,
-            name:'My Location',
+            name:'',
             addr1:'',
             city:'',
             state:'',
@@ -200,6 +200,7 @@ class Registrations extends Component {
     } 
 
     render() {
+        console.log("p",this.props);
         var fields = [
             {name:'Email',value:'email'},
             {name:'First',value:'first_name'},

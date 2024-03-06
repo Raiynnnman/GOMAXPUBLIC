@@ -380,7 +380,7 @@ class InvoicesList(AdminBase):
                         'quantity', ii.quantity
                     )
                 ) as items,i.invoice_status_id,i.created,i.updated,
-                round(i.total,2)
+                round(i.total,2) as total
             from
                 invoices i,
                 invoice_items ii,
@@ -390,9 +390,9 @@ class InvoicesList(AdminBase):
                 invoice_status ist
             where
                 i.id = ii.invoices_id and
-                month(i.billing_period) = month(now()) and
-                year(i.billing_period) = year(now()) and
                 o.user_id = u.id and
+                month(billing_period) <= month(now()) and
+                year(billing_period) <= year(now()) and
                 o.id = i.office_id and
                 sis.invoices_id = i.id and 
                 ist.id = i.invoice_status_id 
@@ -401,7 +401,7 @@ class InvoicesList(AdminBase):
         if 'filter' in params and params['filter'] != 0:
             q += " and invoice_status_id = %s " 
             p.append(params['filter'])
-        q += "group by i.id"
+        q += "group by i.id order by billing_period desc"
         o = db.query(q,p)
         for x in o:
             x['items'] = json.loads(x['items'])
@@ -948,7 +948,6 @@ class RegistrationList(AdminBase):
                 left outer join provider_queue_status pqs on pqs.id=pq.provider_queue_status_id
                 left outer join office_plans op on op.office_id = o.id
                 left outer join office_type ot on ot.id=o.office_type_id
-                left outer join office_addresses oa on oa.office_id=o.id
                 left outer join users u on o.user_id = u.id
                 left outer join office_user ou on ou.office_id = o.id
         """
@@ -970,24 +969,12 @@ class RegistrationList(AdminBase):
         for x in o:
             x['addr'] = db.query("""
                 select 
-                JSON_ARRAYAGG(
-                    JSON_OBJECT(
-                        'id',oa.id,'addr1',oa.addr1,'addr2',oa.addr2,'phone',oa.phone,
-                        'city',oa.city,'state',oa.state,'zipcode',oa.zipcode,'name',oa.name
-                    )
-                ) as addr
+                    oa.id,oa.addr1,oa.addr2,oa.phone,
+                    oa.city,oa.state,oa.zipcode,oa.name
                 from 
                     office_addresses oa where office_id=%s
-                limit 1
                 """,(x['office_id'],)
             )
-            if len(x['addr']) < 1 or x['addr'][0]['addr'] == None:
-                x['addr'] = []
-            else:
-                j = x['addr']
-                x['addr'] = []
-                for a in j:
-                    x['addr'].append(json.loads(a['addr']))
             t = db.query("""
                 select 
                     op.id,start_date,end_date,

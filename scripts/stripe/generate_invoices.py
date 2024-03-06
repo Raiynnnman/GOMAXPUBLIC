@@ -54,7 +54,7 @@ q = db.query("""
 )
 
 for x in q:
-    print(json.dumps(x,indent=4))
+    # print(json.dumps(x,indent=4))
     x['items'] = json.loads(x['items'])
     o = db.query("""
         select 
@@ -85,7 +85,7 @@ for x in q:
     insid = db.query("select LAST_INSERT_ID()")
     insid = insid[0]['LAST_INSERT_ID()']
     for g in x['items']:
-        print(g)
+        # print(g)
         subtotal = g['price']*g['quantity']
         price = round(g['price']*g['quantity'],2)
         db.update("""

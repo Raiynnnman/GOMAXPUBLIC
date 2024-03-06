@@ -6,11 +6,10 @@ import { ElementsConsumer } from "@stripe/react-stripe-js";
 import { Button, Form, FormGroup, Label, Input, Row, Col, Dropdown, DropdownToggle, DropdownItem, DropdownMenu } from "reactstrap";
 import { PaymentElement } from "@stripe/react-stripe-js";
 import { saveCard } from "../../actions/saveCard";
-import { Country, State, City } from "country-state-city";
+import { State, City } from "country-state-city";
 import {toast} from "react-toastify";
 
 function BillingCreditCardForm({ intentid, onCancel, onSave }) {
-  const countryRef = useRef(null);
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -19,27 +18,18 @@ function BillingCreditCardForm({ intentid, onCancel, onSave }) {
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
   const [zip, setZip] = useState("");
-  const [country, setCountry] = useState("");
   const [addedCard,setAddedCard] = useState(false);
 
   const [disableSaveButton, setDisableSaveButton] = useState(true);
 
-  const [fetchedCountries, setFetchedCountries] = useState(
-    Country.getAllCountries()
-  );
   const [fetchedStates, setFetchedStates] = useState();
   const [fetchedCities, setFetchedCities] = useState();
-  const [filteredCountries, setFilteredCountries] = useState(
-    Country.getAllCountries()
-  );
   const [filteredStates, setFilteredStates] = useState([]);
   const [filteredCities, setFilteredCities] = useState([]);
 
-  const [selectedCountry, setSelectedCountry] = useState();
   const [selectedState, setSelectedState] = useState();
   const [selectedCity, setSelectedCity] = useState();
 
-  const [countryIsOpen, setCountryIsOpen] = useState(false);
   const [cityIsOpen, setCityIsOpen] = useState(false);
   const [stateIsOpen, setStateIsOpen] = useState(false);
 
@@ -51,14 +41,6 @@ function BillingCreditCardForm({ intentid, onCancel, onSave }) {
     onCancel();
   };
 
-  useEffect(() => {
-    if (document.activeElement === countryRef.current) {
-      setCountryIsOpen(true);
-    } else {
-      setCountryIsOpen(false);
-    }
-  }, [countryRef]);
-
   const handlePaymentAdd = async (event) => {
     event.preventDefault();
     let data = {
@@ -69,7 +51,6 @@ function BillingCreditCardForm({ intentid, onCancel, onSave }) {
       address_state: state,
       address_phone: phone,
       address_zip: zip,
-      address_country: country,
     };
     const card = elements.getElement(CardElement);
     const result = await stripe.createToken(card, data);
@@ -122,20 +103,6 @@ function BillingCreditCardForm({ intentid, onCancel, onSave }) {
   const handleChangeZip = (event) => {
     setZip(event.target.value);
   };
-  const handleChangeCountry = (event) => {
-    let foundCountry = fetchedCountries.find(
-      (country) => country === event.target.value
-    );
-    if (foundCountry !== undefined) {
-      setSelectedCountry(foundCountry);
-    }
-    setFilteredCountries(
-      fetchedCountries.filter((countryName) =>
-        countryName.name.includes(event.target.value)
-      )
-    );
-    setCountry(event.target.value);
-  };
 
   useEffect(() => {
     setDisableSaveButton(
@@ -145,25 +112,13 @@ function BillingCreditCardForm({ intentid, onCancel, onSave }) {
         address1.length <= 0 ||
         city.length <= 0 ||
         state.length <= 0 ||
-        zip.length <= 0 ||
-        country.length <= 0
+        zip.length <= 0 
     );
-  }, [name, address1, city, state, zip, country]);
-
-  useEffect(() => {
-    if (selectedCountry) {
-      let tempStates = State.getStatesOfCountry(selectedCountry.isoCode);
-      if (tempStates !== undefined) {
-        setFetchedStates(tempStates);
-        setFilteredStates(tempStates);
-      }
-    }
-  }, [selectedCountry]);
+  }, [name, address1, city, state, zip]);
 
   useEffect(() => {
     if (selectedState) {
       let tempCities = City.getCitiesOfState(
-        selectedCountry.isoCode,
         selectedState.isoCode
       );
       if (tempCities !== undefined) {
@@ -174,11 +129,6 @@ function BillingCreditCardForm({ intentid, onCancel, onSave }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedState]);
 
-  const countryMenuItemClicked = (country) => {
-    setCountry(country.name);
-    setSelectedCountry(country);
-    handleChangeCountry({ target: { value: country.name } });
-  };
   const stateMenuItemClicked = (state) => {
     setState(state.name);
     setSelectedState(state);
@@ -341,48 +291,6 @@ function BillingCreditCardForm({ intentid, onCancel, onSave }) {
                 value={zip}
                 onChange={handleChangeZip}
               />
-            </FormGroup>
-          </Col>
-        </Row>
-        <Row>
-          <Col md={6}>
-            <FormGroup>
-              <Label for="country">Country</Label>
-              <Dropdown
-                toggle={() => setCountryIsOpen(!countryIsOpen)}
-                isOpen={countryIsOpen}
-                ref={countryRef}
-                outline
-              >
-                <DropdownToggle data-toggle="dropdown" tag="span">
-                  <Input
-                    id="country"
-                    name="country"
-                    value={country}
-                    onChange={handleChangeCountry}
-                  />
-                </DropdownToggle>
-                <DropdownMenu style={{ maxHeight: 300, overflowY: "scroll" }}>
-                  {fetchedCountries &&
-                    (filteredCountries.length > 0 ? (
-                      filteredCountries.map((item) => (
-                        <div key={item}>
-                          <DropdownItem
-                            onClick={() => {
-                              countryMenuItemClicked(item);
-                            }}
-                          >
-                            {item.name}
-                          </DropdownItem>
-                        </div>
-                      ))
-                    ) : (
-                      <DropdownItem disabled={true}>
-                        No countries found
-                      </DropdownItem>
-                    ))}
-                </DropdownMenu>
-              </Dropdown>
             </FormGroup>
           </Col>
         </Row>

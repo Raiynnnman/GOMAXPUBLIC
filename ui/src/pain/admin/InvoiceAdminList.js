@@ -222,19 +222,34 @@ class InvoiceAdminList extends Component {
             {
                 dataField:'number',
                 editable: false,
+                align:'center',
                 text:'Invoice ID',
             },
             {
                 dataField:'invoice_status',
                 sort:true,
                 editable:false,
+                align:'center',
                 text:'Status',
             },
             {
                 dataField:'billing_period',
                 sort:true,
                 editable:false,
+                align:'center',
                 text:'Period',
+            },
+            {
+                dataField:'total',
+                sort:true,
+                align:'right',
+                editable:false,
+                text:'Amount',
+                formatter:(cellContent,row) => (
+                    <div>
+                        ${row.total}
+                    </div>
+                )
             },
             {
                 dataField:'updated',

@@ -348,14 +348,26 @@ class MapContainer extends React.Component {
                             Metadata
                         </Col>
                     </Row>
-                    <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                        <Col md="4">
-                            UUID 
-                        </Col>
-                        <Col md="8">
-                            {this.state.selected.uuid.substring(0,10)}
-                        </Col>
-                    </Row>
+                    {(this.state.selected.category_id) === 99 && (
+                        <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
+                            <Col md="4">
+                                Office
+                            </Col>
+                            <Col md="8">
+                                {this.state.selected.name}
+                            </Col>
+                        </Row>
+                    )}
+                    {(this.state.selected.category_id !== 99) && (
+                        <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
+                            <Col md="4">
+                                UUID 
+                            </Col>
+                            <Col md="8">
+                                {this.state.selected.uuid.substring(0,10)}
+                            </Col>
+                        </Row>
+                    )}
                     <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
                         <Col md="4">
                             Type
@@ -412,46 +424,50 @@ class MapContainer extends React.Component {
                             {!this.state.selected.traf_delay ? "N/A" : this.state.selected.traf_delay}
                         </Col>
                     </Row>
-                    <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                        <Col md="4">
-                            Start
-                        </Col>
-                        <Col md="8">
-                            {moment(this.state.selected.traf_start_time).format('LLL')} (UTC)
-                        </Col>
-                    </Row>
-                    <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                        <Col md="4">
-                            End
-                        </Col>
-                        <Col md="8">
-                            {moment(this.state.selected.traf_end_time).format('LLL')} (UTC)
-                        </Col>
-                    </Row>
-                    <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                        <Col md="4">
-                            Magnitude
-                        </Col>
-                        <Col md="8">
-                            {this.state.selected.traf_magnitude}
-                        </Col>
-                    </Row>
-                    <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                        <Col md="4">
-                            # Reports
-                        </Col>
-                        <Col md="8">
-                            {this.state.selected.traf_num_reports}
-                        </Col>
-                    </Row>
-                    <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                        <Col md="4">
-                            Client Data
-                        </Col>
-                        <Col md="8">
-                            Pending
-                        </Col>
-                    </Row>
+                    {(this.state.selected.category_id !== 99) && (
+                        <>
+                        <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
+                            <Col md="4">
+                                Start
+                            </Col>
+                            <Col md="8">
+                                {moment(this.state.selected.traf_start_time).format('LLL')} (UTC)
+                            </Col>
+                        </Row>
+                        <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
+                            <Col md="4">
+                                End
+                            </Col>
+                            <Col md="8">
+                                {moment(this.state.selected.traf_end_time).format('LLL')} (UTC)
+                            </Col>
+                        </Row>
+                        <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
+                            <Col md="4">
+                                Magnitude
+                            </Col>
+                            <Col md="8">
+                                {this.state.selected.traf_magnitude}
+                            </Col>
+                        </Row>
+                        <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
+                            <Col md="4">
+                                # Reports
+                            </Col>
+                            <Col md="8">
+                                {this.state.selected.traf_num_reports}
+                            </Col>
+                        </Row>
+                        <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
+                            <Col md="4">
+                                Client Data
+                            </Col>
+                            <Col md="8">
+                                Pending
+                            </Col>
+                        </Row>
+                    </>
+                    )}
                     </>
                     )}
                 </div>
