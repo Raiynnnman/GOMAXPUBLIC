@@ -309,9 +309,10 @@ class RegisterProvider(RegistrationsBase):
                 insert into office_cards(
                     office_id,card_id,last4,exp_month,
                     exp_year,client_ip,payment_id,
-                    address1,address2,state,city,zip,name
+                    address1,address2,state,city,zip,name,
+                    is_default
                 ) values (
-                    %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s
+                    %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,1
                 )
                 """,(insid,card['id'],card['last4'],
                      card['exp_month'],card['exp_year'],
