@@ -121,7 +121,7 @@ export function loginUser(creds) {
     return (dispatch) => {
       const cookies = new Cookies();
       localStorage.setItem("dashboardTheme", 'dark')
-      localStorage.setItem('navbarColor', '#fff')
+      localStorage.setItem('navbarColor', '#F74301')
       localStorage.setItem('navbarType', 'static')
       if (false && !config.isBackend) {
         dispatch(receiveToken('token'));

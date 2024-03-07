@@ -35,11 +35,12 @@
   .dashboard-dark {
     --logo-color: $white;
 
-    --sidebar-icon-bg: #5CB0FF;
-    --sidebar-bg-color: #002B49;
+    --sidebar-icon-bg: black;
+    --sidebar-bg-color: #F74301;
     --sidebar-color: #F6F6E9;
     --sidebar-action-bg: #042338;
-    --sidebar-item-active: #F6F6E9;
+    //--sidebar-item-active: #F6F6E9;
+    --sidebar-item-active: black;
     --sidebar-nav-title-color: #dedede;
 
     --sidebar-section: #5287B9;
