@@ -209,6 +209,18 @@ class ResetPasswordWithToken(SubmitDataRequest):
             }
             return ret
         user_id = o[0]['id']
+        if 'i' in val:
+            l = db.query("""
+                select user_id from registrations
+                where id = %s""",(val['i'],))
+            for t in l:
+                val['u'] = t['user_id']
+        if 'u' not in val:
+            ret = { 
+                "success":False,
+                "message": "NO_UID_IN_TOKEN"
+            }
+            return ret
         if user_id != val['u']:
             ret = { 
                 "success":False,

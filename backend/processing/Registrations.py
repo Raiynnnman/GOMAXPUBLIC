@@ -162,6 +162,15 @@ class RegistrationVerify(RegistrationsBase):
             )
             insid = db.query("select LAST_INSERT_ID()");
             insid = insid[0]['LAST_INSERT_ID()']
+            db.update("""
+                update registrations set user_id = %s where id = %s
+                """,(insid,inis)
+            )
+            db.update("""
+                insert into user_login_tokens (user_id,token,expires) values
+                    (%s,%s,date_add(now(),INTERVAL 24 HOUR))
+                """,(insid,params['token'])
+            )
             offname = "user-%s" % encryption.getSHA256(u['email'])
             db.update("insert into office (name,office_type_id) values (%s,%s)",
                 (

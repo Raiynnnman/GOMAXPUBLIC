@@ -10,6 +10,7 @@ import classnames from 'classnames';
 import s from '../utils/default.module.scss';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
+import Reset from '../reset/Reset';
 import { registerVerify } from '../../actions/registerVerify';
 
 class ThankYou extends Component {
@@ -30,20 +31,9 @@ class ThankYou extends Component {
 
     render() {
         return (
-            <div className="auth-page">
-                <Container>
-                    <h5 className="auth-logo">
-                        <i className="la la-circle text-primary" />
-                        #PAIN
-                        <i className="la la-circle text-danger" />
-                    </h5>
-                    <Widget className="widget-auth mx-auto" title={<h3 className="mt-0">Welcome to #PAIN</h3>}>
-                        <p className="widget-auth-info">
-                            Thank you for registering with #PAIN! We will be in contact soon. 
-                        </p>
-                    </Widget>
-                </Container>
-            </div>
+        <>
+            <Reset/>
+        </>
         )
     }
 }
