@@ -93,10 +93,10 @@ for x in q:
             insert into invoice_items (
                     invoices_id,description,price,quantity,code,office_id
                 ) values (
-                %s,%s,%s,%s,%s
+                %s,%s,%s,%s
             )
             """,(
-                insid,g['description'],price,g['quantity'],g['office_id']
+                insid,g['description'],price,g['quantity']
             )
         )
     db.update("""
