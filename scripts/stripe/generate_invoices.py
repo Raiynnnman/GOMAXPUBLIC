@@ -77,7 +77,7 @@ for x in q:
     print("Generating invoice for this month for %s" % x['office_id'])
     db.update("""
     insert into invoices(
-        office_id,invoice_status_id,billing_period,stripe_tax_code
+        office_id,invoice_status_id,billing_period,stripe_tax_id
         ) 
         values
         (%s,%s,date(%s),'txcd_10000000')
