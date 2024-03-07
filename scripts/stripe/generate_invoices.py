@@ -96,7 +96,7 @@ for x in q:
                 %s,%s,%s,%s,%s,%s
             )
             """,(
-                insid,g['desc'],price,g['quantity'],g['code'],g['office_id']
+                insid,g['description'],price,g['quantity'],g['code'],g['office_id']
             )
         )
     db.update("""
