@@ -47,7 +47,7 @@ class App extends React.PureComponent {
                       <UserRoute path="/app" dispatch={this.props.dispatch} component={LayoutComponent}/>
                       <Route path="/reset/:token" exact component={Reset}/>
                       <Route path="/verify/:token" exact component={Verified}/> 
-                      <Route path="/register" exact component={Register}/> */}
+                      <Route path="/register" exact component={Register}/>}
                       <Route path="/register-provider/:id" exact component={RegisterProvider}/>
                       <AuthRoute path="/login" exact component={Login}/>
                       <AuthRoute path="/welcome" exact component={Welcome}/>
