@@ -165,12 +165,15 @@ class RegistrationVerify(RegistrationsBase):
             offname = "user-%s" % encryption.getSHA256(u['email'])
             db.update("insert into office (name,office_type_id) values (%s,%s)",
                 (
-                    offname,
+                    offname[:10],
                     OT['Customer']
                 )
             )
             offid = db.query("select LAST_INSERT_ID()");
             offid = offid[0]['LAST_INSERT_ID()']
+            db.update("insert into office_addresses (office_id,zipcode) values (%s,%s)",
+                (offid,u['zipcode'])
+            )
             db.update("insert into office_user (office_id,user_id) values (%s,%s)",
                 (offid,insid)
             )
