@@ -91,7 +91,7 @@ for x in q:
         price = round(g['price']*g['quantity'],2)
         db.update("""
             insert into invoice_items (
-                    invoices_id,description,price,quantity,code,office_id
+                    invoices_id,description,price,quantity
                 ) values (
                 %s,%s,%s,%s
             )
