@@ -68,6 +68,11 @@ class PricingList extends Component {
                 text:'Price'
             }
         ]
+        const options = {
+          showTotal:true,
+          sizePerPage:10,
+          hideSizePerPage:true
+        };
         return (
         <>
             {(this.props.plansList && this.props.plansList.isReceiving) && (
@@ -89,6 +94,7 @@ class PricingList extends Component {
                         <TabPane tabId="pricing">
                             <BootstrapTable 
                                 keyField='id' data={this.props.plansList.data} 
+                                pagination={paginationFactory(options)}
                                 columns={planheads}>
                             </BootstrapTable>
                         </TabPane>

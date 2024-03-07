@@ -142,6 +142,11 @@ class Scheduling extends Component {
     } 
 
     render() {
+        const options = {
+          showTotal:true,
+          sizePerPage:10,
+          hideSizePerPage:true
+        };
         var days = {
             0:'Mon',
             1:'Tue',

@@ -200,7 +200,11 @@ class Registrations extends Component {
     } 
 
     render() {
-        console.log("p",this.props);
+        const options = {
+          showTotal:true,
+          sizePerPage:10,
+          hideSizePerPage:true
+        };
         var fields = [
             {name:'Email',value:'email'},
             {name:'First',value:'first_name'},
@@ -420,6 +424,10 @@ class Registrations extends Component {
                             <>
                             <div style={{zIndex:512}}>
                                 <Row md="12">
+                                    <Col md="1"> 
+                                        <Button onClick={this.add} 
+                                            color="primary">Add</Button>
+                                    </Col>
                                     <Col md="5" style={{zIndex:9995}}>
                                       {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
                                         this.props.registrationsAdminList.data.config &&
@@ -450,14 +458,6 @@ class Registrations extends Component {
                                     </Col>                
                                 </Row>
                             </div>
-                            <Row md="12">
-                                <Col md="12">
-                                    <Col md="6">
-                                        <Button style={{marginLeft:10}} onClick={this.add} 
-                                            color="primary">Add</Button>
-                                    </Col>
-                                </Col>
-                            </Row>
                             <Row md="12" style={{marginTop:10}}>
                                 <Col md="12">
                                     <>
@@ -466,6 +466,7 @@ class Registrations extends Component {
                                       this.props.registrationsAdminList.data.registrations.length > 0)&& ( 
                                     <BootstrapTable 
                                         keyField='id' data={this.props.registrationsAdminList.data.registrations} 
+                                        pagination={paginationFactory(options)}
                                         columns={regheads}>
                                     </BootstrapTable>
                                     )}

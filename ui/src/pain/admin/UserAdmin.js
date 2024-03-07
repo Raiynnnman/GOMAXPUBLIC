@@ -47,7 +47,7 @@ class UserAdmin extends Component {
     render() {
         return (
         <>
-            {(this.props.consultantAdmin && this.props.consultantAdmin.isReceiving) && (
+            {(this.props.userAdmin && this.props.userAdmin.isReceiving) && (
                 <AppSpinner/>
             )}
             <Row md="12">
@@ -63,7 +63,7 @@ class UserAdmin extends Component {
 function mapStateToProps(store) {
     return {
         currentUser: store.auth.currentUser,
-        userAdmin: store.consultantAdmin
+        userAdmin: store.userAdmin
     }
 }
 

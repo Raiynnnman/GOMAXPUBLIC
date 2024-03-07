@@ -274,6 +274,11 @@ class InvoiceAdminList extends Component {
                 )
             }
         ];
+        const options = {
+          showTotal:true,
+          sizePerPage:10,
+          hideSizePerPage:true
+        };
         return (
         <>
             {(this.props.invoiceAdmin && this.props.invoiceAdmin.isReceiving) && (
@@ -298,7 +303,7 @@ class InvoiceAdminList extends Component {
                     <BootstrapTable 
                         keyField='id' data={this.props.invoiceAdmin.data.invoices} 
                         cellEdit={ cellEditFactory({ mode: 'click',blurToSave:true })}
-                        columns={heads} pagination={ paginationFactory()}>
+                        columns={heads} pagination={ paginationFactory(options)}>
                     </BootstrapTable>
                 </Col>                
             </Row>

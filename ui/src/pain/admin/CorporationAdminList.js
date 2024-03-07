@@ -88,6 +88,11 @@ class CorporationList extends Component {
     } 
 
     render() {
+        const options = {
+          showTotal:true,
+          sizePerPage:10,
+          hideSizePerPage:true
+        };
         var heads = [
             {
                 dataField:'id',
@@ -153,7 +158,7 @@ class CorporationList extends Component {
                 <Col md="12">
                     <BootstrapTable 
                         keyField='id' data={this.props.corporationAdmin.data} 
-                        columns={heads} pagination={ paginationFactory()}>
+                        columns={heads} pagination={ paginationFactory(options)}>
                     </BootstrapTable>
                 </Col>                
             </Row>

@@ -246,6 +246,15 @@ class RegisterProvider(RegistrationsBase):
         ENT = self.getEntitlementIDs()
         PERM = self.getPermissionIDs()
         PL = self.getPlans()
+        HAVE = False
+        l = db.query("""
+            select id from office where cust_id=%s
+            """,(params['cust_id'],)
+        )
+        for t in l:
+            HAVE = True
+        if HAVE:
+            return ret
         db.update("insert into office (name,office_type_id,email,cust_id,active) values (%s,%s,%s,%s,0)",
             (params['name'],OT['Chiropractor'],params['email'],params['cust_id'])
         )

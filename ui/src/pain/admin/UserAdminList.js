@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { Col, Row } from 'reactstrap';
 import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
 import { FormGroup, Label, Input } from 'reactstrap';
+import ToolkitProvider from 'react-bootstrap-table2-toolkit';
 import moment from 'moment';
 import Select from 'react-select';
 import { push } from 'connected-react-router';
@@ -126,6 +127,11 @@ class UserAdminList extends Component {
     } 
 
     render() {
+        const options = {
+          showTotal:true,
+          sizePerPage:10,
+          hideSizePerPage:true
+        };
         const responsive = {
             0: { 
                 items: 1
@@ -212,6 +218,7 @@ class UserAdminList extends Component {
                 )
             },
         ];
+        console.log("p",this.props);
         return (
         <>
             {(this.props.userAdmin && this.props.userAdmin.isReceiving) && (
@@ -229,11 +236,24 @@ class UserAdminList extends Component {
             </Row>
             <Row md="12">
                 <Col md="12">
-                    <BootstrapTable 
-                        keyField='id' data={this.props.userAdmin.data.users} 
-                        cellEdit={ cellEditFactory({ mode: 'click',blurToSave:true })}
-                        columns={heads} pagination={ paginationFactory()}>
-                    </BootstrapTable>
+                    <ToolkitProvider
+                      keyField="id"
+                      data={ this.props.userAdmin.data.users }
+                      columns={ heads }
+                      search
+                    >
+                        {props => (
+                            <>
+                              <SearchBar
+                                {...props.searchProps}
+                                style={{ marginBottom:10,width: "400px", height: "40px" }}
+                              />
+                              <BootstrapTable { ...props.baseProps }
+                                pagination={ paginationFactory(options) }>
+                              </BootstrapTable>
+                            </>
+                        )}
+                    </ToolkitProvider>
                 </Col>                
             </Row>
             </>

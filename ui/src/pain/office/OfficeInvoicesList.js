@@ -134,6 +134,11 @@ class InvoiceAdminList extends Component {
     } 
 
     render() {
+        const options = {
+          showTotal:true,
+          sizePerPage:10,
+          hideSizePerPage:true
+        };
         const responsive = {
             0: { 
                 items: 1
@@ -242,7 +247,7 @@ class InvoiceAdminList extends Component {
                     <BootstrapTable 
                         keyField='id' data={this.props.officeInvoices.data.invoices.filter((e) => e.invoice_status !== "CREATED")} 
                         cellEdit={ cellEditFactory({ mode: 'click',blurToSave:true })}
-                        columns={heads} pagination={ paginationFactory()}>
+                        columns={heads} pagination={ paginationFactory(options)}>
                     </BootstrapTable>
                 </Col>                
             </Row>

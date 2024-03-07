@@ -186,6 +186,11 @@ class LegalAdminList extends Component {
     } 
 
     render() {
+        const options = {
+          showTotal:true,
+          sizePerPage:10,
+          hideSizePerPage:true
+        };
         const responsive = {
             0: { 
                 items: 1
@@ -278,7 +283,7 @@ class LegalAdminList extends Component {
                     <BootstrapTable 
                         keyField='id' data={this.props.legalAdmin.data.legals} 
                         cellEdit={ cellEditFactory({ mode: 'click',blurToSave:true })}
-                        columns={heads} pagination={ paginationFactory()}>
+                        columns={heads} pagination={ paginationFactory(options)}>
                     </BootstrapTable>
                 </Col>                
             </Row>
