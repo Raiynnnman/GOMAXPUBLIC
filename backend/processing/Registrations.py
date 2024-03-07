@@ -51,7 +51,7 @@ class RegistrationUpdate(RegistrationsBase):
             return {'success': True}
         if 'phone' not in params:
             params['phone'] = ''
-        email = params['email']
+        email = params['email'].lower()
         HAVE = False
         db = Query()
         l = db.query("""
@@ -100,7 +100,6 @@ class RegistrationUpdate(RegistrationsBase):
         m = Mail()
         m.defer(email,"Registration with #PAIN","templates/mail/registration-verification.html",data)
         db.commit()
-        log.info("HERE")
         return {'success': True}
 
 class RegistrationVerify(RegistrationsBase):
@@ -118,6 +117,9 @@ class RegistrationVerify(RegistrationsBase):
             return {'success':False,'message':'TOKEN_REQUIRED'}
         token = params['token']
         db = Query()
+        OT = self.getOfficeTypes()
+        ENT = self.getEntitlementIDs()
+        PERM = self.getPermissionIDs()
         o = db.query("""
             select registrations_id from registrations_tokens where
             token = %s 
@@ -130,19 +132,29 @@ class RegistrationVerify(RegistrationsBase):
         inid = 0
         inem = ''
         try:
-            OT = self.getOfficeTypes()
-            ENT = self.getEntitlementIDs()
-            PERM = self.getPermissionIDs()
             token = base64.b64decode(token.encode('utf-8'))
             myjson = encryption.decrypt(token,config.getKey("encryption_key"))
             myjson = json.loads(myjson)
             inis = myjson['i']
             myid = inis
             inem = myjson['e']
+            HAVE = False
             l = db.query("""
-                select email,first_name,last_name,phone,zipcode
-                from registrations where token = %s
-                """,(token,))
+                select id from users where email = %s
+                """,(inem,)
+            )
+            for t in l:
+                HAVE=True
+            if HAVE:
+                return {'success':False,'message':'USER_ALREADY_REGISTERED'}
+            l = db.query("""
+                select 
+                    email,first_name,last_name,phone,zipcode
+                from 
+                    registrations r
+                where
+                    email = %s and verified = 0
+                """,(inem,))
             u = l[0]
             db.update("""
                 insert into users (email, first_name, last_name, phone, zipcode) values (%s,%s,%s,%s,%s)
@@ -150,28 +162,32 @@ class RegistrationVerify(RegistrationsBase):
             )
             insid = db.query("select LAST_INSERT_ID()");
             insid = insid[0]['LAST_INSERT_ID()']
+            offname = "user-%s" % encryption.getSHA256(u['email'])
             db.update("insert into office (name,office_type_id) values (%s,%s)",
-                (encryption.getSHA256(l['email']),OT['Customer'])
+                (
+                    offname,
+                    OT['Customer']
+                )
             )
             offid = db.query("select LAST_INSERT_ID()");
-            office = offid[0]['LAST_INSERT_ID()']
-            db.update("insert into office_users (office_id,user_id) values (%s,%s)",
+            offid = offid[0]['LAST_INSERT_ID()']
+            db.update("insert into office_user (office_id,user_id) values (%s,%s)",
                 (offid,insid)
             )
             db.update("insert into user_entitlements(user_id,entitlements_id) values (%s,%s)",
                 (insid,ENT['Customer'])
             )
-            db.update("insert into user_permissions(user_id,entitlements_id) values (%s,%s)",
+            db.update("insert into user_permissions(user_id,permissions_id) values (%s,%s)",
                 (insid,PERM['Write'])
             )
-        except:
-            log.info("TOKEN_INVALID")
+            db.update("""
+                update registrations set verified = 1 where id=%s
+                """,(myid,)
+            )
+            db.commit()
+        except Exception as e:
+            log.info("TOKEN_INVALID: %s" % str(e))
             return {'success':False,'message':'INVALID_TOKEN'}
-        db.update("""
-            update registrations set verified = 1 where id=%s
-            """,(myid,)
-        )
-        db.commit()
         return { 'success': True }
 
 class RegistrationLandingData(RegistrationsBase):

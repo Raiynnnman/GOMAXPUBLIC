@@ -78,6 +78,7 @@ class Register extends Component {
             phone: this.state.phone,
             last: this.state.last
         } 
+        console.log("tosend",tosend)
         this.props.dispatch(registerUser(tosend,function(err,args) { 
               toast.success('Successfully registered.',
                 {
@@ -142,6 +143,7 @@ class Register extends Component {
 
 
     render() {
+        console.log("p",this.props);
         return (
         <>
             {(this.props.registerUser && this.props.registerUser.isReceiving) && (
@@ -220,7 +222,7 @@ class Register extends Component {
                             </div>
                             <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                 <div style={{border:"1px solid black"}}></div>
-                                <Button type="submit" color="primary" className="auth-btn mb-3" onClick={this.register} disabled={
+                                <Button color="primary" className="auth-btn mb-3" onClick={this.register} disabled={
                                       !this.state.isValid} size="sm">{this.props.registerUser.isReceiving ? 'Saving...' : 'Register'}</Button>
                             </div>
                         </form>
