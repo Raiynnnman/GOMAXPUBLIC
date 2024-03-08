@@ -11,6 +11,7 @@ import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import { getOffices } from '../../actions/offices';
 import OfficeAdminList from './OfficeAdminList';
+import { getPlansList } from '../../actions/plansList';
 
 class Office extends Component {
     constructor(props) { 
@@ -26,6 +27,7 @@ class Office extends Component {
 
     componentDidMount() {
         this.props.dispatch(getOffices({page:0,limit:10000}))
+        this.props.dispatch(getPlansList({}));
     }
 
     toggleTab(e) { 

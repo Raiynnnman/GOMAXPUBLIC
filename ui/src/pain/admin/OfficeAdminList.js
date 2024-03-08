@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
+import moment from 'moment';
 import { connect } from 'react-redux';
 import { Col, Row } from 'reactstrap';
+import ToolkitProvider from 'react-bootstrap-table2-toolkit';
 import { push } from 'connected-react-router';
+import Select from 'react-select';
 import cellEditFactory from 'react-bootstrap-table2-editor';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { TabContent, TabPane } from 'reactstrap';
@@ -29,20 +32,15 @@ class OfficeList extends Component {
         this.getContext = this.getContext.bind(this);
         this.state = { 
             selected: null,
+            subTab: "plans",
             selectedID: 0
         } 
         this.cancel = this.cancel.bind(this);
+        this.toggleSubTab = this.toggleSubTab.bind(this);
         this.save = this.save.bind(this);
+        this.delRow = this.delRow.bind(this);
+        this.addAddress = this.addAddress.bind(this);
         this.nameChange = this.nameChange.bind(this);
-        this.phoneChange = this.phoneChange.bind(this);
-        this.addr1Change = this.addr1Change.bind(this);
-        this.addr2Change = this.addr2Change.bind(this);
-        this.cityChange = this.cityChange.bind(this);
-        this.stateChange = this.stateChange.bind(this);
-        this.phoneChange = this.phoneChange.bind(this);
-        this.markupChange = this.markupChange.bind(this);
-        this.zipcodeChange = this.zipcodeChange.bind(this);
-        this.einChange = this.einChange.bind(this);
         this.emailChange = this.emailChange.bind(this);
     } 
 
@@ -52,6 +50,27 @@ class OfficeList extends Component {
     componentDidMount() {
     }
 
+    delRow(e) { 
+        var t = this.state.selected.addr.filter((g) => g.id !== e.id);
+        this.state.selected.addr = t;
+        this.setState(this.state);
+    } 
+    toggleSubTab(e) { 
+        this.state.subTab = e;
+        this.setState(this.state);
+    } 
+    addAddress() { 
+        this.state.selected.addr.push({
+            id:0,
+            name:'',
+            addr1:'',
+            city:'',
+            state:'',
+            zipcode:'',
+            phone:''
+        })
+        this.setState(this.state);
+    } 
     getContext(e) { 
         this.props.dispatch(getContext({office:e.id},function(err,args) { 
                 localStorage.setItem("context",true);
@@ -66,7 +85,6 @@ class OfficeList extends Component {
                 name:'',
                 ein_number: '',
                 email:'',
-                pain_markup:1.25,
                 addr: [{ 
                     phone:'',
                     addr1:'',
@@ -86,59 +104,6 @@ class OfficeList extends Component {
         this.state.selected.name = e.target.value;
         this.setState(this.state);
     } 
-    phoneChange(e) { 
-        let val = e.target.value.replace(/\D/g, "")
-        .match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
-        let validPhone = !val[2] ? val[1]: "(" + val[1] + ") " + val[2] + (val[3] ? "-" + val[3] : "");
-        this.setState(prevState => {
-          const updatedAddr = [...prevState.selected.addr];
-          updatedAddr[0] = {
-            ...updatedAddr[0],
-            phone: validPhone
-          };
-      
-          return {
-            selected: {
-              ...prevState.selected,
-              addr: updatedAddr
-            }
-          };
-        });
-        if (validPhone.length < 14 && validPhone.length > 0) {
-            this.setState({ phoneMessage: 'Please add a 10 digit phone number' });
-        } else {
-            this.setState({ phoneMessage: '' });
-        }
-    } 
-    addr1Change(e) {
-        this.state.selected.addr[0].addr1 = e.target.value;
-        this.setState(this.state);
-    }
-    addr2Change(e) {
-        this.state.selected.addr[0].addr2 = e.target.value;
-        this.setState(this.state);
-    }
-    cityChange(e) {
-        this.state.selected.addr[0].city = e.target.value;
-        this.setState(this.state);
-    }
-    stateChange(e) {
-        this.state.selected.addr[0].state = e.target.value;
-        this.setState(this.state);
-    }
-    markupChange(e) { 
-        var g = parseInt(e.target.value);
-        this.state.selected.pain_markup = g;
-        this.setState(this.state);
-    } 
-    zipcodeChange(e) { 
-        this.state.selected.addr[0].zipcode = e.target.value;
-        this.setState(this.state);
-    } 
-    einChange(e) { 
-      this.state.selected.ein_number = e.target.value;
-      this.setState(this.state);
-    }
     emailChange(e) { 
       this.state.selected.email = e.target.value;
       this.setState(this.state);
@@ -164,18 +129,7 @@ class OfficeList extends Component {
         if (g.id === 'new') { 
             delete g['id']
         }
-        if (g.pain_markup < 1) { 
-            toast.error('Markup must be greater than 1.',
-                {
-                    position:"top-right",
-                    autoClose:3000,
-                    hideProgressBar:true
-                }
-            );
-            return;
-        }
-        if (!g.name || !g.email || !g.ein_number || !g.addr[0].addr1 || !g.addr[0].city || 
-          !g.addr[0].phone || !g.addr[0].state || !g.addr[0].zipcode || !g.pain_markup){
+        if (!g.name || !g.email) {  
             toast.error('Please fill all the fields.',
                 {
                     position:"top-right",
@@ -207,7 +161,6 @@ class OfficeList extends Component {
     } 
 
     render() {
-        console.log("p",this.props)
         var heads = [
             {
                 dataField:'id',
@@ -220,6 +173,20 @@ class OfficeList extends Component {
                 text:'Name'
             },
             {
+                dataField:'status',
+                sort:true,
+                text:'Status',
+                formatter:(cellContent,row) => (
+                    <div>
+                        {(row.status === 'INVITED') && (<Badge color="primary">INVITED</Badge>)}
+                        {(row.status === 'APPROVED') && (<Badge color="primary">APPROVED</Badge>)}
+                        {(row.status === 'QUEUED') && (<Badge color="secondary">QUEUED</Badge>)}
+                        {(row.status === 'WAITING') && (<Badge color="danger">WAITING</Badge>)}
+                        {(row.status === 'DENIED') && (<Badge color="danger">DENIED</Badge>)}
+                    </div>
+                )
+            },
+            {
                 dataField:'active',
                 width:"50",
                 text:'Active',
@@ -227,6 +194,16 @@ class OfficeList extends Component {
                     <div>
                         {(row.active === 1) && (<Badge color="primary">Active</Badge>)}
                         {(row.active === 0) && (<Badge color="danger">Inactive</Badge>)}
+                    </div>
+                )
+            },
+            {
+                dataField:'updated',
+                sort:true,
+                text:'Updated',
+                formatter:(cellContent,row) => (
+                    <div>
+                        {moment(row['updated']).format('LLL')} 
                     </div>
                 )
             },
@@ -241,15 +218,106 @@ class OfficeList extends Component {
                 )
             },
         ];
-        var addrheads = [ 
-                {dataField:'id', sort:true, text:'ID', hidden:true},
-                {dataField:'phone', sort:true, text:'Phone'},
-                {dataField:'addr1', sort:true, text:'Address1'},
-                {dataField:'addr2', sort:true, text:'Address2'},
-                {dataField:'city', sort:true, text:'City'},
-                {dataField:'state', sort:true, text:'State'},
-                {dataField:'zipcode', sort:true, text:'Zip'}
-        ] 
+        var offheads = [
+            {
+                dataField:'id',
+                sort:true,
+                hidden:true,
+                text:'ID'
+            },
+            {
+                dataField:'name',
+                text:'Name'
+            },
+            {
+                dataField:'phone',
+                text:'Phone'
+            },
+            {
+                dataField:'addr1',
+                text:'Address'
+            },
+            {
+                dataField:'city',
+                text:'City'
+            },
+            {
+                dataField:'state',
+                text:'state'
+            },
+            {
+                dataField:'zipcode',
+                text:'Zipcode'
+            },
+            {
+                dataField:'id',
+                text:'Actions',
+                editable: false,
+                formatter:(cellContent,row) => ( 
+                    <div>
+                        <Button onClick={() => this.delRow(row)} style={{marginRight:5,height:35,width:90}} color="danger">Delete</Button>
+                    </div>
+                )
+            },
+        ]
+        var planheads = [
+            {
+                dataField:'id',
+                sort:true,
+                hidden:true,
+                text:'ID'
+            },
+            {
+                dataField:'description',
+                editable:true,
+                text:'Description'
+            },
+            {
+                dataField:'quantity',
+                align:'center',
+                editable:true,
+                width:50,
+                text:'quantity'
+            },
+            {
+                dataField:'price',
+                text:'Price',
+                editable:true,
+                align:'right',
+                formatter: (cellContent,row) => (
+                    <div>
+                        ${row.price.toFixed ?  row.price.toFixed(2) : row.price}
+                    </div>
+                )
+            },
+            
+        ]
+        var invheads = [
+            {
+                dataField:'id',
+                sort:true,
+                hidden:true,
+                text:'ID'
+            },
+            {
+                dataField:'status',
+                text:'Status'
+            },
+            {
+                dataField:'billing_period',
+                text:'Period'
+            },
+            {
+                dataField:'total',
+                text:'Total',
+                align:'right',
+                formatter: (cellContent,row) => (
+                    <div>
+                        {row.total.toFixed ? '$' + row.total.toFixed(2) : row.total}
+                    </div>
+                )
+            }
+        ]
         const options = {
           showTotal:true,
           sizePerPage:10,
@@ -266,26 +334,35 @@ class OfficeList extends Component {
             {(this.props.officeSave && this.props.officeSave.isReceiving) && (
                 <AppSpinner/>
             )}
-            {(this.props && this.props.offices && this.props.offices.data && this.props.offices.data.length > 0 &&
-              this.state.selected === null) && ( 
+            {(this.props && this.props.offices && this.props.offices.data && this.props.offices.data.offices &&
+              this.props.offices.data.offices.length > 0 && this.state.selected === null) && ( 
             <>
             <Row md="12">
-                <Col md="4" style={{marginBottom:10}}>
-                    <Button onClick={() => this.edit({id:"new",addr:[]})} style={{marginRight:5,height:35,width:90}} color="primary">Add</Button>
-                </Col>
-            </Row>
-            <Row md="12">
                 <Col md="12">
-                    <BootstrapTable 
-                        keyField='id' data={this.props.offices.data} 
-                        columns={heads} pagination={ paginationFactory(options)}>
-                    </BootstrapTable>
+                    <ToolkitProvider
+                      keyField="id"
+                      data={this.props.offices.data.offices} 
+                      columns={ heads }
+                      search
+                    >
+                        {props => (
+                            <>
+                              <SearchBar
+                                {...props.searchProps}
+                                style={{ marginBottom:10,width: "400px", height: "40px" }}
+                              />
+                              <BootstrapTable { ...props.baseProps }
+                                pagination={ paginationFactory(options) }>
+                              </BootstrapTable>
+                            </>
+                        )}
+                    </ToolkitProvider>
                 </Col>                
             </Row>
             </>
             )}
-            {(this.props && this.props.offices && this.props.offices.data && this.props.offices.data.length > 0 &&
-              this.state.selected !== null) && ( 
+            {(this.props && this.props.offices && this.props.offices.data && this.props.offices.data.offices &&
+              this.props.offices.data.offices.length > 0 && this.state.selected !== null) && ( 
                 <>
                 <Row md="12">
                     <Col md="12">
@@ -293,10 +370,10 @@ class OfficeList extends Component {
                             <Col md={4}>
                               <FormGroup row>
                                 <Label for="normal-field" md={4} className="text-md-right">
-                                  Name
+                                  ID
                                 </Label>
                                 <Col md={8}>
-                                  <Input type="text" id="normal-field" onChange={this.nameChange} placeholder="Name" value={this.state.selected.name}/>
+                                  <Input type="text" id="normal-field" readOnly placeholder="ID" value={this.state.selected.id}/>
                                 </Col>
                               </FormGroup>
                             </Col>
@@ -305,17 +382,10 @@ class OfficeList extends Component {
                             <Col md={4}>
                               <FormGroup row>
                                 <Label for="normal-field" md={4} className="text-md-right">
-                                  Phone
+                                  Name
                                 </Label>
                                 <Col md={8}>
-                                  <Input type="text" id="normal-field" onChange={this.phoneChange} placeholder="Phone" value={this.state.selected.addr[0].phone}/>
-                                  {this.state.phoneMessage &&
-                                  <p for="normal-field" md={12} className="text-md-right">
-                                      <font style={{color:"red"}}>
-                                          {this.state.phoneMessage}
-                                      </font>
-                                  </p>
-                                }
+                                  <Input type="text" id="normal-field" onChange={this.nameChange} placeholder="Name" value={this.state.selected.name}/>
                                 </Col>
                               </FormGroup>
                             </Col>
@@ -340,87 +410,73 @@ class OfficeList extends Component {
                             </FormGroup>
                           </Col>
                         </Row>
-                        <Row md="12">
-                            <Col md={4}>
-                              <FormGroup row>
-                                <Label for="normal-field" md={4} className="text-md-right">
-                                  Address 1
-                                </Label>
-                                <Col md={8}>
-                                  <Input type="text" id="normal-field" onChange={this.addr1Change} placeholder="Address 1" value={this.state.selected.addr[0].addr1}/>
-                                </Col>
-                              </FormGroup>
-                            </Col>
-                        </Row>
-                        <Row md="12">
-                            <Col md={4}>
-                              <FormGroup row>
-                                <Label for="normal-field" md={4} className="text-md-right">
-                                  Address 2
-                                </Label>
-                                <Col md={8}>
-                                  <Input type="text" id="normal-field" onChange={this.addr2Change} placeholder="Address 2" value={this.state.selected.addr[0].addr2}/>
-                                </Col>
-                              </FormGroup>
-                            </Col>
-                        </Row>
-                        <Row md="12">
-                            <Col md={4}>
-                              <FormGroup row>
-                                <Label for="normal-field" md={4} className="text-md-right">
-                                  City
-                                </Label>
-                                <Col md={8}>
-                                  <Input type="text" id="normal-field" onChange={this.cityChange} placeholder="City" value={this.state.selected.addr[0].city}/>
-                                </Col>
-                              </FormGroup>
-                            </Col>
-                        </Row>
-                        <Row md="12">
-                            <Col md={4}>
-                              <FormGroup row>
-                                <Label for="normal-field" md={4} className="text-md-right">
-                                  State
-                                </Label>
-                                <Col md={8}>
-                                  <Input type="text" id="normal-field" onChange={this.stateChange} placeholder="State" value={this.state.selected.addr[0].state}/>
-                                </Col>
-                              </FormGroup>
-                            </Col>
-                        </Row>
-                        <Row md="12">
-                            <Col md={4}>
-                              <FormGroup row>
-                                <Label for="normal-field" md={4} className="text-md-right">
-                                  Zip Code
-                                </Label>
-                                <Col md={8}>
-                                  <Input type="text" id="normal-field" onChange={this.zipcodeChange} placeholder="Zip Code" value={this.state.selected.addr[0].zipcode}/>
-                                </Col>
-                              </FormGroup>
-                            </Col>
-                        </Row>
-                        <Row md="12">
-                            <Col md={4}>
-                              <FormGroup row>
-                                <Label for="normal-field" md={4} className="text-md-right">
-                                  EIN
-                                </Label>
-                                <Col md={8}>
-                                  <Input type="text" id="normal-field" onChange={this.einChange} placeholder="EIN" value={this.state.selected.ein_number}/>
-                                </Col>
-                              </FormGroup>
-                            </Col>
-                        </Row>
                     </Col>                
+                </Row>
+                <Row md="12">
+                    <Col md="12">
+                        <Nav tabs  className={`${s.coloredNav}`} style={{backgroundColor:"#e8ecec"}}>
+                            <NavItem>
+                                <NavLink className={classnames({ active: this.state.subTab === 'plans' })}
+                                    onClick={() => { this.toggleSubTab('plans') }}>
+                                    <span>{translate('Plans')}</span>
+                                </NavLink>
+                            </NavItem>
+                            <NavItem>
+                                <NavLink className={classnames({ active: this.state.subTab === 'offices' })}
+                                    onClick={() => { this.toggleSubTab('offices') }}>
+                                    <span>{translate('Offices')}</span>
+                                </NavLink>
+                            </NavItem>
+                            <NavItem>
+                                <NavLink className={classnames({ active: this.state.subTab === 'invoices' })}
+                                    onClick={() => { this.toggleSubTab('invoices') }}>
+                                    <span>{translate('Invoices')}</span>
+                                </NavLink>
+                            </NavItem>
+                        </Nav>
+                        <TabContent className='mb-lg' activeTab={this.state.subTab}>
+                            <TabPane tabId="plans">
+                                {(this.state.selected.plans && this.state.selected.plans.items) && (
+                                <>
+                                <BootstrapTable 
+                                    keyField='id' data={this.state.selected.plans.items} 
+                                    cellEdit={ cellEditFactory({ mode: 'click',blurToSave:true })}
+                                    columns={planheads}>
+                                </BootstrapTable>
+                                </>
+                                )}
+                            </TabPane>
+                            <TabPane tabId="offices">
+                                <Button style={{marginBottom:10}} onClick={this.addAddress} 
+                                    color="primary">Add</Button>
+                                {(this.state.selected.addr && this.state.selected.addr) && (
+                                <>
+                                <BootstrapTable 
+                                    cellEdit={ cellEditFactory({ mode: 'click',blurToSave:true })}
+                                    keyField='id' data={this.state.selected.addr} 
+                                    columns={offheads}>
+                                </BootstrapTable>
+                                </>
+                                )}
+                            </TabPane>
+                            <TabPane tabId="invoices">
+                                {/*<Button onClick={() => this.addInvoiceRow({id:"new"})} 
+                                    style={{marginRight:5,marginBottom:10,height:35,width:90}} color="primary">Add</Button> */}
+                                {(this.state.selected.invoices && this.state.selected.invoices) && (
+                                    <BootstrapTable 
+                                        keyField='id' data={this.state.selected.invoices} 
+                                        columns={invheads}>
+                                    </BootstrapTable>
+                                )}
+                            </TabPane>
+                        </TabContent>
+                    </Col>
                 </Row>
                 <hr/>
                 <Row md="12">
                     <Col md="6">
                         <Button onClick={this.save} color="primary" disabled={!this.state.selected.name || !this.state.selected.email || 
-                          !this.state.selected.ein_number || !this.state.selected.addr[0].addr1 || !this.state.selected.addr[0].city || 
-                          !this.state.selected.addr[0].phone || !this.state.selected.addr[0].state || !this.state.selected.addr[0].zipcode || 
-                          !this.state.selected.pain_markup || this.state.errorMessage || this.state.phoneMessage}>Save</Button>
+                          this.state.errorMessage || this.state.phoneMessage}>Save</Button>
                         <Button outline style={{marginLeft:10}} onClick={this.cancel} color="secondary">Cancel</Button>
                     </Col>
                 </Row>
@@ -435,6 +491,7 @@ function mapStateToProps(store) {
     return {
         currentUser: store.auth.currentUser,
         officeSave: store.officeSave,
+        plansList: store.plansList,
         context: store.context,
         offices: store.offices
     }

@@ -565,26 +565,84 @@ class OfficeList(AdminBase):
         o = db.query(
             """
                 select 
-                    o.id,o.name,active,email,
+                    o.id,o.name,o.active,o.email,pqs.name as status,
                     JSON_ARRAYAGG(
                         JSON_OBJECT(
-                            'id',oa.id,'addr1',addr1,'addr2',addr2,'phone',phone,
-                            'city',city,'state',state,'zipcode',zipcode)
-                    ) as addr
+                            'id',oa.id,'addr1',oa.addr1,'addr2',oa.addr2,'phone',oa.phone,
+                            'city',oa.city,'state',oa.state,'zipcode',oa.zipcode)
+                    ) as addr,u.phone,u.first_name,u.last_name
                 from 
                     office o
                 left outer join office_addresses oa on oa.office_id=o.id
-                where o.office_type_id = %s
+                left outer join provider_queue pq on pq.office_id = o.id
+                left outer join provider_queue_status pqs on pq.provider_queue_status_id=pqs.id
+                left join  users u on u.id = o.user_id
+                where 
+                    o.office_type_id = %s
                 group by 
                     o.id
                 limit %s offset %s
             """, (OT['Chiropractor'],limit,offset)
         )
-        ret = []
+        ret = {}
+        ret['offices'] = []
         for x in o:
-            j = x
-            j['addr'] = json.loads(x['addr'])
-            ret.append(j)
+            x['addr'] = json.loads(x['addr'])
+            t = db.query("""
+                select 
+                    i.id,i.invoice_status_id,isi.name as status,i.total,i.billing_period,
+                    JSON_ARRAYAGG(
+                        JSON_OBJECT(
+                            'id',ii.id,'price',ii.price,
+                            'description',ii.description,'quantity',ii.quantity
+                        )
+                    ) as items
+                
+                from
+                    invoices i,
+                    invoice_status isi,
+                    invoice_items ii
+                where
+                    i.invoice_status_id = isi.id and
+                    ii.invoices_id = i.id and
+                    i.office_id = %s
+                group by
+                    i.id
+                """,(x['id'],)
+            )
+            x['invoices'] = []
+            for j in t:
+                if j['id'] is None:
+                    continue
+                j['items'] = json.loads(j['items'])
+                x['invoices'].append(j)
+            t = db.query("""
+                select 
+                    op.id,start_date,end_date,
+                    JSON_ARRAYAGG(
+                        JSON_OBJECT(
+                            'id',opi.id,'price',opi.price,'description',
+                            opi.description,'quantity',opi.quantity
+                        )
+                    ) as items
+                from 
+                    office_plans op,
+                    office_plan_items opi
+                where 
+                    opi.office_plans_id = op.id and
+                    office_id = %s 
+            """,(x['id'],)
+            )
+            x['plans'] = []
+            for j in t:
+                if j['id'] is None:
+                    continue
+                x['plans'] = j
+                x['plans']['items'] = json.loads(x['plans']['items'])
+            ret['offices'].append(x)
+        ret['config'] = {}
+        ret['config']['provider_status'] = db.query("select id,name from provider_queue_status")
+        ret['config']['invoice_status'] = db.query("select id,name from invoice_status")
         return ret
 
 class OfficeSave(AdminBase):
@@ -601,11 +659,9 @@ class OfficeSave(AdminBase):
         db = Query()
         insid = 0
         OT = self.getOfficeTypes()
-        if 'dhd_markup' not in params:
-            params['dhd_markup'] = 1
         if 'id' not in params:
             db.update("insert into office (name,office_type_id,email) values (%s,%s,%s,%s)",
-                (params['name'],OT['Physician'],params['email'])
+                (params['name'],OT['Provider'],params['email'])
             )
             insid = db.query("select LAST_INSERT_ID()");
             insid = insid[0]['LAST_INSERT_ID()']
@@ -616,22 +672,18 @@ class OfficeSave(AdminBase):
                     email = %s where id = %s
                 """,(params['name'],params['email'],params['id']))
             insid = params['id']
+        db.update("""
+            delete from office_addresses where office_id = %s
+            """,(insid,)
+        )
         for x in params['addr']:
-            if 'id' not in x or x['id'] == 0:
-                db.update(
-                    """
-                        insert into office_addresses (
-                            office_id,addr1,addr2,phone,city,state,zipcode
-                        ) values (%s,%s,%s,%s,%s,%s,%s)
-                    """,(insid,x['addr1'],x['addr2'],x['phone'],x['city'],x['state'],x['zipcode'])
-                )
-            else:
-                db.update("""
-                    update office_addresses set 
-                        addr1=%s,addr2=%s,phone=%s,city=%s,state=%s,zipcode=%s
-                    where id = %s
-                """,(x['addr1'],x['addr2'],x['phone'],x['city'],x['state'],x['zipcode'],x['id'])
-                )
+            db.update(
+                """
+                    insert into office_addresses (
+                        office_id,addr1,addr2,phone,city,state,zipcode
+                    ) values (%s,%s,%s,%s,%s,%s,%s)
+                """,(insid,x['addr1'],x['addr2'],x['phone'],x['city'],x['state'],x['zipcode'])
+            )
         db.commit()
         return {'success': True}
 
@@ -1018,6 +1070,9 @@ class RegistrationList(AdminBase):
                     i.office_id = %s
                 group by
                     i.id
+                order by 
+                    created
+                limit 1
                 """,(x['office_id'],)
             )
             x['invoice'] = {}
