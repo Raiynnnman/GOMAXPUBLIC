@@ -1106,6 +1106,8 @@ class TrafficGet(AdminBase):
         if 'zipcode' in params:
             if params['zipcode'] == 'All':
                 del params['zipcode']
+            if params['zipcode'] is None:
+                del params['zipcode']
         db = Query()
         l = db.query("""
             select count(id) as cnt,date(ti.created) as day 
@@ -1147,7 +1149,7 @@ class TrafficGet(AdminBase):
         sqlp = []
         q = """
             select
-                ti.lat as lat ,ti.lon as lon
+                ti.lat as lat ,ti.lon as lng
             from
                 traffic_incidents ti,
                 traffic_coordinates tc
@@ -1158,23 +1160,34 @@ class TrafficGet(AdminBase):
         if 'date' in params:
             q += " date(ti.created) = %s and "
             sqlp.append(params['date'])
-        if 'zipcode' in params:
-            q += " ti.zipcode = %s and "
-            sqlp.append(params['zipcode'])
         q += """
                 1 = 1
             limit 1
         """
         l = db.query(q,sqlp)
         if len(l) > 0:
-            ret['center'] = {'lat':l[0]['lat'],'lon':l[0]['lon']}
+            if 'zipcode' in params:
+                o = db.query("""
+                    select lat,lon as lng from 
+                    position_zip where zipcode=%s
+                    UNION ALL
+                    select lat,lon as lng from 
+                    position_zip where zipcode=77089
+                    """,(params['zipcode'],)
+                )
+                if len(o) > 0:
+                    ret['center'] = {'lat':o[0]['lat'],'lng':o[0]['lng']}
+                else:
+                    ret['center'] = {'lat':l[0]['lat'],'lng':l[0]['lng']}
+            else:
+                ret['center'] = {'lat':l[0]['lat'],'lng':l[0]['lng']}
         else:
-            ret['center'] = {'lat':0,'lon':0}
+            ret['center'] = {'lat':0,'lng':0}
         q = """
             select
                 ti.uuid,ti.traffic_categories_id as category_id,
                 tcat.name as category,ti.zipcode,ti.city,ti.traf_start_time,
-                ti.traf_end_time,ti.traf_num_reports,ti.lat,ti.lon,
+                ti.traf_end_time,ti.traf_num_reports,ti.lat,ti.lon as lng,
                 ti.traf_magnitude,ti.traf_delay,ti.state,
                 json_arrayagg(
                     json_object(
@@ -1196,9 +1209,9 @@ class TrafficGet(AdminBase):
         if 'date' in params:
             q += " date(ti.created) = %s and "
             sqlp.append(params['date'])
-        if 'zipcode' in params:
-            q += " ti.zipcode = %s and "
-            sqlp.append(params['zipcode'])
+        #if 'zipcode' in params:
+        #    q += " ti.zipcode = %s and "
+        #    sqlp.append(params['zipcode'])
         if 'categories' in params:
             q += " ti.traffic_categories_id in (%s) and " 
             sqlp.append(",".join(map(str,params['categories'])))
@@ -1214,13 +1227,17 @@ class TrafficGet(AdminBase):
         for x in l:
             x['coords'] = json.loads(x['coords'])
             ret['data'].append(x)
-        ret['locations'] = []
+        if 'zipcode' in params:
+            ret['data'].append({
+                'category_id':100,
+                'coords':[ret['center']]
+            })
         if 99 in params['categories']:
             o = db.query("""
                 select 
                     oa.id,oa.name,oa.addr1,'' as uuid,
                     oa.city,oa.state,oa.zipcode,99 as category_id,
-                    'Location' as category, oa.lat, oa.lon,
+                    'Location' as category, oa.lat, oa.lon as lng,
                     json_arrayagg(
                         json_object('lat',oa.lat,'lng',oa.lon)) as coords
                 from 

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Map, Marker, GoogleApiWrapper } from "google-maps-react";
+import { Map, Circle, Marker, GoogleApiWrapper } from "google-maps-react";
 import { Col, Row } from 'reactstrap';
 import './Map.scss';
 import moment from 'moment';
@@ -9,20 +9,35 @@ class MapContainer extends React.Component {
     super(props);
     this.state = {
       locations: [],
+      mapRef:null,
+      //center:{lat:0,lng:0},
+      center:null,
       selected:null
     };
     this.handleMapClick = this.handleMapClick.bind(this);
     this.mapLoaded = this.mapLoaded.bind(this);
     this.handleMarkerClick = this.handleMarkerClick.bind(this);
   }
+  componentWillReceiveProps(p) { 
+    if (this.state.center === null) { 
+        this.state.center = this.props.centerPoint;
+        this.setState(this.state);
+    } 
+    if (this.state.mapRef !== null) { 
+        this.state.center = this.props.centerPoint;
+        this.state.mapRef.panTo(this.state.center);
+        this.setState(this.state);
+    } 
+  }
 
   handleMarkerClick(ref,map,ev) { 
-    var location = {lat:ref.data.lat,lng:ref.data.lon};
+    var location = {lat:ref.data.lat,lng:ref.data.lng};
     this.state.selected = ref.data;
     this.setState(prevState => ({
       locations: [...prevState.locations, location]
     }));
   }
+
   mapLoaded(m,n) { 
     var styles = 
         [
@@ -259,7 +274,9 @@ class MapContainer extends React.Component {
           }
         ]
     n.setOptions({styles:styles})
+    this.setState(this.state);
   }
+
   handleMapClick(ref,map,ev) { 
     const location = ev.latLng;
     this.setState(prevState => ({
@@ -290,7 +307,6 @@ class MapContainer extends React.Component {
         scale: 2,
         anchor: new google.maps.Point(0, 20),
      };
-    console.log("p",this.props)
     return (
       <div style={{zIndex:1,borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}} className="map-container">
         <Row md="12">
@@ -325,6 +341,11 @@ class MapContainer extends React.Component {
                                 data={e}
                                 icon={locationMarker}
                                 position={e.coords[0]}/>
+                            )
+                        }
+                    if (e.category_id === 100) {
+                            return (
+                              <Marker position={e.coords[0]}/>
                             )
                         }
                 })}
@@ -413,7 +434,7 @@ class MapContainer extends React.Component {
                             Longitude
                         </Col>
                         <Col md="8">
-                            {this.state.selected.lon}
+                            {this.state.selected.lng}
                         </Col>
                     </Row>
                     <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { FormGroup, Label, Input } from 'reactstrap';
 import { connect } from 'react-redux';
 import { Col, Row } from 'reactstrap';
 import { Nav, NavItem, NavLink } from 'reactstrap';
@@ -35,11 +36,11 @@ class Map extends Component {
             changed = true;
             this.setState(this.state);
         } 
-        if (p.trafficData.data && p.trafficData.data.config && p.trafficData.data.config.avail && this.state.zipSelected === null) { 
+        /*if (p.trafficData.data && p.trafficData.data.config && p.trafficData.data.config.avail && this.state.zipSelected === null) { 
             this.state.zipSelected = p.trafficData.data.config.locations[0].zipcode
             this.setState(this.state);
             changed = true;
-        } 
+        } */
         if (p.trafficData.data && p.trafficData.data.config && p.trafficData.data.config.avail && this.state.categories === null) { 
             this.state.categories = p.trafficData.data.config.categories;
             this.setState(this.state);
@@ -67,25 +68,57 @@ class Map extends Component {
         this.props.dispatch(getTraffic({}));
     }
 
-    onCategoryChange(e) { 
-        t = [];
+    onCategoryChange(e,t) { 
+        var torem = 0;
+        if (t.action && t.action === 'remove-value') { 
+            torem = t.removedValue.id;
+            var k = this.state.categories.filter((g) => g.id !== torem);
+            this.state.categories = k;
+            this.setState(this.state);
+        } 
+        if (t.action && t.action === 'select-option') { 
+            torem = t.option.value;
+            var k = this.props.trafficData.data.config.categories.filter((g) => g.id === torem);
+            this.state.categories.push(k[0]);
+            this.setState(this.state);
+        } 
+        if (this.state.categories.length < 1) { return; }
+        var d = [];
+        var c = 0;
+        for (c = 0; c < this.state.categories.length;c++) { 
+            d.push(this.state.categories[c].id);
+        } 
+        this.props.dispatch(getTraffic({categories:d,date:this.state.dateSelected,zipcode:this.state.zipSelected}))
+    } 
+
+    onDateChange(e) { 
+        var t = [];
         var c = 0;
         for (c = 0; c < this.state.categories.length;c++) { 
             t.push(this.state.categories[c].id);
         } 
+        this.state.dateSelected = e.label
+        this.setState(this.state);
         this.props.dispatch(getTraffic({categories:t,date:this.state.dateSelected,zipcode:this.state.zipSelected}))
     } 
 
-    onDateChange(e) { 
-        this.state.dateSelected = e.label
-        this.setState(this.state);
-        this.props.dispatch(getTraffic({date:this.state.dateSelected,zipcode:this.state.zipSelected}))
-    } 
-
     onZipChange(e) { 
-        this.state.zipSelected = e.label
-        this.setState(this.state);
-        this.props.dispatch(getTraffic({date:this.state.dateSelected,zipcode:this.state.zipSelected}))
+        var t = [];
+        var c = 0;
+        for (c = 0; c < this.state.categories.length;c++) { 
+            t.push(this.state.categories[c].id);
+        } 
+        if (e.target.value) { 
+            this.state.zipSelected = e.target.value;
+            if (e.target.value.length === 5) { 
+                this.props.dispatch(getTraffic({categories:t,date:this.state.dateSelected,zipcode:this.state.zipSelected}))
+            }
+            this.setState(this.state);
+        } else { 
+            this.state.zipSelected = e.label
+            this.setState(this.state);
+            this.props.dispatch(getTraffic({categories:t,date:this.state.dateSelected,zipcode:this.state.zipSelected}))
+        } 
     } 
 
     toggleTab(e) { 
@@ -106,7 +139,7 @@ class Map extends Component {
                           <Select
                               styles={{ menuPortal: base => ({ ...base, zIndex: 9995 }) }}
                               closeMenuOnSelect={true}
-                              isSearchable={false}
+                              isSearchable={true}
                               onChange={this.onDateChange}
                               value={{
                                 label:this.state.dateSelected
@@ -125,22 +158,8 @@ class Map extends Component {
                     <Col md="1" style={{zIndex:9995}}>
                       {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.config &&
                         this.props.trafficData.data.config.avail && this.state.dateSelected !== null) && (
-                          <Select
-                              closeMenuOnSelect={true}
-                              isSearchable={false}
-                              onChange={this.onZipChange}
-                              value={{
-                                label:this.state.zipSelected
-                              }}
-                              options={this.props.trafficData.data.config.locations.map((e) => { 
-                                return (
-                                    { 
-                                    label: e.zipcode,
-                                    value: e.zipcode
-                                    }
-                                )
-                              })}
-                            />
+                          <Input type="text" id="normal-field" 
+                            onChange={this.onZipChange} placeholder="" value={this.state.zipSelected}/>
                         )}
                     </Col>                
                     <Col md="7" style={{zIndex:9995}}>
