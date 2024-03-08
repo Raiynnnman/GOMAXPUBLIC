@@ -207,6 +207,7 @@ class OfficeList extends Component {
     } 
 
     render() {
+        console.log("p",this.props)
         var heads = [
             {
                 dataField:'id',
@@ -224,8 +225,8 @@ class OfficeList extends Component {
                 text:'Active',
                 formatter: (cellContent,row) => (
                     <div>
-                        {(row.active) && (<Badge color="primary">Active</Badge>)}
-                        {(!row.active) && (<Badge color="danger">Inactive</Badge>)}
+                        {(row.active === 1) && (<Badge color="primary">Active</Badge>)}
+                        {(row.active === 0) && (<Badge color="danger">Inactive</Badge>)}
                     </div>
                 )
             },
@@ -296,18 +297,6 @@ class OfficeList extends Component {
                                 </Label>
                                 <Col md={8}>
                                   <Input type="text" id="normal-field" onChange={this.nameChange} placeholder="Name" value={this.state.selected.name}/>
-                                </Col>
-                              </FormGroup>
-                            </Col>
-                        </Row>
-                        <Row md="12">
-                            <Col md={4}>
-                              <FormGroup row>
-                                <Label for="normal-field" md={4} className="text-md-right">
-                                  DHD Markup
-                                </Label>
-                                <Col md={8}>
-                                  <Input type="text" id="normal-field" onChange={this.markupChange} placeholder="1.25" value={this.state.selected.pain_markup}/>
                                 </Col>
                               </FormGroup>
                             </Col>
