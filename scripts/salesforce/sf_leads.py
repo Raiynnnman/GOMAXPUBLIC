@@ -38,7 +38,9 @@ PAINHASH = {}
 PAIN = db.query("""
     select 
         o.id as office_id,u.id as user_id,pq.sf_id,
-        op.id as office_plans_id,pd.id as pricing_data_id
+        op.id as office_plans_id,pd.id as pricing_data_id,
+        o.updated as office_updated,u.updated as users_updated,
+        pq.updated as provider_queue_updated
     from 
         office o,
         users u,
@@ -121,11 +123,6 @@ for x in res['records']:
     print(json.dumps(x,indent=4))
     SF_ID = x['Id']
     SF_DATA[SF_ID] = x
-    if SF_ID in PAINHASH:
-        print(PAINHASH[SF_ID])
-    break
-
-sys.exit(0)
 
 random.shuffle(PAIN)
 for x in PAIN:
@@ -134,9 +131,12 @@ for x in PAIN:
     OBJ = {}
 
     for y in PSCHEMA:
+        if not PSCHEMA[y]['include_in_update']:
+            continue
         SFFIELD= PSCHEMA[y]['sf_field_name']
         if y not in SFSCHEMA:
             continue
+        print("PS:%s" % y)
         SFCOLNAME = SFSCHEMA[y]['name']
         field = PSCHEMA[y]['pain_field_name']
         table = PSCHEMA[y]['pain_table_name']
@@ -151,7 +151,6 @@ for x in PAIN:
         if table == 'pricing_data' and join == 'pricing_data_id':
             join = 'id'
 
-        print("PS:%s" % y)
         q = """
             select %s as s from %s where %s = %s %s
         """ % (field,table,join,val,filt)
@@ -161,7 +160,10 @@ for x in PAIN:
         if len(o) < 1:
             OBJ[SFCOLNAME] = ''
         else:
-            OBJ[SFCOLNAME] = o[0]['s']
+            if 'URL' in SFCOLNAME:
+                OBJ[SFCOLNAME] = "%s/#/app/main/admin/registrations/%s" % (config.getKey("host_url"),o[0]['s'])
+            else:
+                OBJ[SFCOLNAME] = o[0]['s']
 
         print("SFC: %s" % SFCOLNAME)
         print("----")
@@ -172,6 +174,9 @@ for x in PAIN:
     if 'FirstName' in OBJ:
         if OBJ['FirstName'] is None or len(OBJ['FirstName']) == 0:
             OBJ['FirstName'] = 'Unknown'
+    if 'Company' in OBJ:
+        if OBJ['Company'] is None or len(OBJ['Company']) == 0:
+            OBJ['Company'] = 'Unknown'
     # Dont send back the ID to SF
     if 'Id' in OBJ:
         del OBJ['Id']
@@ -179,10 +184,47 @@ for x in PAIN:
 
     if SF_ID in SF_DATA:
         print("synchronizing objects")
+        print("SYNC: %s" % SF_ID)
+        SF_CHANGE = False
+        PA_CHANGE = False
+        pdata = json.dumps(OBJ,sort_keys=True)
+        tmp = json.loads(json.dumps(SF_DATA[SF_ID]))
+        del tmp['Id']
+        del tmp['attributes']
+        s = tmp['LastModifiedDate'].split(".")
+        tmp['LastModifiedDate'] = s[0] 
+        print("p-lu: %s" % OBJ['LastModifiedDate'])
+        print("s-lu: %s" % tmp['LastModifiedDate'])
+        LEADER = None
+        d1 = calcdate.sysParseDate(OBJ['LastModifiedDate'])
+        d2 = calcdate.sysParseDate(tmp['LastModifiedDate'])
+        print(d1,d2)
+        if tmp['LastModifiedDate'] is None:
+            LEADER = 'pain' 
+        elif d1 > d2:
+            LEADER = 'pain'
+        elif d2 > d1:
+            LEADER = 'sf'
+        ### SYNC HERE
+        if 'LastModifiedDate' in OBJ:
+            del OBJ['LastModifiedDate']
+        sdata = json.dumps(tmp,sort_keys=True)
+        psha = encryption.getSHA256(pdata)
+        ssha = encryption.getSHA256(sdata)
+        if LEADER is None:
+            print("No updates required")
+        if LEADER == 'pain':
+            print("Sync'ing to salesforce")
+            r = sf.Lead.update(SF_ID,OBJ)
+        #print("p=%s" % pdata)
+        #print("s=%s" % sdata)
+        #print("p-%s = sf-%s" % (psha,ssha))
         # Synchronize here
         pass
     else:
         print("creating object")
+        if 'LastModifiedDate' in OBJ:
+            del OBJ['LastModifiedDate']
         r = sf.Lead.create(OBJ)
         print(json.dumps(r,indent=4))
         off = x['office_id']
@@ -191,6 +233,4 @@ for x in PAIN:
             """,(r['id'],off)
         )
         db.commit()
-    break
-
 
