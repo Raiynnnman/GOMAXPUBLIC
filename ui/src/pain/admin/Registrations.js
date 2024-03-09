@@ -5,6 +5,7 @@ import moment from 'moment';
 import { Badge } from 'reactstrap';
 import { Button } from 'reactstrap'; 
 import cellEditFactory from 'react-bootstrap-table2-editor';
+import salesforceURL from '../../salesforceConfig';
 
 import { Type } from 'react-bootstrap-table2-editor';
 import { connect } from 'react-redux';
@@ -347,6 +348,21 @@ class Registrations extends Component {
                 dataField:'office_type',
                 sort:true,
                 text:'Type'
+            },
+            {
+                dataField:'sf_id',
+                sort:true,
+                text:'SF',
+                formatter:(cellContent,row) => (
+                    <div>
+                    {row.sf_id !== null && (
+                        <a target="_blank" href={salesforceURL() + 'lightning/r/Lead/' + row.sf_id + '/view'}>SalesForce</a>
+                    )}
+                    {row.sf_id === null && (
+                        <font>N/A</font>
+                    )}
+                    </div>
+                )
             },
             /*{
                 dataField:'verified',

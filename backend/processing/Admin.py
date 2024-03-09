@@ -991,7 +991,7 @@ class RegistrationList(AdminBase):
         q = """
             select 
                 pq.id,pqs.name,o.name,o.id as office_id,pqs.name as status,
-                pq.provider_queue_status_id,
+                pq.provider_queue_status_id,pq.sf_id,
                 u.first_name,u.last_name,u.email,u.phone,pq.created,pq.updated,
                 pq.initial_payment,ot.name as office_type,op.pricing_data_id as pricing_id
             from
@@ -1071,7 +1071,7 @@ class RegistrationList(AdminBase):
                 group by
                     i.id
                 order by 
-                    created
+                    i.created
                 limit 1
                 """,(x['office_id'],)
             )
