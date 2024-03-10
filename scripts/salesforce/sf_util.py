@@ -17,7 +17,7 @@ def getPainSchema(TYPE):
         select 
             sf_table_schema,sf_field_name,
             pain_table_name,pain_field_name,pain_special_filter,
-            pain_join_col,include_in_update
+            pain_join_col,include_in_update,include_in_back_sync
         from 
             salesforce_mapping
         where 
@@ -42,3 +42,24 @@ def cacheOrLoad(fname,obj):
         H.write(json.dumps(res,indent=4))
         H.close()
     return res
+
+def compareDicts(sf,pain):
+    sf1 = {}
+    pain1 = {}
+    for t in sf:
+        sf1[t] = str(sf[t])
+    for t in pain:
+        pain1[t] = str(pain[t])
+    sdata = json.dumps(sf1,sort_keys=True)
+    pdata = json.dumps(pain1,sort_keys=True)
+    psha = encryption.getSHA256(pdata)
+    ssha = encryption.getSHA256(sdata)
+    print("p=%s" % pdata)
+    print("s=%s" % sdata)
+    print("p-%s = sf-%s" % (psha,ssha))
+    if psha != ssha:
+        return False
+    return True
+
+
+

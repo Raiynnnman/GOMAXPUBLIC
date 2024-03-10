@@ -27,11 +27,13 @@ token = config.getKey("sf_token")
 inst = config.getKey("sf_instance")
 parser = argparse.ArgumentParser()
 parser.add_argument('--dryrun', dest="dryrun", action="store_true")
+parser.add_argument('--sf_id', dest="sf_id", action="store")
 args = parser.parse_args()
 
 sf = None
 #if config.getKey("sf_test"):
 sf = Salesforce(security_token=token, password=passw, username=user, instance=inst,domain='test')
+
 
 db = Query()
 PAINHASH = {}
@@ -109,11 +111,6 @@ else:
     H.close()
 
 
-#---- FUNCTIONS
-
-def gatherPAINData(field,table,join,val,filt):
-    pass
-
 #---- MAIN
 
 SF_DATA = {}
@@ -128,8 +125,11 @@ random.shuffle(PAIN)
 for x in PAIN:
     print(x)
     SF_ID = x['sf_id']
+    if args.sf_id is not None:
+        if SF_ID != args.sf_id:
+            continue
     OBJ = {}
-
+    OBJ['modifiedMeta'] = {}
     for y in PSCHEMA:
         if not PSCHEMA[y]['include_in_update']:
             continue
@@ -152,18 +152,26 @@ for x in PAIN:
             join = 'id'
 
         q = """
-            select %s as s from %s where %s = %s %s
+            select %s as s,updated as u,id as i from %s where %s = %s %s
         """ % (field,table,join,val,filt)
         print("q=%s" % q)
         o = db.query(q)
         print("o=%s" %o)
         if len(o) < 1:
             OBJ[SFCOLNAME] = ''
+            OBJ['modifiedMeta'][SFCOLNAME] = {
+                'upd': '', 'id':0, 'tbl': table, 'val': val,
+                'field':field, 'join':join, 'inc': PSCHEMA[y]['include_in_back_sync'] 
+            }
         else:
             if 'URL' in SFCOLNAME:
                 OBJ[SFCOLNAME] = "%s/#/app/main/admin/registrations/%s" % (config.getKey("host_url"),o[0]['s'])
             else:
                 OBJ[SFCOLNAME] = o[0]['s']
+            OBJ['modifiedMeta'][SFCOLNAME] = {
+                'upd': o[0]['u'], 'id':o[0]['i'], 'tbl':table, 
+                'field':field, 'join':join, 'inc': PSCHEMA[y]['include_in_back_sync'] 
+            }
 
         print("SFC: %s" % SFCOLNAME)
         print("----")
@@ -182,6 +190,7 @@ for x in PAIN:
         del OBJ['Id']
     print(json.dumps(OBJ,indent=4))
 
+    INSERT_IDS = {}
     if SF_ID in SF_DATA:
         print("synchronizing objects")
         print("SYNC: %s" % SF_ID)
@@ -196,41 +205,83 @@ for x in PAIN:
         print("p-lu: %s" % OBJ['LastModifiedDate'])
         print("s-lu: %s" % tmp['LastModifiedDate'])
         LEADER = None
-        d1 = calcdate.sysParseDate(OBJ['LastModifiedDate'])
-        d2 = calcdate.sysParseDate(tmp['LastModifiedDate'])
-        print(d1,d2)
-        if tmp['LastModifiedDate'] is None:
-            LEADER = 'pain' 
-        elif d1 > d2:
-            LEADER = 'pain'
-        elif d2 > d1:
-            LEADER = 'sf'
+        sflastm = calcdate.sysParseDate(tmp['LastModifiedDate'])
+        if 'Id' in OBJ['modifiedMeta']:
+            del OBJ['modifiedMeta']['Id']
+        for upd in OBJ['modifiedMeta']:
+            if 'URL' in upd:
+                continue
+            n = OBJ['modifiedMeta'][upd]
+            if n['field'] == 'id':
+                continue
+            if n['inc'] == 0:
+                continue
+            print("upd=%s,n=%s,sf=%s" % (upd,n,tmp[upd]))
+            painlastm = calcdate.sysParseDate(n['upd'])
+            print("upd: %s : p:%sd1,sf:%s" % (upd,painlastm,sflastm))
+            if sflastm > painlastm:
+                print("Sync'ing %s (%s) to paindb"%(upd,tmp[upd]))
+                q = ""
+                dbargs = []
+                if n['id'] == 0 and n['tbl'] not in INSERT_IDS:
+                    q = "insert into " 
+                    q += n['tbl'] 
+                    q += "(%s,%s)" % (n['field'],n['join'])
+                    q += " values (%s,%s)"
+                    if not args.dryrun:
+                        db.update(q,(
+                            tmp[upd],
+                            n['val']
+                            )
+                        )
+                        insid = db.query("select LAST_INSERT_ID()");
+                        insid = insid[0]['LAST_INSERT_ID()']
+                        INSERT_IDS[n['tbl']] = insid
+                else:
+                    if n['tbl'] in INSERT_IDS:
+                        n['id'] = INSERT_IDS[n['tbl']]
+                    q = "update " 
+                    q += n['tbl'] 
+                    q += " set %s = " % n['field'] 
+                    q += " %s " 
+                    q += ', updated = %s'
+                    q += ' where %s = ' % n['join']
+                    q += ' %s '
+                    print(q)
+                    if not args.dryrun:
+                        db.update(q,(
+                                tmp[upd],                     # New Value
+                                sflastm.strftime("%Y-%m-%dT%H:%M:%S"), # Updated date
+                                n['id']     # pk
+                                )
+                        )
+
+        db.commit()
+        sys.exit(0)
         ### SYNC HERE
-        if 'LastModifiedDate' in OBJ:
-            del OBJ['LastModifiedDate']
-        sdata = json.dumps(tmp,sort_keys=True)
-        psha = encryption.getSHA256(pdata)
-        ssha = encryption.getSHA256(sdata)
-        if LEADER is None:
-            print("No updates required")
-        if LEADER == 'pain':
+        if not sf_util.compareDicts(tmp,pain):
+            if 'LastModifiedDate' in OBJ:
+                del OBJ['LastModifiedDate']
+            if 'modifiedMeta' in OBJ:
+                del OBJ['modifiedMeta']
             print("Sync'ing to salesforce")
-            r = sf.Lead.update(SF_ID,OBJ)
-        #print("p=%s" % pdata)
-        #print("s=%s" % sdata)
-        #print("p-%s = sf-%s" % (psha,ssha))
-        # Synchronize here
-        pass
+            if not args.dryrun:
+                r = sf.Lead.update(SF_ID,OBJ)
+        else:
+            print("Fields synchronized")
     else:
         print("creating object")
         if 'LastModifiedDate' in OBJ:
             del OBJ['LastModifiedDate']
-        r = sf.Lead.create(OBJ)
-        print(json.dumps(r,indent=4))
-        off = x['office_id']
-        db.update("""
-            update provider_queue set sf_id=%s where office_id=%s
-            """,(r['id'],off)
-        )
+        if 'modifiedMeta' in OBJ:
+            del OBJ['modifiedMeta']
+        if not args.dryrun:
+            r = sf.Lead.create(OBJ)
+            print(json.dumps(r,indent=4))
+            off = x['office_id']
+            db.update("""
+                update provider_queue set sf_id=%s where office_id=%s
+                """,(r['id'],off)
+            )
         db.commit()
 

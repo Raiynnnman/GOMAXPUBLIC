@@ -77,6 +77,8 @@ def getFormat(s):
     return myformat
 
 def sysParseDate(s):
+    if s is None or len(s) < 1:
+        return parser.parse('1970-01-01')
     q = parser.parse(s)
     return q
 
