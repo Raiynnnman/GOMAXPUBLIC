@@ -209,6 +209,7 @@ for x in PAIN:
         if 'Id' in OBJ['modifiedMeta']:
             del OBJ['modifiedMeta']['Id']
         for upd in OBJ['modifiedMeta']:
+            LEADER = 'sf'
             if 'URL' in upd:
                 continue
             n = OBJ['modifiedMeta'][upd]
@@ -228,6 +229,7 @@ for x in PAIN:
                     q += n['tbl'] 
                     q += "(%s,%s)" % (n['field'],n['join'])
                     q += " values (%s,%s)"
+                    print(q)
                     if not args.dryrun:
                         db.update(q,(
                             tmp[upd],
@@ -255,18 +257,21 @@ for x in PAIN:
                                 n['id']     # pk
                                 )
                         )
+            else:
+                print("Field synchronized")
 
         db.commit()
         sys.exit(0)
         ### SYNC HERE
-        if not sf_util.compareDicts(tmp,pain):
-            if 'LastModifiedDate' in OBJ:
-                del OBJ['LastModifiedDate']
-            if 'modifiedMeta' in OBJ:
-                del OBJ['modifiedMeta']
-            print("Sync'ing to salesforce")
-            if not args.dryrun:
-                r = sf.Lead.update(SF_ID,OBJ)
+        if LEADER=='pain':
+            if not sf_util.compareDicts(tmp,pain):
+                if 'LastModifiedDate' in OBJ:
+                    del OBJ['LastModifiedDate']
+                if 'modifiedMeta' in OBJ:
+                    del OBJ['modifiedMeta']
+                print("Sync'ing to salesforce")
+                if not args.dryrun:
+                    r = sf.Lead.update(SF_ID,OBJ)
         else:
             print("Fields synchronized")
     else:
