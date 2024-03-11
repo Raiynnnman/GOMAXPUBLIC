@@ -92,7 +92,6 @@ pycparser==2.21
 pycryptodome==3.9.9
 pycurl==7.43.0.6
 pydocstyle==5.1.1
-pyduktape==0.0.6
 pyflakes==2.2.0
 Pygments==2.7.2
 PyJWT==1.7.1
