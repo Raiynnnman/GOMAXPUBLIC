@@ -1,0 +1,10 @@
+
+export const squareAppKey = function() {
+    return "__SQUARE_APP_KEY__";
+}
+
+export const squareLocationKey = function() { 
+    return "__SQUARE_LOCATION_KEY__";
+}
+
+export default squareAppKey;
