@@ -7,7 +7,6 @@ fi
 
 T="
     square/square_customers \
-    square/square_customer_update \
     stripe/registration_invoices \
     stripe/registration_initial_payment \
     stripe/invoice_totals \

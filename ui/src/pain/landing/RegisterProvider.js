@@ -377,7 +377,7 @@ class RegisterProvider extends Component {
                         Enter your credit card info. You will not be charged until the first client. 
                     </div>
                     <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        <div style={{width:800}}>
+                        <div style={{width:400}}>
                                 <PaymentForm style={{display:'grid',justifyContent:'center',alignContent:'center'}}
                                     applicationId={squareAppKey()}
                                     locationId={squareLocationKey()}
@@ -386,7 +386,7 @@ class RegisterProvider extends Component {
                                             console.log('token:',token);
                                     }}>
                                     <>
-                                        <CreditCard onChange={this.cardChange}/>
+                                        <CreditCard>Save</CreditCard>
                                     </>
                                 </PaymentForm>
                         </div>

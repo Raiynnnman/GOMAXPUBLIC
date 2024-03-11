@@ -366,7 +366,6 @@ class RegisterProvider(RegistrationsBase):
                 )
             elif BS == 2:
                 card = params['card']
-                print(json.dumps(card,indent=4))
                 db.update("""
                     insert into office_cards(
                         office_id,card_id,payment_id,last4,

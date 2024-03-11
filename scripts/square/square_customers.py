@@ -66,6 +66,7 @@ for x in l:
             db.update("update office set stripe_cust_id=%s where id=%s",
                 (r['id'],x['id'])
             )
+            db.commit()
         elif BS==2:
             r = client.customers.create_customer({
                 'given_name': x['name'],
@@ -77,6 +78,28 @@ for x in l:
             db.update("update office set stripe_cust_id=%s where id=%s",
                 (r['customer']['id'],x['id'])
             )
+            l = db.query("""
+                select id,payment_id from office_cards where office_id=%s and
+                    sync_provider = 0
+                """,(x['id'],)
+            )
+            for t in l:
+                r = client.cards.create_card(
+                    body = {
+                        'source_id':t['payment_id'],
+                        'card': { 
+                            'customer_id':r['customer']['id']
+                        },
+                        'idempotency_key': str(uuid.uuid4())            
+                    }
+                )
+                db.update("""
+                    update office_cards set sync_provider=1 where
+                    id = %s
+                    """,(t['id'],)
+                )
+                print(r.body)
+            db.commit()
     except Exception as e:
         print("ERROR: %s has an issue: %s" % (x['email'],str(e)))
         exc_type, exc_value, exc_traceback = sys.exc_info()
