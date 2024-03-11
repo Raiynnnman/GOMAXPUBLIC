@@ -36,7 +36,7 @@ q = db.query("""
                 'id',opi.id,'price',opi.price,'description',
                 opi.description,'quantity',opi.quantity
             )
-        ) as items,o.stripe_cust_id
+        ) as items,o.stripe_cust_id,o.billing_system_id
         
     from 
         office_plans op,
@@ -81,8 +81,8 @@ for x in q:
         office_id,invoice_status_id,billing_period,stripe_tax_id,billing_system_id
         ) 
         values
-        (%s,%s,date(%s),'txcd_10000000',%s,1)
-        """,(x['office_id'],INV['CREATED'],x['start_date'])
+        (%s,%s,date(%s),'txcd_10000000',%s,%s)
+        """,(x['office_id'],INV['CREATED'],x['start_date'],x['billing_system_id'])
     )
     insid = db.query("select LAST_INSERT_ID()")
     insid = insid[0]['LAST_INSERT_ID()']
