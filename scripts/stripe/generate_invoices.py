@@ -26,6 +26,7 @@ args = parser.parse_args()
 
 APT = getIDs.getAppointStatus()
 INV = getIDs.getInvoiceIDs()
+BS = getIDs.getBillingSystem()
 db = Query()
 q = db.query("""
     select
@@ -77,11 +78,11 @@ for x in q:
     print("Generating invoice for this month for %s" % x['office_id'])
     db.update("""
     insert into invoices(
-        office_id,invoice_status_id,billing_period,stripe_tax_id
+        office_id,invoice_status_id,billing_period,stripe_tax_id,billing_system_id
         ) 
         values
-        (%s,%s,date(%s),'txcd_10000000')
-        """,(x['office_id'],INV['CREATED'],x['start_date'])
+        (%s,%s,date(%s),'txcd_10000000',%s,%s)
+        """,(x['office_id'],INV['CREATED'],x['start_date'],BS)
     )
     insid = db.query("select LAST_INSERT_ID()")
     insid = insid[0]['LAST_INSERT_ID()']

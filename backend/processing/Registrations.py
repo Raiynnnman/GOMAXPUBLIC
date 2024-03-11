@@ -255,7 +255,10 @@ class RegisterProvider(RegistrationsBase):
         ENT = self.getEntitlementIDs()
         PERM = self.getPermissionIDs()
         PL = self.getPlans()
+        BS = self.getBillingSystem()
         HAVE = False
+        if 'cust_id' not in params:
+            params['cust_id'] = "cust-%s" % (encryption.getSHA256(params['email']))
         l = db.query("""
             select id from office where cust_id=%s
             """,(params['cust_id'],)
@@ -330,34 +333,55 @@ class RegisterProvider(RegistrationsBase):
                 
         )
         if 'card' in params:
-            cust_id = params['cust_id']
-            card = params['card']['card']
-            l = db.query("""
-                select stripe_key from setupIntents where uuid=%s
-            """,(cust_id,))
-            stripe_id = l[0]['stripe_key']
-            db.update("""
-                update office set stripe_cust_id=%s where id=%s
-                """,(stripe_id,insid)
-            )
-            st = Stripe.Stripe()
-            pid = st.confirmCard(params['intentid'],cust_id,stripe_id)
-            db.update("""
-                insert into office_cards(
-                    office_id,card_id,last4,exp_month,
-                    exp_year,client_ip,payment_id,
-                    address1,address2,state,city,zip,name,
-                    is_default
-                ) values (
-                    %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,1
+            stripe_id = None
+            if BS == 1:
+                cust_id = params['cust_id']
+                card = params['card']['card']
+                self.saveStripe(cust_id,card)
+                l = db.query("""
+                    select stripe_key from setupIntents where uuid=%s
+                """,(cust_id,))
+                stripe_id = l[0]['stripe_key']
+                db.update("""
+                    update office set stripe_cust_id=%s where id=%s
+                    """,(stripe_id,insid)
                 )
-                """,(insid,card['id'],card['last4'],
-                     card['exp_month'],card['exp_year'],
-                     params['card']['client_ip'],pid['payment_method'],card['address_line1'],
-                     card['address_line2'],card['address_state'],card['address_city'],
-                     card['address_zip'],card['name']
+                st = Stripe.Stripe()
+                pid = st.confirmCard(params['intentid'],cust_id,stripe_id)
+                db.update("""
+                    insert into office_cards(
+                        office_id,card_id,last4,exp_month,
+                        exp_year,client_ip,payment_id,
+                        address1,address2,state,city,zip,name,
+                        is_default
+                    ) values (
+                        %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,1
+                    )
+                    """,(insid,card['id'],card['last4'],
+                         card['exp_month'],card['exp_year'],
+                         params['card']['client_ip'],pid['payment_method'],card['address_line1'],
+                         card['address_line2'],card['address_state'],card['address_city'],
+                         card['address_zip'],card['name']
+                    )
                 )
-            )
+            elif BS == 2:
+                card = params['card']
+                print(json.dumps(card,indent=4))
+                db.update("""
+                    insert into office_cards(
+                        office_id,card_id,payment_id,last4,
+                        exp_month,exp_year,is_default,brand
+                    ) values (%s,%s,%s,%s,%s,%s,1,%s)
+                    """,(
+                        insid,
+                        card['token']['token'],
+                        card['token']['token'],
+                        card['token']['details']['card']['last4'],
+                        card['token']['details']['card']['expMonth'],
+                        card['token']['details']['card']['expYear'],
+                        card['token']['details']['card']['brand']
+                        )
+                )
         ### TODO: Send invite link
         db.commit()
         return ret

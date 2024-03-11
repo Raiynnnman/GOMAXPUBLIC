@@ -23,6 +23,8 @@ import {loadStripe} from '@stripe/stripe-js';
 import { setupIntent } from '../../actions/setupIntent';
 import {stripeKey} from '../../stripeConfig.js';
 import BillingCreditCardForm from './BillingCreditCardForm';
+import { squareAppKey, squareLocationKey } from '../../squareConfig.js';
+import { PaymentForm,CreditCard } from 'react-square-web-payments-sdk';
 
 const stripePromise = loadStripe(stripeKey());
 
@@ -66,6 +68,7 @@ class RegisterProvider extends Component {
         this.register = this.register.bind(this);
         this.saveCard= this.saveCard.bind(this);
         this.cancel= this.cancel.bind(this);
+        this.cardChange = this.cardChange.bind(this);
     } 
 
     componentWillReceiveProps(p) { 
@@ -73,10 +76,11 @@ class RegisterProvider extends Component {
 
     componentDidMount() {
         this.state.plan = this.props.match.params.id;
-        this.props.dispatch(setupIntent()).then((e) =>  { 
+        // Turn off, using square
+        /*this.props.dispatch(setupIntent()).then((e) =>  { 
             this.state.newcard = {id:0};
             this.setState(this.state);
-        })
+        }) */
     }
 
     checkValid() { 
@@ -88,9 +92,14 @@ class RegisterProvider extends Component {
     cancel() { 
     } 
 
+    cardChange(e,t,i) { 
+        console.log(e,t,i);
+    } 
+
     saveCard(e,i) { 
-        this.state.card = e.token;
+        this.state.card = e;
         this.state.intentid = i;
+        this.nextPage();
         this.setState(this.state);
     } 
     officeNameChange(e) {
@@ -126,8 +135,8 @@ class RegisterProvider extends Component {
             name: this.state.name,
             phone: this.state.phone,
             plan: this.state.plan,
-            cust_id: this.props.setupIntent.data.data.cust_id,
-            intentid: this.state.intentid,
+            //cust_id: this.props.setupIntent.data.data.cust_id,
+            //intentid: this.state.intentid,
             card: this.state.card,
             last: this.state.last,
             license: this.state.license,
@@ -242,6 +251,7 @@ class RegisterProvider extends Component {
                 text:'Zip'
             }
         ]
+        console.log("s",this.state);
         return (
         <>
             {(this.props.registerProvider && this.props.registerProvider.isReceiving) && (
@@ -368,16 +378,17 @@ class RegisterProvider extends Component {
                     </div>
                     <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                         <div style={{width:800}}>
-                            {(this.props.setupIntent && this.props.setupIntent.data &&
-                              this.props.setupIntent.data.data &&
-                              this.props.setupIntent.data.data.id) && (
-                                <Elements stripe={stripePromise} options={{clientSecret:this.props.setupIntent.data.data.clientSecret}}>
-                                    <ElementsConsumer>
-                                        {(ctx) => <BillingCreditCardForm onSave={this.saveCard}
-                                            onCancel={this.cancel} intentid={this.props.setupIntent.data.data.id} {...ctx} />}
-                                    </ElementsConsumer>
-                                </Elements>
-                            )}
+                                <PaymentForm style={{display:'grid',justifyContent:'center',alignContent:'center'}}
+                                    applicationId={squareAppKey()}
+                                    locationId={squareLocationKey()}
+                                    cardTokenizeResponseReceived={(token,verifiedBuyer) => { 
+                                            this.saveCard({token:token});
+                                            console.log('token:',token);
+                                    }}>
+                                    <>
+                                        <CreditCard onChange={this.cardChange}/>
+                                    </>
+                                </PaymentForm>
                         </div>
                     </div>
                     </>
@@ -396,12 +407,18 @@ class RegisterProvider extends Component {
                               !this.state.isValid} size="lg">Next</Button>
                         </div>
                     )}
-                    {(this.state.page === 2 && this.state.card !== null) && (
+                    {(this.state.page === 3 && this.state.card !== null) && (
+                        <>
                         <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        <div style={{border:"1px solid black"}}></div>
-                        <Button type="submit" color="primary" className="auth-btn mb-3" onClick={this.register} disabled={
-                              !this.state.isValid} size="sm">{this.props.registerProvider.isReceiving ? 'Saving...' : 'Register'}</Button>
+                        <font>Thank you! Click register below to finish the registration process</font>
                         </div>
+                        <br/>
+                        <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                            <div style={{border:"1px solid black"}}></div>
+                            <Button type="submit" style={{marginTop:20}} color="primary" className="auth-btn mb-3" onClick={this.register} disabled={
+                                  !this.state.isValid} size="sm">{this.props.registerProvider.isReceiving ? 'Saving...' : 'Register'}</Button>
+                        </div>
+                        </>
                     )}
                 </Container>
                 <footer className="auth-footer">

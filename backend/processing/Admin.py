@@ -368,7 +368,7 @@ class InvoicesList(AdminBase):
                 i.id,ist.name as invoice_status,i.physician_schedule_id,
                 i.nextcheck,stripe_invoice_number as number,
                 stripe_invoice_number, billing_period,
-                from_unixtime(due) as due,
+                from_unixtime(due) as due,bs.name as billing_system,
                 o.id as office_id,o.name as office_name,o.email,
                 u.first_name,u.last_name,u.phone,
                 json_arrayagg(
@@ -384,12 +384,14 @@ class InvoicesList(AdminBase):
             from
                 invoices i,
                 invoice_items ii,
+                billing_system bs,
                 stripe_invoice_status sis,
                 users u,
                 office o,
                 invoice_status ist
             where
                 i.id = ii.invoices_id and
+                i.billing_system_id = bs.id and
                 o.user_id = u.id and
                 month(billing_period) <= month(now()) and
                 year(billing_period) <= year(now()) and

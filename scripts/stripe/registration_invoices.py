@@ -26,6 +26,7 @@ args = parser.parse_args()
 
 APT = getIDs.getAppointStatus()
 INV = getIDs.getInvoiceIDs()
+BS = getIDs.getBillingSystem()
 db = Query()
 
 l = db.query("""
@@ -53,9 +54,10 @@ for x in l:
     print(x)
     x['items'] = json.loads(x['items'])
     o = db.update("""
-        insert into invoices (office_id,invoice_status_id,office_plans_id,billing_period,stripe_tax_id) 
-            values (%s,%s,%s,date(now()),'txcd_10000000')
-        """,(x['office_id'],INV['CREATED'],x['id'])
+        insert into invoices (office_id,invoice_status_id,
+            office_plans_id,billing_period,stripe_tax_id,billing_system_id) 
+            values (%s,%s,%s,date(now()),'txcd_10000000',%s)
+        """,(x['office_id'],INV['CREATED'],x['id'],BS)
     )
     insid = db.query("select LAST_INSERT_ID()")
     insid = insid[0]['LAST_INSERT_ID()']

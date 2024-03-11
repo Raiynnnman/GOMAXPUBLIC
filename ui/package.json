@@ -188,6 +188,7 @@
     "react-sortable-tree": "^2.8.0",
     "react-sortablejs": "1.5.1",
     "react-sparklines": "^1.7.0",
+    "react-square-web-payments-sdk": "^3.2.1",
     "react-syntax-highlighter": "^10.3.5",
     "react-table": "6.11.5",
     "react-tagsinput": "^3.19.0",

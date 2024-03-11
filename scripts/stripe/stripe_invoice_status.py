@@ -33,6 +33,7 @@ q = """
         invoices i
     where 
         i.id = sis.invoices_id and
+        i.billing_system_id = 1 and
         date_add(sis.created,interval 160 day) > now() 
     """
 

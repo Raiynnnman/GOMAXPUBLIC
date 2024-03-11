@@ -1,0 +1,95 @@
+#!/usr/bin/python
+
+import os
+import sys
+import time
+import traceback
+import json
+
+sys.path.append(os.getcwd())  # noqa: E402
+
+from util import getIDs
+from util.DBOps import Query
+from common import settings
+from util import encryption,calcdate
+import argparse
+from square.client import Client
+
+config = settings.config()
+config.read("settings.cfg")
+
+key = config.getKey("square_api_key")
+loc = config.getKey("square_loc_key")
+
+client = Client(access_token=key,environment='sandbox')
+parser = argparse.ArgumentParser()
+parser.add_argument('--dryrun', dest="dryrun", action="store_true")
+args = parser.parse_args()
+db = Query()
+
+l = db.query("""
+    select 
+        i.id,i.office_id,invoices_id,i.stripe_invoice_id,
+        i.nextcheck, sis.status, i.physician_schedule_id, 
+        ist.name as invoice_status
+    from 
+        stripe_invoice_status sis,
+        invoice_status ist,
+        invoices i
+    where 
+        i.id = sis.invoices_id and
+        i.billing_system_id = 2 and
+        ist.id = i.invoice_status_id and
+        i.stripe_invoice_id is not null and
+        date_add(sis.created,interval 160 day) > now() 
+    """
+)
+
+key = config.getKey("square_api_key")
+loc = config.getKey("square_loc_key")
+APT = getIDs.getAppointStatus()
+INV = getIDs.getInvoiceIDs()
+
+for x in l:
+    try:
+        if x['stripe_invoice_id'] is None:
+            print("invoice id %s has no stripe_invoice_id" % x['id'])
+            continue
+        print(x)
+        if x['status']  == 'draft' and x['invoice_status'] != 'SENT':   
+            r = client.invoices.publish_invoice(
+                invoice_id = x['stripe_invoice_id'],
+                body = { 'version': 0 }
+            )
+            if r.is_error():
+                raise Exception(json.dumps(r.errors))
+            print("changing status to SENT: %s" % x['invoices_id'])
+            db.update("""
+                update invoices set invoice_status_id=%s where id=%s
+                """,(INV['SENT'],x['invoices_id'])
+            )
+            db.update("""
+                insert into invoice_history (invoices_id,user_id,text) values 
+                    (%s,%s,%s)
+                """,(x['invoices_id'],1,'Progressed invoice status to SENT')
+            )
+            db.commit()
+        if x['status']  == 'PAID' and x['invoice_status'] != 'PAID':   
+            print("changing status to PAID: %s" % x['invoices_id'])
+            db.update("""
+                update invoices set invoice_status_id=%s where id=%s
+                """,(INV['PAID'],x['invoices_id'])
+            )
+            db.update("""
+                insert into invoice_history (invoices_id,user_id,text) values 
+                    (%s,%s,%s)
+                """,(x['invoices_id'],1,'Progressed invoice status to PAID' )
+            )
+            db.commit()
+    except Exception as e:
+        print(str(e))
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
+    db.commit()
+
+

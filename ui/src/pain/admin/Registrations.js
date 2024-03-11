@@ -158,6 +158,7 @@ class Registrations extends Component {
             tosend.invoice_id = this.state.selected.invoice.id,
             tosend.invoice_items = this.state.selected.invoice.items
         }
+        console.log("ts",tosend);
         this.props.dispatch(registrationAdminUpdate(tosend,function(err,args) { 
             args.props.dispatch(getRegistrations({page:0,limit:10000},function(err,args) { 
               toast.success('Successfully saved registration.',
@@ -503,15 +504,16 @@ class Registrations extends Component {
                                 <Col md="12">
                                     <Row md="12">
                                         <Col md="12" style={{zIndex:9999}}>
-                                          <FormGroup row>
+                                          {this.state.selected.id && (<FormGroup row>
                                             <Label for="normal-field" md={1} className="text-md-right">
                                               ID 
                                             </Label>
                                             <Col md={5}>
-                                                <Input type="text" id="normal-field" readONly 
+                                                <Input type="text" id="normal-field" readOnly 
                                                 placeholder="ID" value={this.state.selected.id}/>
                                             </Col>
                                           </FormGroup>
+                                          )}
                                           <FormGroup row>
                                             <Label for="normal-field" md={1} className="text-md-right">
                                               Email

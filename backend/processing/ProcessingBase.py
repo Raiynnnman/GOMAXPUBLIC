@@ -5,6 +5,13 @@ class ProcessingBase:
 
     def __init__(self):
         pass
+
+    def getBillingSystem(self):
+        db = Query()
+        ret = {}
+        o = db.query("select billing_system_id from billing_system_current")
+        ret = o[0]['billing_system_id']
+        return ret
         
     def getProviderQueueStatus(self):
         db = Query()

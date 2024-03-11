@@ -1,5 +1,12 @@
 from util.DBOps import Query
 
+def getBillingSystem():
+    db = Query()
+    ret = {}
+    o = db.query("select billing_system_id from billing_system_current")
+    ret = o[0]['billing_system_id']
+    return ret
+
 def getTrafficCategories():
     db = Query()
     ret = {}

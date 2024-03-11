@@ -39,6 +39,7 @@ inv = db.query("""
             left outer join user_cards uc on uc.user_id=i.user_id
          where 
             o.id = i.office_id and 
+            i.billing_system_id = 1 and
             i.billing_period < now() and
             invoice_status_id=%s
     """,(INV['APPROVED'],)

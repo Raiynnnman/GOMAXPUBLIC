@@ -115,3 +115,4 @@ lxml==4.9.2
 pandas==2.0.1
 googlemaps
 simple_salesforce
+squareup==35.0.0.20240222
