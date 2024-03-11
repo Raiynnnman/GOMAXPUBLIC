@@ -113,6 +113,6 @@ xmltodict==0.13.0
 openpyxl==3.1.2
 lxml==4.9.2
 pandas==2.0.1
-googlemaps
-simple_salesforce
+googlemaps==4.10.0
+simple-salesforce==1.12.5
 squareup==35.0.0.20240222
