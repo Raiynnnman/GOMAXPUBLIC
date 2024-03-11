@@ -53,6 +53,7 @@ for x in l:
     CNT += 1
     print(x)
     x['items'] = json.loads(x['items'])
+    # All new customers go to new system
     o = db.update("""
         insert into invoices (office_id,invoice_status_id,
             office_plans_id,billing_period,stripe_tax_id,billing_system_id) 
