@@ -32,21 +32,27 @@ class Registrations extends Component {
             selected: null,
             activeTab: "registrations",
             statusSelected:null,
+            filter: [],
             subTab: "plans",
+            page: 0,
+            pageSize: 10
         }
         this.close = this.close.bind(this);
         this.onStatusChange = this.onStatusChange.bind(this);
         this.onLeadStrengthChange = this.onLeadStrengthChange.bind(this);
         this.onPlansChange = this.onPlansChange.bind(this);
         this.onStatusFilter = this.onStatusFilter.bind(this);
+        this.renderTotalLabel = this.renderTotalLabel.bind(this);
         this.addAddress = this.addAddress.bind(this);
         this.save = this.save.bind(this);
         this.edit = this.edit.bind(this);
         this.add = this.add.bind(this);
         this.addInvoiceRow = this.addInvoiceRow.bind(this);
+        this.pageChange = this.pageChange.bind(this);
         this.toggleTab = this.toggleTab.bind(this);
         this.toggleSubTab = this.toggleSubTab.bind(this);
         this.updatePhone = this.updatePhone.bind(this);
+        this.updateName = this.updateName.bind(this);
         this.updateEmail = this.updateEmail.bind(this);
         this.updateFirst = this.updateFirst.bind(this);
         this.updateInitial = this.updateInitial.bind(this);
@@ -63,14 +69,37 @@ class Registrations extends Component {
                 t.push(p.registrationsAdminList.data.config.status[c].id); 
             } 
             this.state.statusSelected = t;
+            this.state.filter = t;
             this.setState(this.state);
-            this.props.dispatch(getRegistrations({status:t}));
+            this.props.dispatch(getRegistrations(
+                {limit:this.state.pageSize,offset:this.state.page,status:t}
+            ));
         } 
     }
+    pageChange(e,t) { 
+        console.log(e,t);
+        if (e === '>') { 
+            this.state.page = this.state.page + 1;
+        } else { 
+            this.state.page = e - 1;
+        }
+        this.props.dispatch(getRegistrations(
+            {limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
+        ));
+        this.setState(this.state);
+    } 
+
+    renderTotalLabel(f,t,s) { 
+        console.log(f,t,s);
+        var numpage = s/t;
+        return "Showing page " + (this.state.page+1) + " of " + numpage.toFixed(0);
+    } 
+
     updateFirst(e) { 
         this.state.selected.first_name = e.target.value;
         this.setState(this.state);
     }
+
     onStatusFilter(e,t) { 
         if (e.length <2 ) { return; }
         var c = 0;
@@ -79,7 +108,14 @@ class Registrations extends Component {
             t.push(e[c].value); 
         } 
         this.state.statusSelected = t;
-        this.props.dispatch(getRegistrations({status:t}));
+        this.state.filter = t;
+        this.props.dispatch(getRegistrations(
+            {
+            limit:this.state.pageSize,
+            offset:this.state.page,
+            status:t
+            }
+        ));
         this.setState(this.state)
     } 
     addAddress() { 
@@ -102,6 +138,10 @@ class Registrations extends Component {
         this.state.selected.last_name = e.target.value;
         this.setState(this.state);
     }
+    updateName(e) { 
+        this.state.selected.name = e.target.value;
+        this.setState(this.state);
+    }
     updatePhone(e) { 
         this.state.selected.phone = e.target.value;
         this.setState(this.state);
@@ -112,7 +152,10 @@ class Registrations extends Component {
     }
 
     componentDidMount() {
-        this.props.dispatch(getRegistrations({}));
+        this.props.dispatch(getRegistrations({
+            limit:this.state.pageSize,
+            offset:this.state.page
+        }));
         this.props.dispatch(getPlansList({}));
     }
     addInvoiceRow() { 
@@ -130,6 +173,7 @@ class Registrations extends Component {
             initial_payment:0,
             last_name:'',
             phone: '',
+            name: '',
             office_id: 0,
             addr:[],
             provider_queue_status_id: 1,
@@ -146,9 +190,11 @@ class Registrations extends Component {
     save() { 
         var tosend = { 
             email:this.state.selected.email,
+            name: this.state.selected.name,
             first_name:this.state.selected.first_name,
             initial_payment:this.state.selected.initial_payment,
             last_name:this.state.selected.last_name,
+            lead_strength_id:this.state.selected.lead_strength_id,
             addr:this.state.selected.addr,
             phone: this.state.selected.phone,
             office_id: this.state.selected.office_id,
@@ -160,7 +206,7 @@ class Registrations extends Component {
             tosend.invoice_items = this.state.selected.invoice.items
         }
         this.props.dispatch(registrationAdminUpdate(tosend,function(err,args) { 
-            args.props.dispatch(getRegistrations({page:0,limit:10000},function(err,args) { 
+            args.props.dispatch(getRegistrations({page:args.state.page,limit:args.state.pageSize},function(err,args) { 
               toast.success('Successfully saved registration.',
                 {
                     position:"top-right",
@@ -208,11 +254,44 @@ class Registrations extends Component {
     } 
 
     render() {
-        const options = {
-          showTotal:true,
-          sizePerPage:10,
-          hideSizePerPage:true
+        const pageButtonRenderer = ({
+          page,
+          currentPage,
+          disabled,
+          title,
+          onPageChange
+        }) => {
+          const handleClick = (e) => {
+             e.preventDefault();
+             this.pageChange(page, currentPage);// api call 
+           };    
+          console.log(page,currentPage);
+          return (
+            <div>
+              {
+               <li className="page-item">
+                 <a href="#"  onClick={ handleClick } className="page-link">{ page }</a>
+               </li>
+              }
+            </div>
+          );
         };
+        console.log("p",this.props)
+        const options = {
+          pageButtonRenderer,
+          showTotal:true,
+          withFirstAndLast: false,
+          alwaysShowAllBtns: false,
+          nextPageText:'>',
+          sizePerPage:10,
+          paginationTotalRenderer: (f,t,z) => this.renderTotalLabel(f,t,z),
+          totalSize: (this.props.registrationsAdminList && 
+                      this.props.registrationsAdminList.data &&
+                      this.props.registrationsAdminList.data.total) ? this.props.registrationsAdminList.data.total : 10,
+          hideSizePerPage:true,
+          //onPageChange:(page,sizePerPage) => this.pageChange(page,sizePerPage)
+        };
+        console.log(options)
         var fields = [
             {name:'Email',value:'email'},
             {name:'First',value:'first_name'},
@@ -532,6 +611,15 @@ class Registrations extends Component {
                                           )}
                                           <FormGroup row>
                                             <Label for="normal-field" md={1} className="text-md-right">
+                                              Practice
+                                            </Label>
+                                            <Col md={5}>
+                                                <Input type="text" id="normal-field" onChange={this.updateName}
+                                                placeholder="Name" value={this.state.selected.name}/>
+                                            </Col>
+                                          </FormGroup>
+                                          <FormGroup row>
+                                            <Label for="normal-field" md={1} className="text-md-right">
                                               Email
                                             </Label>
                                             <Col md={5}>
@@ -612,9 +700,9 @@ class Registrations extends Component {
                                                   onChange={this.onLeadStrengthChange}
                                                   value={{
                                                     label:
-                                                        this.props.registrationsAdminList.data.config.strength.filter((g) => 
+                                                        (this.state.selected.lead_strength_id) ?  this.props.registrationsAdminList.data.config.strength.filter((g) => 
                                                             this.state.selected.lead_strength_id == g.id
-                                                    )[0].name
+                                                    )[0].name : ''
                                                   }}
                                                   options={this.props.registrationsAdminList.data.config.strength.map((g) => { 
                                                     return (

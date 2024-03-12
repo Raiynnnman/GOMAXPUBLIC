@@ -288,9 +288,9 @@ class LegalUpdate(AdminBase):
             )
         else:
             db.update("""
-                insert into office (user_id,addr1,addr2,phone,city,state,zipcode,office_type_id) values
-                (%s,%s,%s,%s,%s,%s,%s,%s,2)
-                """,(user_id,params['addr1'],params['addr2'],
+                insert into office (name,user_id,addr1,addr2,phone,city,state,zipcode,office_type_id) values
+                (%s,%s,%s,%s,%s,%s,%s,%s,%s,2)
+                """,(user_id,params['name'],params['addr1'],params['addr2'],
                      params['phone'],params['city'],params['state'],
                      params['zipcode']
                 )
@@ -781,8 +781,11 @@ class RegistrationUpdate(AdminBase):
         INV = self.getInvoiceIDs()
         ENT = self.getEntitlementIDs()
         PERM = self.getPermissionIDs()
+        BS = self.getBillingSystem()
         OT = self.getOfficeTypes()
         PL = self.getPlans()
+        PQS = self.getProviderQueueStatus()
+        STR = self.getLeadStrength()
         # TODO: Check params here
         email = params['email']
         offid = 0
@@ -836,17 +839,20 @@ class RegistrationUpdate(AdminBase):
             userid = db.query("select LAST_INSERT_ID()");
             userid = userid[0]['LAST_INSERT_ID()']
             db.update("""
-                insert into office(office_type_id,email,user_id) values
-                    (%s,%s,%s)
+                insert into office(
+                        name,office_type_id,email,user_id,billing_system_id
+                    ) values
+                    (%s,%s,%s,%s,%s)
                 """,
-                (OT['Chiropractor'],params['email'],userid
+                (
+                params['name'],OT['Chiropractor'],params['email'],userid,BS
                 )
             )
             offid = db.query("select LAST_INSERT_ID()");
             offid = offid[0]['LAST_INSERT_ID()']
             db.update("""
-                insert into provider_queue(office_id) values (%s)
-                """,(offid,)
+                insert into provider_queue(office_id,provider_queue_lead_strength_id) values (%s,%s)
+                """,(offid,STR['Potential Provider'])
             )
             db.update("""
                 insert into office_user(office_id,user_id) values
@@ -989,12 +995,16 @@ class RegistrationList(AdminBase):
         ret = {}
         job,user,off_id,params = self.getArgs(*args,**kwargs)
         limit = 10000
+        if 'limit' in params:
+            limit = params['limit']
         offset = 0
+        if 'offset' in params:
+            offset = params['offset']
         db = Query()
         PQS = self.getProviderQueueStatus()
         q = """
             select 
-                pq.id,pqs.name,o.name,o.id as office_id,pqs.name as status,
+                pq.id,o.name,o.id as office_id,pqs.name as status,
                 pq.provider_queue_status_id,pq.sf_id,pqls.name as lead_strength,
                 pqls.id as lead_strength_id, pq.created,pq.updated,
                 pq.initial_payment,ot.name as office_type,op.pricing_data_id as pricing_id
@@ -1018,8 +1028,11 @@ class RegistrationList(AdminBase):
             order by
                 updated desc
         """
+        cnt = db.query("select count(id) as cnt from (%s) as t" % (q,))
+        q += " limit %s offset %s " 
+        ret['total'] = cnt[0]['cnt']
         o = []
-        o = db.query(q)
+        o = db.query(q,(limit,offset*limit))
         k = [] 
         for x in o:
             x['addr'] = db.query("""
