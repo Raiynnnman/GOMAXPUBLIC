@@ -48,7 +48,6 @@ o = db.query("""
     """)
 
 for x in o:
-    print(x)
     res = gmaps.geocode('%s, %s, %s' % (x['addr1'],x['city'],x['state']))
     if len(res) < 1:
         print("Unable to find coordinates for %s" % x['id'])

@@ -30,7 +30,7 @@ install: build
 	if [ -d docs ]; then cp -r docs pre; fi
 	cp stripe/doall.sh pre/stripe
 	mkdir -p pre/tests
-	cp tests/current_subs_feb_2024.xlsx pre/tests
+	cp tests/*.xlsx pre/tests
 	(cd pre && tar cfz ../targets/install.tar.gz  --exclude p \
 		--exclude targets \
         --exclude ui/src --exclude .git --exclude src \

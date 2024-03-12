@@ -296,12 +296,34 @@ class MapContainer extends React.Component {
         scale: 2,
         anchor: new google.maps.Point(0, 20),
      };
-      const locationMarker = {
+      const locationMarkerPref = {
         //path: "M-1.547 12l6.563-6.609-1.406-1.406-5.156 5.203-2.063-2.109-1.406 1.406zM0 0q2.906 0 4.945 2.039t2.039 4.945q0 1.453-0.727 3.328t-1.758 3.516-2.039 3.070-1.711 2.273l-0.75 0.797q-0.281-0.328-0.75-0.867t-1.688-2.156-2.133-3.141-1.664-3.445-0.75-3.375q0-2.906 2.039-4.945t4.945-2.039z",
         //#path:"M0,0h100v100h-100v-100M60,50a10,10 0 0 0 -20,0a10,10 0 0 0 20,0",
         path:  'M -2,0 0,-2 2,0 0,2 z',
         fillOpacity: 1,
         fillColor: "#2cad01",
+        strokeWeight: 0,
+        rotation: 0,
+        scale: 2,
+        anchor: new google.maps.Point(0, 20),
+     };
+      const locationMarkerInNet = {
+        //path: "M-1.547 12l6.563-6.609-1.406-1.406-5.156 5.203-2.063-2.109-1.406 1.406zM0 0q2.906 0 4.945 2.039t2.039 4.945q0 1.453-0.727 3.328t-1.758 3.516-2.039 3.070-1.711 2.273l-0.75 0.797q-0.281-0.328-0.75-0.867t-1.688-2.156-2.133-3.141-1.664-3.445-0.75-3.375q0-2.906 2.039-4.945t4.945-2.039z",
+        //#path:"M0,0h100v100h-100v-100M60,50a10,10 0 0 0 -20,0a10,10 0 0 0 20,0",
+        path:  'M -2,0 0,-2 2,0 0,2 z',
+        fillOpacity: 1,
+        fillColor: "#f84404",
+        strokeWeight: 0,
+        rotation: 0,
+        scale: 2,
+        anchor: new google.maps.Point(0, 20),
+     };
+      const locationMarkerPotent = {
+        //path: "M-1.547 12l6.563-6.609-1.406-1.406-5.156 5.203-2.063-2.109-1.406 1.406zM0 0q2.906 0 4.945 2.039t2.039 4.945q0 1.453-0.727 3.328t-1.758 3.516-2.039 3.070-1.711 2.273l-0.75 0.797q-0.281-0.328-0.75-0.867t-1.688-2.156-2.133-3.141-1.664-3.445-0.75-3.375q0-2.906 2.039-4.945t4.945-2.039z",
+        //#path:"M0,0h100v100h-100v-100M60,50a10,10 0 0 0 -20,0a10,10 0 0 0 20,0",
+        path:  'M -2,0 0,-2 2,0 0,2 z',
+        fillOpacity: 1,
+        fillColor: "yellow",
         strokeWeight: 0,
         rotation: 0,
         scale: 2,
@@ -336,12 +358,30 @@ class MapContainer extends React.Component {
                             )
                         }
                     if (e.category_id === 99) {
-                            return (
-                              <Marker onClick={this.handleMarkerClick}
-                                data={e}
-                                icon={locationMarker}
-                                position={e.coords[0]}/>
-                            )
+                            if (e.lead_strength_id === 1) { 
+                                return (
+                                  <Marker onClick={this.handleMarkerClick}
+                                    data={e}
+                                    icon={locationMarkerPref}
+                                    position={e.coords[0]}/>
+                                )
+                            }
+                            if (e.lead_strength_id === 2) { 
+                                return (
+                                  <Marker onClick={this.handleMarkerClick}
+                                    data={e}
+                                    icon={locationMarkerInNet}
+                                    position={e.coords[0]}/>
+                                )
+                            }
+                            if (e.lead_strength_id === 3) { 
+                                return (
+                                  <Marker onClick={this.handleMarkerClick}
+                                    data={e}
+                                    icon={locationMarkerPotent}
+                                    position={e.coords[0]}/>
+                                )
+                            }
                         }
                     if (e.category_id === 100) {
                             return (
@@ -445,6 +485,16 @@ class MapContainer extends React.Component {
                             {!this.state.selected.traf_delay ? "N/A" : this.state.selected.traf_delay}
                         </Col>
                     </Row>
+                    {(this.state.selected.category_id === 99) && (
+                    <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
+                        <Col md="4">
+                            Lead Strength
+                        </Col>
+                        <Col md="8">
+                            {!this.state.selected.lead_strength ? "N/A" : this.state.selected.lead_strength}
+                        </Col>
+                    </Row>
+                    )}
                     {(this.state.selected.category_id !== 99) && (
                         <>
                         <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>

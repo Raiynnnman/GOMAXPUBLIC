@@ -252,6 +252,7 @@ class RegisterProvider(RegistrationsBase):
         db = Query()
         insid = 0
         OT = self.getOfficeTypes()
+        ST = self.getLeadStrength()
         ENT = self.getEntitlementIDs()
         PERM = self.getPermissionIDs()
         PL = self.getPlans()
@@ -282,8 +283,9 @@ class RegisterProvider(RegistrationsBase):
             )
         db.update(
             """
-            insert into provider_queue (office_id) values (%s)
-            """,(insid,)
+            insert into provider_queue (office_id,provider_queue_lead_strength_id) 
+                values (%s,%s)
+            """,(insid,ST['Potential Provider'])
         )
         l = db.query("""
             select id from users where email = %s

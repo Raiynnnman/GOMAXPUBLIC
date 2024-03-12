@@ -13,6 +13,16 @@ class ProcessingBase:
         ret = o[0]['billing_system_id']
         return ret
         
+    def getLeadStrength(self):
+        db = Query()
+        ret = {}
+        o = db.query("select id,name from provider_queue_lead_strength")
+        for x in o:
+            n = x['name']
+            i = x['id']
+            ret[n] = i
+        return ret 
+
     def getProviderQueueStatus(self):
         db = Query()
         ret = {}

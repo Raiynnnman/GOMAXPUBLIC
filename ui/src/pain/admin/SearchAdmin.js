@@ -82,7 +82,6 @@ class SearchAdmin extends Component {
 
 
     changeZip(e) { 
-        console.log(e.target.value)
         this.state.zipchange = true;
         this.state.zipcode = e.target.value;
         this.setState(this.state);
@@ -191,7 +190,6 @@ class SearchAdmin extends Component {
     }
 
     render() {
-        console.log("p",this.props)
         const responsive = {
             0: { 
                 items: 1

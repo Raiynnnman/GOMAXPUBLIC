@@ -78,7 +78,6 @@ class Register extends Component {
             phone: this.state.phone,
             last: this.state.last
         } 
-        console.log("tosend",tosend)
         this.props.dispatch(registerUser(tosend,function(err,args) { 
               toast.success('Successfully registered.',
                 {
@@ -143,7 +142,6 @@ class Register extends Component {
 
 
     render() {
-        console.log("p",this.props);
         return (
         <>
             {(this.props.registerUser && this.props.registerUser.isReceiving) && (

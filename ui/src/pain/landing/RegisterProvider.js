@@ -93,7 +93,6 @@ class RegisterProvider extends Component {
     } 
 
     cardChange(e,t,i) { 
-        console.log(e,t,i);
     } 
 
     saveCard(e,i) { 

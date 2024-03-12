@@ -36,6 +36,7 @@ class Registrations extends Component {
         }
         this.close = this.close.bind(this);
         this.onStatusChange = this.onStatusChange.bind(this);
+        this.onLeadStrengthChange = this.onLeadStrengthChange.bind(this);
         this.onPlansChange = this.onPlansChange.bind(this);
         this.onStatusFilter = this.onStatusFilter.bind(this);
         this.addAddress = this.addAddress.bind(this);
@@ -158,7 +159,6 @@ class Registrations extends Component {
             tosend.invoice_id = this.state.selected.invoice.id,
             tosend.invoice_items = this.state.selected.invoice.items
         }
-        console.log("ts",tosend);
         this.props.dispatch(registrationAdminUpdate(tosend,function(err,args) { 
             args.props.dispatch(getRegistrations({page:0,limit:10000},function(err,args) { 
               toast.success('Successfully saved registration.',
@@ -179,6 +179,10 @@ class Registrations extends Component {
         this.state.selected.plans = {}
         this.state.selected.plans.items = [t[0]]
         this.state.selected.pricing_id = t[0].id
+        this.setState(this.state);
+    } 
+    onLeadStrengthChange(e) { 
+        this.state.selected.lead_strength_id = e.value;
         this.setState(this.state);
     } 
     onStatusChange(e) { 
@@ -376,6 +380,18 @@ class Registrations extends Component {
                     </div>
                 )
             },*/
+            {
+                dataField:'lead_strength',
+                sort:true,
+                text:'Strength',
+                formatter:(cellContent,row) => (
+                    <div>
+                        {(row.lead_strength === 'Preferred Provider') && (<Badge color="primary">Preferred Provider</Badge>)}
+                        {(row.lead_strength === 'In-Network Provider') && (<Badge color="secondary">In-Network Provider</Badge>)}
+                        {(row.lead_strength === 'Potential Provider') && (<Badge color="danger">Potential Provider</Badge>)}
+                    </div>
+                )
+            },
             {
                 dataField:'status',
                 sort:true,
@@ -575,6 +591,32 @@ class Registrations extends Component {
                                                     )[0].name
                                                   }}
                                                   options={this.props.registrationsAdminList.data.config.status.map((g) => { 
+                                                    return (
+                                                        { 
+                                                        label: g.name,
+                                                        value: g.id
+                                                        }
+                                                    )
+                                                  })}
+                                                />
+                                            </Col>
+                                          </FormGroup>
+                                          <FormGroup row>
+                                            <Label for="normal-field" md={1} className="text-md-right">
+                                              Strength
+                                            </Label>
+                                            <Col md={5}>
+                                              <Select
+                                                  closeMenuOnSelect={true}
+                                                  isSearchable={false}
+                                                  onChange={this.onLeadStrengthChange}
+                                                  value={{
+                                                    label:
+                                                        this.props.registrationsAdminList.data.config.strength.filter((g) => 
+                                                            this.state.selected.lead_strength_id == g.id
+                                                    )[0].name
+                                                  }}
+                                                  options={this.props.registrationsAdminList.data.config.strength.map((g) => { 
                                                     return (
                                                         { 
                                                         label: g.name,

@@ -218,7 +218,6 @@ class UserAdminList extends Component {
                 )
             },
         ];
-        console.log("p",this.props);
         return (
         <>
             {(this.props.userAdmin && this.props.userAdmin.isReceiving) && (

@@ -117,7 +117,6 @@ class SearchGet(SearchBase):
             lon = params['location']['lon']
         if 'zipcode' in params: 
             (lon,lat) = self.findLonLatFromZip(params['zipcode'])
-        # print(params,lat,lon)
         db = Query()
         # Save for debugging
         #o = db.query("""

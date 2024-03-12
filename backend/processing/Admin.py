@@ -886,10 +886,12 @@ class RegistrationUpdate(AdminBase):
         db.update("""
             update provider_queue set 
                 provider_queue_status_id=%s,
+                provider_queue_lead_strength_id=%s,
                 initial_payment=%s,updated=now()
             where 
                 id = %s
-            """,(params['status'],params['initial_payment'],pqid)
+            """,(params['status'],params['lead_strength_id'],
+                 params['initial_payment'],pqid)
         )
         db.update("""
             update office_plans set pricing_data_id=%s where office_id=%s
@@ -993,17 +995,16 @@ class RegistrationList(AdminBase):
         q = """
             select 
                 pq.id,pqs.name,o.name,o.id as office_id,pqs.name as status,
-                pq.provider_queue_status_id,pq.sf_id,
-                u.first_name,u.last_name,u.email,u.phone,pq.created,pq.updated,
+                pq.provider_queue_status_id,pq.sf_id,pqls.name as lead_strength,
+                pqls.id as lead_strength_id, pq.created,pq.updated,
                 pq.initial_payment,ot.name as office_type,op.pricing_data_id as pricing_id
             from
                 provider_queue pq
                 left outer join office o on pq.office_id = o.id
                 left outer join provider_queue_status pqs on pqs.id=pq.provider_queue_status_id
+                left outer join provider_queue_lead_strength pqls on pq.provider_queue_lead_strength_id=pqls.id
                 left outer join office_plans op on op.office_id = o.id
                 left outer join office_type ot on ot.id=o.office_type_id
-                left outer join users u on o.user_id = u.id
-                left outer join office_user ou on ou.office_id = o.id
         """
         status_ids = []
         if 'status' in params:
@@ -1021,6 +1022,21 @@ class RegistrationList(AdminBase):
         o = db.query(q)
         k = [] 
         for x in o:
+            x['addr'] = db.query("""
+                select 
+                    u.first_name,u.last_name,u.email,u.phone
+                from 
+                    office_user ou,
+                    users u
+                where 
+                    office_id=%s and
+                    ou.user_id = u.id
+                """,(x['office_id'],)
+            )
+            x['last_name'] = x['addr'][0]['last_name'] if len(x['addr']) > 0 else ''
+            x['first_name'] = x['addr'][0]['first_name'] if len(x['addr']) > 0 else ''
+            x['phone'] = x['addr'][0]['phone'] if len(x['addr']) > 0 else ''
+            x['email'] = x['addr'][0]['email'] if len(x['addr']) > 0 else ''
             x['addr'] = db.query("""
                 select 
                     oa.id,oa.addr1,oa.addr2,oa.phone,
@@ -1086,6 +1102,7 @@ class RegistrationList(AdminBase):
             k.append(x)
         ret['config'] = {}
         ret['config']['status'] = db.query("select id,name from provider_queue_status")
+        ret['config']['strength'] = db.query("select id,name from provider_queue_lead_strength")
         ret['registrations'] = k
         return ret
 
@@ -1110,6 +1127,7 @@ class TrafficGet(AdminBase):
                 del params['zipcode']
             if params['zipcode'] is None:
                 del params['zipcode']
+        STR = self.getLeadStrength()
         db = Query()
         l = db.query("""
             select count(id) as cnt,date(ti.created) as day 
@@ -1130,6 +1148,8 @@ class TrafficGet(AdminBase):
             select id,name from traffic_categories where category_id = 1
             UNION ALL
             select 99,'Location'
+            UNION ALL
+            select 101,'Potential Providers'
             """)
         ret['config']['categories'] = l
         if 'categories' not in params or len(params['categories']) == 0:
@@ -1234,21 +1254,55 @@ class TrafficGet(AdminBase):
                 'category_id':100,
                 'coords':[ret['center']]
             })
+        if 101 in params['categories']:
+            o = db.query("""
+                select 
+                    oa.id,oa.name,oa.addr1,'' as uuid,
+                    oa.city,oa.state,oa.zipcode,99 as category_id,
+                    pq.provider_queue_lead_strength_id as lead_strength_id,
+                    pqls.name as lead_strength,
+                    'Location' as category, oa.lat, oa.lon as lng,
+                    json_arrayagg(
+                        json_object('lat',oa.lat,'lng',oa.lon)) as coords
+                from 
+                    office_addresses oa,
+                    provider_queue_lead_strength pqls,
+                    provider_queue pq
+                where
+                    lat <> 0 and
+                    pq.provider_queue_lead_strength_id = %s and
+                    pq.provider_queue_lead_strength_id = pqls.id and
+                    pq.office_id = oa.office_id
+                group by 
+                    oa.id
+                """,(STR['Potential Provider'],)
+            )
+            for t in o:
+                t['coords'] = json.loads(t['coords'])
+                ret['data'].append(t) 
         if 99 in params['categories']:
             o = db.query("""
                 select 
                     oa.id,oa.name,oa.addr1,'' as uuid,
                     oa.city,oa.state,oa.zipcode,99 as category_id,
+                    pq.provider_queue_lead_strength_id as lead_strength_id,
+                    pqls.name as lead_strength,
                     'Location' as category, oa.lat, oa.lon as lng,
                     json_arrayagg(
                         json_object('lat',oa.lat,'lng',oa.lon)) as coords
                 from 
-                    office_addresses oa
+                    office_addresses oa,
+                    provider_queue_lead_strength pqls,
+                    provider_queue pq
                 where
-                    lat <> 0
+                    lat <> 0 and
+                    pq.provider_queue_lead_strength_id <> %s and
+                    pq.provider_queue_lead_strength_id = pqls.id and
+                    pq.office_id = oa.office_id
                 group by 
                     oa.id
-                """)
+                """,(STR['Potential Provider'],)
+            )
             for t in o:
                 t['coords'] = json.loads(t['coords'])
                 ret['data'].append(t) 

@@ -7,6 +7,16 @@ def getBillingSystem():
     ret = o[0]['billing_system_id']
     return ret
 
+def getLeadStrength():
+    db = Query()
+    ret = {}
+    o = db.query("select id,name from provider_queue_lead_strength")
+    for x in o:
+        n = x['name']
+        i = x['id']
+        ret[n] = i
+    return ret
+
 def getTrafficCategories():
     db = Query()
     ret = {}
@@ -67,12 +77,12 @@ def getInvoiceIDs():
         ret[n] = i
     return ret 
 
-def getCPTCodes():
+def getOfficeTypes():
     db = Query()
     ret = {}
-    o = db.query("select id,code from icd_cpt")
+    o = db.query("select id,name from office_type")
     for x in o:
-        n = x['code']
+        n = x['name']
         i = x['id']
         ret[n] = i
     return ret 
