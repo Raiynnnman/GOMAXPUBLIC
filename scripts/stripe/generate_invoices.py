@@ -81,7 +81,7 @@ for x in q:
         office_id,invoice_status_id,billing_period,stripe_tax_id,billing_system_id
         ) 
         values
-        (%s,%s,date(%s),'txcd_10000000',%s,%s)
+        (%s,%s,date(%s),'txcd_10000000',%s)
         """,(x['office_id'],INV['CREATED'],x['start_date'],x['billing_system_id'])
     )
     insid = db.query("select LAST_INSERT_ID()")
