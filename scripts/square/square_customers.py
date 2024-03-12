@@ -35,6 +35,7 @@ q = """
         office o
     where 
         o.active = 1 and
+        o.billing_system_id = 2 and
         o.stripe_cust_id is null
     """
 
@@ -56,50 +57,38 @@ for x in l:
     CNT += 1
     try:
         r = {}
-        if BS == 1:
-            r = stripe.Customer.create(
-                description="Customer %s-%s" % (x['name'],x['id']),
-                email=email,
-                metadata={'office_id':x['id']},
-                name="%s-%s" % (x['name'],x['id'])
+        r = client.customers.create_customer({
+            'given_name': x['name'],
+            'email_address':email,
+            'idempotency_key': str(uuid.uuid4())            
+        })
+        r = r.body
+        print(json.dumps(r,indent=4))
+        db.update("update office set stripe_cust_id=%s where id=%s",
+            (r['customer']['id'],x['id'])
+        )
+        l = db.query("""
+            select id,payment_id from office_cards where office_id=%s and
+                sync_provider = 0
+            """,(x['id'],)
+        )
+        for t in l:
+            r = client.cards.create_card(
+                body = {
+                    'source_id':t['payment_id'],
+                    'card': { 
+                        'customer_id':r['customer']['id']
+                    },
+                    'idempotency_key': str(uuid.uuid4())            
+                }
             )
-            db.update("update office set stripe_cust_id=%s where id=%s",
-                (r['id'],x['id'])
+            db.update("""
+                update office_cards set sync_provider=1 where
+                id = %s
+                """,(t['id'],)
             )
-            db.commit()
-        elif BS==2:
-            r = client.customers.create_customer({
-                'given_name': x['name'],
-                'email_address':email,
-                'idempotency_key': str(uuid.uuid4())            
-            })
-            r = r.body
-            print(json.dumps(r,indent=4))
-            db.update("update office set stripe_cust_id=%s where id=%s",
-                (r['customer']['id'],x['id'])
-            )
-            l = db.query("""
-                select id,payment_id from office_cards where office_id=%s and
-                    sync_provider = 0
-                """,(x['id'],)
-            )
-            for t in l:
-                r = client.cards.create_card(
-                    body = {
-                        'source_id':t['payment_id'],
-                        'card': { 
-                            'customer_id':r['customer']['id']
-                        },
-                        'idempotency_key': str(uuid.uuid4())            
-                    }
-                )
-                db.update("""
-                    update office_cards set sync_provider=1 where
-                    id = %s
-                    """,(t['id'],)
-                )
-                print(r.body)
-            db.commit()
+            print(r.body)
+        db.commit()
     except Exception as e:
         print("ERROR: %s has an issue: %s" % (x['email'],str(e)))
         exc_type, exc_value, exc_traceback = sys.exc_info()
