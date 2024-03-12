@@ -220,7 +220,7 @@ for x in PAIN:
             print("upd=%s,n=%s,sf=%s" % (upd,n,tmp[upd]))
             painlastm = calcdate.sysParseDate(n['upd'])
             print("upd: %s : p:%sd1,sf:%s" % (upd,painlastm,sflastm))
-            if sflastm > painlastm:
+            if False and sflastm > painlastm:
                 print("Sync'ing %s (%s) to paindb"%(upd,tmp[upd]))
                 q = ""
                 dbargs = []
