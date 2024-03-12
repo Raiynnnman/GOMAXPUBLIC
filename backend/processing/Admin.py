@@ -1262,15 +1262,18 @@ class TrafficGet(AdminBase):
         for x in l:
             x['coords'] = json.loads(x['coords'])
             ret['data'].append(x)
+        zipcoords = {}
         if 'zipcode' in params:
             ret['data'].append({
                 'category_id':100,
                 'coords':[ret['center']]
             })
-        if 101 in params['categories']:
+            zipcoords = ret['center']
+        if 101 in params['categories'] and 'zipcode' in params:
             o = db.query("""
                 select 
                     oa.id,oa.name,oa.addr1,'' as uuid,
+                    round(st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192,2) as miles,
                     oa.city,oa.state,oa.zipcode,99 as category_id,
                     pq.provider_queue_lead_strength_id as lead_strength_id,
                     pqls.name as lead_strength,
@@ -1284,11 +1287,14 @@ class TrafficGet(AdminBase):
                 where
                     lat <> 0 and
                     pq.provider_queue_lead_strength_id = %s and
+                    round(st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192,2) < 50 and
                     pq.provider_queue_lead_strength_id = pqls.id and
                     pq.office_id = oa.office_id
                 group by 
                     oa.id
-                """,(STR['Potential Provider'],)
+                """,(zipcoords['lng'],
+                     zipcoords['lat'],STR['Potential Provider'],
+                     zipcoords['lng'],zipcoords['lat'])
             )
             for t in o:
                 t['coords'] = json.loads(t['coords'])
