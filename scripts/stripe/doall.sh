@@ -11,9 +11,14 @@ T="
     stripe/registration_initial_payment \
     stripe/invoice_totals \
     stripe/generate_invoices \
-    square/invoice_submit \
+    stripe/stripe_customers \
+    stripe/stripe_customer_update \
+    stripe/stripe_invoice_status \
+    stripe/stripe_progress_invoice \
     square/square_invoice_status \
-    square/square_progress_invoice 
+    square/square_progress_invoice  \
+    square/invoice_submit \
+    stripe/invoice_submit
 "
 
 for x in $T; do
