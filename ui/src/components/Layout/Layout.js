@@ -25,6 +25,7 @@ import MyHealth from '../../pain/myhealth/MyHealth';
 import MyHealthDocuments from '../../pain/myhealth/MyHealthDocuments';
 import MyHealthBilling from '../../pain/myhealth/MyHealthBilling';
 import Search from '../../pain/search/Search';
+import SearchAdmin from '../../pain/admin/SearchAdmin';
 import Dashboard from '../../pain/dashboard/Dashboard';
 import LegalAdmin from '../../pain/admin/LegalAdmin';
 import PricingList from '../../pain/admin/PricingList';
@@ -123,6 +124,7 @@ class Layout extends React.Component {
                     <Route path="/app/main/admin/map" exact component={Map} />
                     <Route path="/app/main/admin/plans" exact component={PricingList} />
                     <Route path="/app/main/admin/legal" exact component={LegalAdmin} />
+                    <Route path="/app/main/admin/search" exact component={SearchAdmin} />
                     <Route path="/app/main/admin/users" exact component={UserAdmin} />
                     <Route path="/app/main/admin/invoices" exact component={InvoiceAdmin} />
                     <Route path="/app/main/legal/myday" exact component={LegalAppointment} />

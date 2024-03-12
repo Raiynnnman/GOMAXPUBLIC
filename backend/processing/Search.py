@@ -117,15 +117,17 @@ class SearchGet(SearchBase):
             lon = params['location']['lon']
         if 'zipcode' in params: 
             (lon,lat) = self.findLonLatFromZip(params['zipcode'])
-        today = calcdate.getYearToday()
+        # print(params,lat,lon)
         db = Query()
         # Save for debugging
         #o = db.query("""
         #    select 
-        #        st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192 as dist
+        #        office_id,st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192 as dist
         #    from 
         #        office_addresses oa
-        #    """,(lon,lat))
+        #    where
+        #        st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192 < 50 
+        #    """,(lon,lat,lon,lat))
         #log.debug("dist=%s" % o)
         o = db.query("""
             select
@@ -134,15 +136,12 @@ class SearchGet(SearchBase):
                 pm.headshot,pm.video,u.id as phy_id,
                 round(st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192,2) as miles
             from
-                users u,office_user ou,
-                office o,office_addresses oa,
-                physician_media pm
+                users u
+                left join office_user ou on ou.user_id = u.id
+                left join office o on o.id = ou.office_id
+                left join office_addresses oa on oa.office_id=o.id
+                left outer join physician_media pm on pm.user_id = u.id
             where
-                pm.user_id = u.id and 
-                ou.user_id = u.id and
-                ou.office_id = o.id and
-                ou.office_id = oa.office_id and 
-                oa.office_id = o.id and
                 st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192 < 50 and
                 o.active = 1 and 
                 o.office_type_id = %s

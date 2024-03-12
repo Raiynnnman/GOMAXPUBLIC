@@ -50,6 +50,7 @@ import phy from './phy';
 import procedures from './procedures';
 import searchRegister from './searchRegister';
 import providerSearch from './providerSearch';
+import providerSearchAdmin from './providerSearchAdmin';
 import phySave from './phySave';
 import myday from './myday';
 import mydaySchedSave from './mydaySchedSave';
@@ -83,6 +84,7 @@ export default (history) =>
     adminDashboard,
     chatDownloadDoc,
     registerProvider,
+    providerSearchAdmin,
     alerts,
     createRoom,
     auth,

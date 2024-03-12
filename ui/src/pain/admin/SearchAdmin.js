@@ -12,10 +12,10 @@ import Select from 'react-select';
 import { Button } from 'reactstrap'; 
 import { Form, FormGroup, Label, Input } from 'reactstrap';
 import { InputGroup, InputGroupText } from 'reactstrap';
-import s from './default.module.scss';
+import s from '../utils/default.module.scss';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
-import { getProviderSearch } from '../../actions/providerSearch';
+import { getProviderSearchAdmin } from '../../actions/providerSearchAdmin';
 import { searchConfig } from '../../actions/searchConfig';
 import { searchCheckRes } from '../../actions/searchCheckRes';
 import { searchRegister } from '../../actions/searchRegister';
@@ -28,7 +28,7 @@ import Login from '../login';
 
 const animatedComponents = makeAnimated();
 
-class Search extends Component {
+class SearchAdmin extends Component {
     constructor(props) { 
         super(props);
         this.state = { 
@@ -82,9 +82,17 @@ class Search extends Component {
 
 
     changeZip(e) { 
+        console.log(e.target.value)
         this.state.zipchange = true;
         this.state.zipcode = e.target.value;
         this.setState(this.state);
+        if (this.state.zipcode.length === 5) { 
+            this.props.dispatch(getProviderSearchAdmin(
+                {type:this.state.selectedProvider,
+                 zipcode:this.state.zipcode
+                }
+            ))
+        } 
     } 
 
     updateAppt(e,t) { 
@@ -110,7 +118,7 @@ class Search extends Component {
     setProviderType(e) { 
         this.state.selectedProvider = e;
         this.setState(this.state);
-        this.props.dispatch(getProviderSearch(
+        this.props.dispatch(getProviderSearchAdmin(
             {type:this.state.selectedProvider,
              location:this.state.mylocation
         }))
@@ -178,11 +186,12 @@ class Search extends Component {
             selected: this.state.selected,
             zipcode: this.state.zipcode
         } 
-        this.props.dispatch(getProceduresSearch(params))
+        this.props.dispatch(getProceduresSearchAdmin(params))
         this.setState(this.state);
     }
 
     render() {
+        console.log("p",this.props)
         const responsive = {
             0: { 
                 items: 1
@@ -207,7 +216,7 @@ class Search extends Component {
         }
         return (
         <>
-            {(this.props.providerSearch && this.props.providerSearch.isReceiving) && (
+            {(this.props.providerSearchAdmin && this.props.providerSearchAdmin.isReceiving) && (
                 <AppSpinner/>
             )}
             {(this.state.geo) && (
@@ -218,7 +227,7 @@ class Search extends Component {
             )}
             {(Login.isAuthenticated()) && ( 
                 <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                    <h5>Find the best price for the highest quality providers. Book an appointment in minutes.</h5>
+                    <h5>Use the zipcode box to find providers. Book an appointment in minutes.</h5>
                 </div>
             )}
             {(Login.isAuthenticated() && this.state.selectedProvider !== null) && ( 
@@ -284,22 +293,22 @@ class Search extends Component {
                     })}
                 </Row>
             )}
-            {(this.props.providerSearch && this.props.providerSearch.data && 
-                this.props.providerSearch.data && this.props.providerSearch.data.providers &&
-                this.props.providerSearch.data.providers.length > 0 && this.state.provider !== null) && (
+            {(this.props.providerSearchAdmin && this.props.providerSearchAdmin.data && 
+                this.props.providerSearchAdmin.data && this.props.providerSearchAdmin.data.providers &&
+                this.props.providerSearchAdmin.data.providers.length > 0 && this.state.provider !== null) && (
                 <AliceCarousel animationType="fadeout" animationDuration={3} autoWidth={true} innerWidth={10}
                     autoPlay={false} disableDotsControls={true} infinite={false}
                     disableButtonsControls={false} responsive={responsive}
                     disableSlideInfo={false}
-                    mouseTracking items={this.props.providerSearch.data.providers.map((e) => { 
+                    mouseTracking items={this.props.providerSearchAdmin.data.providers.map((e) => { 
                         return (
                             <PhysicianCard onScheduleAppt={this.scheduleAppt} provider={e}/>
                         )
                     })} />
             )}
-            {(this.props.providerSearch && this.props.providerSearch.data && 
-                this.props.providerSearch.data && this.props.providerSearch.data.providers &&
-                this.props.providerSearch.data.providers.length < 1 && this.state.provider !== null) && (
+            {(this.props.providerSearchAdmin && this.props.providerSearchAdmin.data && 
+                this.props.providerSearchAdmin.data && this.props.providerSearchAdmin.data.providers &&
+                this.props.providerSearchAdmin.data.providers.length < 1 && this.state.provider !== null) && (
                 <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                     <h4>There are currently no service providers in this area.</h4>
                 </div>
@@ -320,9 +329,9 @@ function mapStateToProps(store) {
     return {
         currentUser: store.auth.currentUser,
         searchConfig:store.searchConfig,
-        providerSearch: store.providerSearch,
+        providerSearchAdmin: store.providerSearchAdmin,
         searchCheckRes: store.searchCheckRes
     }
 }
 
-export default connect(mapStateToProps)(Search);
+export default connect(mapStateToProps)(SearchAdmin);

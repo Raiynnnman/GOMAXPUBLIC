@@ -140,6 +140,17 @@ class Sidebar extends React.Component {
           {(this.props.currentUser && this.props.currentUser.entitlements && 
             this.props.currentUser.entitlements.includes("Admin")) && (
           <LinksGroup
+            header="Search"
+            link="/app/main/admin/search"
+            isHeader
+            iconElement={<Location/>}
+            iconName="flaticon-users"
+            labelColor="info"
+          />
+          )}
+          {(this.props.currentUser && this.props.currentUser.entitlements && 
+            this.props.currentUser.entitlements.includes("Admin")) && (
+          <LinksGroup
             header="Map"
             link="/app/main/admin/map"
             isHeader
