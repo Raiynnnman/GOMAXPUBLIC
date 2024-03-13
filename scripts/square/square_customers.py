@@ -21,6 +21,7 @@ config.read("settings.cfg")
 key = config.getKey("square_api_key")
 client = Client(access_token=key,environment='sandbox')
 
+OT = getIDs.getOfficeTypes()
 parser = argparse.ArgumentParser()
 parser.add_argument('--dryrun', dest="dryrun", action="store_true")
 parser.add_argument('--force', dest="force", action="store_true")
@@ -35,6 +36,7 @@ q = """
         office o
     where 
         o.active = 1 and
+        and o.office_type_id = %s and
         o.billing_system_id = 2 and
         o.stripe_cust_id is null
     """
@@ -45,7 +47,7 @@ if not args.force and args.id is None:
 if args.id is not None:
     q += " and o.id = %s " % args.id
 
-l = db.query(q)
+l = db.query(q,(OT['Chiropractors'],))
 
 BS=getIDs.getBillingSystem()
 

@@ -27,6 +27,7 @@ args = parser.parse_args()
 APT = getIDs.getAppointStatus()
 INV = getIDs.getInvoiceIDs()
 BS = getIDs.getBillingSystem()
+OT = getIDs.getOfficeTypes()
 db = Query()
 q = db.query("""
     select
@@ -48,10 +49,11 @@ q = db.query("""
         o.active = 1 and
         o.stripe_cust_id is not null and
         date(op.end_date) > now() and
+        and o.office_type_id = %s and
         opi.office_plans_id = op.id 
     group by
         op.id
-    """
+    """,(OT['Chiropractor'],)
 )
 
 for x in q:
@@ -63,9 +65,9 @@ for x in q:
         from 
             invoices 
         where 
-            office_id = %s and 
             year(billing_period) = year(now()) and
-            month(billing_period) = month(now())
+            month(billing_period) = month(now()) and
+            office_id = %s 
         """,(x['office_id'],)
     )
     HAVE = False
@@ -81,8 +83,8 @@ for x in q:
         office_id,invoice_status_id,billing_period,stripe_tax_id,billing_system_id
         ) 
         values
-        (%s,%s,date(%s),'txcd_10000000',%s)
-        """,(x['office_id'],INV['CREATED'],x['start_date'],x['billing_system_id'])
+        (%s,%s,date(now()),'txcd_10000000',%s)
+        """,(x['office_id'],INV['CREATED'],x['billing_system_id'])
     )
     insid = db.query("select LAST_INSERT_ID()")
     insid = insid[0]['LAST_INSERT_ID()']

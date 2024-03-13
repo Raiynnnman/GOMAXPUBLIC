@@ -10,6 +10,7 @@ sys.path.append(os.getcwd())  # noqa: E402
 from util.DBOps import Query
 from common import settings
 from util import encryption,calcdate
+from util import getIDs
 import argparse
 import stripe
 config = settings.config()
@@ -17,6 +18,7 @@ config.read("settings.cfg")
 
 key = config.getKey("stripe_key")
 stripe.api_key = key
+OT = getIDs.getOfficeTypes()
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--dryrun', dest="dryrun", action="store_true")
@@ -31,13 +33,14 @@ q = """
         office o
     where 
         o.active = 1 and
+        and o.office_type_id = %s and
         o.stripe_cust_id is null
     """
 
 if not args.force:
     q += " and (o.stripe_next_check is null or o.stripe_next_check < now()) "
 
-l = db.query(q)
+l = db.query(q,(OT['Chiropractor'],))
 
 CNT = 0
 for x in l:
