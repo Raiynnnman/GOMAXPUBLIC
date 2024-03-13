@@ -43,7 +43,7 @@ for x in l:
     if x['total'] != x['calc']:
         db.update("""
             update invoices set total = %s where id = %s
-            """,(x['invoices_id'],x['calc'])
+            """,(x['calc'],x['invoices_id'])
         )
 
 db.commit()
