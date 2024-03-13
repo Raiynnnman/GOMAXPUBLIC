@@ -7,11 +7,11 @@ fi
 
 T="
     square/square_customers \
+    stripe/stripe_customers \
+    stripe/stripe_customer_update \
     stripe/registration_invoices \
     stripe/registration_initial_payment \
     stripe/generate_invoices \
-    stripe/stripe_customers \
-    stripe/stripe_customer_update \
     square/invoice_submit \
     stripe/invoice_submit \
     stripe/stripe_progress_invoice \

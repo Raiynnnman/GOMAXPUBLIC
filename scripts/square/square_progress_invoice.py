@@ -56,7 +56,7 @@ for x in l:
             print("invoice id %s has no stripe_invoice_id" % x['id'])
             continue
         print(x)
-        if x['status']  == 'draft' and x['invoice_status'] != 'SENT':   
+        if x['status']  == 'DRAFT' and x['invoice_status'] != 'SENT':   
             r = client.invoices.publish_invoice(
                 invoice_id = x['stripe_invoice_id'],
                 body = { 'version': 0 }
