@@ -34,6 +34,7 @@ q = """
     where 
         o.active = 1 and
         o.office_type_id = %s and
+        o.billing_system_id = 1 and
         o.stripe_cust_id is null
     """
 
