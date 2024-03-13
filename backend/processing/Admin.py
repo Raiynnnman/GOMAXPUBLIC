@@ -134,15 +134,16 @@ class UserList(AdminBase):
     def execute(self, *args, **kwargs):
         ret = {}
         job,user,off_id,params = self.getArgs(*args,**kwargs)
-        limit = 10000
+        limit = 10
         offset = 0
         if 'limit' in params:
             limit = int(params['limit'])
         if 'offset' in params:
             offset = int(params['offset'])
         db = Query()
+        print(params)
         ENT = self.getEntitlementIDs()
-        o = db.query("""
+        q = """
             select 
                 u.id,u.email,u.first_name,u.last_name,
                 u.phone,u.active
@@ -150,8 +151,13 @@ class UserList(AdminBase):
                 users u
             where 
                 id <> 1
+            order by 
+                updated desc
             """
-        )
+        cnt = db.query("select count(id) as cnt from (%s) as t" % (q,))
+        q += " limit %s offset %s " 
+        o = db.query(q,(limit,offset*limit))
+        ret['total'] = cnt[0]['cnt']
         ret['config'] = {}
         ret['config']['permissions'] = self.getPermissionIDs()
         ret['config']['entitlements'] = self.getEntitlementIDs()
@@ -554,7 +560,7 @@ class OfficeList(AdminBase):
 
     @check_admin
     def execute(self, *args, **kwargs):
-        ret = []
+        ret = {}
         job,user,off_id,params = self.getArgs(*args,**kwargs)
         limit = 10000
         offset = 0
@@ -564,8 +570,7 @@ class OfficeList(AdminBase):
             offset = int(params['offset'])
         db = Query()
         OT = self.getOfficeTypes()
-        o = db.query(
-            """
+        q = """
                 select 
                     o.id,o.name,o.active,o.email,pqs.name as status,
                     JSON_ARRAYAGG(
@@ -583,10 +588,11 @@ class OfficeList(AdminBase):
                     o.office_type_id = %s
                 group by 
                     o.id
-                limit %s offset %s
-            """, (OT['Chiropractor'],limit,offset)
-        )
-        ret = {}
+            """ % OT['Chiropractor']
+        cnt = db.query("select count(id) as cnt from (%s) as t" % (q,))
+        q += " limit %s offset %s " 
+        ret['total'] = cnt[0]['cnt']
+        o = db.query(q,(limit,offset*limit))
         ret['offices'] = []
         for x in o:
             x['addr'] = json.loads(x['addr'])

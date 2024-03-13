@@ -77,7 +77,6 @@ class Registrations extends Component {
         } 
     }
     pageChange(e,t) { 
-        console.log(e,t);
         if (e === '>') { 
             this.state.page = this.state.page + 1;
         } else { 
@@ -90,7 +89,6 @@ class Registrations extends Component {
     } 
 
     renderTotalLabel(f,t,s) { 
-        console.log(f,t,s);
         var numpage = s/t;
         return "Showing page " + (this.state.page+1) + " of " + numpage.toFixed(0);
     } 
@@ -265,7 +263,6 @@ class Registrations extends Component {
              e.preventDefault();
              this.pageChange(page, currentPage);// api call 
            };    
-          console.log(page,currentPage);
           return (
             <div>
               {
@@ -276,7 +273,6 @@ class Registrations extends Component {
             </div>
           );
         };
-        console.log("p",this.props)
         const options = {
           pageButtonRenderer,
           showTotal:true,
@@ -291,7 +287,6 @@ class Registrations extends Component {
           hideSizePerPage:true,
           //onPageChange:(page,sizePerPage) => this.pageChange(page,sizePerPage)
         };
-        console.log(options)
         var fields = [
             {name:'Email',value:'email'},
             {name:'First',value:'first_name'},

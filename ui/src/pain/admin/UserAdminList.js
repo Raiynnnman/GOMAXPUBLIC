@@ -18,8 +18,8 @@ import { Search } from 'react-bootstrap-table2-toolkit';
 import s from '../office/default.module.scss';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
-import { getOffices } from '../../actions/userAdmin';
 import { getContext } from '../../actions/context';
+import { getUserAdmin } from '../../actions/userAdmin';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import cellEditFactory from 'react-bootstrap-table2-editor';
@@ -36,11 +36,15 @@ class UserAdminList extends Component {
         this.state = {
             selected: null,
             assignPhysician: null,
+            page: 0,
+            pageSize: 10,
             commentAdd:false
         } 
         this.edit = this.edit.bind(this);
         this.cancel = this.cancel.bind(this);
         this.save = this.save.bind(this);
+        this.pageChange = this.pageChange.bind(this);
+        this.renderTotalLabel = this.renderTotalLabel.bind(this);
         this.emailChange = this.emailChange.bind(this);
         this.zipcodeChange = this.zipcodeChange.bind(this);
         this.firstChange = this.firstChange.bind(this);
@@ -56,6 +60,7 @@ class UserAdminList extends Component {
     }
 
     componentDidMount() {
+        this.props.dispatch(getUserAdmin({page:this.state.page,limit:this.state.pageSize}))
     }
 
     addr1Change(e) {
@@ -86,6 +91,24 @@ class UserAdminList extends Component {
     emailChange(e) { 
         this.state.selected['email'] = e.target.value;
         this.setState(this.state);
+    } 
+    pageChange(e,t) { 
+        console.log(e,t);
+        if (e === '>') { 
+            this.state.page = this.state.page + 1;
+        } else { 
+            this.state.page = e - 1;
+        }
+        this.props.dispatch(getUserAdmin(
+            {limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
+        ));
+        this.setState(this.state);
+    } 
+
+    renderTotalLabel(f,t,s) { 
+        console.log(f,t,s);
+        var numpage = s/t;
+        return "Showing page " + (this.state.page+1) + " of " + numpage.toFixed(0);
     } 
     firstChange(e) { 
         this.state.selected['first_name'] = e.target.value;
@@ -127,10 +150,42 @@ class UserAdminList extends Component {
     } 
 
     render() {
+        console.log("p",this.props);
+        const pageButtonRenderer = ({
+          page,
+          currentPage,
+          disabled,
+          title,
+          onPageChange
+        }) => {
+          const handleClick = (e) => {
+             e.preventDefault();
+             this.pageChange(page, currentPage);// api call 
+           };    
+          console.log(page,currentPage);
+          return (
+            <div>
+              {
+               <li className="page-item">
+                 <a href="#"  onClick={ handleClick } className="page-link">{ page }</a>
+               </li>
+              }
+            </div>
+          );
+        };
         const options = {
+          pageButtonRenderer,
           showTotal:true,
+          withFirstAndLast: false,
+          alwaysShowAllBtns: false,
+          nextPageText:'>',
           sizePerPage:10,
-          hideSizePerPage:true
+          paginationTotalRenderer: (f,t,z) => this.renderTotalLabel(f,t,z),
+          totalSize: (this.props.userAdmin && 
+                      this.props.userAdmin.data &&
+                      this.props.userAdmin.data.total) ? this.props.userAdmin.data.total : 10,
+          hideSizePerPage:true,
+          //onPageChange:(page,sizePerPage) => this.pageChange(page,sizePerPage)
         };
         const responsive = {
             0: { 
@@ -177,8 +232,8 @@ class UserAdminList extends Component {
                 text:'Active',
                 formatter: (cellContent,row) => (
                     <div>
-                        {(row.active) && (<Badge color="primary">Active</Badge>)}
-                        {(!row.active) && (<Badge color="danger">Inactive</Badge>)}
+                        {(row.active === 1) && (<Badge color="primary">Active</Badge>)}
+                        {(row.active === 0) && (<Badge color="danger">Inactive</Badge>)}
                     </div>
                 )
             },
@@ -235,24 +290,12 @@ class UserAdminList extends Component {
             </Row>
             <Row md="12">
                 <Col md="12">
-                    <ToolkitProvider
-                      keyField="id"
-                      data={ this.props.userAdmin.data.users }
-                      columns={ heads }
-                      search
-                    >
-                        {props => (
-                            <>
-                              <SearchBar
-                                {...props.searchProps}
-                                style={{ marginBottom:10,width: "400px", height: "40px" }}
-                              />
-                              <BootstrapTable { ...props.baseProps }
-                                pagination={ paginationFactory(options) }>
-                              </BootstrapTable>
-                            </>
-                        )}
-                    </ToolkitProvider>
+                      <BootstrapTable 
+                          keyField="id"
+                          data={ this.props.userAdmin.data.users }
+                          columns={ heads }
+                          pagination={ paginationFactory(options) }>
+                      </BootstrapTable>
                 </Col>                
             </Row>
             </>

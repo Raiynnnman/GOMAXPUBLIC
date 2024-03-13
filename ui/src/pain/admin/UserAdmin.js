@@ -41,7 +41,6 @@ class UserAdmin extends Component {
     } 
 
     componentDidMount() {
-        this.props.dispatch(getUserAdmin({page:0,limit:10000}))
     }
 
     render() {

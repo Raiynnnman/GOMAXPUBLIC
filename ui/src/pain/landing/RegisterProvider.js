@@ -122,7 +122,6 @@ class RegisterProvider extends Component {
         this.setState(this.state);
     } 
     officeAddr1Change(e) {
-        console.log(e.target.value)
         this.state.addresses[this.state.selectedAddrId].addr1 = e.target.value;
         this.setState(this.state);
     } 
@@ -141,7 +140,6 @@ class RegisterProvider extends Component {
             license: this.state.license,
             addresses: this.state.addresses
         } 
-        console.log("ts",tosend);
         this.props.dispatch(registerProvider(tosend,function(err,args) { 
               toast.success('Successfully saved office.',
                 {
@@ -250,7 +248,6 @@ class RegisterProvider extends Component {
                 text:'Zip'
             }
         ]
-        console.log("s",this.state);
         return (
         <>
             {(this.props.registerProvider && this.props.registerProvider.isReceiving) && (
@@ -382,7 +379,6 @@ class RegisterProvider extends Component {
                                     locationId={squareLocationKey()}
                                     cardTokenizeResponseReceived={(token,verifiedBuyer) => { 
                                             this.saveCard({token:token});
-                                            console.log('token:',token);
                                     }}>
                                     <>
                                         <CreditCard>Save</CreditCard>

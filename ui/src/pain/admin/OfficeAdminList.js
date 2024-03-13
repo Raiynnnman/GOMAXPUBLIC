@@ -33,9 +33,13 @@ class OfficeList extends Component {
         this.state = { 
             selected: null,
             subTab: "plans",
+            page: 0,
+            pageSize: 10,
             selectedID: 0
         } 
         this.cancel = this.cancel.bind(this);
+        this.pageChange = this.pageChange.bind(this);
+        this.renderTotalLabel = this.renderTotalLabel.bind(this);
         this.toggleSubTab = this.toggleSubTab.bind(this);
         this.save = this.save.bind(this);
         this.delRow = this.delRow.bind(this);
@@ -48,7 +52,25 @@ class OfficeList extends Component {
     }
 
     componentDidMount() {
+        this.props.dispatch(getOffices({page:this.state.page,limit:this.state.pageSize}))
     }
+
+    pageChange(e,t) { 
+        if (e === '>') { 
+            this.state.page = this.state.page + 1;
+        } else { 
+            this.state.page = e - 1;
+        }
+        this.props.dispatch(getOffices(
+            {limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
+        ));
+        this.setState(this.state);
+    } 
+
+    renderTotalLabel(f,t,s) { 
+        var numpage = s/t;
+        return "Showing page " + (this.state.page+1) + " of " + numpage.toFixed(0);
+    } 
 
     delRow(e) { 
         var t = this.state.selected.addr.filter((g) => g.id !== e.id);
@@ -161,6 +183,41 @@ class OfficeList extends Component {
     } 
 
     render() {
+        const pageButtonRenderer = ({
+          page,
+          currentPage,
+          disabled,
+          title,
+          onPageChange
+        }) => {
+          const handleClick = (e) => {
+             e.preventDefault();
+             this.pageChange(page, currentPage);// api call 
+           };    
+          return (
+            <div>
+              {
+               <li className="page-item">
+                 <a href="#"  onClick={ handleClick } className="page-link">{ page }</a>
+               </li>
+              }
+            </div>
+          );
+        };
+        const options = {
+          pageButtonRenderer,
+          showTotal:true,
+          withFirstAndLast: false,
+          alwaysShowAllBtns: false,
+          nextPageText:'>',
+          sizePerPage:10,
+          paginationTotalRenderer: (f,t,z) => this.renderTotalLabel(f,t,z),
+          totalSize: (this.props.offices && 
+                      this.props.offices.data &&
+                      this.props.offices.data.total) ? this.props.offices.data.total : 10,
+          hideSizePerPage:true,
+          //onPageChange:(page,sizePerPage) => this.pageChange(page,sizePerPage)
+        };
         var heads = [
             {
                 dataField:'id',
@@ -318,11 +375,6 @@ class OfficeList extends Component {
                 )
             }
         ]
-        const options = {
-          showTotal:true,
-          sizePerPage:10,
-          hideSizePerPage:true
-        };
         return (
         <>
             {(this.props.offices && this.props.offices.isReceiving) && (
@@ -339,24 +391,12 @@ class OfficeList extends Component {
             <>
             <Row md="12">
                 <Col md="12">
-                    <ToolkitProvider
-                      keyField="id"
-                      data={this.props.offices.data.offices} 
-                      columns={ heads }
-                      search
-                    >
-                        {props => (
-                            <>
-                              <SearchBar
-                                {...props.searchProps}
-                                style={{ marginBottom:10,width: "400px", height: "40px" }}
-                              />
-                              <BootstrapTable { ...props.baseProps }
-                                pagination={ paginationFactory(options) }>
-                              </BootstrapTable>
-                            </>
-                        )}
-                    </ToolkitProvider>
+                      <BootstrapTable 
+                          keyField="id"
+                          data={this.props.offices.data.offices} 
+                          columns={ heads }
+                            pagination={ paginationFactory(options) }>
+                      </BootstrapTable>
                 </Col>                
             </Row>
             </>
