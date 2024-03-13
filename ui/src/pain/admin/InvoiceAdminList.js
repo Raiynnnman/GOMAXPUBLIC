@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Col, Row } from 'reactstrap';
-import { getInvoiceAdmin } from '../../actions/invoiceAdmin';
 import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
 import { FormGroup, Label, Input } from 'reactstrap';
 import moment from 'moment';
@@ -51,6 +50,8 @@ class InvoiceAdminList extends Component {
         this.firstChange = this.firstChange.bind(this);
         this.lastChange = this.lastChange.bind(this);
         this.phoneChange = this.phoneChange.bind(this);
+        this.renderTotalLabel = this.renderTotalLabel.bind(this);
+        this.pageChange = this.pageChange.bind(this);
     } 
 
     componentWillReceiveProps(p) { 
@@ -58,6 +59,16 @@ class InvoiceAdminList extends Component {
 
     componentDidMount() {
     }
+
+    pageChange(e,t) { 
+        this.props.pageChange(this.state.page);
+        this.setState(this.state);
+    } 
+
+    renderTotalLabel(f,t,s) { 
+        var numpage = s/t;
+        return "Showing page " + (this.props.page+1) + " of " + numpage.toFixed(0);
+    } 
 
     onStatusChange(e) { 
         this.props.onStatusChange(e);
@@ -137,6 +148,41 @@ class InvoiceAdminList extends Component {
     } 
 
     render() {
+        const pageButtonRenderer = ({
+          page,
+          currentPage,
+          disabled,
+          title,
+          onPageChange
+        }) => {
+          const handleClick = (e) => {
+             e.preventDefault();
+             this.pageChange(page, currentPage);// api call 
+           };    
+          return (
+            <div>
+              {
+               <li className="page-item">
+                 <a href="#"  onClick={ handleClick } className="page-link">{ page }</a>
+               </li>
+              }
+            </div>
+          );
+        };
+        const options = {
+          pageButtonRenderer,
+          showTotal:true,
+          withFirstAndLast: false,
+          alwaysShowAllBtns: false,
+          nextPageText:'>',
+          sizePerPage:10,
+          paginationTotalRenderer: (f,t,z) => this.renderTotalLabel(f,t,z),
+          totalSize: (this.props.invoicesAdmin && 
+                      this.props.invoicesAdmin.data &&
+                      this.props.invoicesAdmin.data.total) ? this.props.invoicesAdmin.data.total : 10,
+          hideSizePerPage:true,
+          //onPageChange:(page,sizePerPage) => this.pageChange(page,sizePerPage)
+        };
         const responsive = {
             0: { 
                 items: 1
@@ -274,11 +320,6 @@ class InvoiceAdminList extends Component {
                 )
             }
         ];
-        const options = {
-          showTotal:true,
-          sizePerPage:10,
-          hideSizePerPage:true
-        };
         return (
         <>
             {(this.props.invoiceAdmin && this.props.invoiceAdmin.isReceiving) && (

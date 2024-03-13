@@ -409,7 +409,12 @@ class InvoicesList(AdminBase):
         if 'filter' in params and params['filter'] != 0:
             q += " and invoice_status_id = %s " 
             p.append(params['filter'])
+        p.append(limit)
+        p.append(offset*limit)
         q += "group by i.id order by billing_period desc"
+        cnt = db.query("select count(id) as cnt from (%s) as t" % (q,))
+        ret['total'] = cnt[0]['cnt']
+        q += " limit %s offset %s " 
         o = db.query(q,p)
         for x in o:
             x['items'] = json.loads(x['items'])

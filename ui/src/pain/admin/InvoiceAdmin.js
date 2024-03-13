@@ -22,9 +22,12 @@ class InvoiceAdmin extends Component {
             filters:[
             ],
             filterSelected:{},
+            page: 0,
+            pageSize: 10
         }
         this.onFilterChange = this.onFilterChange.bind(this);
         this.onStatusUpdate = this.onStatusUpdate.bind(this);
+        this.pageChange = this.pageChange.bind(this);
         this.onSave = this.onSave.bind(this);
     } 
 
@@ -46,7 +49,7 @@ class InvoiceAdmin extends Component {
     onStatusUpdate(e) { 
         this.props.dispatch(invoiceAdminStatus(e)).then(() => { 
             this.props.dispatch(getInvoiceAdmin({
-                filter:this.state.filterSelected.value,page:0,limit:10000}
+                filter:this.state.filterSelected.value,page:this.state.page,limit:this.state.pageSize}
             ))
         })
     } 
@@ -71,14 +74,27 @@ class InvoiceAdmin extends Component {
             },args))
         },this));
     } 
+
+    pageChange(e,t) { 
+        if (e === '>') { 
+            this.state.page = this.state.page + 1;
+        } else { 
+            this.state.page = e - 1;
+        }
+        this.props.dispatch(getInvoiceAdmin(
+            {limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
+        ));
+        this.setState(this.state);
+    } 
+
     onFilterChange(e) { 
-        this.props.dispatch(getInvoiceAdmin({filter:e.value,page:0,limit:10000}))
+        this.props.dispatch(getInvoiceAdmin({filter:e.value,page:this.state.page,limit:this.state.pageSize}))
         this.state.filterSelected = e
         this.setState(this.state)
     } 
 
     componentDidMount() {
-        this.props.dispatch(getInvoiceAdmin({page:0,limit:10000}))
+        this.props.dispatch(getInvoiceAdmin({page:this.state.page,limit:this.state.pageSize}))
     }
 
     render() {
@@ -92,7 +108,7 @@ class InvoiceAdmin extends Component {
             )}
             <Row md="12">
                 <Col md="12">
-                    <InvoiceAdminList filters={this.state.filters} filterSelected={this.state.filterSelected} 
+                    <InvoiceAdminList filters={this.state.filters} page={this.state.page} filterSelected={this.state.filterSelected} 
                         onFilterChange={this.onFilterChange} onSave={this.onSave} onStatusUpdate={this.onStatusUpdate}/>
                 </Col>                
             </Row>
