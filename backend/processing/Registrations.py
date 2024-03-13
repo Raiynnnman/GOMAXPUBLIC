@@ -171,10 +171,10 @@ class RegistrationVerify(RegistrationsBase):
                     (%s,%s,date_add(now(),INTERVAL 24 HOUR))
                 """,(insid,params['token'])
             )
-            offname = "user-%s" % encryption.getSHA256(u['email'])
+            offname = "user-%s" % encryption.getSHA256(u['email'])[:10]
             db.update("insert into office (name,office_type_id) values (%s,%s)",
                 (
-                    offname[:10],
+                    offname,
                     OT['Customer']
                 )
             )
