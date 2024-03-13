@@ -49,7 +49,7 @@ q = db.query("""
         o.active = 1 and
         o.stripe_cust_id is not null and
         date(op.end_date) > now() and
-        and o.office_type_id = %s and
+        o.office_type_id = %s and
         opi.office_plans_id = op.id 
     group by
         op.id

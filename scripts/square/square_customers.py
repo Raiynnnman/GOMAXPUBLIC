@@ -36,7 +36,7 @@ q = """
         office o
     where 
         o.active = 1 and
-        and o.office_type_id = %s and
+        o.office_type_id = %s and
         o.billing_system_id = 2 and
         o.stripe_cust_id is null
     """
@@ -47,7 +47,7 @@ if not args.force and args.id is None:
 if args.id is not None:
     q += " and o.id = %s " % args.id
 
-l = db.query(q,(OT['Chiropractors'],))
+l = db.query(q,(OT['Chiropractor'],))
 
 BS=getIDs.getBillingSystem()
 

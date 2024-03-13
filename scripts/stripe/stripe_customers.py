@@ -33,7 +33,7 @@ q = """
         office o
     where 
         o.active = 1 and
-        and o.office_type_id = %s and
+        o.office_type_id = %s and
         o.stripe_cust_id is null
     """
 
