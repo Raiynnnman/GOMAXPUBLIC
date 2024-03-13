@@ -20,6 +20,7 @@ import AppSpinner from '../utils/Spinner';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import cellEditFactory from 'react-bootstrap-table2-editor';
+import EditIcon from '@mui/icons-material/Edit';
 import PhysicianCard from '../search/PhysicianCard';
 import AliceCarousel from 'react-alice-carousel';
 import { toast } from 'react-toastify';
@@ -315,7 +316,7 @@ class InvoiceAdminList extends Component {
                 editable: false,
                 formatter:(cellContent,row) => ( 
                     <div>
-                        <Button onClick={() => this.edit(row)} style={{marginRight:5,height:35,width:90}} color="primary">Edit</Button>
+                        <Button onClick={() => this.edit(row)} style={{marginRight:5,height:35}} color="primary"><EditIcon/></Button>
                     </div>
                 )
             }

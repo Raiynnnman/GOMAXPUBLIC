@@ -7,6 +7,7 @@ import { bundleSave } from '../../actions/bundleSave';
 import { push } from 'connected-react-router';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import cellEditFactory from 'react-bootstrap-table2-editor';
+import EditIcon from '@mui/icons-material/Edit';
 import { TabContent, TabPane } from 'reactstrap';
 import cx from 'classnames';
 import classnames from 'classnames';
@@ -154,7 +155,7 @@ class UsersList extends Component {
                 text:'Actions',
                 formatter:(cellContent,row) => ( 
                     <div>
-                        <Button onClick={() => this.edit(row)} style={{marginRight:5,height:35,width:90}} color="primary">Edit</Button>
+                        <Button onClick={() => this.edit(row)} style={{marginRight:5,height:35}} color="primary"><EditIcon/></Button>
                     </div>
                 )
             },

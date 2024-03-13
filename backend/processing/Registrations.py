@@ -258,21 +258,32 @@ class RegisterProvider(RegistrationsBase):
         PL = self.getPlans()
         BS = self.getBillingSystem()
         HAVE = False
+        userid = 0
         if 'cust_id' not in params:
             params['cust_id'] = "cust-%s" % (encryption.getSHA256(params['email']))
         l = db.query("""
-            select id from office where cust_id=%s
-            """,(params['cust_id'],)
+            select id from users where email=%s
+            """,(params['email'],)
         )
         for t in l:
-            HAVE = True
-        if HAVE:
-            return ret
-        db.update("insert into office (name,office_type_id,email,cust_id,active) values (%s,%s,%s,%s,0)",
-            (params['name'],OT['Chiropractor'],params['email'],params['cust_id'])
+            userid = t['id']
+        l = db.query("""
+            select id 
+                from office o, office_user ou 
+            where
+                ou.office_id=o.id and
+                ou.user_id = %s
+            """,(user_id,)
         )
-        insid = db.query("select LAST_INSERT_ID()");
-        insid = insid[0]['LAST_INSERT_ID()']
+        for t in l:
+            insid = t['id']
+        if insid == 0:
+            db.update("insert into office (name,office_type_id,email,cust_id,active) values (%s,%s,%s,%s,0)",
+                (params['name'],OT['Chiropractor'],params['email'],params['cust_id'])
+            )
+            insid = db.query("select LAST_INSERT_ID()");
+            insid = insid[0]['LAST_INSERT_ID()']
+        db.update("delete from office_addresses where office=%s",(insid,))
         for x in params['addresses']:
             db.update(
                 """
@@ -281,43 +292,44 @@ class RegisterProvider(RegistrationsBase):
                     ) values (%s,%s,%s,%s,%s,%s,%s)
                 """,(insid,x['name'],x['addr1'],x['phone'],x['city'],x['state'],x['zipcode'])
             )
-        db.update(
-            """
-            insert into provider_queue (office_id,provider_queue_lead_strength_id) 
-                values (%s,%s)
-            """,(insid,ST['Potential Provider'])
-        )
-        l = db.query("""
-            select id from users where email = %s
-            """,(params['email'],)
-        )
-        uid = 0
-        for o in l:
-            uid = o['id']
-        if uid == 0:
+        if not Have:
             db.update(
                 """
-                insert into users (first_name,last_name,email,phone) values (%s,%s,%s,%s)
-                """,(params['first'],params['last'],params['email'],params['phone'])
+                insert into provider_queue (office_id,provider_queue_lead_strength_id) 
+                    values (%s,%s)
+                """,(insid,ST['Potential Provider'])
             )
-            uid = db.query("select LAST_INSERT_ID()");
-            uid = uid[0]['LAST_INSERT_ID()']
-        db.update("""
-            update office set user_id=%s where id=%s
-            """,(uid,insid)
-        )
-        db.update("""
-            insert into office_user (office_id,user_id) values (%s,%s)
-            """,(insid,uid)
-        )
-        db.update("""
-            insert into user_entitlements (user_id,entitlements_id) values (%s,%s)
-            """,(uid,ENT['Provider'])
-        )
-        db.update("""
-            insert into user_permissions (user_id,permissions_id) values (%s,%s)
-            """,(uid,PERM['Admin'])
-        )
+            l = db.query("""
+                select id from users where email = %s
+                """,(params['email'],)
+            )
+            uid = 0
+            for o in l:
+                uid = o['id']
+            if uid == 0:
+                db.update(
+                    """
+                    insert into users (first_name,last_name,email,phone) values (%s,%s,%s,%s)
+                    """,(params['first'],params['last'],params['email'],params['phone'])
+                )
+                uid = db.query("select LAST_INSERT_ID()");
+                uid = uid[0]['LAST_INSERT_ID()']
+            db.update("""
+                update office set user_id=%s where id=%s
+                """,(uid,insid)
+            )
+            db.update("""
+                insert into office_user (office_id,user_id) values (%s,%s)
+                """,(insid,uid)
+            )
+            db.update("""
+                insert into user_entitlements (user_id,entitlements_id) values (%s,%s)
+                """,(uid,ENT['Provider'])
+            )
+            db.update("""
+                insert into user_permissions (user_id,permissions_id) values (%s,%s)
+                """,(uid,PERM['Admin'])
+            )
         selplan = int(params['plan'])
         db.update("""
             insert into office_plans (office_id,start_date,end_date,pricing_data_id) 

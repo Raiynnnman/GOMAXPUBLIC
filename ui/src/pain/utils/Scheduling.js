@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Col, Row } from 'reactstrap';
+import EditIcon from '@mui/icons-material/Edit';
 import Select from 'react-select';
 import { push } from 'connected-react-router';
 import { Nav, NavItem, NavLink } from 'reactstrap';
@@ -213,7 +214,7 @@ class Scheduling extends Component {
                 text:'Actions',
                 formatter:(cellContent,row) => ( 
                     <div>
-                        <Button onClick={() => this.edit(row)} style={{marginRight:5,height:35,width:90}} color="primary">Edit</Button>
+                        <Button onClick={() => this.edit(row)} style={{marginRight:5,height:35}} color="primary"><EditIcon/></Button>
                     </div>
                 )
             },
@@ -267,7 +268,7 @@ class Scheduling extends Component {
                     text:'Actions',
                     formatter:(cellContent,row) => ( 
                         <div>
-                            <Button onClick={() => this.edit(row)} style={{marginRight:5,height:35,width:90}} color="primary">Edit</Button>
+                            <Button onClick={() => this.edit(row)} style={{marginRight:5,height:35,width:90}} color="primary"><EditIcon/></Button>
                         </div>
                     )
                 },

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Col, Row } from 'reactstrap';
+import EditIcon from '@mui/icons-material/Edit';
 import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
 import { FormGroup, Label, Input } from 'reactstrap';
 import moment from 'moment';
@@ -218,7 +219,7 @@ class InvoiceAdminList extends Component {
                 editable: false,
                 formatter:(cellContent,row) => ( 
                     <div>
-                        <Button onClick={() => this.edit(row)} style={{marginRight:5,height:35,width:90}} color="primary">Edit</Button>
+                        <Button onClick={() => this.edit(row)} style={{marginRight:5,height:35}} color="primary"><EditIcon/></Button>
                     </div>
                 )
             }*/,

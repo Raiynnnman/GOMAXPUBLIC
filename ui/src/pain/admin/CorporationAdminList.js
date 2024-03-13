@@ -3,6 +3,8 @@ import { connect } from 'react-redux';
 import { Col, Row } from 'reactstrap';
 import { push } from 'connected-react-router';
 import cellEditFactory from 'react-bootstrap-table2-editor';
+import EditIcon from '@mui/icons-material/Edit';
+import LaunchIcon from '@mui/icons-material/Launch';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { TabContent, TabPane } from 'reactstrap';
 import cx from 'classnames';
@@ -120,8 +122,8 @@ class CorporationList extends Component {
                 text:'Actions',
                 formatter:(cellContent,row) => ( 
                     <div>
-                        <Button onClick={() => this.edit(row)} style={{marginRight:5,height:35,width:90}} color="primary">Edit</Button>
-                        <Button onClick={() => this.getContext(row)} style={{height:35,width:90}} color="primary">Context</Button>
+                        <Button onClick={() => this.edit(row)} style={{marginRight:5,height:35}} color="primary"><EditIcon/></Button>
+                        <Button onClick={() => this.getContext(row)} style={{height:35}} color="primary"><LaunchIcon/></Button>
                     </div>
                 )
             },

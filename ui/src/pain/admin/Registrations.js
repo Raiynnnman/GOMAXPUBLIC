@@ -5,6 +5,7 @@ import moment from 'moment';
 import { Badge } from 'reactstrap';
 import { Button } from 'reactstrap'; 
 import cellEditFactory from 'react-bootstrap-table2-editor';
+import EditIcon from '@mui/icons-material/Edit';
 import salesforceURL from '../../salesforceConfig';
 
 import { Type } from 'react-bootstrap-table2-editor';
@@ -497,7 +498,7 @@ class Registrations extends Component {
                 formatter:(cellContent,row) => (
                     <>
                     <div>
-                        <Button onClick={() => this.edit(row)} style={{marginRight:5,height:35,width:90}} color="primary">Edit</Button>
+                        <Button onClick={() => this.edit(row)} style={{marginRight:5,height:35}} color="primary"><EditIcon/></Button>
                     </div>
                     </>
                 )
