@@ -259,6 +259,7 @@ class RegisterProvider(RegistrationsBase):
         BS = self.getBillingSystem()
         HAVE = False
         userid = 0
+        print(params)
         if 'cust_id' not in params:
             params['cust_id'] = "cust-%s" % (encryption.getSHA256(params['email']))
         l = db.query("""
@@ -273,17 +274,17 @@ class RegisterProvider(RegistrationsBase):
             where
                 ou.office_id=o.id and
                 ou.user_id = %s
-            """,(user_id,)
+            """,(userid,)
         )
         for t in l:
             insid = t['id']
         if insid == 0:
-            db.update("insert into office (name,office_type_id,email,cust_id,active) values (%s,%s,%s,%s,0)",
-                (params['name'],OT['Chiropractor'],params['email'],params['cust_id'])
+            db.update("insert into office (name,office_type_id,email,cust_id,active,billing_system_id) values (%s,%s,%s,%s,0,%s)",
+                (params['name'],OT['Chiropractor'],params['email'],params['cust_id'],BS)
             )
             insid = db.query("select LAST_INSERT_ID()");
             insid = insid[0]['LAST_INSERT_ID()']
-        db.update("delete from office_addresses where office=%s",(insid,))
+        db.update("delete from office_addresses where office_id=%s",(insid,))
         for x in params['addresses']:
             db.update(
                 """
@@ -292,7 +293,7 @@ class RegisterProvider(RegistrationsBase):
                     ) values (%s,%s,%s,%s,%s,%s,%s)
                 """,(insid,x['name'],x['addr1'],x['phone'],x['city'],x['state'],x['zipcode'])
             )
-        if not Have:
+        if not HAVE:
             db.update(
                 """
                 insert into provider_queue (office_id,provider_queue_lead_strength_id) 

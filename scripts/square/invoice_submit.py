@@ -44,6 +44,7 @@ inv = db.query("""
          where 
             o.id = i.office_id and 
             i.billing_system_id = 2 and
+            o.stripe_cust_id is not null and
             i.billing_period < now() and
             invoice_status_id=%s
     """,(INV['APPROVED'],)
@@ -79,14 +80,14 @@ for x in inv:
             'base_price_money':{'amount':g['price'] * 100,'currency':'USD'}
         })
 
-    print(json.dumps(order,indent=4))
-    print("++++")
+    # print(json.dumps(order,indent=4))
+    # print("++++")
     try:
         r = client.orders.create_order(body={'order': order});
         if r.is_error():
             raise Exception(json.dumps(s.errors))
         r = r.body
-        print(json.dumps(r,indent=4))
+        # print(json.dumps(r,indent=4))
         order_id = r['order']['id']
         db.update("""
             update invoices set order_id = %s where id = %s
@@ -101,10 +102,9 @@ for x in inv:
         mode = "charge_automatically"
         if card_id is None:
             mode = 'send_invoice'
-        # Temporary
-        mode = 'send_invoice'
         s = {}
         print("mode=%s,card=%s" % (mode,card_id))
+        print(x)
         if mode == 'send_invoice':
             s = client.invoices.create_invoice(
                 body = {
@@ -115,13 +115,39 @@ for x in inv:
                             'customer_id': x['stripe_cust_id']
                         },
                         'delivery_method':'EMAIL',
+                        'store_payment_method_enabled': True,
                         'accepted_payment_methods': { 
                             'card':True,
                             'bank_account':True
                         },
                         'payment_requests': [{
                             'request_type':'BALANCE',
-                            'due_date': calcdate.getTimeIntervalAddMonths(None,30).strftime('%Y-%m-%d'),
+                            'automatic_payment_source':'CARD_ON_FILE',
+                            'card_id': card_id,
+                            'due_date': calcdate.getTimeIntervalAddMonths(None,1).strftime('%Y-%m-%d'),
+                            'tipping_enabled':False,
+                        }]
+                    }
+                }
+            )
+        if mode == 'charge_automatically':
+            s = client.invoices.create_invoice(
+                body = {
+                    'invoice': {
+                        'location_id': loc,
+                        'order_id': order_id,
+                        'primary_recipient': { 
+                            'customer_id': x['stripe_cust_id']
+                        },
+                        'delivery_method':'EMAIL',
+                        'store_payment_method_enabled': True,
+                        'accepted_payment_methods': { 
+                            'card':True,
+                            'bank_account':True
+                        },
+                        'payment_requests': [{
+                            'request_type':'BALANCE',
+                            'due_date': calcdate.getTimeIntervalAddMonths(None,1).strftime('%Y-%m-%d'),
                             'tipping_enabled':False,
                         }]
                     }
@@ -130,8 +156,6 @@ for x in inv:
             if s.is_error():
                 raise Exception(json.dumps(s.errors))
             s = s.body
-        else:
-            pass
         print(json.dumps(s,indent=4))
         db.update("""
             update invoices set stripe_invoice_id=%s,invoice_status_id=%s where id=%s

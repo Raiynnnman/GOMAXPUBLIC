@@ -6,6 +6,7 @@ import { Badge } from 'reactstrap';
 import { Button } from 'reactstrap'; 
 import cellEditFactory from 'react-bootstrap-table2-editor';
 import EditIcon from '@mui/icons-material/Edit';
+import AutorenewIcon from '@mui/icons-material/Autorenew';
 import salesforceURL from '../../salesforceConfig';
 
 import { Type } from 'react-bootstrap-table2-editor';
@@ -48,6 +49,7 @@ class Registrations extends Component {
         this.renderTotalLabel = this.renderTotalLabel.bind(this);
         this.addAddress = this.addAddress.bind(this);
         this.save = this.save.bind(this);
+        this.reload = this.reload.bind(this);
         this.edit = this.edit.bind(this);
         this.add = this.add.bind(this);
         this.addInvoiceRow = this.addInvoiceRow.bind(this);
@@ -195,6 +197,11 @@ class Registrations extends Component {
         }]
         this.setState(this.state);
     } 
+    reload() { 
+        this.props.dispatch(getRegistrations(
+            {search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
+        ));
+    }
     save() { 
         var tosend = { 
             email:this.state.selected.email,
@@ -213,9 +220,12 @@ class Registrations extends Component {
             tosend.invoice_id = this.state.selected.invoice.id,
             tosend.invoice_items = this.state.selected.invoice.items
         }
+        if (this.state.selected.card) { 
+            tosend.card = this.state.selected.card
+        }
         this.props.dispatch(registrationAdminUpdate(tosend,function(err,args) { 
             args.props.dispatch(getRegistrations(
-                {search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter},function(err,args) { 
+                {search:args.search,limit:args.pageSize,offset:args.page,status:args.filter},function(err,args) { 
               toast.success('Successfully saved registration.',
                 {
                     position:"top-right",
@@ -576,6 +586,12 @@ class Registrations extends Component {
                                     <Col md={3}>
                                         <Input type="text" id="normal-field" onChange={this.search}
                                         placeholder="Search" value={this.state.search}/>
+                                    </Col>
+                                    <Col md={3}>
+                                        <div class='pull-right'>
+                                            <Button onClick={() => this.reload()} style={{marginRight:5,height:35}} outline 
+                                                color="primary"><AutorenewIcon/></Button>
+                                        </div>
                                     </Col>
                                 </Row>
                             </div>
