@@ -195,11 +195,12 @@ for x in PAIN:
     # Dont send back the ID to SF
     if 'Id' in OBJ:
         del OBJ['Id']
-    print(json.dumps(OBJ,indent=4))
+    # print(json.dumps(OBJ,indent=4))
 
     INSERT_IDS = {}
-    if SF_ID in SF_DATA:
-        continue    # Temporary, skip the sync part
+
+    # Temporary, skip the sync part
+    if False and SF_ID in SF_DATA:
         print("synchronizing objects")
         print("SYNC: %s" % SF_ID)
         SF_CHANGE = False
@@ -267,11 +268,10 @@ for x in PAIN:
                         )
             else:
                 print("Field synchronized")
+            db.commit()
 
-        db.commit()
-        sys.exit(0)
         ### SYNC HERE
-        if LEADER=='pain':
+        if False and LEADER=='pain':
             if not sf_util.compareDicts(tmp,pain):
                 if 'LastModifiedDate' in OBJ:
                     del OBJ['LastModifiedDate']
@@ -280,10 +280,9 @@ for x in PAIN:
                 print("Sync'ing to salesforce")
                 if not args.dryrun:
                     r = sf.Lead.update(SF_ID,OBJ)
-        else:
-            print("Fields synchronized")
+
     else:
-        print("creating object")
+        print("creating object: %s" % OBJ['PainID'])
         if 'LastModifiedDate' in OBJ:
             del OBJ['LastModifiedDate']
         if 'modifiedMeta' in OBJ:
