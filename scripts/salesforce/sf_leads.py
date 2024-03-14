@@ -193,7 +193,8 @@ for x in PAIN:
     print(json.dumps(OBJ,indent=4))
 
     INSERT_IDS = {}
-    if False and SF_ID in SF_DATA:
+    if SF_ID in SF_DATA:
+        continue    # Temporary, skip the sync part
         print("synchronizing objects")
         print("SYNC: %s" % SF_ID)
         SF_CHANGE = False
