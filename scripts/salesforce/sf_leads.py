@@ -52,6 +52,7 @@ PAIN = db.query("""
         provider_queue pq
     where 
         o.user_id = u.id and
+        o.active = 0 and
         pd.id = op.pricing_data_id and
         op.office_id = o.id and
         pq.office_id = o.id
