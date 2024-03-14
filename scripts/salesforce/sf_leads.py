@@ -74,11 +74,11 @@ data_f = 'sf_leads_data.json'
 res = sf_util.cacheOrLoad(schema_f,sf.Lead.describe)
 SFSCHEMA = {}
 for x in res['fields']:
-    print(x['name'])
+    # print(x['name'])
     lab = x['label']
     SFSCHEMA[lab] = x
-    print(json.dumps(x,indent=4))
-    print("----")
+    # print(json.dumps(x,indent=4))
+    # print("----")
 
 SFQUERY = "select  "
 HAVE={}
@@ -120,17 +120,17 @@ if not os.path.exists('./sf_out'):
     os.makedirs('./sf_out')
 
 SF_DATA = {}
-print(res)
-print(type(res))
+#print(res)
+#print(type(res))
 CNTR = 0
 for x in res['records']:
-    print(json.dumps(x,indent=4))
+    # print(json.dumps(x,indent=4))
     SF_ID = x['Id']
     SF_DATA[SF_ID] = x
 
-random.shuffle(PAIN)
+# random.shuffle(PAIN)
 for x in PAIN:
-    print(x)
+    # print(x)
     SF_ID = x['sf_id']
     if args.sf_id is not None:
         if SF_ID != args.sf_id:
@@ -238,7 +238,7 @@ for x in PAIN:
                     q += n['tbl'] 
                     q += "(%s,%s)" % (n['field'],n['join'])
                     q += " values (%s,%s)"
-                    print(q)
+                    # print(q)
                     if not args.dryrun:
                         db.update(q,(
                             tmp[upd],
@@ -258,7 +258,7 @@ for x in PAIN:
                     q += ', updated = %s'
                     q += ' where %s = ' % n['join']
                     q += ' %s '
-                    print(q)
+                    # print(q)
                     if not args.dryrun:
                         db.update(q,(
                                 tmp[upd],                     # New Value
@@ -289,16 +289,19 @@ for x in PAIN:
             del OBJ['modifiedMeta']
         if not args.dryrun:
             r = sf.Lead.create(OBJ)
-            print(json.dumps(r,indent=4))
+            # print(json.dumps(r,indent=4))
             off = x['office_id']
             db.update("""
                 update provider_queue set sf_id=%s where office_id=%s
                 """,(r['id'],off)
             )
         db.commit()
+
     H.open("./sf_out/%s.json" % r['id'],"w")
     H.write(json.dumps(OBJ,indent=4))
     H.close()
+
     if args.limit is not None and CNTR > int(args.limit):
         break
+    CNTR += 1
 
