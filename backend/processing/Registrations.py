@@ -259,7 +259,6 @@ class RegisterProvider(RegistrationsBase):
         BS = self.getBillingSystem()
         HAVE = False
         userid = 0
-        print(params)
         if 'cust_id' not in params:
             params['cust_id'] = "cust-%s" % (encryption.getSHA256(params['email']))
         l = db.query("""
