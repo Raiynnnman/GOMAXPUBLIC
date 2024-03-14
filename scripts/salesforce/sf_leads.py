@@ -28,6 +28,7 @@ inst = config.getKey("sf_instance")
 parser = argparse.ArgumentParser()
 parser.add_argument('--dryrun', dest="dryrun", action="store_true")
 parser.add_argument('--sf_id', dest="sf_id", action="store")
+parser.add_argument('--limit', dest="limit", action="store")
 args = parser.parse_args()
 
 sf = None
@@ -118,6 +119,7 @@ if not os.path.exists('./sf_out'):
 SF_DATA = {}
 print(res)
 print(type(res))
+CNTR = 0
 for x in res['records']:
     print(json.dumps(x,indent=4))
     SF_ID = x['Id']
@@ -295,4 +297,6 @@ for x in PAIN:
     H.open("./sf_out/%s.json" % r['id'],"w")
     H.write(json.dumps(OBJ,indent=4))
     H.close()
+    if args.limit is not None and CNTR > int(args.limit):
+        break
 
