@@ -47,17 +47,13 @@ PAIN = db.query("""
         o.updated as office_updated,u.updated as users_updated,
         pq.updated as provider_queue_updated
     from 
-        office o,
-        users u,
-        office_plans op,
-        pricing_data pd,
         provider_queue pq
+        left outer join office o on pq.office_id = o.id
+        left outer join users u on o.user_id = u.id
+        left outer join office_plans op on  op.office_id = o.id
+        left outer join pricing_data pd on pd.id = op.pricing_data_id
     where 
-        o.user_id = u.id and
-        o.active = 0 and
-        pd.id = op.pricing_data_id and
-        op.office_id = o.id and
-        pq.office_id = o.id
+        o.active = 0 
     """)
 
 for x in PAIN:
