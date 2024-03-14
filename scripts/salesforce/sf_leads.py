@@ -112,6 +112,8 @@ else:
 
 
 #---- MAIN
+if not os.path.exists('./sf_out'):
+    os.makedirs('./sf_out')
 
 SF_DATA = {}
 print(res)
@@ -191,7 +193,7 @@ for x in PAIN:
     print(json.dumps(OBJ,indent=4))
 
     INSERT_IDS = {}
-    if SF_ID in SF_DATA:
+    if False and SF_ID in SF_DATA:
         print("synchronizing objects")
         print("SYNC: %s" % SF_ID)
         SF_CHANGE = False
@@ -220,7 +222,7 @@ for x in PAIN:
             print("upd=%s,n=%s,sf=%s" % (upd,n,tmp[upd]))
             painlastm = calcdate.sysParseDate(n['upd'])
             print("upd: %s : p:%sd1,sf:%s" % (upd,painlastm,sflastm))
-            if False and sflastm > painlastm:
+            if sflastm > painlastm:
                 print("Sync'ing %s (%s) to paindb"%(upd,tmp[upd]))
                 q = ""
                 dbargs = []
@@ -289,4 +291,7 @@ for x in PAIN:
                 """,(r['id'],off)
             )
         db.commit()
+    H.open("./sf_out/%s.json" % r['id'],"w")
+    H.write(json.dumps(OBJ,indent=4))
+    H.close()
 
