@@ -1011,6 +1011,9 @@ class RegistrationList(AdminBase):
         offset = 0
         if 'offset' in params:
             offset = params['offset']
+        if 'search' in params:
+            if params['search'] == None or len(params['search']) == 0:
+                del params['search']
         db = Query()
         PQS = self.getProviderQueueStatus()
         q = """
@@ -1028,6 +1031,11 @@ class RegistrationList(AdminBase):
                 left outer join office_type ot on ot.id=o.office_type_id
         """
         status_ids = []
+        search_par = [
+            limit,
+            offset*limit
+        ]
+        count_par = []
         if 'status' in params:
             q += " where ("
             arr = []
@@ -1035,15 +1043,22 @@ class RegistrationList(AdminBase):
                 arr.append("provider_queue_status_id = %s " % z)
             q += " or ".join(arr)
             q += ")"
+        if 'search' in params:
+            q += """ and (o.email like %s  or o.name like %s ) 
+            """
+            search_par.insert(0,params['search']+'%%')
+            search_par.insert(0,params['search']+'%%')
+            count_par.insert(0,params['search']+'%%')
+            count_par.insert(0,params['search']+'%%')
         q += """
             order by
                 updated desc
         """
-        cnt = db.query("select count(id) as cnt from (%s) as t" % (q,))
-        q += " limit %s offset %s " 
+        cnt = db.query("select count(id) as cnt from (" + q + ") as t", count_par)
         ret['total'] = cnt[0]['cnt']
+        q += " limit %s offset %s " 
         o = []
-        o = db.query(q,(limit,offset*limit))
+        o = db.query(q,search_par)
         k = [] 
         for x in o:
             x['addr'] = db.query("""

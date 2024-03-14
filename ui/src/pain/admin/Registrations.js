@@ -33,12 +33,14 @@ class Registrations extends Component {
             selected: null,
             activeTab: "registrations",
             statusSelected:null,
+            search:null,
             filter: [],
             subTab: "plans",
             page: 0,
             pageSize: 10
         }
         this.close = this.close.bind(this);
+        this.search = this.search.bind(this);
         this.onStatusChange = this.onStatusChange.bind(this);
         this.onLeadStrengthChange = this.onLeadStrengthChange.bind(this);
         this.onPlansChange = this.onPlansChange.bind(this);
@@ -84,7 +86,7 @@ class Registrations extends Component {
             this.state.page = e - 1;
         }
         this.props.dispatch(getRegistrations(
-            {limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
+            {search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
         ));
         this.setState(this.state);
     } 
@@ -99,6 +101,17 @@ class Registrations extends Component {
         this.setState(this.state);
     }
 
+    search(e) { 
+        this.state.search = e.target.value;
+        if (this.state.search.length === 0) { 
+            this.state.search = null;
+        } 
+        this.props.dispatch(getRegistrations(
+            {search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
+        ));
+        this.setState(this.state);
+    } 
+
     onStatusFilter(e,t) { 
         if (e.length <2 ) { return; }
         var c = 0;
@@ -109,11 +122,7 @@ class Registrations extends Component {
         this.state.statusSelected = t;
         this.state.filter = t;
         this.props.dispatch(getRegistrations(
-            {
-            limit:this.state.pageSize,
-            offset:this.state.page,
-            status:t
-            }
+            {search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
         ));
         this.setState(this.state)
     } 
@@ -205,7 +214,8 @@ class Registrations extends Component {
             tosend.invoice_items = this.state.selected.invoice.items
         }
         this.props.dispatch(registrationAdminUpdate(tosend,function(err,args) { 
-            args.props.dispatch(getRegistrations({page:args.state.page,limit:args.state.pageSize},function(err,args) { 
+            args.props.dispatch(getRegistrations(
+                {search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter},function(err,args) { 
               toast.success('Successfully saved registration.',
                 {
                     position:"top-right",
@@ -405,6 +415,11 @@ class Registrations extends Component {
                 text:'ID'
             },
             {
+                dataField:'name',
+                sort:true,
+                text:'Name'
+            },
+            {
                 dataField:'email',
                 sort:true,
                 text:'Email'
@@ -423,11 +438,6 @@ class Registrations extends Component {
                 dataField:'phone',
                 sort:true,
                 text:'Phone'
-            },
-            {
-                dataField:'office_type',
-                sort:true,
-                text:'Type'
             },
             {
                 dataField:'sf_id',
@@ -526,9 +536,6 @@ class Registrations extends Component {
                         </NavItem>
                     </Nav>
                     <TabContent className='mb-lg' activeTab={this.state.activeTab}>
-                        {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
-                          this.props.registrationsAdminList.data.registrations && 
-                          this.props.registrationsAdminList.data.registrations.length > 0)&& ( 
                         <TabPane tabId="registrations">
                             {(this.state.selected === null) && (
                             <>
@@ -566,6 +573,10 @@ class Registrations extends Component {
                                             />
                                         )}
                                     </Col>                
+                                    <Col md={3}>
+                                        <Input type="text" id="normal-field" onChange={this.search}
+                                        placeholder="Search" value={this.state.search}/>
+                                    </Col>
                                 </Row>
                             </div>
                             <Row md="12" style={{marginTop:10}}>
@@ -808,7 +819,6 @@ class Registrations extends Component {
                             </Row>
                             )}
                         </TabPane>
-                        )}
                     </TabContent>
                 </Col>                
             </Row>

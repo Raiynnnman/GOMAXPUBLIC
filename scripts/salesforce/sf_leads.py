@@ -32,8 +32,10 @@ parser.add_argument('--limit', dest="limit", action="store")
 args = parser.parse_args()
 
 sf = None
-#if config.getKey("sf_test"):
-sf = Salesforce(security_token=token, password=passw, username=user, instance=inst,domain='test')
+if config.getKey("sf_test"):
+    sf = Salesforce(security_token=token, password=passw, username=user, instance=inst,domain='test')
+else:
+    sf = Salesforce(security_token=token, password=passw, username=user, instance=inst)
 
 
 db = Query()
