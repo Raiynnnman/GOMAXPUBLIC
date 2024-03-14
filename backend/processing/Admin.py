@@ -141,7 +141,6 @@ class UserList(AdminBase):
         if 'offset' in params:
             offset = int(params['offset'])
         db = Query()
-        print(params)
         ENT = self.getEntitlementIDs()
         q = """
             select 
@@ -814,20 +813,14 @@ class RegistrationUpdate(AdminBase):
                 ) as addr,u.first_name,u.last_name,u.email,u.phone,u.id as uid,
                 pq.initial_payment,op.id as planid
             from
-                provider_queue pq,
-                provider_queue_status pqs,
-                office o,
-                office_addresses oa,
-                office_plans op,
-                users u,
-                office_user ou
+                provider_queue pq
+                left outer join provider_queue_status pqs on  pq.provider_queue_status_id = pqs.id
+                left outer join office o on pq.office_id = o.id
+                left outer join office_addresses oa on oa.office_id = o.id
+                left outer join office_plans op on op.office_id = o.id
+                left outer join office_user ou on ou.office_id = o.id
+                left outer join users u on u.id = ou.office_id 
             where
-                pq.provider_queue_status_id = pqs.id and
-                op.office_id = o.id and
-                pq.office_id = o.id and
-                oa.office_id = o.id and
-                ou.office_id = o.id and
-                ou.user_id = u.id and
                 o.id = %s
             group by 
                 o.id
@@ -865,6 +858,8 @@ class RegistrationUpdate(AdminBase):
                 insert into provider_queue(office_id,provider_queue_lead_strength_id) values (%s,%s)
                 """,(offid,STR['Potential Provider'])
             )
+            pqid = db.query("select LAST_INSERT_ID()");
+            pqid = pqid[0]['LAST_INSERT_ID()']
             db.update("""
                 insert into office_user(office_id,user_id) values
                     (%s,%s)

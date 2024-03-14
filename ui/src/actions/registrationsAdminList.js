@@ -27,10 +27,6 @@ export function receivingData(params,callback,args) {
     dispatch({
         type: RECEIVING_REGL_DATA
     });
-    dispatch({
-        type: RECEIVED_REGL_DATA_SUCCESS,
-        payload: []
-    });
     const response = await axios.create({
             baseURL: apiBaseUrl(),
             withCredentials: true,

@@ -70,7 +70,13 @@ for x in l:
             (r['customer']['id'],x['id'])
         )
         l = db.query("""
-            select id,payment_id from office_cards where office_id=%s and
+            select 
+                id,payment_id 
+            from 
+                office_cards 
+            where 
+                office_id=%s and
+                payment_id is null and
                 sync_provider = 0
             """,(x['id'],)
         )

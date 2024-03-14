@@ -24,10 +24,11 @@ loc = config.getKey("square_loc_key")
 client = Client(access_token=key,environment='sandbox')
 parser = argparse.ArgumentParser()
 parser.add_argument('--dryrun', dest="dryrun", action="store_true")
+parser.add_argument('--force', dest="force", action="store_true")
 args = parser.parse_args()
 db = Query()
 
-l = db.query("""
+q = """
     select 
         i.id,i.office_id,invoices_id,i.stripe_invoice_id,
         i.nextcheck, sis.status, i.physician_schedule_id, 
@@ -43,7 +44,10 @@ l = db.query("""
         i.stripe_invoice_id is not null and
         date_add(sis.created,interval 160 day) > now() 
     """
-)
+
+if not args.force:
+    q += " and (i.nextcheck is null or i.nextcheck < now()) "
+l = db.query(q)
 
 key = config.getKey("square_api_key")
 loc = config.getKey("square_loc_key")
@@ -52,9 +56,6 @@ INV = getIDs.getInvoiceIDs()
 
 for x in l:
     try:
-        if x['stripe_invoice_id'] is None:
-            print("invoice id %s has no stripe_invoice_id" % x['id'])
-            continue
         print(x)
         if x['status']  == 'DRAFT' and x['invoice_status'] != 'SENT':   
             r = client.invoices.publish_invoice(
@@ -86,10 +87,15 @@ for x in l:
                 """,(x['invoices_id'],1,'Progressed invoice status to PAID' )
             )
             db.commit()
+        db.update("""
+            update invoices set nextcheck=date_add(now(),INTERVAL 12 hour)
+                where id=%s
+            """,(x['id'],)
+        )
+        db.commit()
     except Exception as e:
         print(str(e))
         exc_type, exc_value, exc_traceback = sys.exc_info()
         traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
-    db.commit()
 
 

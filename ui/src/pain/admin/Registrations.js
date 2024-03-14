@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { toast } from 'react-toastify';
 import Select from 'react-select';
+import MaskedInput from 'react-maskedinput';
 import moment from 'moment';
 import { Badge } from 'reactstrap';
 import { Button } from 'reactstrap'; 
@@ -114,6 +115,7 @@ class Registrations extends Component {
         this.setState(this.state);
     } 
 
+
     onStatusFilter(e,t) { 
         if (e.length <2 ) { return; }
         var c = 0;
@@ -224,8 +226,9 @@ class Registrations extends Component {
             tosend.card = this.state.selected.card
         }
         this.props.dispatch(registrationAdminUpdate(tosend,function(err,args) { 
+            console.log('a',args);
             args.props.dispatch(getRegistrations(
-                {search:args.search,limit:args.pageSize,offset:args.page,status:args.filter},function(err,args) { 
+                {search:args.state.search,limit:args.state.pageSize,offset:args.state.page,status:args.state.filter},function(err,args) { 
               toast.success('Successfully saved registration.',
                 {
                     position:"top-right",
@@ -273,6 +276,7 @@ class Registrations extends Component {
     } 
 
     render() {
+        console.log("p",this.props);
         const pageButtonRenderer = ({
           page,
           currentPage,
@@ -673,8 +677,11 @@ class Registrations extends Component {
                                               Phone
                                             </Label>
                                             <Col md={5}>
-                                                <Input type="text" id="normal-field" onChange={this.updatePhone}
-                                                placeholder='Phone' value={this.state.selected.phone}/>
+                                                <MaskedInput
+                                                  className="form-control" id="mask-phone" mask="(111) 111-1111"
+                                                  onChange={this.updatePhone} value={this.state.selected.phone}
+                                                  size="10"
+                                                />
                                             </Col>
                                           </FormGroup>
                                           <FormGroup row>
@@ -691,6 +698,9 @@ class Registrations extends Component {
                                               Status
                                             </Label>
                                             <Col md={5}>
+                                              {(this.props.registrationsAdminList && this.props.registrationsAdminList.data &&
+                                                this.props.registrationsAdminList.data.config && 
+                                                this.props.registrationsAdminList.data.config.status) && (
                                               <Select
                                                   closeMenuOnSelect={true}
                                                   isSearchable={false}
@@ -710,6 +720,7 @@ class Registrations extends Component {
                                                     )
                                                   })}
                                                 />
+                                                )}
                                             </Col>
                                           </FormGroup>
                                           <FormGroup row>
