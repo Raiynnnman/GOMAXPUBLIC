@@ -178,9 +178,9 @@ class InvoiceAdminList extends Component {
           nextPageText:'>',
           sizePerPage:10,
           paginationTotalRenderer: (f,t,z) => this.renderTotalLabel(f,t,z),
-          totalSize: (this.props.invoicesAdmin && 
-                      this.props.invoicesAdmin.data &&
-                      this.props.invoicesAdmin.data.total) ? this.props.invoicesAdmin.data.total : 10,
+          totalSize: (this.props.invoiceAdmin && 
+                      this.props.invoiceAdmin.data &&
+                      this.props.invoiceAdmin.data.total) ? this.props.invoiceAdmin.data.total : 10,
           hideSizePerPage:true,
           //onPageChange:(page,sizePerPage) => this.pageChange(page,sizePerPage)
         };
