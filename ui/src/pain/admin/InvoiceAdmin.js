@@ -109,7 +109,8 @@ class InvoiceAdmin extends Component {
             <Row md="12">
                 <Col md="12">
                     <InvoiceAdminList filters={this.state.filters} page={this.state.page} filterSelected={this.state.filterSelected} 
-                        onFilterChange={this.onFilterChange} onSave={this.onSave} onStatusUpdate={this.onStatusUpdate}/>
+                        pageChange={this.pageChange} onFilterChange={this.onFilterChange} 
+                        onSave={this.onSave} onStatusUpdate={this.onStatusUpdate}/>
                 </Col>                
             </Row>
         </>

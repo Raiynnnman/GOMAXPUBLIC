@@ -22,6 +22,7 @@ key = config.getKey("stripe_key")
 stripe.api_key = key
 parser = argparse.ArgumentParser()
 parser.add_argument('--dryrun', dest="dryrun", action="store_true")
+parser.add_argument('--office', dest="office", action="store")
 args = parser.parse_args()
 
 APT = getIDs.getAppointStatus()
@@ -29,7 +30,8 @@ INV = getIDs.getInvoiceIDs()
 BS = getIDs.getBillingSystem()
 OT = getIDs.getOfficeTypes()
 db = Query()
-q = db.query("""
+
+q = """
     select
         op.office_id,op.id,start_date,end_date,
         JSON_ARRAYAGG(
@@ -52,12 +54,18 @@ q = db.query("""
         date(op.end_date) > now() and
         o.office_type_id = %s and
         opi.office_plans_id = op.id 
-    group by
-        op.id
-    """,(OT['Chiropractor'],)
-)
+    """
 
-for x in q:
+if args.office is not None:
+    q += " and o.id = %s " % args.office
+
+q += " group by op.id "
+l = db.query(q,(OT['Chiropractor'],))
+
+print(l)
+sys.exit(0)
+
+for x in l:
     # print(json.dumps(x,indent=4))
     x['items'] = json.loads(x['items'])
     o = db.query("""

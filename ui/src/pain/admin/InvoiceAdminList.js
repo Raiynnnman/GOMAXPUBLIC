@@ -62,7 +62,7 @@ class InvoiceAdminList extends Component {
     }
 
     pageChange(e,t) { 
-        this.props.pageChange(this.state.page);
+        this.props.pageChange(e,t);
         this.setState(this.state);
     } 
 

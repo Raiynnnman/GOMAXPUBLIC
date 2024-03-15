@@ -359,6 +359,7 @@ class InvoicesList(AdminBase):
         job,user,off_id,params = self.getArgs(*args,**kwargs)
         limit = 10000
         offset = 0
+        print(params)
         if 'limit' in params:
             limit = int(params['limit'])
         if 'offset' in params:
