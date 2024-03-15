@@ -49,7 +49,7 @@ for x in l:
     r = stripe.Invoice.retrieve(x['stripe_invoice_id'])
     payment_intent = r['payment_intent']
     s_fee = 0
-    if r['status'] == 'paid':
+    if r['status'] == 'paid' and payment_intent is not None:
         p = stripe.PaymentIntent.retrieve(payment_intent,expand=['latest_charge.balance_transaction'])
         s_fee = p['latest_charge']['balance_transaction']['fee']/100
     db.update("""
