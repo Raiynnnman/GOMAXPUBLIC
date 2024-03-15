@@ -52,12 +52,15 @@ q = """
         o.active = 1 and
         o.stripe_cust_id is not null and
         date(op.end_date) > now() and
-        o.office_type_id = %s and
-        opi.office_plans_id = op.id 
+        opi.office_plans_id = op.id and
+        o.office_type_id = %s 
     """
 
 if args.office is not None:
     q += " and o.id = %s " % args.office
+
+
+print(q % OT['Chiropractor'])
 
 q += " group by op.id "
 l = db.query(q,(OT['Chiropractor'],))

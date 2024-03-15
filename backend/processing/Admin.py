@@ -359,7 +359,6 @@ class InvoicesList(AdminBase):
         job,user,off_id,params = self.getArgs(*args,**kwargs)
         limit = 10000
         offset = 0
-        print(params)
         if 'limit' in params:
             limit = int(params['limit'])
         if 'offset' in params:
@@ -1115,6 +1114,7 @@ class RegistrationList(AdminBase):
             t = db.query("""
                 select 
                     i.id,i.invoice_status_id,isi.name,i.total,
+                    i.billing_period,
                     JSON_ARRAYAGG(
                         JSON_OBJECT(
                             'id',ii.id,'price',ii.price,

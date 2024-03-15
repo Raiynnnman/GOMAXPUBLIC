@@ -364,21 +364,21 @@ class Registrations extends Component {
             {
                 dataField:'quantity',
                 align:'center',
-                editable:true,
+                editable:false,
                 width:50,
                 text:'quantity'
             },
             {
                 dataField:'price',
                 text:'Price',
-                editable:true,
+                editable:false,
                 align:'right',
                 formatter: (cellContent,row) => (
                     <div>
                         ${row.price.toFixed ?  row.price.toFixed(2) : row.price}
                     </div>
                 )
-            },
+            }
             
         ]
         var invheads = [
@@ -387,6 +387,10 @@ class Registrations extends Component {
                 sort:true,
                 hidden:true,
                 text:'ID'
+            },
+            {
+                dataField:'billing_period',
+                text:'Period'
             },
             {
                 dataField:'description',

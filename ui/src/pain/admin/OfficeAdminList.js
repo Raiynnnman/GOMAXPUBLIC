@@ -225,6 +225,7 @@ class OfficeList extends Component {
     } 
 
     render() {
+        console.log("S",this.state);
         const pageButtonRenderer = ({
           page,
           currentPage,
@@ -592,11 +593,27 @@ class OfficeList extends Component {
                             <TabPane tabId="plans">
                                 {(this.state.selected.plans && this.state.selected.plans.items) && (
                                 <>
-                                <BootstrapTable 
-                                    keyField='id' data={this.state.selected.plans.items} 
-                                    cellEdit={ cellEditFactory({ mode: 'click',blurToSave:true })}
-                                    columns={planheads}>
-                                </BootstrapTable>
+                                    <Row md="12" style={{marginBottom:20,borderBottom:"1px solid black"}}>
+                                        <Col md="2">
+                                            Plan Start
+                                        </Col>
+                                        <Col md="4">
+                                            {this.state.selected.plans.start_date}
+                                        </Col>
+                                        <Col md="2">
+                                            Plan End
+                                        </Col>
+                                        <Col md="4">
+                                            {this.state.selected.plans.end_date}
+                                        </Col>
+                                    </Row>
+                                    <Row md="12" style={{marginBottom:20}}>
+                                        <BootstrapTable 
+                                            keyField='id' data={this.state.selected.plans.items} 
+                                            cellEdit={ cellEditFactory({ mode: 'click',blurToSave:true })}
+                                            columns={planheads}>
+                                        </BootstrapTable>
+                                    </Row>
                                 </>
                                 )}
                             </TabPane>
