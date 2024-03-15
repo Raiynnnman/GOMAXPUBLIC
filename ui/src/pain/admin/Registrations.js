@@ -226,7 +226,6 @@ class Registrations extends Component {
             tosend.card = this.state.selected.card
         }
         this.props.dispatch(registrationAdminUpdate(tosend,function(err,args) { 
-            console.log('a',args);
             args.props.dispatch(getRegistrations(
                 {search:args.state.search,limit:args.state.pageSize,offset:args.state.page,status:args.state.filter},function(err,args) { 
               toast.success('Successfully saved registration.',
@@ -276,7 +275,6 @@ class Registrations extends Component {
     } 
 
     render() {
-        console.log("p",this.props);
         const pageButtonRenderer = ({
           page,
           currentPage,
@@ -562,7 +560,7 @@ class Registrations extends Component {
                                     <Col md="5" style={{zIndex:9995}}>
                                       {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
                                         this.props.registrationsAdminList.data.config &&
-                                        this.props.registrationsAdminList.data.config.status && this.state.statusSelected !== null) && (
+                                        this.props.registrationsAdminList.data.config.provider_status && this.state.statusSelected !== null) && (
                                           <Select
                                               closeMenuOnSelect={true}
                                               isSearchable={false}

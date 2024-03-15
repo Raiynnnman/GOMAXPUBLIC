@@ -35,14 +35,18 @@ class OfficeList extends Component {
         this.state = { 
             selected: null,
             subTab: "plans",
+            filter: [],
+            statusSelected:null,
             page: 0,
             pageSize: 10,
             selectedID: 0
         } 
         this.cancel = this.cancel.bind(this);
         this.pageChange = this.pageChange.bind(this);
+        this.activeChange = this.activeChange.bind(this);
         this.renderTotalLabel = this.renderTotalLabel.bind(this);
         this.toggleSubTab = this.toggleSubTab.bind(this);
+        this.onStatusFilter = this.onStatusFilter.bind(this);
         this.save = this.save.bind(this);
         this.delRow = this.delRow.bind(this);
         this.addAddress = this.addAddress.bind(this);
@@ -51,12 +55,46 @@ class OfficeList extends Component {
     } 
 
     componentWillReceiveProps(p) { 
+        if (p.offices.data && p.offices.data.config && 
+            p.offices.data.config.provider_status && this.state.statusSelected === null) { 
+            var c = 0;
+            var t = [];
+            for (c = 0; c < p.offices.data.config.provider_status.length; c++) { 
+                if (p.offices.data.config.provider_status[c].name !== 'INVITED') { continue; }
+                t.push(p.offices.data.config.provider_status[c].id); 
+            } 
+            this.state.statusSelected = t;
+            this.state.filter = t;
+            this.setState(this.state);
+            this.props.dispatch(getOffices(
+                {limit:this.state.pageSize,offset:this.state.page,status:t}
+            ));
+        } 
     }
+
+    onStatusFilter(e,t) { 
+        if (e.length < 1 ) { return; }
+        var c = 0;
+        var t = [];
+        for (c = 0; c < e.length; c++) { 
+            t.push(e[c].value); 
+        } 
+        this.state.statusSelected = t;
+        this.state.filter = t;
+        this.props.dispatch(getOffices(
+            {search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
+        ));
+        this.setState(this.state)
+    } 
 
     componentDidMount() {
         this.props.dispatch(getOffices({page:this.state.page,limit:this.state.pageSize}))
     }
 
+    activeChange(e,t) { 
+        this.state.selected.active = this.state.selected.active ? 0 : 1; 
+        this.setState(this.state);
+    }
     pageChange(e,t) { 
         if (e === '>') { 
             this.state.page = this.state.page + 1;
@@ -164,7 +202,9 @@ class OfficeList extends Component {
             return;
           }
         this.props.dispatch(officeSave(g,function(err,args) { 
-            args.props.dispatch(getOffices({page:0,limit:10000},function(err,args) { 
+            args.props.dispatch(
+                getOffices(
+                    {limit:args.state.pageSize,offset:args.state.page,status:args.state.filter},function(err,args) { 
               toast.success('Successfully saved office.',
                 {
                     position:"top-right",
@@ -234,6 +274,7 @@ class OfficeList extends Component {
             {
                 dataField:'status',
                 sort:true,
+                align:'center',
                 text:'Status',
                 formatter:(cellContent,row) => (
                     <div>
@@ -247,12 +288,27 @@ class OfficeList extends Component {
             },
             {
                 dataField:'active',
-                width:"50",
+                align:'center',
                 text:'Active',
                 formatter: (cellContent,row) => (
                     <div>
                         {(row.active === 1) && (<Badge color="primary">Active</Badge>)}
                         {(row.active === 0) && (<Badge color="danger">Inactive</Badge>)}
+                    </div>
+                )
+            },
+            {
+                dataField:'status',
+                sort:true,
+                align:'center',
+                text:'Status',
+                formatter:(cellContent,row) => (
+                    <div>
+                        {(row.status === 'INVITED') && (<Badge color="primary">INVITED</Badge>)}
+                        {(row.status === 'APPROVED') && (<Badge color="primary">APPROVED</Badge>)}
+                        {(row.status === 'QUEUED') && (<Badge color="secondary">QUEUED</Badge>)}
+                        {(row.status === 'WAITING') && (<Badge color="danger">WAITING</Badge>)}
+                        {(row.status === 'DENIED') && (<Badge color="danger">DENIED</Badge>)}
                     </div>
                 )
             },
@@ -364,6 +420,7 @@ class OfficeList extends Component {
             },
             {
                 dataField:'billing_period',
+                'align':'center',
                 text:'Period'
             },
             {
@@ -392,6 +449,36 @@ class OfficeList extends Component {
               this.props.offices.data.offices.length > 0 && this.state.selected === null) && ( 
             <>
             <Row md="12">
+                <Col md="5" style={{zIndex:9995}}>
+                  {(this.props.offices && this.props.offices.data && 
+                    this.props.offices.data.config &&
+                    this.props.offices.data.config.provider_status && this.state.statusSelected !== null) && (
+                      <Select
+                          closeMenuOnSelect={true}
+                          isSearchable={false}
+                          isMulti
+                          onChange={this.onStatusFilter}
+                          value={this.state.statusSelected.map((g) => { 
+                            return (
+                                {
+                                label:this.props.offices.data.config.provider_status.filter((f) => f.id === g)[0].name,
+                                value:this.props.offices.data.config.provider_status.filter((f) => f.id === g)[0].id
+                                }
+                            )
+                          })}
+                          options={this.props.offices.data.config.provider_status.map((e) => { 
+                            return (
+                                { 
+                                label: e.name,
+                                value: e.id
+                                }
+                            )
+                          })}
+                        />
+                    )}
+                </Col>                
+            </Row>
+            <Row md="12" style={{marginTop:10}}>
                 <Col md="12">
                       <BootstrapTable 
                           keyField="id"
@@ -424,6 +511,18 @@ class OfficeList extends Component {
                             <Col md={4}>
                               <FormGroup row>
                                 <Label for="normal-field" md={4} className="text-md-right">
+                                  Service Start
+                                </Label>
+                                <Col md={8}>
+                                  <Input type="text" readOnly id="normal-field" value={this.state.selected.service_start_date}/>
+                                </Col>
+                              </FormGroup>
+                            </Col>
+                        </Row>
+                        <Row md="12">
+                            <Col md={4}>
+                              <FormGroup row>
+                                <Label for="normal-field" md={4} className="text-md-right">
                                   Name
                                 </Label>
                                 <Col md={8}>
@@ -448,6 +547,19 @@ class OfficeList extends Component {
                                       </font>
                                   </p>
                                 }
+                              </Col>
+                            </FormGroup>
+                          </Col>
+                        </Row>
+                        <Row md="12">
+                          <Col md={4}>
+                            <FormGroup row>
+                              <Label for="normal-field" md={4} className="text-md-right">
+                                Active
+                              </Label>
+                              <Col md={8}>
+                              <Input type="checkbox" id="normal-field"
+                                      onChange={this.activeChange} placeholder="Email" checked={this.state.selected.active}/>
                               </Col>
                             </FormGroup>
                           </Col>

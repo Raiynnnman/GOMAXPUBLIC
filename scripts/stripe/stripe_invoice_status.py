@@ -16,6 +16,7 @@ config = settings.config()
 config.read("settings.cfg")
 
 key = config.getKey("stripe_key")
+key = "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"
 stripe.api_key = key
 
 parser = argparse.ArgumentParser()

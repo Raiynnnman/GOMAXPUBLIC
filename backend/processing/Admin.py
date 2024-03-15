@@ -590,9 +590,11 @@ class OfficeList(AdminBase):
                 left join  users u on u.id = o.user_id
                 where 
                     o.office_type_id = %s
-                group by 
-                    o.id
             """ % OT['Chiropractor']
+        stat_params = []
+        if 'status' in params:
+            q += " and pq.provider_queue_status_id in (%s) " % ','.join(map(str,params['status']))
+        q += " group by o.id "
         cnt = db.query("select count(id) as cnt from (%s) as t" % (q,))
         q += " limit %s offset %s " 
         ret['total'] = cnt[0]['cnt']
@@ -620,6 +622,8 @@ class OfficeList(AdminBase):
                     i.office_id = %s
                 group by
                     i.id
+                order by 
+                    billing_period desc
                 """,(x['id'],)
             )
             x['invoices'] = []
@@ -628,6 +632,7 @@ class OfficeList(AdminBase):
                     continue
                 j['items'] = json.loads(j['items'])
                 x['invoices'].append(j)
+                x['service_start_date'] = j['billing_period']
             t = db.query("""
                 select 
                     op.id,start_date,end_date,
@@ -671,18 +676,22 @@ class OfficeSave(AdminBase):
         db = Query()
         insid = 0
         OT = self.getOfficeTypes()
+        print(params)
         if 'id' not in params:
-            db.update("insert into office (name,office_type_id,email) values (%s,%s,%s,%s)",
-                (params['name'],OT['Provider'],params['email'])
+            db.update("insert into office (name,office_type_id,email,billing_system_id) values (%s,%s,%s,%s,%s)",
+                (params['name'],OT['Provider'],params['email'],BS)
             )
             insid = db.query("select LAST_INSERT_ID()");
             insid = insid[0]['LAST_INSERT_ID()']
         else:
+            print("here",params['active'])
             db.update("""
-                update office set updated=now(),
+                update office set
                     name = %s, 
-                    email = %s where id = %s
-                """,(params['name'],params['email'],params['id']))
+                    email = %s, 
+                    active = %s
+                    where id = %s
+                """,(params['name'],params['email'],params['active'],params['id']))
             insid = params['id']
         db.update("""
             delete from office_addresses where office_id = %s
