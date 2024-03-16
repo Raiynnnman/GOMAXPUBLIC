@@ -82,3 +82,24 @@ def deleteS3ItemFromBucket(access, secret, bucket, path):
         's3', aws_access_key_id=access,
         aws_secret_access_key=secret, use_ssl=True)
     s3.Object(bucket, path).delete()
+
+def iterateBucket(access,secret,bucket,prefix):
+    ret = []
+    if prefix is not None:
+        if prefix.startswith('/'):
+            raise Exception('Dont start prefix with /')
+    s3 = boto3.client('s3', 
+            aws_access_key_id=access,
+            aws_secret_access_key=secret)
+    paginator = s3.get_paginator('list_objects_v2')
+    page_iterator = paginator.paginate(Bucket=bucket,Prefix=prefix)
+    for page in page_iterator:
+        if 'Contents' not in page:
+            continue
+        for obj in page['Contents']:
+            key = obj['Key']
+            if len(prefix) > 0:
+                if prefix not in key:
+                    continue
+            ret.append(key)
+    return ret

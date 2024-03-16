@@ -13,6 +13,7 @@ import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import { getTraffic } from '../../actions/trafficGet';
 import TrafficMap from './TrafficMap';
+import HeatMap from './HeatMap';
 
 class Map extends Component {
     constructor(props) { 
@@ -123,9 +124,11 @@ class Map extends Component {
 
     toggleTab(e) { 
         this.state.activeTab = e;
+        this.setState(this.state);
     } 
 
     render() {
+        console.log("s",this.state);
         return (
         <>
             {(this.props.trafficData && this.props.trafficData.isReceiving) && (
@@ -201,18 +204,23 @@ class Map extends Component {
                             </NavLink>
                         </NavItem>
                         <NavItem>
-                            <NavLink className={classnames({ active: this.state.activeTab === 'weather' })}
-                                onClick={() => { this.toggleTab('weather') }}>
-                                <span>{translate('Weather')}</span>
+                            <NavLink className={classnames({ active: this.state.activeTab === 'heatmap' })}
+                                onClick={() => { this.toggleTab('heatmap') }}>
+                                <span>{translate('HeatMap')}</span>
                             </NavLink>
                         </NavItem>
                     </Nav>
                     {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.center) && (
+                        <>
                         <TabContent style={{height:"1000px"}} className='mb-lg' activeTab={this.state.activeTab}>
                             <TabPane tabId="traffic">
                                 <TrafficMap data={this.props.trafficData} centerPoint={this.props.trafficData.data.center}/>
                             </TabPane>
+                            <TabPane tabId="heatmap">
+                                <HeatMap data={this.props.trafficData} centerPoint={this.props.trafficData.data.center}/>
+                            </TabPane>
                         </TabContent>
+                        </>
                     )}
                 </Col>                
             </Row>

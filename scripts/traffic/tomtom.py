@@ -9,6 +9,7 @@ import json
 sys.path.append(os.getcwd())  # noqa: E402
 from common import settings
 from util import encryption,calcdate,getIDs
+from traffic import traffic_util
 import argparse
 import requests
 from util.DBOps import Query
@@ -21,7 +22,6 @@ parser.add_argument('--dryrun', dest="dryrun", action="store_true")
 parser.add_argument('--usecache', dest="usecache", action="store_true")
 parser.add_argument('--distance', dest="distance", action="store")
 args = parser.parse_args()
-
 
 distance = 250 # miles
 if args.distance is not None:
@@ -86,7 +86,6 @@ l = db.query("""
 for x in l:
     pollid = x['LAST_INSERT_ID()']
 
-
 for x in CITIES:
     # print(x)
     l = []
@@ -126,8 +125,6 @@ FILT="{incidents{type,geometry{type,coordinates},properties{id,iconCategory,"\
 TC=getIDs.getTrafficCategories()
 VER=5
 JS=[]
-NEW=0
-SKIP=0
 for x in TOGET:
     F="%s.json" % x
     BOX=[
@@ -152,61 +149,12 @@ for x in TOGET:
     R=H.read()
     JS = json.loads(R)
     H.close()
+    traffic_util.importTraffic(
+            db,JS,
+            TOGET[x]['city'],
+            TOGET[x]['state'],
+            TOGET[x]['zipcode'],
+            TOGET[x]['lat'],
+            TOGET[x]['lon']
+    )
 
-    for z in JS['incidents']:
-        # print(json.dumps(z,indent=4))
-        # print("---")
-        # print(json.dumps(x,indent=4))
-        uuid = encryption.getSHA256()
-        incid = 0
-        HAVE=False
-        props = z['properties']
-        # print(json.dumps(props,indent=4))
-        l = db.query("""
-            select id from traffic_incidents where vendor_id = %s
-            """,(props['id'],)
-        )
-        for h in l:
-            HAVE=True
-        if HAVE:
-            # print("already loaded incident %s" % props['id'])
-            SKIP += 1
-            continue
-        NEW += 1
-        cat = TC[props['iconCategory']]
-        db.update("""
-            insert into traffic_incidents (
-                uuid,traf_delay,traf_end_time,traf_from,
-                traffic_categories_id,vendor_id,traf_len,
-                traf_magnitude,traf_num_reports,probability,
-                traf_start_time,traf_to,city,state,zipcode,
-                lat,lon
-            ) values (
-                %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
-                %s, %s, %s, %s,%s
-            )
-        """,(
-            uuid,props['delay'],props['endTime'],props['from'],
-            cat,props['id'],props['length'],
-            props['magnitudeOfDelay'],
-            props['numberOfReports'] if props['numberOfReports'] is not None else 0,
-            props['probabilityOfOccurrence'], props['startTime'],
-            props['to'],TOGET[x]['city'],TOGET[x]['state'],TOGET[x]['zipcode'],
-            TOGET[x]['lat'],TOGET[x]['lon']
-        ))
-        l = db.query("""
-            select LAST_INSERT_ID()
-            """)
-        incid = l[0]['LAST_INSERT_ID()']
-        order = 0
-        for t in z['geometry']['coordinates']:
-            db.update("""
-               insert into traffic_coordinates (
-                traffic_incidents_id,lon,lat,ord ) values (
-                    %s,%s,%s,%s
-                )
-            """,(incid,t[0],t[1],order))
-            order += 1
-    db.commit()   
-
-print("Added %s, skipped %s" % (NEW, SKIP))
