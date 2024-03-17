@@ -578,7 +578,7 @@ class OfficeList(AdminBase):
                         JSON_OBJECT(
                             'id',oa.id,'addr1',oa.addr1,'addr2',oa.addr2,'phone',oa.phone,
                             'city',oa.city,'state',oa.state,'zipcode',oa.zipcode)
-                    ) as addr,u.phone,u.first_name,u.last_name
+                    ) as addr,u.phone,u.first_name,u.last_name,o.stripe_cust_id
                 from 
                     office o
                 left outer join office_addresses oa on oa.office_id=o.id

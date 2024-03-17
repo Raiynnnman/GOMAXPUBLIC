@@ -560,6 +560,19 @@ class OfficeList extends Component {
                             </FormGroup>
                           </Col>
                         </Row>
+                        <Row md="12">
+                          <Col md={4}>
+                            <FormGroup row>
+                              <Label for="normal-field" md={4} className="text-md-right">
+                                Stripe ID
+                              </Label>
+                              <Col md={8}>
+                                  <a href={'https://dashboard.stripe.com/guests/' + this.state.selected.stripe_cust_id}
+                                    target='_blank'>{this.state.selected.stripe_cust_id}</a>
+                              </Col>
+                            </FormGroup>
+                          </Col>
+                        </Row>
                     </Col>                
                 </Row>
                 <Row md="12">
