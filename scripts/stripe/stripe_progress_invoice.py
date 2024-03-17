@@ -69,7 +69,17 @@ for x in l:
                 (%s,%s,%s)
             """,(x['invoices_id'],1,'Progressed invoice status to SENT')
         )
-        db.commit()
+    if x['status']  == 'failed' and x['invoice_status'] != 'ERROR':   
+        print("changing status to VOID: %s" % x['invoices_id'])
+        db.update("""
+            update invoices set invoice_status_id=%s where id=%s
+            """,(INV['ERROR'],x['invoices_id'])
+        )
+        db.update("""
+            insert into invoice_history (invoices_id,user_id,text) values 
+                (%s,%s,%s)
+            """,(x['invoices_id'],1,'Progressed invoice status to VOID' )
+        )
     if x['status']  == 'void' and x['invoice_status'] != 'VOID':   
         print("changing status to VOID: %s" % x['invoices_id'])
         db.update("""
@@ -92,6 +102,6 @@ for x in l:
                 (%s,%s,%s)
             """,(x['invoices_id'],1,'Progressed invoice status to PAID' )
         )
-        db.commit()
+    db.commit()
 
 
