@@ -225,7 +225,6 @@ class OfficeList extends Component {
     } 
 
     render() {
-        console.log("S",this.state);
         const pageButtonRenderer = ({
           page,
           currentPage,
@@ -299,17 +298,13 @@ class OfficeList extends Component {
                 )
             },
             {
-                dataField:'status',
+                dataField:'months_left',
                 sort:true,
                 align:'center',
-                text:'Status',
+                text:'Rem Mnths',
                 formatter:(cellContent,row) => (
                     <div>
-                        {(row.status === 'INVITED') && (<Badge color="primary">INVITED</Badge>)}
-                        {(row.status === 'APPROVED') && (<Badge color="primary">APPROVED</Badge>)}
-                        {(row.status === 'QUEUED') && (<Badge color="secondary">QUEUED</Badge>)}
-                        {(row.status === 'WAITING') && (<Badge color="danger">WAITING</Badge>)}
-                        {(row.status === 'DENIED') && (<Badge color="danger">DENIED</Badge>)}
+                        {row.plans && row.plans.months_left ? row.plans.months_left :'N/A'}
                     </div>
                 )
             },

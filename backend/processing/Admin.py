@@ -638,7 +638,7 @@ class OfficeList(AdminBase):
                             'id',opi.id,'price',opi.price,'description',
                             opi.description,'quantity',opi.quantity
                         )
-                    ) as items
+                    ) as items,datediff(end_date,start_date)/12 as months_left
                 from 
                     office_plans op,
                     office_plan_items opi
