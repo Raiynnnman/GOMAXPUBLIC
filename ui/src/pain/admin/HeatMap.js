@@ -39,6 +39,7 @@ class MapContainer extends React.Component {
   }
 
   mapLoaded(m,n) { 
+    return;
     var styles = 
         [
           {
