@@ -567,7 +567,7 @@ class OfficeList extends Component {
                                 Stripe ID
                               </Label>
                               <Col md={8}>
-                                  <a href={'https://dashboard.stripe.com/guests/' + this.state.selected.stripe_cust_id}
+                                  <a href={'https://dashboard.stripe.com/customers/' + this.state.selected.stripe_cust_id}
                                     target='_blank'>{this.state.selected.stripe_cust_id}</a>
                               </Col>
                             </FormGroup>
