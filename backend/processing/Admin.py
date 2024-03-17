@@ -544,11 +544,8 @@ class PlansList(AdminBase):
                 start_date,end_date,active,created,updated
             from
                 pricing_data 
-            where
-                end_date > now() and
-                active = 1
             order by
-                start_date
+                start_date desc
             """
         )
         ret = o
