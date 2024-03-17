@@ -422,7 +422,13 @@ class OfficeList extends Component {
             },
             {
                 dataField:'status',
+                align:'center',
                 text:'Status'
+            },
+            {
+                dataField:'stripe_status',
+                align:'center',
+                text:'Prov Status'
             },
             {
                 dataField:'billing_period',

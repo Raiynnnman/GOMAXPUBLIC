@@ -607,14 +607,16 @@ class OfficeList(AdminBase):
                             'id',ii.id,'price',ii.price,
                             'description',ii.description,'quantity',ii.quantity
                         )
-                    ) as items,i.stripe_invoice_id
+                    ) as items,i.stripe_invoice_id,sis.status as stripe_status 
                 
                 from
                     invoices i,
                     invoice_status isi,
+                    stripe_invoice_status sis,
                     invoice_items ii
                 where
                     i.invoice_status_id = isi.id and
+                    sis.invoices_id = i.id and
                     ii.invoices_id = i.id and
                     i.office_id = %s
                 group by
