@@ -70,15 +70,22 @@ for x in l:
             """,(x['invoices_id'],1,'Progressed invoice status to SENT')
         )
         db.commit()
-    if x['status']  == 'paid' and x['invoice_status'] != 'PAID':   
-        print("changing status to PAID: %s" % x['invoices_id'])
+    if x['status']  == 'void' and x['invoice_status'] != 'VOID':   
+        print("changing status to VOID: %s" % x['invoices_id'])
         db.update("""
             update invoices set invoice_status_id=%s where id=%s
             """,(INV['PAID'],x['invoices_id'])
         )
         db.update("""
-            update physician_schedule_scheduled set appt_status_id=%s where physician_schedule_id=%s
-            """,(APT['PAYMENT_SUCCESS'],x['physician_schedule_id'])
+            insert into invoice_history (invoices_id,user_id,text) values 
+                (%s,%s,%s)
+            """,(x['invoices_id'],1,'Progressed invoice status to VOID' )
+        )
+    if x['status']  == 'paid' and x['invoice_status'] != 'PAID':   
+        print("changing status to PAID: %s" % x['invoices_id'])
+        db.update("""
+            update invoices set invoice_status_id=%s where id=%s
+            """,(INV['PAID'],x['invoices_id'])
         )
         db.update("""
             insert into invoice_history (invoices_id,user_id,text) values 
