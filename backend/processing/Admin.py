@@ -607,7 +607,7 @@ class OfficeList(AdminBase):
                             'id',ii.id,'price',ii.price,
                             'description',ii.description,'quantity',ii.quantity
                         )
-                    ) as items
+                    ) as items,i.stripe_invoice_id
                 
                 from
                     invoices i,

@@ -411,6 +411,16 @@ class OfficeList extends Component {
                 text:'ID'
             },
             {
+                dataField:'stripe_invoice_id',
+                text:'ID',
+                formatter: (cellContent,row) => (
+                    <div>
+                        <a href={'https://dashboard.stripe.com/invoices/' + row.stripe_invoice_id} 
+                            target='_blank'>{row.stripe_invoice_id}</a>
+                    </div>
+                )
+            },
+            {
                 dataField:'status',
                 text:'Status'
             },
