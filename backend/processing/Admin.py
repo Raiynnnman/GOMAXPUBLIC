@@ -578,7 +578,7 @@ class OfficeList(AdminBase):
                         JSON_OBJECT(
                             'id',oa.id,'addr1',oa.addr1,'addr2',oa.addr2,'phone',oa.phone,
                             'city',oa.city,'state',oa.state,'zipcode',oa.zipcode)
-                    ) as addr,u.phone,u.first_name,u.last_name,o.stripe_cust_id
+                    ) as addr,u.phone,u.first_name,u.last_name,o.stripe_cust_id,o.old_stripe_cust_id 
                 from 
                     office o
                 left outer join office_addresses oa on oa.office_id=o.id
@@ -599,6 +599,15 @@ class OfficeList(AdminBase):
         ret['offices'] = []
         for x in o:
             x['addr'] = json.loads(x['addr'])
+            x['next_invoice'] = db.query("""
+                select date_add(max(billing_period),INTERVAL 1 MONTH) as next_invoice
+                from invoices where office_id = %s group by office_id
+                """,(x['id'],)
+            )
+            if len(x['next_invoice']) > 0:
+                x['next_invoice'] = x['next_invoice'][0]['next_invoice']
+            else:
+                x['next_invoice'] = None
             t = db.query("""
                 select 
                     i.id,i.invoice_status_id,isi.name as status,i.total,i.billing_period,

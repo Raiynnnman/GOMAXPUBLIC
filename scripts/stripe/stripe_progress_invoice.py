@@ -91,7 +91,7 @@ for x in l:
         print("changing status to VOID: %s" % x['invoices_id'])
         db.update("""
             update invoices set invoice_status_id=%s where id=%s
-            """,(INV['PAID'],x['invoices_id'])
+            """,(INV['VOID'],x['invoices_id'])
         )
         db.update("""
             insert into invoice_history (invoices_id,user_id,text) values 
