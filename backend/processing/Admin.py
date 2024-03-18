@@ -366,7 +366,6 @@ class InvoicesList(AdminBase):
         db = Query()
         ret['config'] = {}
         ret['config']['status'] = db.query("select id,name from invoice_status")
-        ret['config']['status'].insert(0,{'id':0,'name':'All'})
         ret['invoices'] = []
         q = """
             select
@@ -405,9 +404,13 @@ class InvoicesList(AdminBase):
                 ist.id = i.invoice_status_id 
             """
         p = []
-        if 'filter' in params and params['filter'] != 0:
-            q += " and invoice_status_id = %s " 
-            p.append(params['filter'])
+        if 'status' in params:
+            q += " and ("
+            arr = []
+            for z in params['status']:
+                arr.append("invoice_status_id = %s " % z)
+            q += " or ".join(arr)
+            q += ")"
         p.append(limit)
         p.append(offset*limit)
         q += "group by i.id order by billing_period desc"

@@ -60,7 +60,9 @@ l = db.query("""
 for x in l:
     x['items'] = json.loads(x['items'])
     total_val = x['price']*x['duration']
-    months = int(x['initial_payment'] / x['price'])
+    months = 0
+    if x['price'] != 0:
+        months = int(x['initial_payment'] / x['price'])
     for t in range(0,months):
         j = db.query("""
             select

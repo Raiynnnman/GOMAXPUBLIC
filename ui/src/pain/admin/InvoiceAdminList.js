@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Col, Row } from 'reactstrap';
 import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
+import { getInvoiceAdmin } from '../../actions/invoiceAdmin';
 import { FormGroup, Label, Input } from 'reactstrap';
 import moment from 'moment';
 import Select from 'react-select';
@@ -33,9 +34,10 @@ class InvoiceAdminList extends Component {
         this.state = {
             selected: null,
             assignPhysician: null,
+            filter: [],
+            statusSelected:null,
             commentAdd:false
         } 
-        this.onFilterChange = this.onFilterChange.bind(this);
         this.onStatusChange = this.onStatusChange.bind(this);
         this.onInvoiceStatusChange = this.onInvoiceStatusChange.bind(this);
         this.statusChange = this.statusChange.bind(this);
@@ -56,6 +58,23 @@ class InvoiceAdminList extends Component {
     } 
 
     componentWillReceiveProps(p) { 
+        if (p.invoiceAdmin.data && p.invoiceAdmin.data.config && 
+            p.invoiceAdmin.data.config.status && this.state.statusSelected === null) { 
+            var c = 0;
+            var t = [];
+            for (c = 0; c < p.invoiceAdmin.data.config.status.length; c++) { 
+                if (p.invoiceAdmin.data.config.status[c].name === 'PAID') { continue; }
+                if (p.invoiceAdmin.data.config.status[c].name === 'IMPORTED') { continue; }
+                if (p.invoiceAdmin.data.config.status[c].name === 'CREATED') { continue; }
+                t.push(p.invoiceAdmin.data.config.status[c].id); 
+            } 
+            this.state.statusSelected = t;
+            this.state.filter = t;
+            this.setState(this.state);
+            this.props.dispatch(getInvoiceAdmin(
+                {limit:this.state.pageSize,offset:this.state.page,status:t}
+            ));
+        } 
     }
 
     componentDidMount() {
@@ -72,7 +91,18 @@ class InvoiceAdminList extends Component {
     } 
 
     onStatusChange(e) { 
-        this.props.onStatusChange(e);
+        if (e.length <2 ) { return; }
+        var c = 0;
+        var t = [];
+        for (c = 0; c < e.length; c++) { 
+            t.push(e[c].value); 
+        } 
+        this.state.statusSelected = t;
+        this.state.filter = t;
+        this.props.dispatch(getInvoiceAdmin(
+            {limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
+        ));
+        this.setState(this.state)
     }
     cancel() { 
         this.state.selected = null;
@@ -115,9 +145,6 @@ class InvoiceAdminList extends Component {
         } 
         this.props.onStatusUpdate(p)
     }
-    onFilterChange(e) { 
-        this.props.onFilterChange(e)
-    } 
     comment(e) { 
         this.state.selected.comments[0].text=e.target.value
         this.setState(this.state);
@@ -149,6 +176,7 @@ class InvoiceAdminList extends Component {
     } 
 
     render() {
+        console.log("p",this.props)
         const pageButtonRenderer = ({
           page,
           currentPage,
@@ -330,13 +358,28 @@ class InvoiceAdminList extends Component {
               this.props.invoiceAdmin.data.invoices && this.state.selected === null) && ( 
             <>
             <Row md="12">
-                <Col md="3" style={{marginBottom:10}}>
+                <Col md="7" style={{marginBottom:10}}>
                       <Select
                           closeMenuOnSelect={true}
                           isSearchable={false}
-                          onChange={this.onFilterChange}
-                          value={this.props.filterSelected}
-                          options={this.props.filters}
+                          isMulti
+                          onChange={this.onStatusChange}
+                          value={this.state.statusSelected.map((g) => { 
+                            return (
+                                {
+                                label:this.props.invoiceAdmin.data.config.status.filter((f) => f.id === g)[0].name,
+                                value:this.props.invoiceAdmin.data.config.status.filter((f) => f.id === g)[0].id
+                                }
+                            )
+                          })}
+                          options={this.props.invoiceAdmin.data.config.status.map((e) => { 
+                            return (
+                                { 
+                                label: e.name,
+                                value: e.id
+                                }
+                            )
+                          })}
                         />
                 </Col>
             </Row>

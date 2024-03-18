@@ -14,10 +14,10 @@ T="
     stripe/generate_invoices \
     square/invoice_submit \
     stripe/invoice_submit \
-    stripe/stripe_progress_invoice \
-    square/square_progress_invoice  \
     stripe/stripe_invoice_status \
     square/square_invoice_status \
+    stripe/stripe_progress_invoice \
+    square/square_progress_invoice  \
     stripe/invoice_totals
 "
 
