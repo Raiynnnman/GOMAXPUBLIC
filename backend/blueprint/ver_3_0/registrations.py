@@ -38,3 +38,9 @@ def registerprovider(*args, **kwargs):
 def setupintent(*args, **kwargs):
     po = RegistrationRest.RegistrationSetupIntentRest()
     return po.getWrapper(*args,**kwargs)
+
+@registrations.route('/search/provider', methods=['POST'])
+@swag_from(docs_dir + 'user_card_intent.yaml')
+def searchprov(*args, **kwargs):
+    po = RegistrationRest.RegistrationSearchProviderRest()
+    return po.postWrapper(*args,**kwargs)

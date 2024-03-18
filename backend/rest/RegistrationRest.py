@@ -43,3 +43,10 @@ class RegistrationSetupIntentRest(RestBase):
         u = Registrations.RegistrationSetupIntent()
         ret = u.process(args)
         return ret
+
+class RegistrationSearchProviderRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Registrations.RegistrationSearchProvider()
+        ret = u.process(args)
+        return ret

@@ -219,14 +219,14 @@ class RegistrationLandingData(RegistrationsBase):
             from
                 pricing_data p
             where 
+                active = 1 and
                 end_date > now()
             order by 
                 slot asc,
                 start_date desc
             
         """)
-        # Taken out for now!
-        # ret['pricing'] = o
+        ret['pricing'] = o
         l = db.query("""
             select ot.id,otd.name,otd.description,otd.signup_description
             from 
@@ -423,3 +423,50 @@ class RegistrationSetupIntent(RegistrationsBase):
         return ret
 
 
+class RegistrationSearchProvider(RegistrationsBase):
+
+    def __init__(self):
+        super().__init__()
+
+    def isDeferred(self):
+        return False
+
+    def execute(self, *args, **kwargs):
+        ret = {}
+        db = Query()
+        params = args[1][0]
+        st = encryption.getSHA256()
+        if isinstance(params,list):
+            params = params[0]
+        print(params,type(params))
+        if 'p' not in params or len(params['p']) < 1:
+            params['p'] = st
+        if 'e' not in params or len(params['e']) < 1:
+            params['e'] = st
+        o = db.query("""
+            select distinct office_id from (
+                select id as office_id from office where 
+                    lower(name) like lower(%s)  or lower(email) like lower(%s) 
+                UNION ALL
+                select office_id from office_addresses where 
+                    lower(name) like  lower(%s)  or phone like %s) as t 
+            """,(
+                '%%' + params['n'] + '%%','%%' + params['e'] + '%%',
+                '%%' + params['n'] + '%%','%%' + params['p'] + '%%'
+                )
+        )
+        if len(o) < 1:
+            ret['potentials'] = []
+            return ret
+        pots = []
+        for j in o:
+            t = db.query("""
+                select addr1,city,state,zipcode from
+                    office_addresses where
+                    office_id = %s 
+                """,(j['office_id'],)
+            )
+            pots += t
+
+        ret['potentials'] = pots
+        return ret

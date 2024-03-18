@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 import auth from './auth';
 import registrationAdminUpdate from './registrationAdminUpdate';
+import searchProvider from './searchProvider';
 import officeReportDownload from './officeReportDownload';
 import plansList from './plansList';
 import searchConfig from './searchConfig';
@@ -154,6 +155,7 @@ export default (history) =>
     landingData,
     trafficData,
     registrationAdminUpdate,
+    searchProvider,
     searchConfig,
     officeReportDownload,
     mydayReceiptSave,

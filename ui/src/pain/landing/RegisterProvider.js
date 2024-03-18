@@ -25,6 +25,8 @@ import {stripeKey} from '../../stripeConfig.js';
 import BillingCreditCardForm from './BillingCreditCardForm';
 import { squareAppKey, squareLocationKey } from '../../squareConfig.js';
 import { PaymentForm,CreditCard } from 'react-square-web-payments-sdk';
+import {searchProvider} from '../../actions/searchProvider';
+import { getLandingData } from '../../actions/landingData';
 
 const stripePromise = loadStripe(stripeKey());
 
@@ -42,6 +44,7 @@ class RegisterProvider extends Component {
             email:'',
             addresses:[],
             intentid:'',
+            selPlan:null,
             license:'',
             provtype:0,
             provtypeSel:[
@@ -55,6 +58,7 @@ class RegisterProvider extends Component {
         this.lastChange = this.lastChange.bind(this);
         this.emailChange = this.emailChange.bind(this);
         this.licenseChange = this.licenseChange.bind(this);
+        this.search = this.search.bind(this);
         this.officeNameChange = this.officeNameChange.bind(this);
         this.officeStateChange = this.officeStateChange.bind(this);
         this.officeZipChange = this.officeZipChange.bind(this);
@@ -72,9 +76,18 @@ class RegisterProvider extends Component {
     } 
 
     componentWillReceiveProps(p) { 
+        if (p.landingData && p.landingData.data && p.landingData.data.pricing && this.state.selPlan === null) { 
+            console.log(p)
+            this.state.selPlan = p.landingData.data.pricing.filter((e) => parseInt(this.state.plan) === e.id)
+            if (this.state.selPlan.length > 0) { 
+                this.state.selPlan = this.state.selPlan[0]
+            } 
+            this.setState(this.state);
+        } 
     }
 
     componentDidMount() {
+        this.props.dispatch(getLandingData({}));
         this.state.plan = this.props.match.params.id;
         // Turn off, using square
         /*this.props.dispatch(setupIntent()).then((e) =>  { 
@@ -93,6 +106,16 @@ class RegisterProvider extends Component {
     } 
 
     cardChange(e,t,i) { 
+    } 
+
+    search() { 
+        var ts = { 
+            n:this.state.name,
+            p:this.state.phone,
+            e:this.state.email
+        } 
+        console.log("ts",ts)
+        this.props.dispatch(searchProvider(ts));
     } 
 
     saveCard(e,i) { 
@@ -133,11 +156,8 @@ class RegisterProvider extends Component {
             name: this.state.name,
             phone: this.state.phone,
             plan: this.state.plan,
-            //cust_id: this.props.setupIntent.data.data.cust_id,
-            //intentid: this.state.intentid,
             card: this.state.card,
             last: this.state.last,
-            license: this.state.license,
             addresses: this.state.addresses
         } 
         this.props.dispatch(registerProvider(tosend,function(err,args) { 
@@ -162,12 +182,14 @@ class RegisterProvider extends Component {
         this.state.phone = e.target.value;
         this.setState(this.state);
         this.checkValid();
+        this.search();
     }
 
     nameChange(e) { 
         this.state.name = e.target.value;
         this.setState(this.state);
         this.checkValid();
+        this.search();
     }
 
     licenseChange(e) { 
@@ -178,18 +200,21 @@ class RegisterProvider extends Component {
     }
 
     emailChange(e) { 
-
         this.state.email = e.target.value;
         this.setState(this.state);
         this.checkValid();
+        this.search();
     }
+
     provtypeChange(e) { 
 
     } 
+
     saveRow(e) { 
         this.state.selectedAddrId = null
         this.setState(this.state);
     }
+
     addRow(e) { 
         this.state.selectedAddrId = this.state.addresses.length 
         this.state.addresses.push({
@@ -203,11 +228,13 @@ class RegisterProvider extends Component {
         })
         this.setState(this.state);
     }
+
     firstChange(e) { 
         this.state.first = e.target.value;
         this.setState(this.state);
         this.checkValid();
     }
+
     lastChange(e) { 
         this.state.last = e.target.value;
         this.setState(this.state);
@@ -216,6 +243,8 @@ class RegisterProvider extends Component {
 
 
     render() {
+        console.log("p",this.props);
+        console.log("s",this.state);
         var heads = [
             {
                 dataField:'name',
@@ -278,29 +307,21 @@ class RegisterProvider extends Component {
                                     {this.state.errorMessage}
                                 </font>
                             </p>
-                            <div className="form-group mb-0">
+                            <div className="form-group mb-1">
                                 Practice Name:
                                 <input className="form-control no-border" value={this.state.name} onChange={this.nameChange} required name="name" placeholder="Name" />
                             </div>
-                            <div className="form-group mb-0">
-                                First Name:
-                                <input className="form-control no-border" value={this.state.first} onChange={this.firstChange} required name="first" placeholder="First Name" />
+                            <div className="form-group mb-1">
+                                Name:
+                                <input className="form-control no-border" value={this.state.first} onChange={this.firstChange} required name="first" placeholder="Name" />
                             </div>
-                            <div className="form-group mb-0">
-                                Last Name:
-                                <input className="form-control no-border" value={this.state.last} onChange={this.lastChange} type="last" required name="last" placeholder="Last Name" />
-                            </div>
-                            <div className="form-group">
+                            <div className="form-group mb-1">
                                 Email:
                                 <input className="form-control no-border" value={this.state.email} onChange={this.emailChange} type="email" required name="email" placeholder="Email" />
                             </div>
-                            <div className="form-group mb-0">
+                            <div className="form-group mb-1">
                                 Phone:
                                 <input className="form-control no-border" value={this.state.phone} onChange={this.phoneChange} required name="phone" placeholder="Phone" />
-                            </div>
-                            <div className="form-group mb-0">
-                                License Number:
-                                <input className="form-control no-border" value={this.state.license} onChange={this.licenseChange} required name="license" placeholder="License #" />
                             </div>
                         </form>
                     </Widget>
@@ -429,6 +450,8 @@ function mapStateToProps(store) {
     return {
         registerProvider: store.registerProvider,
         saveCard: store.saveCard,
+        searchProvider: store.searchProvider,
+        landingData: store.landingData,
         setupIntent: store.setupIntent
     }
 }
