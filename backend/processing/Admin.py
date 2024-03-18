@@ -1385,5 +1385,69 @@ class TrafficGet(AdminBase):
                 ret['data'].append(t) 
         return ret
 
+class AdminReportGet(AdminBase):
+
+    def __init__(self):
+        super().__init__()
+
+    def isDeferred(self):
+        return False
+
+    def OfficeReport(self):
+        q = """
+            select
+                o.id,o.name,i.id as invoice_id,
+                pd.description as subscription_plan,
+                pd.duration as subscription_duration,
+                op.start_date as plan_start,
+                op.end_date as plan_end,
+                i1.name as first_invoice_status, i1.bp as  first_billing_period,
+                i1.total as first_invoice_total,
+                i2.name as last_invoice_status, i2.bp as  last_billing_period,
+                i2.total as last_invoice_total, 
+                date_add(max(i.billing_period),INTERVAL 1 MONTH) as next_invoice
+            from
+                office o
+                left outer join invoices i on i.office_id=o.id
+                left outer join office_plans op on op.office_id = o.id
+                left outer join pricing_data pd on op.pricing_data_id = pd.id
+                left outer join (
+                    select i.office_id,i.total,i.id,isi.name,min(i.billing_period) as bp
+                        from invoices i,invoice_status isi where 
+                        isi.id=i.invoice_status_id group by office_id
+                ) i1 on i1.office_id = o.id
+                left outer join (
+                    select i.office_id,i.total,i.id,isi.name,max(i.billing_period) as bp
+                        from invoices i,invoice_status isi where 
+                        isi.id=i.invoice_status_id group by office_id
+                ) i2 on i2.office_id = o.id
+            where
+                o.active = 1 and
+                o.office_type_id=1 
+            group by
+                o.id
+            """
+        db = Query()
+        o = db.query(q)
+        ret = pd.DataFrame.from_dict(o)
+        return ret
+
+    @check_admin
+    def execute(self, *args, **kwargs):
+        ret = {}
+        job,user,off_id,params = self.getArgs(*args,**kwargs)
+        frame = []
+        report = 'report.csv'
+        if 'report' in params:
+            if params['report'] == 'office_report':
+                frame = self.OfficeReport()
+                report = 'office_status_report.csv'
+        ret['filename'] = report
+        t = frame.to_csv()
+        ret['content'] = base64.b64encode(t.encode('utf-8')).decode('utf-8')
+        return ret
+
+
+
 
 

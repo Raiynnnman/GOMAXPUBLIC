@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import moment from 'moment';
 import { connect } from 'react-redux';
+import AssessmentIcon from '@mui/icons-material/Assessment';
 import { Col, Row } from 'reactstrap';
 import ToolkitProvider from 'react-bootstrap-table2-toolkit';
 import { push } from 'connected-react-router';
@@ -26,6 +27,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { getOffices } from '../../actions/offices';
 import { getContext } from '../../actions/context';
 import { officeSave } from '../../actions/officeSave';
+import { officeReportDownload } from '../../actions/officeReportDownload';
 
 const { SearchBar } = Search;
 class OfficeList extends Component {
@@ -44,6 +46,7 @@ class OfficeList extends Component {
         this.cancel = this.cancel.bind(this);
         this.pageChange = this.pageChange.bind(this);
         this.activeChange = this.activeChange.bind(this);
+        this.officeReport = this.officeReport.bind(this);
         this.renderTotalLabel = this.renderTotalLabel.bind(this);
         this.toggleSubTab = this.toggleSubTab.bind(this);
         this.onStatusFilter = this.onStatusFilter.bind(this);
@@ -72,6 +75,19 @@ class OfficeList extends Component {
         } 
     }
 
+
+    componentDidMount() {
+        this.props.dispatch(getOffices({page:this.state.page,limit:this.state.pageSize}))
+    }
+
+    activeChange(e,t) { 
+        this.state.selected.active = this.state.selected.active ? 0 : 1; 
+        this.setState(this.state);
+    }
+    officeReport() { 
+        console.log("h");
+        this.props.dispatch(officeReportDownload({report:'office_report'}));
+    } 
     onStatusFilter(e,t) { 
         if (e.length < 1 ) { return; }
         var c = 0;
@@ -86,15 +102,6 @@ class OfficeList extends Component {
         ));
         this.setState(this.state)
     } 
-
-    componentDidMount() {
-        this.props.dispatch(getOffices({page:this.state.page,limit:this.state.pageSize}))
-    }
-
-    activeChange(e,t) { 
-        this.state.selected.active = this.state.selected.active ? 0 : 1; 
-        this.setState(this.state);
-    }
     pageChange(e,t) { 
         if (e === '>') { 
             this.state.page = this.state.page + 1;
@@ -457,6 +464,9 @@ class OfficeList extends Component {
             {(this.props.officeSave && this.props.officeSave.isReceiving) && (
                 <AppSpinner/>
             )}
+            {(this.props.officeReportDownload && this.props.officeReportDownload.isReceiving) && (
+                <AppSpinner/>
+            )}
             {(this.props && this.props.offices && this.props.offices.data && this.props.offices.data.offices &&
               this.props.offices.data.offices.length > 0 && this.state.selected === null) && ( 
             <>
@@ -489,6 +499,11 @@ class OfficeList extends Component {
                         />
                     )}
                 </Col>                
+                <Col md="7">
+                    <div class="pull-right">
+                        <Button onClick={this.officeReport} outline color="primary"><AssessmentIcon/></Button>
+                    </div>
+                </Col>
             </Row>
             <Row md="12" style={{marginTop:10}}>
                 <Col md="12">
@@ -686,6 +701,7 @@ function mapStateToProps(store) {
     return {
         currentUser: store.auth.currentUser,
         officeSave: store.officeSave,
+        officeReportDownload: store.officeReportDownload,
         plansList: store.plansList,
         context: store.context,
         offices: store.offices

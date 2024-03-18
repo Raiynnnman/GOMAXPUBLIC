@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 import auth from './auth';
-import registrationAdminUpdate from './registrationAdminUpdate.js';
+import registrationAdminUpdate from './registrationAdminUpdate';
+import officeReportDownload from './officeReportDownload';
 import plansList from './plansList';
 import searchConfig from './searchConfig';
 import review from './review';
@@ -30,7 +31,7 @@ import officeUsersSave from './officeUsersSave';
 import officeUsers from './officeUsers';
 import transferAdmin from './transferAdmin';
 import invoiceAdminUpdate from './invoiceAdminUpdate';
-import officeBillingDownloadDoc from './officeBillingDownloadDoc.js';
+import officeBillingDownloadDoc from './officeBillingDownloadDoc';
 import moreSchedules from './moreSchedules';
 import userDashboard from './userDashboard';
 import navigation from './navigation';
@@ -154,6 +155,7 @@ export default (history) =>
     trafficData,
     registrationAdminUpdate,
     searchConfig,
+    officeReportDownload,
     mydayReceiptSave,
     userDocumentsUpdate,
     chat,
