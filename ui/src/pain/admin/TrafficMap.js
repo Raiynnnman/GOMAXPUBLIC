@@ -53,7 +53,7 @@ class MapContainer extends React.Component {
             "elementType": "labels.text.fill",
             "stylers": [
               {
-                "color": "#8ec3b9"
+                "visibility": "off"
               }
             ]
           },
@@ -61,7 +61,7 @@ class MapContainer extends React.Component {
             "elementType": "labels.text.stroke",
             "stylers": [
               {
-                "color": "#1a3646"
+                "visibility": "off"
               }
             ]
           },
@@ -70,7 +70,7 @@ class MapContainer extends React.Component {
             "elementType": "geometry.stroke",
             "stylers": [
               {
-                "color": "#4b6878"
+                "visibility": "#4b6878"
               }
             ]
           },

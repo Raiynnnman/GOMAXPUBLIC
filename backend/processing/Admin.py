@@ -1284,6 +1284,7 @@ class TrafficGet(AdminBase):
                 traffic_categories tcat
             where
                 1 = 1 and
+                created > date_add(created,INTERVAL -60 DAY) and
                 tc.traffic_incidents_id = ti.id and
                 ti.traffic_categories_id = tcat.id and
         """
