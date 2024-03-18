@@ -62,11 +62,9 @@ if args.office is not None:
 
 print(q % OT['Chiropractor'])
 
-q += " group by op.id "
+q += " group by op.id order by o.id "
 l = db.query(q,(OT['Chiropractor'],))
 
-print(l)
-sys.exit(0)
 
 for x in l:
     # print(json.dumps(x,indent=4))
@@ -88,6 +86,8 @@ for x in l:
     if HAVE:
         # print("Office %s already has an invoice for this month, skipping"%x['office_id'])
         continue
+    print(json.dumps(x,indent=4))
+    continue
     insid = 0
     print("Generating invoice for this month for %s" % x['office_id'])
     db.update("""

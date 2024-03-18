@@ -22,6 +22,7 @@ stripe.api_key = key
 parser = argparse.ArgumentParser()
 parser.add_argument('--dryrun', dest="dryrun", action="store_true")
 parser.add_argument('--force', dest="force", action="store_true")
+parser.add_argument('--stripeid', dest="stripeid", action="store")
 args = parser.parse_args()
 db = Query()
 
@@ -41,12 +42,19 @@ q = """
 if not args.force:
     q+= "and (i.nextcheck is null or i.nextcheck < now())"
 
+if args.stripeid is not None:
+    q+= "and i.stripe_invoice_id = '%s'" % args.stripeid
+
 l = db.query(q)
 
 for x in l:
     if x['stripe_invoice_id'] is None:
         continue
+    if args.stripeid is not None:
+        print(x)
     r = stripe.Invoice.retrieve(x['stripe_invoice_id'])
+    if args.stripeid is not None:
+        print(json.dumps(r,indent=4))
     payment_intent = r['payment_intent']
     s_fee = 0
     if r['status'] == 'paid' and payment_intent is not None:
