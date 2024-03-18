@@ -54,7 +54,7 @@ for x in l:
     #    stripe.Invoice.finalize_invoice(
     #      x['stripe_invoice_id'],
     #    )
-    if x['status']  == 'open' and x['attempt_count'] > 1 and x['invoice_status'] != 'SENT':   
+    if x['status']  == 'open' and x['attempt_count'] > 1 and x['invoice_status'] != 'ERROR':   
         print("changing status to ERROR: %s" % x['invoices_id'])
         db.update("""
             update invoices set invoice_status_id=%s where id=%s
@@ -63,7 +63,7 @@ for x in l:
         db.update("""
             insert into invoice_history (invoices_id,user_id,text) values 
                 (%s,%s,%s)
-            """,(x['invoices_id'],1,'Progressed invoice status to SENT')
+            """,(x['invoices_id'],1,'Progressed invoice status to ERROR (Failed Payment)')
         )
     if x['status']  == 'open' and x['invoice_status'] != 'SENT':   
         print("changing status to SENT: %s" % x['invoices_id'])
