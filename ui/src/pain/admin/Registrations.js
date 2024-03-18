@@ -443,12 +443,17 @@ class Registrations extends Component {
             {
                 dataField:'first_name',
                 sort:true,
-                text:'First'
+                text:'Name',
+                formatter:(cellContent,row) => (
+                    <div>
+                        {row.first_name + ' ' + row.last_name}
+                    </div>
+                )
             },
             {
-                dataField:'last_name',
+                dataField:'office_type',
                 sort:true,
-                text:'Last'
+                text:'Type'
             },
             {
                 dataField:'phone',
@@ -458,14 +463,13 @@ class Registrations extends Component {
             {
                 dataField:'sf_id',
                 sort:true,
-                text:'SF',
+                text:'Links',
                 formatter:(cellContent,row) => (
                     <div>
                     {row.sf_id !== null && (
-                        <a target="_blank" href={salesforceURL() + 'lightning/r/Lead/' + row.sf_id + '/view'}>SalesForce</a>
-                    )}
-                    {row.sf_id === null && (
-                        <font>N/A</font>
+                        <a target="_blank" href={salesforceURL() + 'lightning/r/Lead/' + row.sf_id + '/view'}>
+                            <img height={50} width={100}src='/salesforce.jpg'/>
+                        </a>
                     )}
                     </div>
                 )
@@ -564,7 +568,7 @@ class Registrations extends Component {
                                     <Col md="5" style={{zIndex:9995}}>
                                       {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
                                         this.props.registrationsAdminList.data.config &&
-                                        this.props.registrationsAdminList.data.config.provider_status && this.state.statusSelected !== null) && (
+                                        this.props.registrationsAdminList.data.config.status && this.state.statusSelected !== null) && (
                                           <Select
                                               closeMenuOnSelect={true}
                                               isSearchable={false}

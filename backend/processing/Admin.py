@@ -581,16 +581,19 @@ class OfficeList(AdminBase):
                         JSON_OBJECT(
                             'id',oa.id,'addr1',oa.addr1,'addr2',oa.addr2,'phone',oa.phone,
                             'city',oa.city,'state',oa.state,'zipcode',oa.zipcode)
-                    ) as addr,u.phone,u.first_name,u.last_name,o.stripe_cust_id,o.old_stripe_cust_id 
+                    ) as addr,u.phone,u.first_name,u.last_name,o.stripe_cust_id,o.old_stripe_cust_id,
+                    ot.name as office_type
                 from 
                     office o
-                left outer join office_addresses oa on oa.office_id=o.id
-                left outer join provider_queue pq on pq.office_id = o.id
-                left outer join provider_queue_status pqs on pq.provider_queue_status_id=pqs.id
-                left join  users u on u.id = o.user_id
+                    left outer join office_addresses oa on oa.office_id=o.id
+                    left outer join office_type ot on o.office_type_id = ot.id
+                    left outer join provider_queue pq on pq.office_id = o.id
+                    left outer join provider_queue_status pqs on pq.provider_queue_status_id=pqs.id
+                    left join  users u on u.id = o.user_id
                 where 
-                    o.office_type_id = %s
-            """ % OT['Chiropractor']
+                    o.office_type_id <> %s and
+                    o.office_type_id <> %s 
+            """ % (OT['Customer'],OT['Legal'])
         stat_params = []
         if 'status' in params:
             q += " and pq.provider_queue_status_id in (%s) " % ','.join(map(str,params['status']))
@@ -1052,7 +1055,7 @@ class RegistrationList(AdminBase):
         ]
         count_par = []
         if 'status' in params:
-            q += " where ("
+            q += " and ("
             arr = []
             for z in params['status']:
                 arr.append("provider_queue_status_id = %s " % z)
