@@ -41,7 +41,7 @@ class Welcome extends React.Component {
                     <Widget className="widget-auth mx-auto" title={<h3 className="mt-0">Welcome to #PAIN</h3>}>
                         <p className="widget-auth-info">
                             Welcome to #PAIN! You will receive an email with details on how to login and get started. 
-                        <br/><Button color="primary" style={{marginTop:20}} onClick={this.loginPage}>Login</Button>
+                        <br/>
                         </p>
                     </Widget>
                 </Container>

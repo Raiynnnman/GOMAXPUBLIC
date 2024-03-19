@@ -215,7 +215,7 @@ class RegistrationLandingData(RegistrationsBase):
         ret = {'pricing':[]}
         db = Query()
         o = db.query("""
-            select id,price,locations,duration,start_date,end_date,active,slot
+            select id,trial,price,locations,duration,start_date,end_date,active,slot
             from
                 pricing_data p
             where 
@@ -292,6 +292,19 @@ class RegisterProvider(RegistrationsBase):
                     ) values (%s,%s,%s,%s,%s,%s,%s)
                 """,(insid,x['name'],x['addr1'],x['phone'],x['city'],x['state'],x['zipcode'])
             )
+            oaid = db.query("select LAST_INSERT_ID()");
+            oaid = oaid[0]['LAST_INSERT_ID()']
+            if 'fulladdr' in x:
+                db.update("update office_addresses set full_addr=%s where id=%s",(
+                    x['fulladdr'],oaid)
+                )
+            if 'places_id' in x:
+                db.update("update office_addresses set places_id=%s where id=%s",(
+                    x['places_id'],oaid)
+                )
+            # If its claimed, remove it from the pool
+            if 'id' in x:
+                db.update(""" delete from office_addresses where id=%s """,(x['id'],))
         if not HAVE:
             db.update(
                 """
@@ -346,7 +359,7 @@ class RegisterProvider(RegistrationsBase):
             """,(planid,PL[selplan]['price'],1,PL[selplan]['description'])
                 
         )
-        if 'card' in params:
+        if 'card' in params and params['card'] is not None:
             stripe_id = None
             if BS == 1:
                 cust_id = params['cust_id']
@@ -438,18 +451,24 @@ class RegistrationSearchProvider(RegistrationsBase):
         st = encryption.getSHA256()
         if isinstance(params,list):
             params = params[0]
-        print(params,type(params))
         if 'p' not in params or len(params['p']) < 1:
             params['p'] = st
         if 'e' not in params or len(params['e']) < 1:
             params['e'] = st
+        params['p'] = params['p'].replace('-','')
+        params['p'] = params['p'].replace(' ','')
+        params['p'] = params['p'].replace(')','')
+        params['p'] = params['p'].replace('(','')
         o = db.query("""
             select distinct office_id from (
                 select id as office_id from office where 
-                    lower(name) like lower(%s)  or lower(email) like lower(%s) 
+                    active = 0 and
+                    (lower(name) like lower(%s)  or lower(email) like lower(%s))
                 UNION ALL
-                select office_id from office_addresses where 
-                    lower(name) like  lower(%s)  or phone like %s) as t 
+                select office_id from office_addresses oa,office o where 
+                    o.id = oa.office_id and o.active = 0 and
+                    (lower(oa.name) like  lower(%s)  or oa.phone like %s)) as t 
+            limit 10
             """,(
                 '%%' + params['n'] + '%%','%%' + params['e'] + '%%',
                 '%%' + params['n'] + '%%','%%' + params['p'] + '%%'
@@ -458,15 +477,21 @@ class RegistrationSearchProvider(RegistrationsBase):
         if len(o) < 1:
             ret['potentials'] = []
             return ret
+        if len(o) > 10:
+            ret['potentials'] = []
+            return ret
         pots = []
         for j in o:
             t = db.query("""
-                select addr1,city,state,zipcode from
+                select id,name,addr1,city,
+                    CONCAT('(',SUBSTR(phone,1,3), ') ', SUBSTR(phone,4,3), '-', SUBSTR(phone,7,4)) as phone,
+                    state,zipcode,0 as verified from
                     office_addresses where
                     office_id = %s 
                 """,(j['office_id'],)
             )
-            pots += t
+            g = pots + t
+            pots = g
 
         ret['potentials'] = pots
         return ret

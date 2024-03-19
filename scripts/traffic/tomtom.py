@@ -87,7 +87,6 @@ for x in l:
     pollid = x['LAST_INSERT_ID()']
 
 for x in CITIES:
-    print('city',x)
     l = []
     if int(x['zipcode']) != 0:
         print('zip',x['zipcode'])
@@ -102,6 +101,8 @@ for x in CITIES:
         """,(x['city'],x['state']))
     if len(l) < 1:
         print("ERROR: Missing data for %s" % x)
+        print('city',x)
+        continue
     random.shuffle(l)
     l = l[:20]
     for y in l:
@@ -143,6 +144,13 @@ for x in TOGET:
     # print(U)
     if not os.path.exists(F):
         r = requests.get(U)
+        if r.status_code != 200:
+            print("ERROR: %s" % r.text)
+            break
+        if r.content is None:
+            print("No data for %s" % F)
+            print(r.body)
+            continue
         H=open(F,"w")
         T=json.loads(r.content)
         H.write(json.dumps(T,indent=4,sort_keys=True))
