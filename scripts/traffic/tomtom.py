@@ -87,19 +87,21 @@ for x in l:
     pollid = x['LAST_INSERT_ID()']
 
 for x in CITIES:
-    # print(x)
+    print('city',x)
     l = []
-    if x['zipcode'] != 0:
+    if int(x['zipcode']) != 0:
+        print('zip',x['zipcode'])
         l = db.query("""
             select lat,lon,zipcode from position_zip where zipcode=%s 
         """,(x['zipcode'],)
         )
     else:
+        print('city',x['city'],x['state'])
         l = db.query("""
-            select lat,lon,zipcode from position_zip where name=%s and code1=%s limit 5
+            select lat,lon,zipcode from position_zip where name=%s and code1=%s 
         """,(x['city'],x['state']))
     random.shuffle(l)
-    l = l[:5]
+    l = l[:20]
     for y in l:
         # print(l)
         i = "%s+%s" % (x['city'],y['zipcode'])
@@ -126,6 +128,7 @@ TC=getIDs.getTrafficCategories()
 VER=5
 JS=[]
 for x in TOGET:
+    print("Checking %s" % x)
     F="%s.json" % x
     BOX=[
         TOGET[x]['bounds'][0],TOGET[x]['bounds'][1],
