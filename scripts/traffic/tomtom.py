@@ -100,6 +100,8 @@ for x in CITIES:
         l = db.query("""
             select lat,lon,zipcode from position_zip where name=%s and code1=%s 
         """,(x['city'],x['state']))
+    if len(l) < 1:
+        print("ERROR: Missing data for %s" % x)
     random.shuffle(l)
     l = l[:20]
     for y in l:
