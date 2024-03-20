@@ -108,7 +108,7 @@ class Sidebar extends React.Component {
             this.props.currentUser.entitlements.includes("Legal")) && (
           <LinksGroup
             header="Customers"
-            link="/app/main/legal/customers"
+            link="/app/main/office/customers"
             isHeader
             iconElement={<Apps/>}
             iconName="flaticon-users"
@@ -185,7 +185,7 @@ class Sidebar extends React.Component {
             this.props.currentUser.entitlements.includes("Provider")) && (
           <LinksGroup
             header="Customers"
-            link="/app/main/customers"
+            link="/app/main/office/customers"
             isHeader
             iconElement={<Apps/>}
             iconName="flaticon-users"

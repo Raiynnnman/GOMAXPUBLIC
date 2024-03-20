@@ -158,3 +158,10 @@ class AdminReportGetRest(RestBase):
         return ret
 
 
+class AdminBookingRegisterRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Admin.AdminBookingRegister()
+        ret = u.process(args[0])
+        return ret
+

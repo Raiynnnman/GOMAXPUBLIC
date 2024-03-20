@@ -115,6 +115,7 @@ class Profile(SubmitDataRequest):
             tz = "%s:00" % tz
         profile = {
             "id":u['id'],
+            "active":u['active'],
             "first_name":u["first_name"],
             "last_name":u["last_name"],
             "email":u["email"],

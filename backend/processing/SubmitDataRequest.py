@@ -79,13 +79,16 @@ class SubmitDataRequest(ProcessingBase):
     def getArgs(self,*args,**kwargs):
         jobid = args[0]
         off_id = 0
-        user = args[1][0]
+        if isinstance(args[1],list):
+            user = args[1][0]
+        else:
+            user = args[1]
         if 'offices' in user and len(user['offices']) > 0:
             off_id = user['offices'][0]
         if 'context' in user and user['context']:
             off_id = user['contextValue']['id']
         postdata = None
-        if len(args[1]) > 1:
+        if len(args[1]) > 1 and isinstance(args[1],list):
             postdata = args[1][1]
         return (jobid,user,off_id,postdata)
 

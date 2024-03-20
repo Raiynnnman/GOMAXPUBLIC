@@ -94,7 +94,6 @@ class UserAdminList extends Component {
         this.setState(this.state);
     } 
     pageChange(e,t) { 
-        console.log(e,t);
         if (e === '>') { 
             this.state.page = this.state.page + 1;
         } else { 
@@ -107,7 +106,6 @@ class UserAdminList extends Component {
     } 
 
     renderTotalLabel(f,t,s) { 
-        console.log(f,t,s);
         var numpage = s/t;
         return "Showing page " + (this.state.page+1) + " of " + numpage.toFixed(0);
     } 
@@ -151,7 +149,6 @@ class UserAdminList extends Component {
     } 
 
     render() {
-        console.log("p",this.props);
         const pageButtonRenderer = ({
           page,
           currentPage,
@@ -163,7 +160,6 @@ class UserAdminList extends Component {
              e.preventDefault();
              this.pageChange(page, currentPage);// api call 
            };    
-          console.log(page,currentPage);
           return (
             <div>
               {

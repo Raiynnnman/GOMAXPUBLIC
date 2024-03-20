@@ -19,6 +19,7 @@ import { getProviderSearchAdmin } from '../../actions/providerSearchAdmin';
 import { searchConfig } from '../../actions/searchConfig';
 import { searchCheckRes } from '../../actions/searchCheckRes';
 import { searchRegister } from '../../actions/searchRegister';
+import { searchRegisterAdmin } from '../../actions/searchRegisterAdmin';
 import makeAnimated from 'react-select/animated';
 import PhysicianCard from './PhysicianCard';
 import AliceCarousel from 'react-alice-carousel';
@@ -54,7 +55,6 @@ class SearchAdmin extends Component {
         this.login = this.login.bind(this);
         this.cancel = this.cancel.bind(this);
         this.getWithoutPermission = this.getWithoutPermission.bind(this);
-        this.register = this.register.bind(this);
         this.register = this.register.bind(this);
         this.scheduleAppt = this.scheduleAppt.bind(this);
         this.changeZip = this.changeZip.bind(this);
@@ -102,16 +102,15 @@ class SearchAdmin extends Component {
     } 
 
     scheduleAppt(p,e) {
+        this.state.selectedAppt = p;
+        this.setState(this.state);
         var params = {
             id: e.id,
             procedure:e.proc
         } 
-        if (!e.proc || e.proc === undefined) { 
-            params['procedure'] = this.state.selectedProcedure;
-        } 
-        this.props.dispatch(searchCheckRes(params,function(err,args,data) { 
+        /*this.props.dispatch(searchCheckRes(params,function(err,args,data) { 
             args[0].updateAppt(args[1],args[2])
-        },[this,p,e]))
+        },[this,p,e]))*/
     }
 
     setProviderType(e) { 
@@ -132,14 +131,21 @@ class SearchAdmin extends Component {
         this.state.selectedAppt = null;
         this.setState(this.state);
     } 
+
     register(e,d) { 
         var params = e;
-        params['zipcode'] = this.state.zipcode;
-        if (d.schedule) { 
-            params.appt_id=d.schedule.id
-        } 
-        this.props.dispatch(searchRegister(params))
-        
+        params.phy_id = d.phy_id;
+        params.office_id = d.office_id;
+        this.props.dispatch(searchRegisterAdmin(params,function(err,args) { 
+              toast.success('Successfully saved booking.',
+                {
+                    position:"top-right",
+                    autoClose:3000,
+                    hideProgressBar:true
+                }
+              );
+              args.cancel()
+            }))
     } 
     setLocation(lat,lon) {
         this.state.mylocation={lat:lat,lon:lon}
@@ -217,7 +223,7 @@ class SearchAdmin extends Component {
             {(this.props.providerSearchAdmin && this.props.providerSearchAdmin.isReceiving) && (
                 <AppSpinner/>
             )}
-            {(this.state.geo) && (
+            {(this.props.searchRegisterAdmin && this.props.searchRegisterAdmin.isReceiving) && (
                 <AppSpinner/>
             )}
             {(this.props.searchCheckRes && this.props.searchCheckRes.isReceiving) && (
@@ -293,20 +299,22 @@ class SearchAdmin extends Component {
             )}
             {(this.props.providerSearchAdmin && this.props.providerSearchAdmin.data && 
                 this.props.providerSearchAdmin.data && this.props.providerSearchAdmin.data.providers &&
-                this.props.providerSearchAdmin.data.providers.length > 0 && this.state.provider !== null) && (
-                <AliceCarousel animationType="fadeout" animationDuration={3} autoWidth={true} innerWidth={10}
-                    autoPlay={false} disableDotsControls={true} infinite={false}
-                    disableButtonsControls={false} responsive={responsive}
-                    disableSlideInfo={false}
-                    mouseTracking items={this.props.providerSearchAdmin.data.providers.map((e) => { 
+                this.props.providerSearchAdmin.data.providers.length > 0 && this.state.provider !== null &&
+                this.state.selectedAppt === null) && (
+                <Row md="12">
+                    {this.props.providerSearchAdmin.data.providers.map((e) => { 
                         return (
-                            <PhysicianCard onScheduleAppt={this.scheduleAppt} provider={e}/>
+                            <Col md="3">
+                                <PhysicianCard onScheduleAppt={this.scheduleAppt} provider={e}/>
+                            </Col>
                         )
-                    })} />
+                    })} 
+                </Row>
             )}
             {(this.props.providerSearchAdmin && this.props.providerSearchAdmin.data && 
                 this.props.providerSearchAdmin.data && this.props.providerSearchAdmin.data.providers &&
-                this.props.providerSearchAdmin.data.providers.length < 1 && this.state.provider !== null) && (
+                this.props.providerSearchAdmin.data.providers.length < 1 && this.state.provider !== null &&
+                this.state.selectedAppt === null) && (
                 <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                     <h4>There are currently no service providers in this area.</h4>
                 </div>
@@ -328,6 +336,7 @@ function mapStateToProps(store) {
         currentUser: store.auth.currentUser,
         searchConfig:store.searchConfig,
         providerSearchAdmin: store.providerSearchAdmin,
+        searchRegisterAdmin: store.searchRegisterAdmin,
         searchCheckRes: store.searchCheckRes
     }
 }

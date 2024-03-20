@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
+import Select from 'react-select';
+import TextareaAutosize from 'react-autosize-textarea';
 import { connect } from 'react-redux';
 import { Col, Row } from 'reactstrap';
+import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
+import googleKey from '../../googleConfig';
 import { push } from 'connected-react-router';
 import { Button } from 'reactstrap'; 
 import { Nav, NavItem, NavLink } from 'reactstrap';
@@ -15,21 +19,62 @@ import Login from '../login';
 
 class UserRegistration extends Component {
 
+/*
+    date_of_accident DATE,
+    description medium_text,
+    hospital int not null default 0,
+    ambulance int not null default 0,
+    witnesses medium_text,
+    rep_law_enforcement varchar(255),
+    police_report_num varchar(64),
+    citations varchar(255),
+    citations_person varchar(255),
+    passengers mediumtext,
+    def_insurance varchar(255),
+    def_claim_num varchar(255),
+    def_name varchar(255),
+    ins_info varchar(255),
+    ins_claim_num varchar(255),
+    ins_policy_holder varchar(255),
+    case_num varchar(255),
+    case_verification_who varchar(255) */
+
     constructor(props) { 
         super(props);
         this.state = { 
-            register:{
-              email: '',
-              first_name: '',
-              last_name: '',
-              phone: '',
-            }
+            address:null,
+            inputs: [ 
+                {l:'Email',f:'email',t:'text',v:''},
+                {l:'Name',f:'name',t:'text',v:''},
+                {l:'Phone',f:'phone',t:'text',v:''},
+                {l:'Address',f:'addr',t:'addr_search',v:''},
+                {l:'Description of accident',f:'description',t:'textfield',v:''},
+                {l:'Hospital',f:'hospital',t:'checkbox',v:0},
+                {l:'Ambulance',f:'ambulance',t:'checkbox',v:0},
+                {l:'Witnesses',f:'witnesses',t:'textfield',v:''},
+                {l:'Reporting Law Enforment Agency',f:'rep_law_enforcement',t:'text',v:''},
+                {l:'Police Report #',f:'police_report_num',t:'text',v:''},
+                {l:'Citations',f:'citations',t:'text',v:''},
+                {l:'Who was cited',f:'citations_person',t:'text',v:''},
+                {l:'Pics of damage',f:'pics_of_damage',t:'checkbox',v:0},
+                {l:'Passengers in Vehicle',f:'passengers',t:'textfield',v:''},
+                {l:'Def Insurance Info',f:'def_insurance',t:'text',v:''},
+                {l:'Claim #/Policy #',f:'def_claim_num',t:'text',v:''},
+                {l:'Def Name#',f:'def_name',t:'text',v:''},
+                {l:'PIP Insurance Info',f:'ins_info',t:'text',v:''},
+                {l:'Claim #/Policy #',f:'ins_claim_num',t:'text',v:''},
+                {l:'Policy Holder',f:'ins_policy_holder',t:'text',v:''},
+                {l:'Case #',f:'case_num',t:'text',v:''},
+              ]
         }
         this.cancel = this.cancel.bind(this);
-        this.schedule = this.schedule.bind(this);
+        this.onSearch = this.onSearch.bind(this);
+        this.setValue = this.setValue.bind(this);
+        this.save = this.save.bind(this);
         this.setVPassword = this.setVPassword.bind(this);
         this.setPassword = this.setPassword.bind(this);
         this.setPhone = this.setPhone.bind(this);
+        this.updateAddress = this.updateAddress.bind(this);
         this.setConsultant = this.setConsultant.bind(this);
         this.setEmail= this.setEmail.bind(this);
         this.setFirst = this.setFirst.bind(this);
@@ -44,13 +89,50 @@ class UserRegistration extends Component {
     cancel() { 
         this.props.onCancel()
     } 
-    schedule() { 
-        if (Login.isAuthenticated()) { 
-            this.props.onRegister(this.props.currentUser,this.props.data)
-        } else { 
-            this.props.onRegister(this.state.register,this.props.data)
+
+    setValue(e,t) { 
+        var c = 0;
+        for (c = 0; c < this.state.inputs.length;c++) { 
+            if (this.state.inputs[c].f === e.f) { 
+                if(e.t === 'checkbox') { 
+                    this.state.inputs[c].v = this.state.inputs[c].v ? 0 : 1
+                } else { 
+                    this.state.inputs[c].v = t.target.value;
+                }
+            } 
         } 
-        this.props.dispatch(push('/welcome'));
+        this.setState(this.state)
+    } 
+
+    updateAddress(e,t,v) { 
+        var t = e.value.terms
+        var c = t[t.length-2].value ? t[t.length-2].value : ''
+        var s = t[t.length-3].value ? t[t.length-3].value : ''
+        this.state.address = {
+            places_id:e.value.place_id,
+            addr1:e.value.structured_formatting.main_text,
+            fulladdr:e.label,
+            name: this.state.currentName,
+            phone: this.state.currentPhone,
+            city:c,
+            state:s,
+            zipcode:0
+        }
+        this.setState(this.state);
+    }
+
+    save() { 
+        var ts = { 
+            address:this.state.address
+        } 
+        var c = 0;
+        for (c=0;c<this.state.inputs.length;c++) { 
+            var v = this.state.inputs[c]
+            ts[v.f] = v.v
+        } 
+        this.props.onRegister(ts,this.props.data)
+    } 
+    onSearch() { 
     } 
     setVPassword(e) {
         this.state.register.verify = e.target.value;
@@ -108,145 +190,66 @@ class UserRegistration extends Component {
     }
 
     render() {
+        var value = '';
+        var cntr = 1;
         return (
         <>
             {(this.props.offices && this.props.offices.isReceiving) && (
                 <AppSpinner/>
             )}
-            {(false) && ( 
-            <Row md="12" xs="12">
-                <Col md="12" xs="12">
-                    <div style={{border:"1px solid black",height:150,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                    <h1>Physician Video Here</h1>
+            <>
+            {this.state.inputs.map((t) => {
+                return (
+                <Row md="12" xs="12" style={{marginTop:5}}>
+                    <div style={{display: 'flex', alignItems: 'center', justifyContent: 'spread-evenly'}}>
+                          <font style={{width:25}}>{cntr++}.</font>
+                          <Label style={{width:100,marginLeft:20,marginRight:20}} for="normal-field" className="text-md-right">
+                              {translate(t.l)}:
+                          </Label>
+                        {t.t === 'text' && (
+                          <Input type="text" style={{backgroundColor:'white'}}
+                            onChange={(e) => this.setValue(t,e)} value={this.state.inputs.filter((g) => g.f === t.f)[0].v} 
+                            placeholder={t.l} />
+                        )}
+                        {t.t === 'textfield' && (
+                            <TextareaAutosize
+                              rows={5} style={{backgroundColor:'white'}}
+                              placeholder=""
+                              onChange={(e) => this.setValue(t,e)} value={this.state.inputs.filter((g) => g.f === t.f)[0].v} 
+                              className={`form-control ${s.autogrow} transition-height`}
+                            />
+                        )}
+                        {t.t === 'checkbox' && (
+                            <input type='checkbox'
+                              onChange={(e) => this.setValue(t,e)} checked={this.state.inputs.filter((g) => g.f === t.f)[0].v} 
+                            />
+                        )}
+                        {t.t === 'addr_search' && (
+                          <>
+                          {this.state.address === null && (
+                            <div style={{width:'100%'}}>
+                              <GooglePlacesAutocomplete style={{backgroundColor:'white'}}
+                                    selectProps={{ value, onChange: this.updateAddress }} apiKey={googleKey()}/>
+                            </div>
+                          )}
+                          {this.state.address !== null && (
+                          <Input type="text" style={{backgroundColor:'white'}}
+                            value={this.state.address.fulladdr}/>
+                          )}
+                          </>
+                        )}
                     </div>
+                </Row>
+                )
+            })}
+            </>
+            <Row md="12" xs="12" style={{marginTop:20}}>
+                <Col md="12" xs="12">
+                <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                    <Button onClick={this.save} style={{marginRight:10}} color="primary">{translate('Save')}</Button>
+                    <Button outline onClick={this.cancel} color="primary">{translate('Cancel')}</Button>
+                </div>
                 </Col>
-            </Row>
-            )}
-            <Row md="12" xs="12" style={{marginTop:20,marginLeft:10}}>
-                <Col md="12" xs="12">
-                <>
-                {(!this.props.currentUser) && (
-                    <>
-                    <div style={{height:300,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        <div>
-                        <Row md="12" xs="12">
-                          <FormGroup row>
-                            <Label for="normal-field" md="3" xs="3" className="text-md-right">
-                              {translate('Email')}:
-                            </Label>
-                            <Col md="9" xs="9" style={{marginLeft:0}}>
-                              <Input type="text" id="normal-field" 
-                                onChange={this.setEmail} value={this.state.register.email} 
-                                placeholder="Email" />
-                            </Col>
-                          </FormGroup>
-                        </Row>
-                        <Row md="12" xs="12">
-                          <FormGroup row>
-                            <Label for="normal-field" md="3" xs="3" className="text-md-right">
-                              {translate('First')}:
-                            </Label>
-                            <Col md="9" xs="9" style={{marginLeft:0}}>
-                              <Input type="text" id="normal-field" 
-                                onChange={this.setFirst} value={this.state.register.first_name} 
-                                placeholder="First Name" />
-                            </Col>
-                          </FormGroup>
-                        </Row>
-                        <Row md="12" xs="12">
-                          <FormGroup row>
-                            <Label for="normal-field" md="3" xs="3" className="text-md-right">
-                              {translate('Last')}:
-                            </Label>
-                            <Col md="9" xs="9" style={{marginLeft:0}}>
-                              <Input type="text" id="normal-field" 
-                                onChange={this.setLast} value={this.state.register.last_name} 
-                                placeholder="Last Name" />
-                            </Col>
-                          </FormGroup>
-                        </Row>
-                        <Row md="12" xs="12">
-                          <FormGroup row>
-                            <Label for="normal-field" md="3" xs="3" className="text-md-right">
-                              {translate('Phone')}:
-                            </Label>
-                            <Col md="9" xs="9" style={{marginLeft:0}}>
-                              <Input type="text" id="normal-field" 
-                                onChange={this.setPhone} value={this.state.register.phone} 
-                                placeholder="Phone" />
-                            </Col>
-                          </FormGroup>
-                        </Row>
-                        <Row md="12" xs="12">
-                            <Col md="12" xs="12">
-                            <FormGroup className="checkbox abc-checkbox" check>
-                              <div style={{display:"flex",width:"100%"}}>
-                              <Input id="consultant" style={{float:"left"}} checked={this.state.register.consultant} type="checkbox" />{' '}
-                              <Label onClick={this.setConsultant} for="consultant" check>
-                                    {translate('Click to get a complementary consultant for your visit')}
-                              </Label>
-                              </div>
-                            </FormGroup>
-                            </Col>
-                        </Row>
-                        {/*<Row md="12" xs="12">
-                          <FormGroup row>
-                            <Label for="normal-field" md="3" xs="3" className="text-md-right">
-                              Password:
-                            </Label>
-                            <Col md="9" xs="9" style={{marginLeft:0}}>
-                              <Input type="password" id="normal-field" 
-                                onChange={this.setPassword} value={this.state.register.password} 
-                                placeholder="Password" />
-                            </Col>
-                          </FormGroup>
-                        </Row>
-                        <Row md="12" xs="12">
-                          <FormGroup row>
-                            <Label for="normal-field" md="3" xs="3" className="text-md-right">
-                              Verify:
-                            </Label>
-                            <Col md="9" xs="9" style={{marginLeft:0}}>
-                              <Input type="password" id="normal-field" 
-                                onChange={this.setVPassword} value={this.state.register.verify} 
-                                placeholder="Verify" />
-                            </Col>
-                          </FormGroup>
-                        </Row>*/}
-                        <Row md="12" xs="12">
-                          <FormGroup row>
-                            <Label for="normal-field" md={12} className="text-md-right">
-                              <font style={{color:"red"}}>
-                                  {translate(this.state.errorMessage)} 
-                                  <br></br>
-                                  {translate(this.state.phoneMessage)}
-                              </font>
-                            </Label>
-                          </FormGroup>
-                        </Row>
-                        <Row md="12" xs="12">
-                            <Col md="12" xs="12">
-                                <Button onClick={this.schedule} style={{marginRight:10}} color="primary" 
-                                disabled={
-                                  !this.state.isValid ||
-                                  !this.state.register.first_name || 
-                                  !this.state.register.last_name ||
-                                  this.state.register.phone.length != 14}>{translate('Schedule Appointment')}</Button>
-                                <Button outline onClick={this.cancel} color="primary">{translate('Cancel')}</Button>
-                            </Col>
-                        </Row>
-                    </div>
-                    </div>
-                    </>
-                )}
-                {(this.props.currentUser) && (
-                    <div style={{marginBottom:10,height:500,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        <Button onClick={this.schedule} style={{marginRight:10}} color="primary">{translate('Schedule Appointment')}</Button>
-                        <Button outline onClick={this.cancel} color="primary">{translate('Cancel')}</Button>
-                    </div>
-                )}
-                </>
-                </Col>                
             </Row>
         </>
         )
@@ -255,7 +258,8 @@ class UserRegistration extends Component {
 
 function mapStateToProps(store) {
     return {
-        currentUser: store.auth.currentUser
+        currentUser: store.auth.currentUser,
+        searchUser: store.searchUser
     }
 }
 

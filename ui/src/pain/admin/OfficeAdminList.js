@@ -85,7 +85,6 @@ class OfficeList extends Component {
         this.setState(this.state);
     }
     officeReport() { 
-        console.log("h");
         this.props.dispatch(officeReportDownload({report:'office_report'}));
     } 
     onStatusFilter(e,t) { 

@@ -102,7 +102,6 @@ class PhysicianCard extends Component {
     } 
 
     scheduleAppt(e) { 
-        this.moreToggle(this.props.provider.phy_id);
         this.props.onScheduleAppt(this.props.provider,e)
     } 
 
@@ -122,7 +121,7 @@ class PhysicianCard extends Component {
         <>
         {(this.props.provider) && (
             <Card style={{
-                margin:20,width:250,height:375,
+                margin:20,height:375,
                 borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}} className="mb-xlg border-1">
                 <CardBody>
                     <Row md="12">
@@ -202,10 +201,9 @@ class PhysicianCard extends Component {
                     </>
                     </div>
                     <Row md="12"> <Col md="12">{this.props.provider.miles.toFixed(2)} miles</Col> </Row>
-                    <Row md="12"> <Col md="12">{this.props.provider.addr[0][0].addr1}</Col> </Row>
-                    <Row md="12"> <Col md="12">{this.props.provider.addr[0][0].addr2}</Col> </Row>
+                    <Row md="12"> <Col md="12">{this.props.provider.addr[0][0].addr1 + " " + this.props.provider.addr[0][0].addr2}</Col> </Row>
                     <Row md="12">
-                        <Col md="12">{this.props.provider.addr[0][0].city},{this.props.provider.addr[0][0].state} {this.props.provider.addr[0][0].zipcode}
+                        <Col md="12">{this.props.provider.addr[0][0].city}, {this.props.provider.addr[0][0].state} {this.props.provider.addr[0][0].zipcode}
                         </Col> 
                     </Row>
                     {(false) && ( <Row md="12"> 
@@ -218,6 +216,13 @@ class PhysicianCard extends Component {
                     </Row>
                     )}
                     <hr/>
+                    <Row md="12"> 
+                        <Col md="12">
+                            <div style={{height:30,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                                <Button color="primary" onClick={this.scheduleAppt}>Book</Button>
+                            </div>
+                        </Col>
+                    </Row>
                 </CardBody>
             </Card>
         )}

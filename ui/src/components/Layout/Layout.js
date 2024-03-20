@@ -19,6 +19,7 @@ import BreadcrumbHistory from '../BreadcrumbHistory';
 import { getVersion } from '../../version';
 import Physician from '../../pain/physician/Physician';
 import OfficeAdmin from '../../pain/admin/OfficeAdmin';
+import Customers from '../../pain/office/Customers';
 import Map from '../../pain/admin/Map';
 import MyDay from '../../pain/myday/MyDay';
 import MyHealth from '../../pain/myhealth/MyHealth';
@@ -118,6 +119,7 @@ class Layout extends React.Component {
                     <Route path="/app/main/office/physicians" exact component={Physician} />
                     <Route path="/app/main/office/invoices" exact component={OfficeInvoices} />
                     <Route path="/app/main/office/users" exact component={Users} />
+                    <Route path="/app/main/office/customers" exact component={Customers} />
                     <Route path="/app/main/office/associations" exact component={OfficeAssociation} />
                     <Route path="/app/main/admin/office" exact component={OfficeAdmin} />
                     <Route path="/app/main/admin/registrations" exact component={Registrations} />

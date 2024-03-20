@@ -1,7 +1,9 @@
 import { combineReducers } from 'redux';
 import auth from './auth';
 import registrationAdminUpdate from './registrationAdminUpdate';
+import officeClients from './officeClients';
 import searchProvider from './searchProvider';
+import searchRegisterAdmin from './searchRegisterAdmin';
 import officeReportDownload from './officeReportDownload';
 import plansList from './plansList';
 import searchConfig from './searchConfig';
@@ -72,7 +74,7 @@ import legalAdminUpdate from './legalAdminUpdate';
 import legalBilling from './legalBilling';
 import legalBillingDownloadDoc from './legalBillingDownloadDoc';
 import saveCard from './saveCard';
-import legalDashboard from './legalDashboard';
+import providerDashboard from './providerDashboard';
 import { connectRouter } from 'connected-react-router';
 import chatUser from './chatUser';
 import chatOffice from './chatOffice';
@@ -101,7 +103,7 @@ export default (history) =>
     legalAdminUpdate,
     legalBilling,
     legalBillingDownloadDoc,
-    legalDashboard,
+    providerDashboard,
     legalSchedSave,
     legal,
     context,
@@ -155,9 +157,11 @@ export default (history) =>
     landingData,
     trafficData,
     registrationAdminUpdate,
+    searchRegisterAdmin,
     searchProvider,
     searchConfig,
     officeReportDownload,
+    officeClients,
     mydayReceiptSave,
     userDocumentsUpdate,
     chat,

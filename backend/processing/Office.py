@@ -27,6 +27,41 @@ class OfficeBase(SubmitDataRequest):
     def __init__(self):
         super().__init__()
 
+class OfficeDashboard(OfficeBase):
+    def __init__(self):
+        super().__init__()
+
+    def isDeferred(self):
+        return False
+
+    def getCustomers(self,off_id):
+        db= Query()
+        print(off_id)
+        o = db.query("""
+            select
+                ifnull(t1.num1,0) as num1, /* */
+                ifnull(t2.num2,0) as num2, /* */
+                ifnull(t3.num3,0) as num3, /* */
+                ifnull(t4.num4,0) as num4
+            from
+                (select count(id) as num1 from client_intake_offices
+                    where office_id = %s and month(created) = month(now())
+                        and year(created) = year(now())) as t1,
+                (select count(id) as num2 from client_intake_offices
+                    where office_id = %s and year(created) = year(now())) as t2,
+                (select count(id) as num3 from client_intake_offices
+                    where office_id = %s) as t3,
+                (select 0 as num4) as t4
+            """,(off_id,off_id,off_id))
+        return o[0]
+
+    @check_office
+    def execute(self, *args, **kwargs):
+        ret = {}
+        job,user,off_id,params = self.getArgs(*args,**kwargs)
+        ret['customers'] = self.getCustomers(off_id)
+        return ret
+
 class OfficeInvoicesList(OfficeBase):
 
     def __init__(self):
@@ -341,7 +376,7 @@ class UsersUpdate(OfficeBase):
         ret['success'] = True
         return ret
 
-class TransfersList(OfficeBase):
+class ClientList(OfficeBase):
 
     def __init__(self):
         super().__init__()
@@ -362,105 +397,24 @@ class TransfersList(OfficeBase):
         db = Query()
         o = db.query("""
             select
-                ot.id,ot.office_id,o.name as office_name,u.id as user_id,
-                u.first_name,u.last_name,u.email,stripe_transfer_id,
-                amount,ot.created,ot.invoices_id
+                ci.id,u.first_name as client_first,
+                u.last_name as client_last, 
+                u.email client_email, u.phone as client_phone,
+                u2.id as phy_id,u2.first_name as phy_first,u2.last_name as phy_last
             from
-                office_transfers ot, users u, office o
+                users u,
+                users u2,
+                office o,
+                client_intake ci,
+                client_intake_offices cio
             where
-                u.id=ot.user_id and
-                o.id=ot.office_id and
+                cio.client_intake_id = ci.id and
+                ci.user_id = u.id and
+                o.id = cio.office_id and
+                cio.phy_id = u2.id and
                 o.id=%s
             """,(off_id,)
         )
-        ret['transfers'] = o
+        ret['clients'] = o
         return ret
 
-class AssociationList(OfficeBase):
-
-    def __init__(self):
-        super().__init__()
-
-    def isDeferred(self):
-        return False
-
-    @check_office
-    def execute(self, *args, **kwargs):
-        ret = {}
-        job,user,off_id,params = self.getArgs(*args,**kwargs)
-        limit = 10000
-        offset = 0
-        if 'limit' in params:
-            limit = int(params['limit'])
-        if 'offset' in params:
-            offset = int(params['offset'])
-        db = Query()
-        o = db.query("""
-            select o.id,o.name
-            from 
-                office o, office_associations oa
-            where 
-                o.id=oa.to_office_id  and
-                oa.from_office_id = %s
-            """,(off_id,))
-        ret['assigned'] = o
-        lat = 0
-        lon = 0
-        l = db.query("""
-            select 
-                oa.lat,oa.lon
-            from 
-                office o, office_addresses oa
-            where 
-                o.id=oa.office_id and
-                o.id = %s
-            """,(off_id,))
-        if len(l) > 0:
-            lat = l[0]['lat']
-            lon = l[0]['lon']
-        offices = db.query("""
-            select
-                o.id,o.name,
-                st_distance_sphere(point(%s,%s),point(lon,lat))*.000621371192 as miles,
-                JSON_ARRAYAGG(
-                    JSON_OBJECT(
-                        'id',oa.id,'addr1',oa.addr1,'addr2',oa.addr2,'phone',oa.phone,
-                        'lat',oa.lat,'lon',oa.lon, 'city',oa.city,'state',
-                        oa.state,'zipcode',oa.zipcode)
-                ) as addr
-            from 
-                office o, office_addresses oa
-            where
-                o.id = oa.office_id and
-                and o.id <> %s
-                st_distance_sphere(point(%s,%s),point(lon,lat))*.000621371192 < 50
-            """,(lon,lat,off_id,lon,lat)
-        )
-        ret['offices'] = []
-        for j in offices:
-            j['addr'] = json.loads(j['addr'])
-            ret['offices'].append(j)
-        return ret
-
-class AssociationUpdate(OfficeBase):
-
-    def __init__(self):
-        super().__init__()
-
-    def isDeferred(self):
-        return False
-
-    @check_office
-    def execute(self, *args, **kwargs):
-        ret = {}
-        job,user,off_id,params = self.getArgs(*args,**kwargs)
-        limit = 10000
-        offset = 0
-        db = Query()
-        db.update("""
-            insert into office_associations 
-                (to_office_id,from_office_id) values (%s,%s)
-        """,(params['office_id'],off_id)
-        )
-        db.commit()
-        return {'success': True}

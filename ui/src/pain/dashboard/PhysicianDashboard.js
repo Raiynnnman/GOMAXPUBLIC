@@ -5,11 +5,12 @@ import { Nav, NavItem, NavLink } from 'reactstrap';
 import { TabContent, TabPane } from 'reactstrap';
 import cx from 'classnames';
 import classnames from 'classnames';
+import TrendHeroWithStats from './components/TrendHeroWithStats';
 
 import s from './default.module.scss';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
-import { getOffices } from '../../actions/offices';
+import {getProviderDashboard} from '../../actions/providerDashboard';
 
 class Template extends Component {
     constructor(props) { 
@@ -22,6 +23,7 @@ class Template extends Component {
     }
 
     componentDidMount() {
+        this.props.dispatch(getProviderDashboard())
     }
 
     render() {
@@ -30,10 +32,16 @@ class Template extends Component {
             {(this.props.offices && this.props.offices.isReceiving) && (
                 <AppSpinner/>
             )}
-            <Row md="12">
-                <Col md="12">
-                </Col>                
-            </Row>
+            {(this.props.providerDashboard && this.props.providerDashboard.data && 
+              this.props.providerDashboard.data.customers) && (
+                <Row md="12">
+                    <Col md="3">
+                        <TrendHeroWithStats data={this.props.providerDashboard.data.customers}
+                            title="Clients Gained" num2title="Month" num3title="Year" 
+                            num4title=""/>
+                    </Col>
+                </Row>
+            )}
         </>
         )
     }
@@ -42,7 +50,7 @@ class Template extends Component {
 function mapStateToProps(store) {
     return {
         currentUser: store.auth.currentUser,
-        offices: store.offices
+        providerDashboard: store.providerDashboard
     }
 }
 

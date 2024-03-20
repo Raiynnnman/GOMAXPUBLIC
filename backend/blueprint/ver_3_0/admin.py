@@ -155,3 +155,10 @@ def planslist(*args, **kwargs):
 def reportget(*args, **kwargs):
     po = AdminRest.AdminReportGetRest()
     return po.postWrapper(*args,**kwargs)
+
+@admin.route('/admin/booking/register', methods=['POST'])
+@token_required
+@swag_from(docs_dir + 'registrationlist.yaml')
+def searchreg(*args, **kwargs):
+    po = AdminRest.AdminBookingRegisterRest()
+    return po.postWrapper(*args,**kwargs)

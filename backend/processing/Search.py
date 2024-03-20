@@ -141,12 +141,15 @@ class SearchGet(SearchBase):
                 left join office_addresses oa on oa.office_id=o.id
                 left outer join physician_media pm on pm.user_id = u.id
             where
-                st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192 < 50 and
+                st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192 < 10 and
                 o.active = 1 and 
                 o.office_type_id = %s
             group by 
                 u.id
-            """,(lon,lat,lon,lat,provtype)
+            order by
+                round(st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192,2) 
+            limit 5
+            """,(lon,lat,lon,lat,provtype,lon,lat)
         )
         for x in o:
             q = db.query("""

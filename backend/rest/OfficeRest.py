@@ -43,24 +43,16 @@ class UsersUpdateRest(RestBase):
         ret = u.process(args[0])
         return ret
 
-class TransferListRest(RestBase):
+class ClientListRest(RestBase):
 
     def post(self, *args, **kwargs):
-        u = Office.TransfersList()
+        u = Office.ClientList()
         ret = u.process(args[0])
         return ret
 
-class AssociationListRest(RestBase):
-
-    def post(self, *args, **kwargs):
-        u = Office.AssociationList()
-        ret = u.process(args[0])
-        return ret
-
-class AssociationUpdateRest(RestBase):
-
-    def post(self, *args, **kwargs):
-        u = Office.AssociationUpdate()
+class DashboardRest(RestBase):
+    def get(self, *args, **kwargs):
+        u = Office.OfficeDashboard()
         ret = u.process(args[0])
         return ret
 
