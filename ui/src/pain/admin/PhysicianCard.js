@@ -127,7 +127,7 @@ class PhysicianCard extends Component {
                     <Row md="12">
                         <Col md="12">
                             <font style={{fontSize:"14pt",fontWeight:"bold"}}>
-                            {this.props.provider.title ? this.props.provider.title : ''} 
+                            {this.props.provider.title ? this.props.provider.title + " ": ''} 
                             {this.props.provider.first_name + " " + this.props.provider.last_name}
                             </font>
                             <br/>

@@ -40,15 +40,105 @@ class AdminDashboard(AdminBase):
     def isDeferred(self):
         return False
 
-    def getLeadsStatus(self):
+    def getCustomers(self,off_id):
+        db= Query()
+        CI = self.getClientIntake()
+        o = db.query("""
+            select
+                ifnull(t1.num1,0) as num1, /* */
+                ifnull(t2.num2,0) as num2, /* */
+                ifnull(t3.num3,0) as num3, /* */
+                ifnull(t4.num4,0) as num4
+            from
+                (select count(ci.id) as num1 from 
+                    client_intake_offices cio,client_intake ci
+                    where 
+                    cio.client_intake_id=ci.id 
+                    ) as t1,
+                (select count(ci.id) as num2 from 
+                    client_intake_offices cio,client_intake ci
+                    where 
+                        cio.client_intake_id=ci.id and
+                        month(ci.created) = month(now())
+                        and year(ci.created) = year(now())) as t2,
+                (select count(ci.id) as num3 from 
+                    client_intake_offices cio,client_intake ci
+                    where 
+                    cio.client_intake_id=ci.id and
+                    year(ci.created) = year(now())) as t3,
+                (select count(ci.id) as num4 from client_intake_offices cio,
+                    client_intake ci
+                    where 
+                    cio.client_intake_id=ci.id 
+                    and client_intake_status_id=%s) as t4
+            """,(CI['COMPLETED'],))
+        return o[0]
+
+    def getTrafficStats(self): 
         db= Query()
         o = db.query("""
             select
-                0 as num1, /* num leads */
-                0 as num2, /* leads won */
-                0 as num3, /* leads lost */
-                0 as num4 /* leads invalid */
-            """)
+                ifnull(t1.num1,0) as num1, /* */
+                ifnull(t2.num2,0) as num2, /* */
+                ifnull(t3.num3,0) as num3, /* */
+                ifnull(t4.num4,0) as num4
+            from
+                (select count(id) as num1 from 
+                    traffic_incidents 
+                    where traffic_categories_id = 1
+                    ) as t1,
+                (select count(id) as num2 from 
+                    traffic_incidents
+                    where 
+                        traffic_categories_id = 1
+                        and  created > date(now())) as t2,
+                (select count(id) as num3 from 
+                    traffic_incidents
+                    where 
+                        month(created) = month(now()) 
+                        and traffic_categories_id = 1
+                        and year(created) = year(now())) as t3,
+                (select count(id) as num4 from 
+                    traffic_incidents
+                    where 
+                        traffic_categories_id = 1
+                        and year(created) = year(now())) as t4
+            """
+        )
+        return o[0]
+
+
+    def getLeadsStatus(self):
+        db= Query()
+        ST = self.getLeadStrength()
+        o = db.query("""
+            select
+                ifnull(t1.num1,0) as num1, /* */
+                ifnull(t2.num2,0) as num2, /* */
+                ifnull(t3.num3,0) as num3, /* */
+                ifnull(t4.num4,0) as num4
+            from
+                (select count(id) as num1 from 
+                    provider_queue pq
+                    ) as t1,
+                (select count(id) as num2 from 
+                    provider_queue
+                    where 
+                        provider_queue_lead_strength_id = %s 
+                        and year(created) = year(now())) as t2,
+                (select count(id) as num3 from 
+                    provider_queue
+                    where 
+                        provider_queue_lead_strength_id = %s 
+                        and year(created) = year(now())) as t3,
+                (select count(id) as num4 from 
+                    provider_queue 
+                    where 
+                        provider_queue_lead_strength_id = %s 
+                        and year(created) = year(now())) as t4
+            """,(ST['Preferred Provider'],
+                 ST['In-Network Provider'],ST['Potential Provider'])
+        )
         return o[0]
 
     def getVisits(self):
@@ -62,7 +152,7 @@ class AdminDashboard(AdminBase):
             from 
                 (select count(id) as num1 from visits where created > date(now())) as t1,
                 (select count(id) as num2 from users where created > date(now())) as t2,
-                (select count(id) as num4 from physician_schedule_scheduled where created > date(now())) as t4
+                (select count(id) as num4 from client_intake where created > date(now())) as t4
             """
         )
         return o[0]
@@ -90,8 +180,11 @@ class AdminDashboard(AdminBase):
             """
         )
         return o[0]
+
     def getRevenueThisMonth(self):
         db = Query()
+        PQS = self.getProviderQueueStatus()
+        OT = self.getOfficeTypes()
         o = db.query("""
             select 
                 ifnull(t1.num1,0) as num1, /* our revenue */
@@ -100,17 +193,24 @@ class AdminDashboard(AdminBase):
                 ifnull(t4.num4,0) as num4
             from 
                 (select round(sum(total),2) as num1 from invoices a
-                    where a.created > 
+                    where a.billing_period > 
                     date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t1,
-                /* total twice, need to fix */
-                (select round(sum(total),2) as num2 from invoices a
-                    where a.created > 
-                    date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t2,
-                (select count(id) as num3 from appt_scheduled where created > 
+                (select count(id) as num2 from 
+                    provider_queue
+                    where 
+                        provider_queue_status_id = %s and
+                        date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)
+                ) as t2,
+                (select count(id) as num3 from 
+                    office where office_type_id = %s and 
+                    created > 
                     date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t3,
-                (select count(id) as num4 from physician_schedule_scheduled where created > 
-                    date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t4
-            """
+                (select count(id) as num4 from 
+                    client_intake
+                    where 
+                        date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH) 
+                ) as t4
+            """,(PQS['INVITED'],OT['Customer'])
         )
         return o[0]
 
@@ -121,6 +221,7 @@ class AdminDashboard(AdminBase):
         ret['revenue_month'] = self.getRevenueThisMonth()
         ret['revenue_leads_month'] = self.getLeadsRevenueMonth()
         ret['lead_status'] = self.getLeadsStatus()
+        ret['traffic'] = self.getTrafficStats()
         return ret
 
 class UserList(AdminBase):
@@ -1210,6 +1311,8 @@ class TrafficGet(AdminBase):
             select 101,'Potential Providers'
             UNION ALL
             select 102,'Customers'
+            UNION ALL
+            select 103,'No Results'
             """)
         ret['config']['categories'] = l
         if 'categories' not in params or len(params['categories']) == 0:
@@ -1370,6 +1473,15 @@ class TrafficGet(AdminBase):
                      zipcoords['lat'],STR['Potential Provider'],
                      zipcoords['lng'],zipcoords['lat'])
             )
+            for t in o:
+                t['coords'] = json.loads(t['coords'])
+                ret['data'].append(t) 
+        if 103 in params['categories']:
+            o = db.query("""
+                select count(sha) as lng
+                  json_object('lat',oa.lat,'lng',oa.lon) as coords
+                group by sha
+                """)
             for t in o:
                 t['coords'] = json.loads(t['coords'])
                 ret['data'].append(t) 

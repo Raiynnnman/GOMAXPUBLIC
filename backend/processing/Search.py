@@ -181,11 +181,14 @@ class SearchGet(SearchBase):
                 x['addr'].append(json.loads(g['addr']))
             ret.append(x)
         vid = 0
+        if len(ret) < 1:
+            sha = encryption.getSHA256("%s,%s" %(lat,lon))
+            db.update("insert into search_no_results(sha,lat,lon) values (%s,%s)",(sha,lat,lon,))
         if 'novisit' not in params:
             db.update("insert into visits (office_type_id) values (%s)",(provtype,))
             vid = db.query("select LAST_INSERT_ID()");
             vid = vid[0]['LAST_INSERT_ID()']
-            db.commit()
+        db.commit()
         myret = {
             'providers':ret,
             'visit_id': vid
@@ -356,7 +359,7 @@ class OfficeAppointmentEmail(SearchBase):
             '__BASE__':url
         } 
         m = Mail()
-        m.defer(email,"Appointment Scheduled with #PAIN","templates/mail/office-appointment.html",data)
+        m.defer(email,"Client Acquired with #PAIN","templates/mail/office-appointment.html",data)
         return ret
 
 class ConsultantAppointmentEmail(SearchBase):
@@ -442,80 +445,18 @@ class SearchRegister(SearchBase):
         haveUser,user_id = self.createUser(db,
             params['email'].lower(),params['first_name'],
             params['last_name'],params['phone'], params['zipcode'])
-        if 'appt_id' in params:
-            db.update("""
-                update physician_schedule_scheduled set updated=now(),user_id = %s,appt_status_id=%s 
-                    where physician_schedule_id = %s
-                """,(user_id, APPT_STATUS['REGISTERED'],params['appt_id'])
+        db.update("""
+            insert into client_intake (user_id) values (%s)
+            """,(user_id,)
+        )
+        ci_id = db.query("select LAST_INSERT_ID()");
+        ci_id = ci_id[0]['LAST_INSERT_ID()']
+        db.update("""
+           insert into client_intake_offices (client_intake_id,office_id,phy_id) 
+                    values(%s,%s,%s)
+           """,(ci_id,params['office_id'],params['phy_id'])
             )
-            db.commit()
-            off = db.query("""
-                select 
-                    ou.office_id,uue.email,office.email as office_email
-                from 
-                    physician_schedule ps
-                    left join office_user ou on ou.user_id = ps.user_id 
-                    left outer join user_upload_email uue on uue.office_id = ou.office_id and uue.user_id = %s
-                    left join office on office.id = ou.office_id
-                where 
-                    ps.id = %s
-                """,(user_id,params['appt_id'])
-            )
-            if len(off) < 1 or off[0]['email'] is None:
-                oid = db.query("""
-                    select office_id from office_user ou,physician_schedule ps where ps.user_id=ou.user_id and ps.id=%s
-                    """,(params['appt_id'],)
-               )
-                email = "d-%s-%s-%s@poundpain.io" % (
-                    oid[0]['office_id'],user_id,encryption.getSHA256(str(user_id)+str(oid[0]['office_id']))[:20]
-                )
-                db.update("""
-                    insert into user_upload_email (office_id,user_id,email) values (
-                        %s,%s,%s            
-                    )
-                    """,(oid[0]['office_id'],user_id,email)
-                )
-                db.update("""
-                    insert into user_consent_documents (office_id,user_id) values (
-                    %s,%s)
-                    """,(oid[0]['office_id'],user_id)
-                )
-            if 'consultant' in params and params['consultant'] == True:
-                needConsultant = True
-                ps = db.query("""
-                    select day,time from physician_schedule ps where id=%s""",
-                    (params['appt_id'],)
-                )
-                cons_uid = 0
-                cons_id = 0
-                if len(ps) > 0:
-                    con = db.query("""
-                        select id,user_id from consultant_schedule where 
-                            day=%s and time=%s and id not in 
-                            (select consultant_schedule_id from consultant_schedule_scheduled)
-                        """,
-                        (ps[0]['day'],ps[0]['time'])
-                    )
-                    if len(con) > 0:
-                        cons_uid=con[0]['user_id']
-                        cons_id=con[0]['id']
-                if cons_uid != 0:
-                    db.update("""
-                       insert into consultant_schedule_scheduled 
-                        (consultant_schedule_id,user_id,physician_schedule_id) values (%s,%s,%s) 
-                    """,(cons_id,user_id,params['appt_id'])
-                    )
-                    conData = db.query("select email from users where id=%s", (cons_id))
-                else:
-                    # We couldnt find a consultant. Mark for later
-                    db.update("""
-                       insert into consultant_schedule_failures
-                        (
-                         user_id, physician_schedule_id,consultant_unavailable) values (%s,%s,1) 
-                    """,(user_id,params['appt_id'])
-                    )
                 
-        db.commit()
         ret = { 
             "success":True
         }
@@ -525,11 +466,19 @@ class SearchRegister(SearchBase):
         else:
             r = WelcomeEmailReset()
             r.execute(*args,**kwargs)
+        off = db.query("""
+            select
+                o.id,
+                o.email as office_email
+            from
+                office o
+            where
+                o.id = %s
+            """,(params['office_id'],)
+        )
         oMail = OfficeAppointmentEmail()
         oMail.execute(off)
-        if needConsultant:
-            cMail = ConsultantAppointmentEmail()
-            cMail.execute(conData)
+        db.commit()
         return ret
 
 class SearchSchedule(SearchBase):

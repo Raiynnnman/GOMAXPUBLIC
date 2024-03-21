@@ -45,25 +45,21 @@ class AdminDashboard extends Component {
                 </Col>
                 <Col md="3">
                     <TrendHeroWithStats data={this.props.adminDashboard.data.revenue_month}
-                        title="PAIN Revenue this month" num1isdollar={true} num2title="Total Sales" num2isdollar={true} num3title="Bundles" num3ispercent={false}
-                        num4title="Appointments"/>
-                </Col>
-                <Col md="3">
-                    <TrendHeroWithStats data={this.props.adminDashboard.data.revenue_leads_month}
-                        title="Leads To Revenue this month" num1isdollar={false} num2title="Total Rev" num2isdollar={true} 
-                            num3title="Total Sales" num3isdollar={true} 
-                        num4title="Appointments"/>
+                        title="PAIN Revenue this month" num1isdollar={true} 
+                        num2title="Providers" num2isdollar={true} num3title="Clients" num3ispercent={false}
+                        num4title="Bookings"/>
                 </Col>
                 </>
-            </Row>
-            <Row md="12">
                 <Col md="3">
                     <TrendHeroWithStats data={this.props.adminDashboard.data.lead_status}
-                        title="Leads Status" num1isdollar={false} num2title="Won" num2isdollar={false} 
-                            num3title="Lost" num3isdollar={false} num4title="Invalid"/>
+                        title="Network Information" num1isdollar={false} num2title="Preferred" num2isdollar={false} 
+                            num3title="In-Network" num3isdollar={false} num4title="Potential"/>
                 </Col>
-            </Row>
-            <Row md="12">
+                <Col md="3">
+                    <TrendHeroWithStats data={this.props.adminDashboard.data.traffic}
+                        title="Traffic Stats" num1isdollar={false} num2title="Today" num2isdollar={false} 
+                            num3title="Month" num3isdollar={false} num4title="Year"/>
+                </Col>
             </Row>
             </>
             )}

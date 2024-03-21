@@ -177,18 +177,6 @@ class UserRegistration extends Component {
                             </Col>
                           </FormGroup>
                         </Row>
-                        <Row md="12" xs="12">
-                            <Col md="12" xs="12">
-                            <FormGroup className="checkbox abc-checkbox" check>
-                              <div style={{display:"flex",width:"100%"}}>
-                              <Input id="consultant" style={{float:"left"}} checked={this.state.register.consultant} type="checkbox" />{' '}
-                              <Label onClick={this.setConsultant} for="consultant" check>
-                                    {translate('Click to get a complementary consultant for your visit')}
-                              </Label>
-                              </div>
-                            </FormGroup>
-                            </Col>
-                        </Row>
                         {/*<Row md="12" xs="12">
                           <FormGroup row>
                             <Label for="normal-field" md="3" xs="3" className="text-md-right">
@@ -231,7 +219,7 @@ class UserRegistration extends Component {
                                   !this.state.isValid ||
                                   !this.state.register.first_name || 
                                   !this.state.register.last_name ||
-                                  this.state.register.phone.length != 14}>{translate('Schedule Appointment')}</Button>
+                                  this.state.register.phone.length != 14}>{translate('Book')}</Button>
                                 <Button outline onClick={this.cancel} color="primary">{translate('Cancel')}</Button>
                             </Col>
                         </Row>
@@ -241,7 +229,7 @@ class UserRegistration extends Component {
                 )}
                 {(this.props.currentUser) && (
                     <div style={{marginBottom:10,height:500,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        <Button onClick={this.schedule} style={{marginRight:10}} color="primary">{translate('Schedule Appointment')}</Button>
+                        <Button onClick={this.schedule} style={{marginRight:10}} color="primary">{translate('Book')}</Button>
                         <Button outline onClick={this.cancel} color="primary">{translate('Cancel')}</Button>
                     </div>
                 )}
