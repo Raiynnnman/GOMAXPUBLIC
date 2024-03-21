@@ -43,6 +43,7 @@ class UserRegistration extends Component {
         super(props);
         this.state = { 
             address:null,
+            status_id:0,
             inputs: [ 
                 {l:'Email',f:'email',t:'text',v:''},
                 {l:'Name',f:'name',t:'text',v:''},
@@ -67,6 +68,9 @@ class UserRegistration extends Component {
                 {l:'Case #',f:'case_num',t:'text',v:''},
               ]
         }
+        this.markComplete = this.markComplete.bind(this);
+        this.markScheduled = this.markScheduled.bind(this);
+        this.markNoShow = this.markNoShow.bind(this);
         this.cancel = this.cancel.bind(this);
         this.onSearch = this.onSearch.bind(this);
         this.setValue = this.setValue.bind(this);
@@ -85,12 +89,34 @@ class UserRegistration extends Component {
     }
 
     componentDidMount() {
+        if (this.props.data && this.props.filled !== undefined && this.props.filled === true) { 
+            for (let [key, value] of Object.entries(this.props.data)) { 
+                var c = 0;
+                for (c = 0; c < this.state.inputs.length; c++) { 
+                    if (this.state.inputs[c].f === key) { 
+                        console.log(value);
+                        this.state.inputs[c].v = value;
+                    } 
+                    if (key === 'addr') { 
+                        this.state.address = {};
+                        this.state.address.fulladdr = value;
+                    } 
+                    if (key === 'status_id') { 
+                        this.state.status_id = value;
+                    } 
+                } 
+                console.log(key,value);
+            }
+            this.setState(this.state);
+        } 
     }
+
     cancel() { 
         this.props.onCancel()
     } 
 
     setValue(e,t) { 
+        if (this.props.filled !== undefined) { return; }
         var c = 0;
         for (c = 0; c < this.state.inputs.length;c++) { 
             if (this.state.inputs[c].f === e.f) { 
@@ -188,8 +214,30 @@ class UserRegistration extends Component {
         this.state.register.last_name = e.target.value;
         this.setState(this.state)
     }
+    markScheduled() { 
+        var t = this.props.config.status.filter((g) => g.name === 'SCHEDULED')
+        this.props.onRegister({
+            id:this.props.data.id,
+            status_id: t[0].id
+        })
+    } 
+    markComplete() { 
+        var t = this.props.config.status.filter((g) => g.name === 'COMPLETED')
+        this.props.onRegister({
+            id:this.props.data.id,
+            status_id: t[0].id
+        })
+    } 
+    markNoShow() { 
+        var t = this.props.config.status.filter((g) => g.name === 'NO_SHOW')
+        this.props.onRegister({
+            id:this.props.data.id,
+            status_id: t[0].id
+        })
+    } 
 
     render() {
+        console.log("p1",this.props);
         var value = '';
         var cntr = 1;
         return (
@@ -198,17 +246,31 @@ class UserRegistration extends Component {
                 <AppSpinner/>
             )}
             <>
+            {(this.props.config && this.props.filled !== undefined) && (
+                <div style={{marginBottom:20,display: 'flex', alignItems: 'center', justifyContent: 'spread-evenly'}}>
+                  <font style={{width:25}}></font>
+                  <Label style={{width:200,marginLeft:20,marginRight:20}} for="normal-field" className="text-md-right">
+                    {translate('Status')}:
+                  </Label>
+                    {(this.props.data.status !== 'SCHEDULED') && (
+                        <Button onClick={this.markScheduled} style={{marginRight:10}} color="primary">{translate('Scheduled')}</Button>
+                    )}
+                    <Button onClick={this.markComplete} style={{marginRight:10}} color="primary">{translate('Completed')}</Button>
+                    <Button onClick={this.markNoShow} style={{marginRight:10}} color="danger">{translate('No Show')}</Button>
+                </div>
+            )}
             {this.state.inputs.map((t) => {
                 return (
                 <Row md="12" xs="12" style={{marginTop:5}}>
                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'spread-evenly'}}>
                           <font style={{width:25}}>{cntr++}.</font>
-                          <Label style={{width:100,marginLeft:20,marginRight:20}} for="normal-field" className="text-md-right">
+                          <Label style={{width:200,marginLeft:20,marginRight:20}} for="normal-field" className="text-md-right">
                               {translate(t.l)}:
                           </Label>
                         {t.t === 'text' && (
                           <Input type="text" style={{backgroundColor:'white'}}
-                            onChange={(e) => this.setValue(t,e)} value={this.state.inputs.filter((g) => g.f === t.f)[0].v} 
+                            onChange={(e) => this.setValue(t,e)} 
+                                value={this.state.inputs.filter((g) => g.f === t.f)[0].v} 
                             placeholder={t.l} />
                         )}
                         {t.t === 'textfield' && (
@@ -224,7 +286,7 @@ class UserRegistration extends Component {
                               onChange={(e) => this.setValue(t,e)} checked={this.state.inputs.filter((g) => g.f === t.f)[0].v} 
                             />
                         )}
-                        {t.t === 'addr_search' && (
+                        {(t.t === 'addr_search') && (
                           <>
                           {this.state.address === null && (
                             <div style={{width:'100%'}}>

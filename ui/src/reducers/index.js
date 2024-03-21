@@ -2,6 +2,7 @@ import { combineReducers } from 'redux';
 import auth from './auth';
 import registrationAdminUpdate from './registrationAdminUpdate';
 import officeClients from './officeClients';
+import officeClientUpdate from './officeClientUpdate';
 import searchProvider from './searchProvider';
 import searchRegisterAdmin from './searchRegisterAdmin';
 import officeReportDownload from './officeReportDownload';
@@ -154,6 +155,7 @@ export default (history) =>
     registerVerify,
     userDashboard,
     userDefaultCard,
+    officeClientUpdate,
     landingData,
     trafficData,
     registrationAdminUpdate,

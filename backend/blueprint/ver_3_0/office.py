@@ -56,3 +56,10 @@ def clientslist(*args, **kwargs):
 def dashboard(*args, **kwargs):
     po = OfficeRest.DashboardRest()
     return po.getWrapper(*args,**kwargs)
+
+@office_set.route('/office/client/update', methods=['POST'])
+@token_required
+@swag_from(docs_dir + 'office_users_update.yaml')
+def clientupdate(*args, **kwargs):
+    po = OfficeRest.ClientUpdateRest()
+    return po.postWrapper(*args,**kwargs)

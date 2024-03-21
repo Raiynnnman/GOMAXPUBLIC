@@ -56,3 +56,9 @@ class DashboardRest(RestBase):
         ret = u.process(args[0])
         return ret
 
+class ClientUpdateRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Office.ClientUpdate()
+        ret = u.process(args[0])
+        return ret

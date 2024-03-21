@@ -36,7 +36,7 @@ class OfficeDashboard(OfficeBase):
 
     def getCustomers(self,off_id):
         db= Query()
-        print(off_id)
+        CI = self.getClientIntake()
         o = db.query("""
             select
                 ifnull(t1.num1,0) as num1, /* */
@@ -44,15 +44,28 @@ class OfficeDashboard(OfficeBase):
                 ifnull(t3.num3,0) as num3, /* */
                 ifnull(t4.num4,0) as num4
             from
-                (select count(id) as num1 from client_intake_offices
-                    where office_id = %s and month(created) = month(now())
-                        and year(created) = year(now())) as t1,
-                (select count(id) as num2 from client_intake_offices
-                    where office_id = %s and year(created) = year(now())) as t2,
-                (select count(id) as num3 from client_intake_offices
-                    where office_id = %s) as t3,
-                (select 0 as num4) as t4
-            """,(off_id,off_id,off_id))
+                (select count(ci.id) as num1 from 
+                    client_intake_offices cio,client_intake ci
+                    where 
+                    cio.client_intake_id=ci.id and
+                    office_id = %s) as t1,
+                (select count(ci.id) as num2 from 
+                    client_intake_offices cio,client_intake ci
+                    where 
+                        cio.client_intake_id=ci.id and
+                        office_id = %s and month(ci.created) = month(now())
+                        and year(ci.created) = year(now())) as t2,
+                (select count(ci.id) as num3 from 
+                    client_intake_offices cio,client_intake ci
+                    where 
+                    cio.client_intake_id=ci.id and
+                    office_id = %s and year(ci.created) = year(now())) as t3,
+                (select count(ci.id) as num4 from client_intake_offices cio,
+                    client_intake ci
+                    where 
+                    cio.client_intake_id=ci.id and office_id = %s 
+                    and client_intake_status_id=%s) as t4
+            """,(off_id,off_id,off_id,off_id,CI['COMPLETED']))
         return o[0]
 
     @check_office
@@ -395,26 +408,94 @@ class ClientList(OfficeBase):
         if 'offset' in params:
             offset = int(params['offset'])
         db = Query()
+        inputs = [
+                {'l':'Description of accident','f':'description','t':'textfield','v':''},
+                {'l':'Hospital','f':'hospital','t':'checkbox','v':0},
+                {'l':'Ambulance','f':'ambulance','t':'checkbox','v':0},
+                {'l':'Witnesses','f':'witnesses','t':'textfield','v':''},
+                {'l':'Reporting Law Enforment Agency','f':'rep_law_enforcement','t':'text','v':''},
+                {'l':'Police Report #','f':'police_report_num','t':'text','v':''},
+                {'l':'Citations','f':'citations','t':'text','v':''},
+                {'l':'Who was cited','f':'citations_person','t':'text','v':''},
+                {'l':'Pics of damage','f':'pics_of_damage','t':'checkbox','v':0},
+                {'l':'Passengers in Vehicle','f':'passengers','t':'textfield','v':''},
+                {'l':'Def Insurance Info','f':'def_insurance','t':'text','v':''},
+                {'l':'Claim #/Policy #','f':'def_claim_num','t':'text','v':''},
+                {'l':'Def Name#','f':'def_name','t':'text','v':''},
+                {'l':'PIP Insurance Info','f':'ins_info','t':'text','v':''},
+                {'l':'Claim #/Policy #','f':'ins_claim_num','t':'text','v':''},
+                {'l':'Policy Holder','f':'ins_policy_holder','t':'text','v':''},
+              ]
+        cols = []
+        CI = self.getClientIntake()
+        for g in inputs:
+            cols.append(g['f'])
         o = db.query("""
             select
                 ci.id,u.first_name as client_first,
                 u.last_name as client_last, 
-                u.email client_email, u.phone as client_phone,
-                u2.id as phy_id,u2.first_name as phy_first,u2.last_name as phy_last
+                u.id as user_id,
+                concat(u.first_name,' ', u.last_name) as name,
+                u.email email, u.phone as phone,
+                u2.id as phy_id,u2.first_name as phy_first,
+                u2.last_name as phy_last,cis.name as status,
+                cis.id as status_id,
+                """ + ','.join(cols) + """
             from
                 users u,
                 users u2,
                 office o,
                 client_intake ci,
+                client_intake_status cis,
                 client_intake_offices cio
             where
                 cio.client_intake_id = ci.id and
+                cis.id = ci.client_intake_status_id and
                 ci.user_id = u.id and
                 o.id = cio.office_id and
                 cio.phy_id = u2.id and
-                o.id=%s
-            """,(off_id,)
+                o.id=%s and
+                cis.id < %s 
+            """,(off_id,CI['COMPLETED'])
         )
-        ret['clients'] = o
+        ret['clients'] = []
+        for x in o:
+            j = x
+            g = db.query("""
+                select fulladdr from user_addresses
+                    where user_id = %s
+                """,(x['user_id'],)
+            )
+            j['address'] = ''
+            for z in g:
+                j['addr'] = z['fulladdr']
+            ret['clients'].append(j)
+        ret['config'] = {}
+        ret['config']['status'] = db.query("""
+            select id,name from client_intake_status""")
         return ret
+
+class ClientUpdate(OfficeBase):
+
+    def __init__(self):
+        super().__init__()
+
+    def isDeferred(self):
+        return False
+
+    @check_office
+    def execute(self, *args, **kwargs):
+        ret = {}
+        job,user,off_id,params = self.getArgs(*args,**kwargs)
+        db = Query()
+        db.update("""
+            update client_intake set client_intake_status_id = %s
+                where id = %s
+            """,(params['status_id'],params['id'])
+        )
+        db.commit()
+        ret['success'] = True
+        return ret
+
+
 

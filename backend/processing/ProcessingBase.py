@@ -12,6 +12,16 @@ class ProcessingBase:
         o = db.query("select billing_system_id from billing_system_current")
         ret = o[0]['billing_system_id']
         return ret
+
+    def getClientIntake(self):
+        db = Query()
+        ret = {}
+        o = db.query("select id,name from client_intake_status")
+        for x in o:
+            n = x['name']
+            i = x['id']
+            ret[n] = i
+        return ret 
         
     def getLeadStrength(self):
         db = Query()

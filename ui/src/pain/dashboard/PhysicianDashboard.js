@@ -38,7 +38,7 @@ class Template extends Component {
                     <Col md="3">
                         <TrendHeroWithStats data={this.props.providerDashboard.data.customers}
                             title="Clients Gained" num2title="Month" num3title="Year" 
-                            num4title=""/>
+                            num4title="Converted"/>
                     </Col>
                 </Row>
             )}
