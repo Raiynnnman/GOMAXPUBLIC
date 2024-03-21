@@ -210,7 +210,6 @@ class RegistrationLandingData(RegistrationsBase):
     def isDeferred(self):
         return False
 
-    @check_admin
     def execute(self, *args, **kwargs):
         ret = {'pricing':[]}
         db = Query()

@@ -133,7 +133,9 @@ for c in OFF:
     }
     # print(OBJ)
     try:
-        r = sf.Lead.create(OBJ)
+        r = sf.Lead.create(OBJ,headers={'Sforce-Duplicate-Rule-Header': 'allowSave=true'})
     except Exception as e:
+        print(OBJ)
         print("%s: %s" % (em,str(e)))
+        print("---")
         
