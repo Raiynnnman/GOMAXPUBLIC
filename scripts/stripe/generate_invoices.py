@@ -60,7 +60,7 @@ if args.office is not None:
     q += " and o.id = %s " % args.office
 
 
-print(q % OT['Chiropractor'])
+# print(q % OT['Chiropractor'])
 
 q += " group by op.id order by o.id "
 l = db.query(q,(OT['Chiropractor'],))

@@ -65,7 +65,7 @@ for x in l:
                 (%s,%s,%s)
             """,(x['invoices_id'],1,'Progressed invoice status to ERROR (Failed Payment)')
         )
-    if x['status']  == 'open' and x['invoice_status'] != 'SENT':   
+    if x['status']  == 'open' and x['invoice_status'] != 'SENT' and x['invoice_status'] != 'ERROR':
         print("changing status to SENT: %s" % x['invoices_id'])
         db.update("""
             update invoices set invoice_status_id=%s where id=%s

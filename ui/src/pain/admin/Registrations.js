@@ -389,10 +389,6 @@ class Registrations extends Component {
                 text:'ID'
             },
             {
-                dataField:'billing_period',
-                text:'Period'
-            },
-            {
                 dataField:'description',
                 text:'Description'
             },
@@ -500,6 +496,7 @@ class Registrations extends Component {
             {
                 dataField:'status',
                 sort:true,
+                align:'center',
                 text:'Status',
                 formatter:(cellContent,row) => (
                     <div>
