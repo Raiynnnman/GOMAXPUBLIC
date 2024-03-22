@@ -48,6 +48,7 @@ q = """
         office_addresses oa, office o
     where
         oa.office_id = o.id and
+        oa.lat_attempt_count < 5 and
         lat = 0
     """
 
@@ -83,6 +84,7 @@ for x in o:
     CNT += 1
     db.update("""
         update office_addresses set lat=%s,lon=%s,
+            lat_attempt_count=lat_attempt_count+1,
             nextcheck=date_add(now(),INTERVAL 1 day)
         where id=%s
         """,(lat,lon,x['id'])
