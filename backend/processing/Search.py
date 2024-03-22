@@ -183,7 +183,7 @@ class SearchGet(SearchBase):
         vid = 0
         if len(ret) < 1:
             sha = encryption.getSHA256("%s,%s" %(lat,lon))
-            db.update("insert into search_no_results(sha,lat,lon) values (%s,%s)",(sha,lat,lon,))
+            db.update("insert into search_no_results(sha,lat,lon) values (%s,%s,%s)",(sha,lat,lon,))
         if 'novisit' not in params:
             db.update("insert into visits (office_type_id) values (%s)",(provtype,))
             vid = db.query("select LAST_INSERT_ID()");
