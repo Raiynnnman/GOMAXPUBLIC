@@ -12,6 +12,7 @@ build: version
 	cp src/globalConfig.js.prod src/globalConfig.js
 	cp src/cryptoKey.js.prod src/cryptoKey.js
 	cp src/salesforceConfig.js.prod src/salesforceConfig.js
+	cp src/baseURLConfig.js.prod src/baseURLConfig.js
 	cp src/squareConfig.js.prod src/squareConfig.js
 	npm i
 	npm run build

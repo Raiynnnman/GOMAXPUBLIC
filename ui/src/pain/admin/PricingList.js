@@ -12,6 +12,7 @@ import s from '../utils/default.module.scss';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import { getPlansList } from '../../actions/plansList';
+import baseURLConfig from '../../baseURLConfig';
 
 class PricingList extends Component {
     constructor(props) { 
@@ -40,8 +41,12 @@ class PricingList extends Component {
             {
                 dataField:'id',
                 sort:true,
-                hidden:true,
-                text:'ID'
+                text:'ID',
+                formatter:(cellContent,row) => (
+                    <div>
+                        <a target='_blank' href={baseURLConfig() + '/register-provider/' + row.id}>{row.id}</a>
+                    </div>
+                )
             },
             {
                 dataField:'description',
