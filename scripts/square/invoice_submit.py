@@ -128,6 +128,9 @@ for x in inv:
                     }
                 }
             )
+            if s.is_error():
+                raise Exception(json.dumps(s.errors))
+            s = s.body
         elif mode == 'charge_automatically':
             s = client.invoices.create_invoice(
                 body = {
