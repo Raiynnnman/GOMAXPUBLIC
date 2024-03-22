@@ -56,8 +56,8 @@ if not args.force:
 
 o = db.query(q)
 
+CNT = 0
 for x in o:
-    print(x)
     lat = 0
     lon = 0
     if x['office_type_id'] == OT['Customer']:
@@ -71,6 +71,7 @@ for x in o:
     else:
         res = gmaps.geocode('%s, %s, %s' % (x['addr1'],x['city'],x['state']))
         if len(res) < 1:
+            print(x)
             print("Unable to find coordinates for %s" % x['id'])
         else:
             res = res[0]
@@ -79,6 +80,7 @@ for x in o:
             #print(json.dumps(res['geometry'],indent=4))
             lat = res['geometry']['location']['lat']
             lon = res['geometry']['location']['lng']
+    CNT += 1
     db.update("""
         update office_addresses set lat=%s,lon=%s,
             nextcheck=date_add(now(),INTERVAL 1 day)
@@ -86,3 +88,5 @@ for x in o:
         """,(lat,lon,x['id'])
     )
     db.commit()
+
+print("Updated %s records")

@@ -85,23 +85,23 @@ class AdminDashboard(AdminBase):
             from
                 (select count(id) as num1 from 
                     traffic_incidents 
-                    where traffic_categories_id = 1
+                    where traffic_categories_id = 2
                     ) as t1,
                 (select count(id) as num2 from 
                     traffic_incidents
                     where 
-                        traffic_categories_id = 1
+                        traffic_categories_id = 2
                         and  created > date(now())) as t2,
                 (select count(id) as num3 from 
                     traffic_incidents
                     where 
                         month(created) = month(now()) 
-                        and traffic_categories_id = 1
+                        and traffic_categories_id = 2
                         and year(created) = year(now())) as t3,
                 (select count(id) as num4 from 
                     traffic_incidents
                     where 
-                        traffic_categories_id = 1
+                        traffic_categories_id = 2
                         and year(created) = year(now())) as t4
             """
         )
@@ -1135,6 +1135,7 @@ class RegistrationList(AdminBase):
                 del params['search']
         db = Query()
         PQS = self.getProviderQueueStatus()
+        print(params)
         q = """
             select 
                 pq.id,o.name,o.id as office_id,pqs.name as status,
@@ -1148,6 +1149,8 @@ class RegistrationList(AdminBase):
                 left outer join provider_queue_lead_strength pqls on pq.provider_queue_lead_strength_id=pqls.id
                 left outer join office_plans op on op.office_id = o.id
                 left outer join office_type ot on ot.id=o.office_type_id
+            where
+                1 = 1 
         """
         status_ids = []
         search_par = [
@@ -1156,11 +1159,11 @@ class RegistrationList(AdminBase):
         ]
         count_par = []
         if 'status' in params:
-            q += " and ("
+            q += " and provider_queue_status_id in ("
             arr = []
             for z in params['status']:
-                arr.append("provider_queue_status_id = %s " % z)
-            q += " or ".join(arr)
+                arr.append(z)
+            q += ",".join(map(str,arr))
             q += ")"
         if 'search' in params:
             q += """ and (o.email like %s  or o.name like %s ) 
@@ -1173,12 +1176,14 @@ class RegistrationList(AdminBase):
             order by
                 updated desc
         """
+        print(q)
         cnt = db.query("select count(id) as cnt from (" + q + ") as t", count_par)
         ret['total'] = cnt[0]['cnt']
         q += " limit %s offset %s " 
         o = []
         o = db.query(q,search_par)
         k = [] 
+        print(json.dumps(o,indent=4))
         for x in o:
             x['addr'] = db.query("""
                 select 
