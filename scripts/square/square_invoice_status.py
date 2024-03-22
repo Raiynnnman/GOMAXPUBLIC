@@ -53,7 +53,7 @@ for x in l:
         if r.is_error():
             raise Exception(json.dumps(s.errors))
         r=r.body
-        print(json.dumps(r,indent=4))
+        # print(json.dumps(r,indent=4))
         s_fee = 0
         #if r['status'] == 'paid':
         #    p = stripe.PaymentIntent.retrieve(payment_intent,expand=['latest_charge.balance_transaction'])

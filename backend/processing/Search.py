@@ -139,6 +139,7 @@ class SearchGet(SearchBase):
                 left join office_user ou on ou.user_id = u.id
                 left join office o on o.id = ou.office_id
                 left join office_addresses oa on oa.office_id=o.id
+                left join provider_queue pq on o.id = pq.office_id 
                 left outer join physician_media pm on pm.user_id = u.id
             where
                 st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192 < 10 and
@@ -147,6 +148,7 @@ class SearchGet(SearchBase):
             group by 
                 u.id
             order by
+                pq.provider_queue_status_id, 
                 round(st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192,2) 
             limit 5
             """,(lon,lat,lon,lat,provtype,lon,lat)
