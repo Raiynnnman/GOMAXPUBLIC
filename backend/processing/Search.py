@@ -301,6 +301,8 @@ class WelcomeEmailReset(SearchBase):
             '__LINK__':"%s/#/reset/%s" % (url,val.decode('utf-8')),
             '__BASE__':url
         } 
+        if config.getKey("appt_email_override") is not None:
+            email = config.getKey("appt_email_override")
         m = Mail()
         m.defer(email,"Appointment Scheduled with #PAIN","templates/mail/welcome-reset.html",data)
         return ret
@@ -335,6 +337,8 @@ class WelcomeEmail(SearchBase):
             '__LINK__':"%s/#/login" % (url,),
             '__BASE__':url
         } 
+        if config.getKey("appt_email_override") is not None:
+            email = config.getKey("appt_email_override")
         m = Mail()
         m.defer(email,"Appointment Scheduled with #PAIN","templates/mail/appointment.html",data)
         return ret
@@ -358,6 +362,8 @@ class OfficeAppointmentEmail(SearchBase):
             '__LINK__':"%s/#/login" % (url,),
             '__BASE__':url
         } 
+        if config.getKey("appt_email_override") is not None:
+            email = config.getKey("appt_email_override")
         m = Mail()
         m.defer(email,"Client Acquired with #PAIN","templates/mail/office-appointment.html",data)
         return ret
@@ -381,6 +387,8 @@ class ConsultantAppointmentEmail(SearchBase):
             '__LINK__':"%s/#/login" % (url,),
             '__BASE__':url
         } 
+        if config.getKey("appt_email_override") is not None:
+            email = config.getKey("appt_email_override")
         m = Mail()
         m.defer(email,"Appointment Scheduled with #PAIN","templates/mail/consultant-appointment.html",data)
         return ret
@@ -460,6 +468,8 @@ class SearchRegister(SearchBase):
         ret = { 
             "success":True
         }
+        if config.getKey("appt_email_override") is not None:
+            params['email'] = config.getKey("appt_email_override")
         if haveUser:
             r = WelcomeEmail()
             r.execute(*args,**kwargs)
@@ -476,6 +486,8 @@ class SearchRegister(SearchBase):
                 o.id = %s
             """,(params['office_id'],)
         )
+        if config.getKey("appt_email_override") is not None:
+            off['office_email'] = config.getKey("appt_email_override")
         oMail = OfficeAppointmentEmail()
         oMail.execute(off)
         db.commit()
