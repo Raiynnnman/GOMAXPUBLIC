@@ -156,7 +156,7 @@ for x in inv:
             if s.is_error():
                 raise Exception(json.dumps(s.errors))
             s = s.body
-        print(json.dumps(s,indent=4))
+        # print(json.dumps(s.body,indent=4))
         db.update("""
             update invoices set stripe_invoice_id=%s,invoice_status_id=%s where id=%s
             """,(s['invoice']['id'],INV['GENERATED'],x['id'])
