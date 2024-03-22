@@ -1478,8 +1478,10 @@ class TrafficGet(AdminBase):
                 ret['data'].append(t) 
         if 103 in params['categories']:
             o = db.query("""
-                select count(sha) as lng
-                  json_object('lat',oa.lat,'lng',oa.lon) as coords
+                select count(sha) as lng,
+                  json_object('lat',lat,'lng',lon) as coords
+                from 
+                    search_no_results
                 group by sha
                 """)
             for t in o:

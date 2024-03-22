@@ -383,6 +383,12 @@ class MapContainer extends React.Component {
                                 )
                             }
                         }
+                    if (e.category_id === 103) {
+                            return (
+                              <Marker icon="http://maps.google.com/mapfiles/ms/icons/purple-dot.png"
+                                    position={e.coords[0]}/>
+                            )
+                        }
                     if (e.category_id === 100) {
                             return (
                               <Marker position={e.coords[0]}/>
