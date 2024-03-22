@@ -46,8 +46,8 @@ class AdminDashboard extends Component {
                 <Col md="3">
                     <TrendHeroWithStats data={this.props.adminDashboard.data.revenue_month}
                         title="PAIN Revenue this month" num1isdollar={true} 
-                        num2title="Providers" num2isdollar={true} num3title="Clients" num3ispercent={false}
-                        num4title="Bookings"/>
+                        num2title="Paid" num2isdollar={true} num3title="Sent" num3isdollar={true}
+                        num4title="Error" num4isdollar={true}/>
                 </Col>
                 </>
                 <Col md="3">

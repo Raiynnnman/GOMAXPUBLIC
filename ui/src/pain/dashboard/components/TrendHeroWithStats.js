@@ -60,7 +60,7 @@ class TrendHeroWithStats extends Component {
                       </div>
                       <div className={cx('mt')}>
                         <div style={{height:10,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                          <h6>{convertToFormat(this.props.data.num4)}</h6>
+                          <h6>{this.props.num4isdollar ? "$" :""}{convertToFormat(this.props.data.num4)}</h6>
                         </div>
                           <p className="text-muted mb-0 me-1">
                               <small>{this.props.num4title}</small>

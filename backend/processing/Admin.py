@@ -193,24 +193,25 @@ class AdminDashboard(AdminBase):
                 ifnull(t4.num4,0) as num4
             from 
                 (select round(sum(total),2) as num1 from invoices a
-                    where a.billing_period > 
+                    where 
+                    a.billing_period > 
                     date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t1,
-                (select count(id) as num2 from 
-                    provider_queue
+                (select round(sum(total),2) as num2 from invoices a
                     where 
-                        provider_queue_status_id = %s and
-                        date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)
-                ) as t2,
-                (select count(id) as num3 from 
-                    office where office_type_id = %s and 
-                    created > 
+                    a.invoice_status_id = 15 
+                    and a.billing_period > 
+                    date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t2,
+                (select round(sum(total),2) as num3 from invoices a
+                    where 
+                    a.invoice_status_id = 10 
+                    and a.billing_period > 
                     date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t3,
-                (select count(id) as num4 from 
-                    client_intake
+                (select round(sum(total),2) as num4 from invoices a
                     where 
-                        date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH) 
-                ) as t4
-            """,(PQS['INVITED'],OT['Customer'])
+                    a.invoice_status_id = 25 
+                    and a.billing_period > 
+                    date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t4
+            """
         )
         return o[0]
 
@@ -791,7 +792,6 @@ class OfficeSave(AdminBase):
         db = Query()
         insid = 0
         OT = self.getOfficeTypes()
-        print(params)
         if 'id' not in params:
             db.update("insert into office (name,office_type_id,email,billing_system_id) values (%s,%s,%s,%s,%s)",
                 (params['name'],OT['Provider'],params['email'],BS)
@@ -799,7 +799,6 @@ class OfficeSave(AdminBase):
             insid = db.query("select LAST_INSERT_ID()");
             insid = insid[0]['LAST_INSERT_ID()']
         else:
-            print("here",params['active'])
             db.update("""
                 update office set
                     name = %s, 
@@ -1135,7 +1134,6 @@ class RegistrationList(AdminBase):
                 del params['search']
         db = Query()
         PQS = self.getProviderQueueStatus()
-        print(params)
         q = """
             select 
                 pq.id,o.name,o.id as office_id,pqs.name as status,
@@ -1176,14 +1174,12 @@ class RegistrationList(AdminBase):
             order by
                 updated desc
         """
-        print(q)
         cnt = db.query("select count(id) as cnt from (" + q + ") as t", count_par)
         ret['total'] = cnt[0]['cnt']
         q += " limit %s offset %s " 
         o = []
         o = db.query(q,search_par)
         k = [] 
-        print(json.dumps(o,indent=4))
         for x in o:
             x['addr'] = db.query("""
                 select 
