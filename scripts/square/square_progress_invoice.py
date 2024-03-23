@@ -62,7 +62,7 @@ for x in l:
     try:
         print(x)
         if x['status']  == 'DRAFT' and x['invoice_status'] != 'SENT' and x['total'] == 0:   
-            r = client.invoices.cancel(
+            r = client.invoices.cancel_invoice(
                 invoice_id = x['stripe_invoice_id'],
                 body = { 'version': 0 }
             )
