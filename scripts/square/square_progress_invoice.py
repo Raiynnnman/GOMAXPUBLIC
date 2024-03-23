@@ -30,7 +30,7 @@ db = Query()
 
 q = """
     select 
-        i.id,i.office_id,invoices_id,i.stripe_invoice_id,
+        i.id,i.office_id,i.stripe_invoice_id,
         i.nextcheck, sis.status, i.physician_schedule_id, 
         ist.name as invoice_status,sum(ii.price * ii.quantity) as total
     from 
@@ -68,15 +68,15 @@ for x in l:
             )
             if r.is_error():
                 raise Exception(json.dumps(r.errors))
-            print("changing status to VOID: %s" % x['invoices_id'])
+            print("changing status to VOID: %s" % x['id'])
             db.update("""
                 update invoices set invoice_status_id=%s where id=%s
-                """,(INV['VOID'],x['invoices_id'])
+                """,(INV['VOID'],x['id'])
             )
             db.update("""
                 insert into invoice_history (invoices_id,user_id,text) values 
                     (%s,%s,%s)
-                """,(x['invoices_id'],1,'Progressed invoice status to VOID ($0 invoice)')
+                """,(x['id'],1,'Progressed invoice status to VOID ($0 invoice)')
             )
             db.commit()
         if x['status']  == 'DRAFT' and x['invoice_status'] != 'SENT' and x['total'] > 0:      
@@ -86,27 +86,27 @@ for x in l:
             )
             if r.is_error():
                 raise Exception(json.dumps(r.errors))
-            print("changing status to SENT: %s" % x['invoices_id'])
+            print("changing status to SENT: %s" % x['id'])
             db.update("""
                 update invoices set invoice_status_id=%s where id=%s
-                """,(INV['SENT'],x['invoices_id'])
+                """,(INV['SENT'],x['id'])
             )
             db.update("""
                 insert into invoice_history (invoices_id,user_id,text) values 
                     (%s,%s,%s)
-                """,(x['invoices_id'],1,'Progressed invoice status to SENT')
+                """,(x['id'],1,'Progressed invoice status to SENT')
             )
             db.commit()
         if x['status']  == 'PAID' and x['invoice_status'] != 'PAID':   
-            print("changing status to PAID: %s" % x['invoices_id'])
+            print("changing status to PAID: %s" % x['id'])
             db.update("""
                 update invoices set invoice_status_id=%s where id=%s
-                """,(INV['PAID'],x['invoices_id'])
+                """,(INV['PAID'],x['id'])
             )
             db.update("""
                 insert into invoice_history (invoices_id,user_id,text) values 
                     (%s,%s,%s)
-                """,(x['invoices_id'],1,'Progressed invoice status to PAID' )
+                """,(x['id'],1,'Progressed invoice status to PAID' )
             )
             db.commit()
         db.update("""

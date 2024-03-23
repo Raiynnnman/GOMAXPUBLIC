@@ -603,8 +603,14 @@ class OfficeList extends Component {
                                 Provider ID
                               </Label>
                               <Col md={8}>
-                                  <a href={'https://dashboard.stripe.com/customers/' + this.state.selected.stripe_cust_id}
-                                    target='_blank'>{this.state.selected.stripe_cust_id}</a>
+                                  {(this.state.selected.stripe_cust_id && this.state.selected.stripe_cust_id.includes('cus_'))  && (
+                                      <a href={'https://dashboard.stripe.com/customers/' + this.state.selected.stripe_cust_id}
+                                        target='_blank'>{this.state.selected.stripe_cust_id}</a>
+                                  )}
+                                  {(this.state.selected.stripe_cust_id && !this.state.selected.stripe_cust_id.includes('cus_'))  && (
+                                      <a href={'https://squareup.com/dashboard/customers/directory/customer/' + this.state.selected.stripe_cust_id}
+                                        target='_blank'>{this.state.selected.stripe_cust_id}</a>
+                                  )}
                               </Col>
                             </FormGroup>
                           </Col>
