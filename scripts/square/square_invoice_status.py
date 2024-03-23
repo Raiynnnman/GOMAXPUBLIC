@@ -90,6 +90,9 @@ for x in l:
             hours = 4
         if r['invoice']['status'] == "DRAFT":
             hours = .5
+        if r['invoice']['status'] == "VOID":
+            # if its void, put it out 6 months
+            hours = 24*30*6
         db.update("""
             update invoices set nextcheck = date_add(now(),interval %s hour) 
             where id = %s
