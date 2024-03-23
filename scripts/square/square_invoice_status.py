@@ -107,33 +107,3 @@ for x in l:
         traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
     db.commit()
    
-""" 
-        db.update(""
-            update stripe_invoice_status
-                set invoice_pdf_url=%s, invoice_pay_url=%s,
-                    amount_due=%s, amount_paid=%s,
-                    attempt_count=%s, next_payment_attempt=%s,
-                    status=%s, finalized_at=%s, paid_at=%s, voided_at=%s,
-                    marked_uncollectable_at=%s, stripe_invoice_number=%s,
-                    due=%s, stripe_fee=%s, stripe_invoice_id=%s
-            where 
-                invoices_id=%s
-            "",(
-                 r['invoice_pdf'],
-                 r['hosted_invoice_url'],
-                 r['amount_due'],
-                 r['amount_paid'],
-                 r['attempt_count'],
-                 r['next_payment_attempt'],
-                 r['status'],
-                 r['status_transitions']['finalized_at'],
-                 r['status_transitions']['paid_at'],
-                 r['status_transitions']['voided_at'],
-                 r['status_transitions']['marked_uncollectible_at'],
-                 r['number'],
-                 r['due_date'],
-                 s_fee,
-                 r['id'],
-                 x['invoices_id']
-            )
-"""

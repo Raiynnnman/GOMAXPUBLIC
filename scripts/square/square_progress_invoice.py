@@ -32,17 +32,21 @@ q = """
     select 
         i.id,i.office_id,invoices_id,i.stripe_invoice_id,
         i.nextcheck, sis.status, i.physician_schedule_id, 
-        ist.name as invoice_status
+        ist.name as invoice_status,sum(ii.price * ii.quantity) as total
     from 
         stripe_invoice_status sis,
         invoice_status ist,
+        invoice_items ii,
         invoices i
     where 
+        ii.invoices_id = i.id and
         i.id = sis.invoices_id and
         i.billing_system_id = 2 and
         ist.id = i.invoice_status_id and
         i.stripe_invoice_id is not null and
         date_add(sis.created,interval 160 day) > now() 
+    group by
+        i.id
     """
 
 if not args.force:
@@ -57,7 +61,25 @@ INV = getIDs.getInvoiceIDs()
 for x in l:
     try:
         print(x)
-        if x['status']  == 'DRAFT' and x['invoice_status'] != 'SENT':   
+        if x['status']  == 'DRAFT' and x['invoice_status'] != 'SENT' and x['total'] == 0:   
+            r = client.invoices.cancel(
+                invoice_id = x['stripe_invoice_id'],
+                body = { 'version': 0 }
+            )
+            if r.is_error():
+                raise Exception(json.dumps(r.errors))
+            print("changing status to VOID: %s" % x['invoices_id'])
+            db.update("""
+                update invoices set invoice_status_id=%s where id=%s
+                """,(INV['VOID'],x['invoices_id'])
+            )
+            db.update("""
+                insert into invoice_history (invoices_id,user_id,text) values 
+                    (%s,%s,%s)
+                """,(x['invoices_id'],1,'Progressed invoice status to VOID ($0 invoice)')
+            )
+            db.commit()
+        if x['status']  == 'DRAFT' and x['invoice_status'] != 'SENT' and x['total'] > 0:      
             r = client.invoices.publish_invoice(
                 invoice_id = x['stripe_invoice_id'],
                 body = { 'version': 0 }
