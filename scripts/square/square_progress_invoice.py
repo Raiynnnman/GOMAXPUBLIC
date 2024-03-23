@@ -49,8 +49,6 @@ q = """
         i.id
     """
 
-if not args.force:
-    q += " and (i.nextcheck is null or i.nextcheck < now()) "
 l = db.query(q)
 
 key = config.getKey("square_api_key")
@@ -61,24 +59,55 @@ INV = getIDs.getInvoiceIDs()
 for x in l:
     try:
         print(x)
-        if x['status']  == 'DRAFT' and x['invoice_status'] != 'SENT' and x['total'] == 0:   
-            r = client.invoices.cancel_invoice(
-                invoice_id = x['stripe_invoice_id'],
-                body = { 'version': 0 }
-            )
-            if r.is_error():
-                raise Exception(json.dumps(r.errors))
-            print("changing status to VOID: %s" % x['id'])
+        if x['invoice_status'] != 'CANCELED' and x['status'] != 'ERROR': 
+            print("changing status to ERROR: %s" % x['id'])
             db.update("""
-                update invoices set invoice_status_id=%s where id=%s
-                """,(INV['VOID'],x['id'])
+                update invoices set invoice_status_id=%s
+                    where id=%s
+                """,(INV['ERROR'],x['id'])
             )
             db.update("""
                 insert into invoice_history (invoices_id,user_id,text) values 
                     (%s,%s,%s)
-                """,(x['id'],1,'Progressed invoice status to VOID ($0 invoice)')
+                """,(x['id'],1,'Progress invoice to ERROR')
             )
-            db.commit()
+        if x['invoice_status'] != 'REFUNDED' and x['status'] != 'ERROR': 
+            print("changing status to ERROR: %s" % x['id'])
+            db.update("""
+                update invoices set invoice_status_id=%s
+                    where id=%s
+                """,(INV['ERROR'],x['id'])
+            )
+            db.update("""
+                insert into invoice_history (invoices_id,user_id,text) values 
+                    (%s,%s,%s)
+                """,(x['id'],1,'Progress invoice to ERROR (REFUNDED')
+            )
+        if x['invoice_status'] != 'FAILED' and x['status'] != 'ERROR': 
+            print("changing status to ERROR: %s" % x['id'])
+            db.update("""
+                update invoices set invoice_status_id=%s
+                    where id=%s
+                """,(INV['ERROR'],x['id'])
+            )
+            db.update("""
+                insert into invoice_history (invoices_id,user_id,text) values 
+                    (%s,%s,%s)
+                """,(x['id'],1,'Progress invoice to ERROR (FAILED_PAYMENT')
+            )
+        if x['status']  == 'DRAFT' and x['invoice_status'] != 'SENT' and x['total'] == 0:   
+            print("changing status to PAID: %s" % x['id'])
+            db.update("""
+                update invoices set invoice_status_id=%s,
+                    nextcheck=date_add(now(),INTERVAL 24*30*6 DAY)
+                    where id=%s
+                """,(INV['PAID'],x['id'])
+            )
+            db.update("""
+                insert into invoice_history (invoices_id,user_id,text) values 
+                    (%s,%s,%s)
+                """,(x['id'],1,'Progress invoice to PAID ($0 invoice)')
+            )
         if x['status']  == 'DRAFT' and x['invoice_status'] != 'SENT' and x['total'] > 0:      
             r = client.invoices.publish_invoice(
                 invoice_id = x['stripe_invoice_id'],
@@ -96,7 +125,6 @@ for x in l:
                     (%s,%s,%s)
                 """,(x['id'],1,'Progressed invoice status to SENT')
             )
-            db.commit()
         if x['status']  == 'PAID' and x['invoice_status'] != 'PAID':   
             print("changing status to PAID: %s" % x['id'])
             db.update("""
@@ -108,12 +136,6 @@ for x in l:
                     (%s,%s,%s)
                 """,(x['id'],1,'Progressed invoice status to PAID' )
             )
-            db.commit()
-        db.update("""
-            update invoices set nextcheck=date_add(now(),INTERVAL 12 hour)
-                where id=%s
-            """,(x['id'],)
-        )
         db.commit()
     except Exception as e:
         print(str(e))
