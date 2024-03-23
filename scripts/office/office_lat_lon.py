@@ -91,4 +91,4 @@ for x in o:
     )
     db.commit()
 
-print("Updated %s records")
+print("Updated %s records" % CNT)

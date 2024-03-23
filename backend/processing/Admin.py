@@ -684,7 +684,7 @@ class OfficeList(AdminBase):
                             'id',oa.id,'addr1',oa.addr1,'addr2',oa.addr2,'phone',oa.phone,
                             'city',oa.city,'state',oa.state,'zipcode',oa.zipcode)
                     ) as addr,u.phone,u.first_name,u.last_name,o.stripe_cust_id,o.old_stripe_cust_id,
-                    ot.name as office_type
+                    ot.name as office_type,o.updated
                 from 
                     office o
                     left outer join office_addresses oa on oa.office_id=o.id
