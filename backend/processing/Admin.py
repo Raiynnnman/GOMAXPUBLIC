@@ -699,7 +699,7 @@ class OfficeList(AdminBase):
         stat_params = []
         if 'status' in params:
             q += " and pq.provider_queue_status_id in (%s) " % ','.join(map(str,params['status']))
-        q += " group by o.id "
+        q += " group by o.id order by o.updated desc "
         cnt = db.query("select count(id) as cnt from (%s) as t" % (q,))
         q += " limit %s offset %s " 
         ret['total'] = cnt[0]['cnt']
