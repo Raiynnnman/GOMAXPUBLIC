@@ -52,6 +52,16 @@ class ProcessingBase:
             ret[i] = x
         return ret 
 
+    def getTrafficCategories(self):
+        db = Query()
+        ret = {}
+        o = db.query("select id,name from traffic_categories")
+        for x in o:
+            n = x['name']
+            i = x['id']
+            ret[n] = i
+        return ret 
+
     def getRegistrationTypes(self):
         db = Query()
         ret = {}

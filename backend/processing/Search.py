@@ -183,9 +183,8 @@ class SearchGet(SearchBase):
                 x['addr'].append(json.loads(g['addr']))
             ret.append(x)
         vid = 0
-        if len(ret) < 1:
-            sha = encryption.getSHA256("%s,%s" %(lat,lon))
-            db.update("insert into search_no_results(sha,lat,lon) values (%s,%s,%s)",(sha,lat,lon,))
+        sha = encryption.getSHA256("%s,%s" %(lat,lon))
+        db.update("insert into search_no_results(sha,lat,lon,ret_size) values (%s,%s,%s,%s)",(sha,lat,lon,len(ret)))
         if 'novisit' not in params:
             db.update("insert into visits (office_type_id) values (%s)",(provtype,))
             vid = db.query("select LAST_INSERT_ID()");

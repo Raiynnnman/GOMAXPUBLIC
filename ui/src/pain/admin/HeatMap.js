@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Map, Circle, Marker, GoogleApiWrapper } from "google-maps-react";
+import { HeatMap, Map, Circle, Marker, GoogleApiWrapper } from "google-maps-react";
 import { Col, Row } from 'reactstrap';
 import './Map.scss';
 import moment from 'moment';
@@ -39,7 +39,6 @@ class MapContainer extends React.Component {
   }
 
   mapLoaded(m,n) { 
-    return;
     var styles = 
         [
           {
@@ -54,7 +53,7 @@ class MapContainer extends React.Component {
             "elementType": "labels.text.fill",
             "stylers": [
               {
-                "color": "#8ec3b9"
+                "visibility": "off"
               }
             ]
           },
@@ -62,7 +61,7 @@ class MapContainer extends React.Component {
             "elementType": "labels.text.stroke",
             "stylers": [
               {
-                "color": "#1a3646"
+                "visibility": "off"
               }
             ]
           },
@@ -71,7 +70,7 @@ class MapContainer extends React.Component {
             "elementType": "geometry.stroke",
             "stylers": [
               {
-                "color": "#4b6878"
+                "visibility": "#4b6878"
               }
             ]
           },
@@ -316,15 +315,43 @@ class MapContainer extends React.Component {
                   onReady={(m,n) => this.mapLoaded(m,n)}
                   onClick={this.handleMapClick}
                 >
-                {this.props.data.data.data.map((e) => {
-                    if (e.category_id === 2) {
+                {this.props.data.data.heatmap.map((e) => {
+                        if (e.magnitude < 10) { 
                             return (
-                              <Marker onClick={this.handleMarkerClick}
-                                data={e}
-                                icon={accidentMarker}
-                                position={e.coords[0]}/>
+                              <Circle 
+                                center={e.coords} 
+                                radius={50000}
+                                fillOpacity={.5}
+                                fillColor='green'
+                                strokeColor='green'
+                                strokeWeight={0}
+                                data={e}/>
                             )
-                        }
+                        } 
+                        else if (e.magnitude > 50) { 
+                            return (
+                              <Circle 
+                                center={e.coords} 
+                                radius={50000}
+                                fillOpacity={.5}
+                                fillColor='#a3b48a'
+                                strokeColor='#a3b48a'
+                                strokeWeight={0}
+                                data={e}/>
+                            )
+                        } 
+                        else {
+                            return (
+                              <Circle 
+                                center={e.coords} 
+                                radius={50000}
+                                fillOpacity={.5}
+                                fillColor='#f97661'
+                                strokeColor='#f97661'
+                                strokeWeight={0}
+                                data={e}/>
+                            )
+                        } 
                 })}
                 </Map>
             </Col>

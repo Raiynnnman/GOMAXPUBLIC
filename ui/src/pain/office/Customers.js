@@ -39,7 +39,6 @@ class Customers extends Component {
 
     save(e) { 
         this.props.dispatch(clientUpdate(e,function(data,args) { 
-            console.log(data,args);
             toast.success('Successfully updated status.',
                 {
                     position:"top-right",
@@ -65,8 +64,6 @@ class Customers extends Component {
     } 
 
     render() {
-        console.log("p",this.props);
-        console.log("s",this.state);
         return (
         <>
             {(this.props.officeClient && this.props.officeClient.isReceiving) && (

@@ -33,21 +33,23 @@ db = Query()
 
 q = """
     select
-        op.office_id,op.id,start_date,end_date,
+        op.office_id,op.id,op.start_date,op.end_date,
         JSON_ARRAYAGG(
             JSON_OBJECT(
                 'id',opi.id,'price',opi.price,'description',
                 opi.description,'quantity',opi.quantity
             )
         ) as items,o.stripe_cust_id,o.billing_system_id,
-        day(start_date) as dom
+        day(op.start_date) as dom,pd.customers_required
         
     from 
         office_plans op,
         office_plan_items opi,
+        pricing_data pd,
         office o
     where
         1 = 1  and
+        op.pricing_data_id = pd.id and
         o.id = op.office_id and
         o.active = 1 and
         o.stripe_cust_id is not null and
@@ -100,12 +102,20 @@ for x in l:
         (%s,%s,concat(year(now()),'-',month(now()),'-',%s),'txcd_10000000',%s)
         """,(x['office_id'],INV['CREATED'],x['dom'],x['billing_system_id'])
     )
+    cnt = db.query("""
+        select count(id) cnt from client_intake_offices
+            where office_id = %s
+        """,(x['office_id'],)
+    )
+    x['cust_total'] = cnt[0]['cnt']
     insid = db.query("select LAST_INSERT_ID()")
     insid = insid[0]['LAST_INSERT_ID()']
     for g in x['items']:
         # print(g)
-        subtotal = g['price']*g['quantity']
+        subtotal = round(g['price']*g['quantity'],2)
         price = round(g['price']*g['quantity'],2)
+        if x['customers_required'] == 1 and x['cust_total'] == 0:
+            price = 0
         db.update("""
             insert into invoice_items (
                     invoices_id,description,price,quantity

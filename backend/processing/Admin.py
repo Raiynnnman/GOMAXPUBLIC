@@ -1481,7 +1481,7 @@ class TrafficGet(AdminBase):
             o = db.query("""
                 select 103 as category_id,'No Result' as category,
                   count(sha) as count, sha as uuid,lat as lat,lon as lng,
-                  json_object('lat',lat,'lng',lon) as coords
+                  json_object('lat',lat,'lng',lon) as coords,0 as zipcode
                 from 
                     search_no_results
                 group by sha
@@ -1489,6 +1489,24 @@ class TrafficGet(AdminBase):
             for t in o:
                 t['coords'] = json.loads(t['coords'])
                 ret['data'].append(t) 
+        ## -- HeatMap
+        TC = self.getTrafficCategories()
+        o = db.query("""
+            select 104 as category_id,'HeatMap' as category,
+                ti.zipcode,count(ti.zipcode) as magnitude,uuid() as uuid,
+                json_object('lat',pz.lat,'lng',pz.lon) as coords 
+            from 
+                traffic_incidents ti,position_zip pz 
+            where 
+                pz.zipcode=ti.zipcode and 
+                ti.traffic_categories_id=%s 
+            group by zipcode
+            """,(TC['Accident'],)
+        )
+        ret['heatmap'] = []
+        for t in o:
+            t['coords'] = json.loads(t['coords'])
+            ret['heatmap'].append(t) 
         if 99 in params['categories']:
             o = db.query("""
                 select 

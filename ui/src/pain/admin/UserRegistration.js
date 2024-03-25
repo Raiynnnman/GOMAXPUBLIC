@@ -94,7 +94,6 @@ class UserRegistration extends Component {
                 var c = 0;
                 for (c = 0; c < this.state.inputs.length; c++) { 
                     if (this.state.inputs[c].f === key) { 
-                        console.log(value);
                         this.state.inputs[c].v = value;
                     } 
                     if (key === 'addr') { 
@@ -105,7 +104,6 @@ class UserRegistration extends Component {
                         this.state.status_id = value;
                     } 
                 } 
-                console.log(key,value);
             }
             this.setState(this.state);
         } 
@@ -237,7 +235,6 @@ class UserRegistration extends Component {
     } 
 
     render() {
-        console.log("p1",this.props);
         var value = '';
         var cntr = 1;
         return (
