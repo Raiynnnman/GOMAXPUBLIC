@@ -286,23 +286,11 @@ class MapContainer extends React.Component {
   }; 
 
   render() {
-      const accidentMarker = {
-        // path: "M-1.547 12l6.563-6.609-1.406-1.406-5.156 5.203-2.063-2.109-1.406 1.406zM0 0q2.906 0 4.945 2.039t2.039 4.945q0 1.453-0.727 3.328t-1.758 3.516-2.039 3.070-1.711 2.273l-0.75 0.797q-0.281-0.328-0.75-0.867t-1.688-2.156-2.133-3.141-1.664-3.445-0.75-3.375q0-2.906 2.039-4.945t4.945-2.039z",
-        path:  'M -2,0 0,-2 2,0 0,2 z',
-        fillColor: "#dc1a1a",
-        fillOpacity: 1,
-        strokeWeight: 0,
-        rotation: 0,
-        scale: 2,
-        anchor: new google.maps.Point(0, 20),
-     };
     return (
-      <div style={{zIndex:1,borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}} className="map-container">
         <Row md="12">
-            <Col md="8">
+            <Col md="12" style={{margin:0,padding:0}}>
                 <Map
                   google={this.props.google}
-                  style={{width:"1000px",height:"800px"}}
                   zoom={4}
                   options={{
                     disableDefaultUI: true, // disable default map UI
@@ -319,160 +307,7 @@ class MapContainer extends React.Component {
                     <HeatMap positions={this.props.data.data.heatmap}/>
                 </Map>
             </Col>
-            <Col md="4" style={{borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}}>
-                <Row md="12" style={{margin:20}}></Row>
-                <div style={{height:800,overflow:"auto"}}>
-                    <Row md="12" style={{margin:20}}></Row>
-                    {(this.state.selected === null) && (
-                    <Row md="12" style={{margin:20}}>
-                        <Col md="12">
-                            <h4>No marker selected!</h4>
-                        </Col>
-                    </Row>
-                    )}
-                    {(this.state.selected !== null) && (
-                    <>
-                    <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                        <Col md="4">
-                            Metadata
-                        </Col>
-                    </Row>
-                    {(this.state.selected.category_id) === 99 && (
-                        <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                            <Col md="4">
-                                Office
-                            </Col>
-                            <Col md="8">
-                                {this.state.selected.name}
-                            </Col>
-                        </Row>
-                    )}
-                    {(this.state.selected.category_id !== 99) && (
-                        <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                            <Col md="4">
-                                UUID 
-                            </Col>
-                            <Col md="8">
-                                {this.state.selected.uuid.substring(0,10)}
-                            </Col>
-                        </Row>
-                    )}
-                    <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                        <Col md="4">
-                            Type
-                        </Col>
-                        <Col md="8">
-                            {this.state.selected.category}
-                        </Col>
-                    </Row>
-                    <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                        <Col md="4">
-                            City
-                        </Col>
-                        <Col md="8">
-                            {this.state.selected.city}
-                        </Col>
-                    </Row>
-                    <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                        <Col md="4">
-                            State
-                        </Col>
-                        <Col md="8">
-                            {this.state.selected.state}
-                        </Col>
-                    </Row>
-                    <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                        <Col md="4">
-                            Zipcode
-                        </Col>
-                        <Col md="8">
-                            {this.state.selected.zipcode}
-                        </Col>
-                    </Row>
-                    <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                        <Col md="4">
-                            Latitude
-                        </Col>
-                        <Col md="8">
-                            {this.state.selected.lat}
-                        </Col>
-                    </Row>
-                    <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                        <Col md="4">
-                            Longitude
-                        </Col>
-                        <Col md="8">
-                            {this.state.selected.lng}
-                        </Col>
-                    </Row>
-                    <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                        <Col md="4">
-                            Delay
-                        </Col>
-                        <Col md="8">
-                            {!this.state.selected.traf_delay ? "N/A" : this.state.selected.traf_delay}
-                        </Col>
-                    </Row>
-                    {(this.state.selected.category_id === 99) && (
-                    <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                        <Col md="4">
-                            Lead Strength
-                        </Col>
-                        <Col md="8">
-                            {!this.state.selected.lead_strength ? "N/A" : this.state.selected.lead_strength}
-                        </Col>
-                    </Row>
-                    )}
-                    {(this.state.selected.category_id !== 99) && (
-                        <>
-                        <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                            <Col md="4">
-                                Start
-                            </Col>
-                            <Col md="8">
-                                {moment(this.state.selected.traf_start_time).format('LLL')} (UTC)
-                            </Col>
-                        </Row>
-                        <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                            <Col md="4">
-                                End
-                            </Col>
-                            <Col md="8">
-                                {moment(this.state.selected.traf_end_time).format('LLL')} (UTC)
-                            </Col>
-                        </Row>
-                        <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                            <Col md="4">
-                                Magnitude
-                            </Col>
-                            <Col md="8">
-                                {this.state.selected.traf_magnitude}
-                            </Col>
-                        </Row>
-                        <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                            <Col md="4">
-                                # Reports
-                            </Col>
-                            <Col md="8">
-                                {this.state.selected.traf_num_reports}
-                            </Col>
-                        </Row>
-                        <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                            <Col md="4">
-                                Client Data
-                            </Col>
-                            <Col md="8">
-                                Pending
-                            </Col>
-                        </Row>
-                    </>
-                    )}
-                    </>
-                    )}
-                </div>
-            </Col>
         </Row>
-      </div>
     );
   }
 }
