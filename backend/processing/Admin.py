@@ -1493,7 +1493,8 @@ class TrafficGet(AdminBase):
         TC = self.getTrafficCategories()
         o = db.query("""
             select 104 as category_id,'HeatMap' as category,
-                ti.zipcode,count(ti.zipcode) as magnitude,uuid() as uuid,
+                ti.zipcode,count(ti.zipcode) as weight2,uuid() as uuid,
+                pz.lat as lat,pz.lon as lng,
                 json_object('lat',pz.lat,'lng',pz.lon) as coords 
             from 
                 traffic_incidents ti,position_zip pz 

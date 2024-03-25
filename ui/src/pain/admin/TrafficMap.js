@@ -341,6 +341,7 @@ class MapContainer extends React.Component {
                     disableDefaultUI: true, // disable default map UI
                     libraries: ['visualization'],
                     draggable: true, // make map draggable
+                    libraries:['visualization'],
                     keyboardShortcuts: false, // disable keyboard shortcuts
                     scaleControl: true, // allow scale controle
                     scrollwheel: true, // allow scroll wheel
@@ -559,5 +560,5 @@ class MapContainer extends React.Component {
 
 export default GoogleApiWrapper({
   apiKey: "AIzaSyCjn4U7o_J0AHbNBvkyijucaX_KgTU-46w",
-  libraries: []
+  libraries: ['visualization']
 })(MapContainer);

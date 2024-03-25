@@ -306,6 +306,7 @@ class MapContainer extends React.Component {
                   zoom={4}
                   options={{
                     disableDefaultUI: true, // disable default map UI
+                    libraries:['visualization'],
                     draggable: true, // make map draggable
                     keyboardShortcuts: false, // disable keyboard shortcuts
                     scaleControl: true, // allow scale controle
@@ -315,44 +316,7 @@ class MapContainer extends React.Component {
                   onReady={(m,n) => this.mapLoaded(m,n)}
                   onClick={this.handleMapClick}
                 >
-                {this.props.data.data.heatmap.map((e) => {
-                        if (e.magnitude < 10) { 
-                            return (
-                              <Circle 
-                                center={e.coords} 
-                                radius={50000}
-                                fillOpacity={.5}
-                                fillColor='green'
-                                strokeColor='green'
-                                strokeWeight={0}
-                                data={e}/>
-                            )
-                        } 
-                        else if (e.magnitude > 50) { 
-                            return (
-                              <Circle 
-                                center={e.coords} 
-                                radius={50000}
-                                fillOpacity={.5}
-                                fillColor='#a3b48a'
-                                strokeColor='#a3b48a'
-                                strokeWeight={0}
-                                data={e}/>
-                            )
-                        } 
-                        else {
-                            return (
-                              <Circle 
-                                center={e.coords} 
-                                radius={50000}
-                                fillOpacity={.5}
-                                fillColor='#f97661'
-                                strokeColor='#f97661'
-                                strokeWeight={0}
-                                data={e}/>
-                            )
-                        } 
-                })}
+                    <HeatMap positions={this.props.data.data.heatmap}/>
                 </Map>
             </Col>
             <Col md="4" style={{borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}}>
@@ -515,5 +479,5 @@ class MapContainer extends React.Component {
 
 export default GoogleApiWrapper({
   apiKey: "AIzaSyCjn4U7o_J0AHbNBvkyijucaX_KgTU-46w",
-  libraries: []
+  libraries: ['visualization']
 })(MapContainer);
