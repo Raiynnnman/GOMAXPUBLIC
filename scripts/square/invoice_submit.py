@@ -40,6 +40,7 @@ inv = db.query("""
             invoices i
             left join office o on i.office_id = o.id 
             left join users u on o.user_id = u.id
+            left join invoice_items ii on ii.invoices_id = i.id 
             left outer join user_cards uc on uc.user_id=i.user_id
          where 
             o.id = i.office_id and 
@@ -186,9 +187,9 @@ for x in inv:
                 """,(x['id'],1,'Submitted invoice to Square' )
             )
             print("Generated invoice: %s" % x['id'])
-        db.commit()
-    except Exception as e:
-        print(str(e))
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
+            db.commit()
+        except Exception as e:
+            print(str(e))
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
 
