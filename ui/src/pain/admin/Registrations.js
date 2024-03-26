@@ -27,6 +27,7 @@ import { getPlansList } from '../../actions/plansList';
 import { registrationAdminUpdate } from '../../actions/registrationAdminUpdate';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
+import formatPhoneNumber from '../utils/formatPhone';
 
 class Registrations extends Component {
     constructor(props) { 
@@ -316,6 +317,7 @@ class Registrations extends Component {
             {name:'Last',value:'last_name'},
             {name:'Phone',value:'phone'},
             {name:'Status',value:'status'},
+            {name:'GoogleID',value:'places_id'},
         ]
         var offheads = [
             {
@@ -330,7 +332,12 @@ class Registrations extends Component {
             },
             {
                 dataField:'phone',
-                text:'Phone'
+                text:'Phone',
+                formatter: (cellContent,row) => (
+                    <div>
+                       {formatPhoneNumber(row.phone)} 
+                    </div>
+                )
             },
             {
                 dataField:'addr1',
@@ -454,7 +461,12 @@ class Registrations extends Component {
             {
                 dataField:'phone',
                 sort:true,
-                text:'Phone'
+                text:'Phone',
+                formatter: (cellContent,row) => (
+                    <div>
+                       {formatPhoneNumber(row.phone)} 
+                    </div>
+                )
             },
             {
                 dataField:'sf_id',
@@ -694,6 +706,15 @@ class Registrations extends Component {
                                             <Col md={5}>
                                                 <Input type="text" id="normal-field" onChange={this.updateInitial}
                                                 placeholder='$' value={this.state.selected.initial_payment}/>
+                                            </Col>
+                                          </FormGroup>
+                                          <FormGroup row>
+                                            <Label for="normal-field" md={1} className="text-md-right">
+                                              Places ID
+                                            </Label>
+                                            <Col md={5}>
+                                                <Input type="text" id="normal-field" readONly
+                                                placeholder='$' value={this.state.selected.places_id}/>
                                             </Col>
                                           </FormGroup>
                                           <FormGroup row>

@@ -707,6 +707,16 @@ class OfficeList(AdminBase):
         ret['offices'] = []
         for x in o:
             x['addr'] = json.loads(x['addr'])
+            x['potential'] = db.query("""
+                select
+                    name,places_id,addr1,phone,city,state,
+                    zipcode,score,lat,lon,website,google_url,
+                    rating,updated
+                from 
+                    office_potential_places
+                where office_id = %s
+                """,(x['id'],)
+            )
             x['next_invoice'] = db.query("""
                 select date_add(max(billing_period),INTERVAL 1 MONTH) as next_invoice
                 from invoices where office_id = %s group by office_id
@@ -1138,7 +1148,7 @@ class RegistrationList(AdminBase):
             select 
                 pq.id,o.name,o.id as office_id,pqs.name as status,
                 pq.provider_queue_status_id,pq.sf_id,pqls.name as lead_strength,
-                pqls.id as lead_strength_id, pq.created,pq.updated,
+                pqls.id as lead_strength_id, pq.created,pq.updated,pq.places_id,
                 pq.initial_payment,ot.name as office_type,op.pricing_data_id as pricing_id
             from
                 provider_queue pq

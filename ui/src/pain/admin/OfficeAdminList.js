@@ -341,6 +341,43 @@ class OfficeList extends Component {
                 )
             },
         ];
+        var potheads = [
+            {
+                dataField:'id',
+                sort:true,
+                hidden:true,
+                text:'ID'
+            },
+            {
+                dataField:'name',
+                sort:true,
+                hidden:false,
+                text:'name'
+            },
+            {
+                dataField:'addr',
+                sort:true,
+                hidden:false,
+                text:'Address',
+                formatter:(cc,r) => (
+                    <div>
+                        {r.addr1 + " " + r.city + ', ' + r.state}
+                    </div>
+                )
+            },
+            {
+                dataField:'phone',
+                sort:true,
+                hidden:false,
+                text:'Phone',
+            },
+            {
+                dataField:'website',
+                sort:true,
+                hidden:false,
+                text:'Website',
+            },
+        ]
         var offheads = [
             {
                 dataField:'id',
@@ -651,8 +688,21 @@ class OfficeList extends Component {
                                     <span>{translate('Invoices')}</span>
                                 </NavLink>
                             </NavItem>
+                            <NavItem>
+                                <NavLink className={classnames({ active: this.state.subTab === 'potentials' })}
+                                    onClick={() => { this.toggleSubTab('potentials') }}>
+                                    <span>{translate('Potentials')}</span>
+                                </NavLink>
+                            </NavItem>
                         </Nav>
                         <TabContent className='mb-lg' activeTab={this.state.subTab}>
+                            <TabPane tabId="potentials">
+                              <BootstrapTable 
+                                  keyField="id"
+                                  data={this.state.selected.potential} 
+                                  columns={ potheads }>
+                              </BootstrapTable>
+                            </TabPane>
                             <TabPane tabId="plans">
                                 {(this.state.selected.plans && this.state.selected.plans.items) && (
                                 <>
