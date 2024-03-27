@@ -65,7 +65,7 @@ for x in l:
             'idempotency_key': str(uuid.uuid4())            
         })
         r = r.body
-        print(json.dumps(r,indent=4))
+        # print(json.dumps(r,indent=4))
         db.update("update office set stripe_cust_id=%s where id=%s",
             (r['customer']['id'],x['id'])
         )
@@ -95,7 +95,7 @@ for x in l:
                 id = %s
                 """,(t['id'],)
             )
-            print(r.body)
+            # print(r.body)
         db.commit()
     except Exception as e:
         print("ERROR: %s has an issue: %s" % (x['email'],str(e)))

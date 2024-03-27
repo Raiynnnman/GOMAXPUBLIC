@@ -47,23 +47,23 @@ class OfficeDashboard(OfficeBase):
                 (select count(ci.id) as num1 from 
                     client_intake_offices cio,client_intake ci
                     where 
-                    cio.client_intake_id=ci.id and
+                    cio.client_intake_id=ci.id and hidden=0 and
                     office_id = %s) as t1,
                 (select count(ci.id) as num2 from 
                     client_intake_offices cio,client_intake ci
                     where 
-                        cio.client_intake_id=ci.id and
+                        cio.client_intake_id=ci.id and hidden=0 and
                         office_id = %s and month(ci.created) = month(now())
                         and year(ci.created) = year(now())) as t2,
                 (select count(ci.id) as num3 from 
                     client_intake_offices cio,client_intake ci
                     where 
-                    cio.client_intake_id=ci.id and
+                    cio.client_intake_id=ci.id and hidden=0 and
                     office_id = %s and year(ci.created) = year(now())) as t3,
                 (select count(ci.id) as num4 from client_intake_offices cio,
                     client_intake ci
                     where 
-                    cio.client_intake_id=ci.id and office_id = %s 
+                    cio.client_intake_id=ci.id and office_id = %s and hidden=0 and
                     and client_intake_status_id=%s) as t4
             """,(off_id,off_id,off_id,off_id,CI['COMPLETED']))
         return o[0]
@@ -452,6 +452,7 @@ class ClientList(OfficeBase):
                 cio.client_intake_id = ci.id and
                 cis.id = ci.client_intake_status_id and
                 ci.user_id = u.id and
+                hidden = 0 and
                 o.id = cio.office_id and
                 cio.phy_id = u2.id and
                 o.id=%s and

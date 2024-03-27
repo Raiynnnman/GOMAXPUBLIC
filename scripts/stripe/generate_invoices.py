@@ -52,6 +52,7 @@ q = """
         op.pricing_data_id = pd.id and
         o.id = op.office_id and
         o.active = 1 and
+        o.billing_system_id = %s and
         o.stripe_cust_id is not null and
         date(op.end_date) > now() and
         opi.office_plans_id = op.id and
@@ -65,7 +66,7 @@ if args.office is not None:
 # print(q % OT['Chiropractor'])
 
 q += " group by op.id order by o.id "
-l = db.query(q,(OT['Chiropractor'],))
+l = db.query(q,(BS,OT['Chiropractor'],))
 
 
 for x in l:
@@ -110,6 +111,7 @@ for x in l:
     x['cust_total'] = cnt[0]['cnt']
     insid = db.query("select LAST_INSERT_ID()")
     insid = insid[0]['LAST_INSERT_ID()']
+    price = 0
     for g in x['items']:
         # print(g)
         subtotal = round(g['price']*g['quantity'],2)
@@ -130,10 +132,11 @@ for x in l:
         insert into stripe_invoice_status (office_id,invoices_id,status) values (%s,%s,%s)
         """,(x['office_id'],insid,'draft')
     )
-    db.update("""
-        insert into invoice_history (invoices_id,user_id,text) values 
-            (%s,%s,%s)
-        """,(insid,1,'Generated invoice' )
-    )
+    if price == 0 and x['customers_required']:
+        db.update("""
+            insert into invoice_history (invoices_id,user_id,text) values 
+                (%s,%s,%s)
+            """,(insid,1,'Price set to 0 as customers_required is true' )
+        )
     db.commit()
     

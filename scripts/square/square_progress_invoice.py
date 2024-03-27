@@ -59,8 +59,8 @@ INV = getIDs.getInvoiceIDs()
 for x in l:
     try:
         print(x)
-        if x['invoice_status'] != 'CANCELED' and x['status'] != 'ERROR': 
-            print("changing status to ERROR: %s" % x['id'])
+        if x['invoice_status'] == 'CANCELED' and x['status'] != 'ERROR': 
+            print("changing status to ERROR: %s " % x['id'])
             db.update("""
                 update invoices set invoice_status_id=%s
                     where id=%s
@@ -71,8 +71,8 @@ for x in l:
                     (%s,%s,%s)
                 """,(x['id'],1,'Progress invoice to ERROR')
             )
-        if x['invoice_status'] != 'REFUNDED' and x['status'] != 'ERROR': 
-            print("changing status to ERROR: %s" % x['id'])
+        if x['invoice_status'] == 'REFUNDED' and x['status'] != 'ERROR': 
+            print("changing status to ERROR: %s (REFUNDED)" % x['id'])
             db.update("""
                 update invoices set invoice_status_id=%s
                     where id=%s
@@ -83,7 +83,7 @@ for x in l:
                     (%s,%s,%s)
                 """,(x['id'],1,'Progress invoice to ERROR (REFUNDED')
             )
-        if x['invoice_status'] != 'FAILED' and x['status'] != 'ERROR': 
+        if x['invoice_status'] == 'FAILED' and x['status'] != 'ERROR': 
             print("changing status to ERROR: %s" % x['id'])
             db.update("""
                 update invoices set invoice_status_id=%s

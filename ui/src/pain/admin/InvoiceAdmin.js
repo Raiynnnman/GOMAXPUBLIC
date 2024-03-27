@@ -62,7 +62,7 @@ class InvoiceAdmin extends Component {
         this.props.dispatch(invoiceAdminUpdate(params,function(err,args) { 
             args.props.dispatch(getInvoiceAdmin(
                 {
-                    filter:this.state.filterSelected.value,page:0,limit:10000
+                    filter:args.state.filterSelected.value,page:args.state.page,limit:args.state.pageSize
                 },function(err,args) { 
                 toast.success('Successfully scheduled invoice.',
                     {

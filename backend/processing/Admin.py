@@ -53,23 +53,23 @@ class AdminDashboard(AdminBase):
                 (select count(ci.id) as num1 from 
                     client_intake_offices cio,client_intake ci
                     where 
-                    cio.client_intake_id=ci.id 
+                    cio.client_intake_id=ci.id and hidden = 0
                     ) as t1,
                 (select count(ci.id) as num2 from 
                     client_intake_offices cio,client_intake ci
                     where 
-                        cio.client_intake_id=ci.id and
+                        cio.client_intake_id=ci.id and and hidden=0 and
                         month(ci.created) = month(now())
                         and year(ci.created) = year(now())) as t2,
                 (select count(ci.id) as num3 from 
                     client_intake_offices cio,client_intake ci
                     where 
-                    cio.client_intake_id=ci.id and
+                    cio.client_intake_id=ci.id and hidden=0 and 
                     year(ci.created) = year(now())) as t3,
                 (select count(ci.id) as num4 from client_intake_offices cio,
                     client_intake ci
                     where 
-                    cio.client_intake_id=ci.id 
+                    cio.client_intake_id=ci.id and hidden=0 and
                     and client_intake_status_id=%s) as t4
             """,(CI['COMPLETED'],))
         return o[0]
@@ -152,7 +152,7 @@ class AdminDashboard(AdminBase):
             from 
                 (select count(id) as num1 from visits where created > date(now())) as t1,
                 (select count(id) as num2 from users where created > date(now())) as t2,
-                (select count(id) as num4 from client_intake where created > date(now())) as t4
+                (select count(id) as num4 from client_intake where hidden=0 and created > date(now())) as t4
             """
         )
         return o[0]

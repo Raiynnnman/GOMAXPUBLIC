@@ -35,23 +35,23 @@ db = Query()
 inv = db.query("""
         select 
             i.id,o.stripe_cust_id,i.office_id as office_id,
-            u.id as user_id,sum(ii.price * ii.quantity) as total
+            sum(ii.price * ii.quantity) as total
         from 
             invoices i
             left join office o on i.office_id = o.id 
-            left join users u on o.user_id = u.id
             left join invoice_items ii on ii.invoices_id = i.id 
             left outer join user_cards uc on uc.user_id=i.user_id
          where 
             o.id = i.office_id and 
             i.billing_system_id = 2 and
             o.stripe_cust_id is not null and
-            i.billing_period < now() and
+            i.billing_period < now() and 
             invoice_status_id=%s
         group by
             i.id
     """,(INV['APPROVED'],)
     )
+print(inv)
 for x in inv:
     if x['id'] is None:
         print("No invoices to process")
@@ -59,7 +59,7 @@ for x in inv:
     print("processing invoice %s" % x['id'])
     if x['total'] == 0:
         db.update("""
-            update invoice set invoice_status_id=%s,
+            update invoices set invoice_status_id=%s,
                     nextcheck=date_add(now(),INTERVAL 24*30*6 DAY)
                      where id = %s
             """,(INV['PAID'],x['id'])

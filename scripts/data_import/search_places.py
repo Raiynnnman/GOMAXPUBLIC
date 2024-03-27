@@ -88,13 +88,14 @@ def processLocation(row,res):
         gtok = q['formatted_address'].split(' ')
         score = 0
         t = min(len(gtok),len(rtok))
-        print("min = %s" % t)
+        # print("min = %s" % t)
         for v in range(t):
             if rtok[v].lower() == gtok[v].lower():
                 score += .2
-        print("q=%s" % json.dumps(q,indent=4))
+        # print("q=%s" % json.dumps(q,indent=4))
         if 'formatted_phone_number' not in q:
-            q['formatted_phone_number'] = "8675309"
+            print("business %s has no phone" % (q['places_id'],))
+            continue
         gphone = q['formatted_phone_number']
         gphone = gphone.replace(" ",'').replace("-",'').replace(")","").replace("(",'')
         ophone = row['phone'].replace(" ",'').replace("-",'').replace(")","").replace("(",'')

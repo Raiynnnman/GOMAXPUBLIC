@@ -699,7 +699,7 @@ class Registrations extends Component {
                                                 />
                                             </Col>
                                           </FormGroup>
-                                          <FormGroup row>
+                                          {/*<FormGroup row>
                                             <Label for="normal-field" md={1} className="text-md-right">
                                               Initial Payment
                                             </Label>
@@ -707,7 +707,7 @@ class Registrations extends Component {
                                                 <Input type="text" id="normal-field" onChange={this.updateInitial}
                                                 placeholder='$' value={this.state.selected.initial_payment}/>
                                             </Col>
-                                          </FormGroup>
+                                          </FormGroup>*/}
                                           <FormGroup row>
                                             <Label for="normal-field" md={1} className="text-md-right">
                                               Places ID
