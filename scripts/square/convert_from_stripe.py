@@ -89,7 +89,7 @@ else:
             (office_id,start_date,end_date,pricing_data_id)
         values
             (%s,now(),date_add(now(), INTERVAL %s months,%s)
-        """,(args.id,plan['duration'],plan['id'],1)
+        """,(args.id,plan['duration'],plan['id'])
     )
     newpid = db.query("select LAST_INSERT_ID()")
     newpid = insid[0]['LAST_INSERT_ID()']
