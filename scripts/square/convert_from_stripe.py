@@ -97,7 +97,7 @@ else:
         """,(args.id,plan['duration'],plan['id'])
     )
     newpid = db.query("select LAST_INSERT_ID()")
-    newpid = insid[0]['LAST_INSERT_ID()']
+    newpid = newpid[0]['LAST_INSERT_ID()']
     pl = { 'id': newpid }
 
 db.update("""
