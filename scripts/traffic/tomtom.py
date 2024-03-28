@@ -133,6 +133,7 @@ JS=[]
 for x in TOGET:
     print("Checking %s" % x)
     F="%s.json" % x
+    F=F.replace(' ','_')
     BOX=[
         TOGET[x]['bounds'][0],TOGET[x]['bounds'][1],
         TOGET[x]['bounds'][2],TOGET[x]['bounds'][3]

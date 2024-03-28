@@ -145,7 +145,7 @@ if args.addclient:
     cliid = db.query("select LAST_INSERT_ID()")
     cliid = cliid[0]['LAST_INSERT_ID()']
     db.update("""
-        insert into client_intake_offices (client_intake_id,office_id) values (%s)
+        insert into client_intake_offices (client_intake_id,office_id) values (%s,%s)
     """,(cliid,args.id)
     )
 
