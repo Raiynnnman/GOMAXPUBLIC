@@ -71,6 +71,7 @@ pl = db.query("""
     """,(args.id,)
     )
 
+
 # Change current plan to new plan
 if len(pl) > 0:
     print("updating plan")
@@ -149,9 +150,46 @@ if args.addclient:
     """,(cliid,args.id)
     )
 
-print(invs)
 if len(invs) < 1:
-    print("ERROR: Expected invoice")
+    db.update("""
+        insert into invoices (office_id,invoice_status_id,
+            office_plans_id,billing_period,billing_system_id,total) 
+            values (%s,%s,%s,date(now()),%s,%s)
+        """,(x['office_id'],INV['CREATED'],pl['id'],BS,plan['price'])
+    )
+    invid = db.query("select LAST_INSERT_ID()")
+    invid = invid[0]['LAST_INSERT_ID()']
+    if args.auto_approve:
+        db.update("""
+            update invoices set invoice_status_id=%s where id = %s
+            """,(INV['APPROVED'],invid)
+        )
+    price = plan['price']
+    if plan['customers_required'] and len(clis) < 1:
+        price = 0
+    db.update("""
+        insert into invoice_items 
+            (invoices_id,description,price,quantity)
+        values 
+            (%s,%s,%s,%s)
+        """,
+        (invid,plan['description'],price,1)
+    )
+    db.update("""
+        insert into invoice_history (invoices_id,user_id,text) values 
+            (%s,%s,%s)
+        """,(invid,1,'Generated invoice' )
+    )
+    if len(clis) < 1 and plan['customers_required']:
+        db.update("""
+            insert into invoice_history (invoices_id,user_id,text) values 
+                (%s,%s,%s)
+            """,(invid,1,'Price set to 0 as customers_required is true' )
+        )
+    db.update("""
+        insert into stripe_invoice_status (office_id,invoices_id,status) values (%s,%s,%s)
+        """,(x['office_id'],invid,'draft')
+    )
 
 for x in invs:
     if x['invoice_status'] == 'PAID':
