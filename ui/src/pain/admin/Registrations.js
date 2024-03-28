@@ -713,8 +713,8 @@ class Registrations extends Component {
                                               Places ID
                                             </Label>
                                             <Col md={5}>
-                                                <Input type="text" id="normal-field" readONly
-                                                placeholder='$' value={this.state.selected.places_id}/>
+                                                <Input type="text" id="normal-field" readOnly
+                                                value={this.state.selected.places_id}/>
                                             </Col>
                                           </FormGroup>
                                           <FormGroup row>

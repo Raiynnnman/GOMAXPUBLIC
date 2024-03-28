@@ -1088,7 +1088,7 @@ class RegistrationUpdate(AdminBase):
                     sum += float(params['initial_payment'])
                     break
                 else:
-                    sum += y['price'] * y['quantity']
+                    sum += float(y['price']) * float(y['quantity'])
                     db.update("""
                         insert into invoice_items (invoices_id,description,price,quantity)
                             values (%s,%s,%s,%s)

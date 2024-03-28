@@ -222,17 +222,6 @@ class InvoiceAdminList extends Component {
               this.props.officeInvoices.data.invoices && this.state.selected === null) && ( 
             <>
             <Row md="12">
-                <Col md="3" style={{marginBottom:10}}>
-                      <Select
-                          closeMenuOnSelect={true}
-                          isSearchable={false}
-                          onChange={this.onFilterChange}
-                          value={this.props.filterSelected}
-                          options={this.props.filters}
-                        />
-                </Col>
-            </Row>
-            <Row md="12">
                 <Col md="12">
                     <BootstrapTable 
                         keyField='id' data={this.props.officeInvoices.data.invoices.filter((e) => e.invoice_status !== "CREATED")} 
