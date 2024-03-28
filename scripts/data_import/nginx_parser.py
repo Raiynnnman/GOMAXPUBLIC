@@ -33,6 +33,7 @@ class Parser:
     TIME_ZONE = 4
     REQUESTED_URL = 5
     STATUS_CODE = 6
+    BYTES = 7
     USER_AGENT = 9
 
     def parse_line(self, line):
@@ -42,6 +43,7 @@ class Parser:
             result = {
                 "ip": data[self.IP],
                 "time": data[self.TIME],
+                "bytes": data[self.BYTES],
                 "status_code": data[self.STATUS_CODE],
                 "requested_url": data[self.REQUESTED_URL],
                 "user_agent": data[self.USER_AGENT],
@@ -56,4 +58,4 @@ LOG_FILE = args.file
 with open(LOG_FILE, "r") as f:
     log_entries = [parser.parse_line(line) for line in f]
 
-print(log_entries)
+print(json.dumps(log_entries[0],indent=4))

@@ -358,6 +358,7 @@ class InvoiceAdminList extends Component {
               this.props.invoiceAdmin.data.invoices && this.state.selected === null) && ( 
             <>
             <Row md="12">
+                {(this.state.statusSelected && this.state.statusSelected.length > 0) && (
                 <Col md="7" style={{marginBottom:10}}>
                       <Select
                           closeMenuOnSelect={true}
@@ -382,6 +383,7 @@ class InvoiceAdminList extends Component {
                           })}
                         />
                 </Col>
+                )}
             </Row>
             <Row md="12">
                 <Col md="12">

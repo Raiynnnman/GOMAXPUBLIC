@@ -227,6 +227,7 @@ class Registrations extends Component {
             tosend.card = this.state.selected.card
         }
         this.props.dispatch(registrationAdminUpdate(tosend,function(err,args) { 
+            console.log("here");
             args.props.dispatch(getRegistrations(
                 {search:args.state.search,limit:args.state.pageSize,offset:args.state.page,status:args.state.filter},function(err,args) { 
               toast.success('Successfully saved registration.',

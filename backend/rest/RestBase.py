@@ -27,18 +27,23 @@ class RestBase:
         perf = Performance.performance()
         perf.start(self.__class__.__name__)
         try: 
-            ret['success'] = True
-            ret['data'] = self.get(*args, **kwargs)
-            ret['execution'] = perf.stop()
-            ret['version'] = version.getVersion()
-            return jsonify(ret)
+           ret['success'] = True
+           ret['data'] = self.get(*args, **kwargs)
+           ret['execution'] = perf.stop()
+           ret['version'] = version.getVersion()
+           perf.status(200)
+           return jsonify(ret)
         except InvalidCredentials as ic:
            abort(401,jsonify({"success":False,"message":str(ic)}))
+           perf.status(401)
         except Exception as e:
+           perf.status(500)
            log.error(str(e))
            exc_type, exc_value, exc_traceback = sys.exc_info()
            traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
            abort(500,jsonify({"success":False,"message":str(e)}))
+        finally:
+            perf.save()
 
     def postWrapper(self, *args, **kwargs):
         ret = {}
@@ -55,12 +60,15 @@ class RestBase:
             ret['data'] = self.post(j)
             ret['execution'] = perf.stop()
             ret['version'] = version.getVersion()
+            perf.status(200)
             return jsonify(ret)
         except InvalidCredentials as ic:
            log.error(str(ic))
+           perf.status(401)
            abort(401,jsonify({"success":False,"message":str(ic)}))
         except Exception as e:
            log.error(str(e))
+           perf.status(500)
            exc_type, exc_value, exc_traceback = sys.exc_info()
            traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
            j = list(args)
@@ -71,4 +79,6 @@ class RestBase:
            )
            db.commit()
            abort(500,jsonify({"success":False,"message":str(e)}))
+        finally:
+            perf.save()
 

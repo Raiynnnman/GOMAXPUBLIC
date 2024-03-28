@@ -12,6 +12,7 @@ import base64
 from ua_parser import user_agent_parser
 from util import calcdate, encryption
 from flask import request
+from util.DBOps import Query
 
 
 con = None
@@ -22,15 +23,23 @@ if os.path.exists("bin/data/ipmapping.db"):
 class performance():
     __start = None
     __subsys = None
-    __data__ = None
+    __data__ = {}
+    __status__ = 0
 
     def start(self, subsys):
         self.__subsys = subsys
         self.__start = datetime.datetime.now()
-        j = {}
+        j = {
+            'lat':0,
+            'lon':0,
+            'stateprov':'',
+            'city':'',
+            'country':'',
+            'continent':''
+        }
         try:
             if "Host-Info" in request.headers:
-                j = json.loads(base64.b64decode(request.headers['Host-Info']))
+                j.update(json.loads(base64.b64decode(request.headers['Host-Info'])))
             if con is not None and 'client_addr' in j:
                 curs = con.cursor()
                 g = int(ipaddress.ip_address(j['client_addr']))
@@ -47,16 +56,18 @@ class performance():
                     j['stateprov'] = n[4]
                     j['city'] = n[5]
                     break
+            self.__data__ = j
             haveit = True
             return j
         except Exception as e:
             pass
 
-    def process(self, cid, pid, *args, **kwargs):
-        self.connect()
-        data = args[0]
-        self.save(cid, pid, data, "performance")
-        return {"success": True}
+    def status(self,s):
+        self.__status__ = s
+
+    def save(self):
+        print(request.headers)
+        print(self.__data__)
 
     def setData(self, d):
         if d is not None:
@@ -68,4 +79,5 @@ class performance():
         ret = datetime.datetime.now() - self.__start
         ms = ret.total_seconds()
         current = calcdate.getTimestampNow()
+        self.__data__['ms'] = ms
         return ms
