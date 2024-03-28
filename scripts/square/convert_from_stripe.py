@@ -93,7 +93,7 @@ else:
         insert into office_plans
             (office_id,start_date,end_date,pricing_data_id)
         values
-            (%s,now(),date_add(now(), INTERVAL %s months,%s)
+            (%s,now(),date_add(now(), INTERVAL %s MONTH),%s)
         """,(args.id,plan['duration'],plan['id'])
     )
     newpid = db.query("select LAST_INSERT_ID()")

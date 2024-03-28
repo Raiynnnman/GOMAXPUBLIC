@@ -90,9 +90,6 @@ for x in l:
         # print("Office %s already has an invoice for this month, skipping"%x['office_id'])
         continue
     print(json.dumps(x,indent=4))
-    if config.getKey('environment') == 'prod':
-        print("environment set, skipping for %s" % config.getKey('environment'))
-        continue
     insid = 0
     print("Generating invoice for this month for %s" % x['office_id'])
     db.update("""
