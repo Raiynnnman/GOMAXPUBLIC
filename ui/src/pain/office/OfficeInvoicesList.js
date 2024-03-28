@@ -159,17 +159,6 @@ class InvoiceAdminList extends Component {
                 text:'ID'
             },
             {
-                dataField:'id',
-                editable: false,
-                text:'Procedure',
-                formatter:(cellContent,row) => (
-                    <div>
-                        {row.subprocedure_name}: {row.day}@{row.time} for {row.first_name} {row.last_name}
-                    </div>
-                )
-                
-            },
-            {
                 dataField:'number',
                 editable: false,
                 text:'Invoice ID',

@@ -63,7 +63,7 @@ class OfficeDashboard(OfficeBase):
                 (select count(ci.id) as num4 from client_intake_offices cio,
                     client_intake ci
                     where 
-                    cio.client_intake_id=ci.id and office_id = %s and hidden=0 and
+                    cio.client_intake_id=ci.id and office_id = %s and hidden=0
                     and client_intake_status_id=%s) as t4
             """,(off_id,off_id,off_id,off_id,CI['COMPLETED']))
         return o[0]
@@ -103,8 +103,8 @@ class OfficeInvoicesList(OfficeBase):
             select
                 i.id,ist.name as invoice_status,i.physician_schedule_id,
                 i.nextcheck,stripe_invoice_number as number,
-                u.first_name,u.last_name,ps.day,ps.time,s.name as subprocedure_name,
-                invoice_pdf_url, invoice_pay_url, amount_due, amount_paid,
+                invoice_pdf_url, invoice_pay_url, 
+                amount_due, amount_paid,
                 attempt_count, next_payment_attempt, status, finalized_at,
                 paid_at, voided_at, marked_uncollectable_at, stripe_invoice_number,
                 from_unixtime(due) as due,o.id as office_id,o.name as office_name,
@@ -119,18 +119,10 @@ class OfficeInvoicesList(OfficeBase):
             from
                 invoices i,
                 invoice_items ii,
-                users u,
                 stripe_invoice_status sis,
-                physician_schedule ps,
-                physician_schedule_scheduled pss,
-                subprocedures s,
                 office o,
                 invoice_status ist
             where
-                u.id = i.user_id and
-                pss.physician_schedule_id = ps.id and
-                pss.subprocedures_id = s.id and
-                i.physician_schedule_id = ps.id and
                 i.id = ii.invoices_id and
                 o.id = i.office_id and
                 sis.invoices_id = i.id and 

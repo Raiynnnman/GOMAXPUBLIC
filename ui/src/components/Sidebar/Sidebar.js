@@ -207,14 +207,11 @@ class Sidebar extends React.Component {
               {
                 header: 'Invoices', link: '/app/main/office/invoices',
               },
-              {
-                header: 'Payouts', link: '/app/main/office/payouts',
-              },
             ]}
           />
           )}
           {(this.props.currentUser && this.props.currentUser.entitlements && 
-            this.props.currentUser.entitlements.includes("OfficeAdmin")) && (
+            this.props.currentUser.entitlements.includes("OfficeAdmin2")) && (
           <LinksGroup
             onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
             activeItem={this.props.activeItem}
@@ -227,9 +224,6 @@ class Sidebar extends React.Component {
             childrenLinks={[
               {
                 header: 'Physician', link: '/app/main/office/physicians',
-              },
-              {
-                header: 'Associations', link: '/app/main/office/associations',
               },
               {
                 header: 'Users', link: '/app/main/office/users',
