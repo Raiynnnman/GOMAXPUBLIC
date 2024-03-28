@@ -25,7 +25,11 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--dryrun', dest="dryrun", action="store_true")
 args = parser.parse_args()
 
-client = Client(access_token=key,environment='sandbox')
+client = None
+if  config.getKey("environment") == 'prod':
+    client = Client(access_token=key,environment='sandbox')
+else:
+    client = Client(access_token=key)
 
 APT = getIDs.getAppointStatus()
 INV = getIDs.getInvoiceIDs()

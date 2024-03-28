@@ -25,8 +25,12 @@ parser.add_argument('--dryrun', dest="dryrun", action="store_true")
 parser.add_argument('--force', dest="force", action="store_true")
 args = parser.parse_args()
 db = Query()
+client = None
+if  config.getKey("environment") == 'prod':
+    client = Client(access_token=key,environment='sandbox')
+else:
+    client = Client(access_token=key)
 
-client = Client(access_token=key,environment='sandbox')
 q = """
     select 
         i.office_id,invoices_id,i.stripe_invoice_id,

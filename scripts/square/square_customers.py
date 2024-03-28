@@ -19,7 +19,11 @@ config = settings.config()
 config.read("settings.cfg")
 
 key = config.getKey("square_api_key")
-client = Client(access_token=key,environment='sandbox')
+client = None
+if  config.getKey("environment") == 'prod':
+    client = Client(access_token=key,environment='sandbox')
+else:
+    client = Client(access_token=key)
 
 OT = getIDs.getOfficeTypes()
 parser = argparse.ArgumentParser()
@@ -65,7 +69,7 @@ for x in l:
             'idempotency_key': str(uuid.uuid4())            
         })
         r = r.body
-        # print(json.dumps(r,indent=4))
+        print(json.dumps(r,indent=4))
         db.update("update office set stripe_cust_id=%s where id=%s",
             (r['customer']['id'],x['id'])
         )
