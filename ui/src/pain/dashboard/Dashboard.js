@@ -39,7 +39,8 @@ class Dashboard extends Component {
                 {(this.props.currentUser && this.props.currentUser.entitlements && this.props.currentUser.entitlements.includes('Provider')) && (
                     <PhysicianDashboard/>
                 )}
-                {(this.props.currentUser && this.props.currentUser.entitlements && this.props.currentUser.entitlements.includes('Admin')) && (
+                {(this.props.currentUser && this.props.currentUser.entitlements && this.props.currentUser.entitlements.includes('Admin') &&
+                  !this.props.currentUser.context) && (
                     <AdminDashboard/>
                 )}
                 {(this.props.currentUser && this.props.currentUser.entitlements && this.props.currentUser.entitlements.includes('Legal')) && (

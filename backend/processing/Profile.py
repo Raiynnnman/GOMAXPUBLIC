@@ -101,8 +101,9 @@ class Profile(SubmitDataRequest):
                 A.append(c[0]['type'])
                 context = True
                 contextValue = c[0]
-            if 'Physician' in A:
+            if 'Chiropractor' in A:
                 A.append('OfficeAdmin')
+                A.append('Provider')
             if 'Corporation' in A:
                 A.append('CorporateAdmin')
         tz = u['offset']

@@ -138,7 +138,7 @@ class Sidebar extends React.Component {
           />
           )}
           {(this.props.currentUser && this.props.currentUser.entitlements && 
-            this.props.currentUser.entitlements.includes("Admin")) && (
+            this.props.currentUser.entitlements.includes("Admin") && !this.props.currentUser.context) && (
           <LinksGroup
             header="Search"
             link="/app/main/admin/search"
@@ -149,7 +149,7 @@ class Sidebar extends React.Component {
           />
           )}
           {(this.props.currentUser && this.props.currentUser.entitlements && 
-            this.props.currentUser.entitlements.includes("Admin")) && (
+            this.props.currentUser.entitlements.includes("Admin") && !this.props.currentUser.context) && (
           <LinksGroup
             header="Map"
             link="/app/main/admin/map"
@@ -160,7 +160,7 @@ class Sidebar extends React.Component {
           />
           )}
           {(this.props.currentUser && this.props.currentUser.entitlements && 
-            this.props.currentUser.entitlements.includes("Admin")) && (
+            this.props.currentUser.entitlements.includes("Admin") && !this.props.currentUser.context) && (
           <LinksGroup
             header="Registrations"
             link="/app/main/admin/registrations"
@@ -232,7 +232,7 @@ class Sidebar extends React.Component {
           />
           )}
           {(this.props.currentUser && this.props.currentUser.entitlements && 
-            this.props.currentUser.entitlements.includes("Admin")) && (
+            this.props.currentUser.entitlements.includes("Admin") && !this.props.currentUser.context) && (
           <LinksGroup
             onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
             activeItem={this.props.activeItem}
