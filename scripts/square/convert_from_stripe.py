@@ -155,6 +155,11 @@ if args.addclient:
     )
 
 if len(invs) < 1:
+    clis = db.query("""
+        select count(id) from client_intake_offices where
+            office_id = %s
+        """,(args.id,)
+    )
     db.update("""
         insert into invoices (office_id,invoice_status_id,
             office_plans_id,billing_period,billing_system_id,total) 
@@ -169,7 +174,8 @@ if len(invs) < 1:
             """,(INV['APPROVED'],invid)
         )
     price = plan['price']
-    if plan['customers_required'] and len(clis) < 1:
+    if plan['customers_required'] and not args.addclient: 
+        print("Setting price to $0 (cr)")
         price = 0
     db.update("""
         insert into invoice_items 
@@ -184,7 +190,7 @@ if len(invs) < 1:
             (%s,%s,%s)
         """,(invid,1,'Generated invoice' )
     )
-    if len(clis) < 1 and plan['customers_required']:
+    if not args.addclient < 1 and plan['customers_required']:
         db.update("""
             insert into invoice_history (invoices_id,user_id,text) values 
                 (%s,%s,%s)
@@ -192,7 +198,7 @@ if len(invs) < 1:
         )
     db.update("""
         insert into stripe_invoice_status (office_id,invoices_id,status) values (%s,%s,%s)
-        """,(x['office_id'],invid,'draft')
+        """,(args.id,invid,'draft')
     )
 
 for x in invs:
