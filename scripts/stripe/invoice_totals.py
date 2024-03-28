@@ -27,6 +27,7 @@ args = parser.parse_args()
 INV = getIDs.getInvoiceIDs()
 PQS = getIDs.getProviderQueueStatus()
 db = Query()
+CNT = 0
 l = db.query("""
     select invoices_id,sum(price*quantity) as calc,i.id,i.total
         from 
@@ -41,6 +42,7 @@ l = db.query("""
 
 for x in l:
     if x['total'] != x['calc']:
+        CNT += 1
         db.update("""
             update invoices set total = %s where id = %s
             """,(x['calc'],x['invoices_id'])
@@ -48,3 +50,4 @@ for x in l:
 
 db.commit()
 
+print("Altered %s records" % CNT)

@@ -486,7 +486,7 @@ class InvoicesList(AdminBase):
                         'quantity', ii.quantity
                     )
                 ) as items,i.invoice_status_id,i.created,i.updated,
-                round(i.total,2) as total
+                round(sum(ii.price*quantity),2) as total
             from
                 invoices i,
                 invoice_items ii,
@@ -515,7 +515,7 @@ class InvoicesList(AdminBase):
             q += ")"
         p.append(limit)
         p.append(offset*limit)
-        q += "group by i.id order by billing_period desc"
+        q += " group by i.id order by updated desc"
         cnt = db.query("select count(id) as cnt from (%s) as t" % (q,))
         ret['total'] = cnt[0]['cnt']
         q += " limit %s offset %s " 
