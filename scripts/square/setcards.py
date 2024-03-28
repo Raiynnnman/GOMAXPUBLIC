@@ -21,9 +21,9 @@ config.read("settings.cfg")
 key = config.getKey("square_api_key")
 client = None
 if  config.getKey("environment") == 'prod':
-    client = Client(access_token=key,environment='sandbox')
+    client = Client(access_token=key,environment='production')
 else:
-    client = Client(access_token=key)
+    client = Client(access_token=key,environment='sandbox')
 
 OT = getIDs.getOfficeTypes()
 parser = argparse.ArgumentParser()

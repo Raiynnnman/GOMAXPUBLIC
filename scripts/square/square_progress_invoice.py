@@ -23,9 +23,9 @@ loc = config.getKey("square_loc_key")
 
 client = None
 if  config.getKey("environment") == 'prod':
-    client = Client(access_token=key,environment='sandbox')
+    client = Client(access_token=key,environment='production')
 else:
-    client = Client(access_token=key)
+    client = Client(access_token=key,environment='sandbox')
 parser = argparse.ArgumentParser()
 parser.add_argument('--dryrun', dest="dryrun", action="store_true")
 parser.add_argument('--force', dest="force", action="store_true")

@@ -27,9 +27,9 @@ args = parser.parse_args()
 
 client = None
 if  config.getKey("environment") == 'prod':
-    client = Client(access_token=key,environment='sandbox')
+    client = Client(access_token=key,environment='production')
 else:
-    client = Client(access_token=key)
+    client = Client(access_token=key,environment='sandbox')
 
 APT = getIDs.getAppointStatus()
 INV = getIDs.getInvoiceIDs()
