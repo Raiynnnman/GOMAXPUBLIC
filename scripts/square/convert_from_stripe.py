@@ -174,6 +174,7 @@ if len(invs) < 1:
             """,(INV['APPROVED'],invid)
         )
     price = plan['price']
+    print(plan['customers_required'],args.addclient);
     if plan['customers_required'] and not args.addclient: 
         print("Setting price to $0 (cr)")
         price = 0
@@ -205,7 +206,7 @@ for x in invs:
     if x['invoice_status'] == 'PAID':
         print("Invoice already paid for this month")
         continue
-    elif x['invoice_status'] == 'ERROR' or x['invoice_status'] == 'SENT' or x['invoice_status'] == 'CREATED':
+    elif x['invoice_status'] == 'ERROR' or x['invoice_status'] == 'CREATED':
         print("Regenerating invoice")
         # delete from invoice_history
         db.update("""
@@ -246,7 +247,9 @@ for x in invs:
                 """,(INV['APPROVED'],invid)
             )
         price = plan['price']
-        if plan['customers_required'] and len(clis) < 1:
+        print(plan['customers_required'],args.addclient);
+        if plan['customers_required'] and not args.addclient:
+            print("Setting price to $0 (cr)")
             price = 0
         db.update("""
             insert into invoice_items 
