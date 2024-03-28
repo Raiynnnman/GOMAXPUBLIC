@@ -159,7 +159,7 @@ if len(invs) < 1:
         insert into invoices (office_id,invoice_status_id,
             office_plans_id,billing_period,billing_system_id,total) 
             values (%s,%s,%s,date(now()),%s,%s)
-        """,(x['office_id'],INV['CREATED'],pl['id'],BS,plan['price'])
+        """,(args.id,INV['CREATED'],pl['id'],BS,plan['price'])
     )
     invid = db.query("select LAST_INSERT_ID()")
     invid = invid[0]['LAST_INSERT_ID()']
