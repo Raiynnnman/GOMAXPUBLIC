@@ -141,6 +141,10 @@ invs = db.query("""
 
 if args.addclient:
     db.update("""
+        delete from client_intake_offices where office_id=%s
+        """,(args.id,)
+    )
+    db.update("""
         insert into client_intake (hidden) values (1)
     """)
     cliid = db.query("select LAST_INSERT_ID()")
