@@ -191,7 +191,7 @@ if len(invs) < 1:
             (%s,%s,%s)
         """,(invid,1,'Generated invoice' )
     )
-    if not args.addclient < 1 and plan['customers_required']:
+    if not args.addclient and plan['customers_required']:
         db.update("""
             insert into invoice_history (invoices_id,user_id,text) values 
                 (%s,%s,%s)
@@ -264,7 +264,7 @@ for x in invs:
                 (%s,%s,%s)
             """,(invid,1,'Generated invoice' )
         )
-        if len(clis) < 1 and plan['customers_required']:
+        if not args.addclient and plan['customers_required']:
             db.update("""
                 insert into invoice_history (invoices_id,user_id,text) values 
                     (%s,%s,%s)
