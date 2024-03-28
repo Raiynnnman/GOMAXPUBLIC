@@ -16,6 +16,9 @@ def getTimestampUTC():
 def getYearMonth():
     return datetime.utcnow().strftime("%Y-%m")
 
+def getYearMonthDay():
+    return datetime.utcnow().strftime("%Y-%m-%d")
+
 def getYearMonthDayHour():
     return datetime.utcnow().strftime("%Y-%m-%d-%H")
 
