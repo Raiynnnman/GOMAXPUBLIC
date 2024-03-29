@@ -33,16 +33,22 @@ class performance():
             'lat':0,
             'lon':0,
             'stateprov':'',
+            'ip':'',
             'city':'',
             'country':'',
+            'request':'',
+            'classname': subsys,
             'continent':''
         }
+        self.__data__ = j
         try:
-            if "Host-Info" in request.headers:
-                j.update(json.loads(base64.b64decode(request.headers['Host-Info'])))
-            if con is not None and 'client_addr' in j:
+            ip = None
+            if "X-Forwarded-For" in request.headers:
+                ip = request.headers['X-Forwarded-For']
+                j['ip'] = ip
+            if con is not None and ip is not None:
                 curs = con.cursor()
-                g = int(ipaddress.ip_address(j['client_addr']))
+                g = int(ipaddress.ip_address(ip))
                 q = """select 
                         latitude, longitude, continent, 
                         country, stateprov, city 
@@ -66,8 +72,20 @@ class performance():
         self.__status__ = s
 
     def save(self):
-        print(request.headers)
-        print(self.__data__)
+        db = Query()
+        j = self.__data__
+        db.update("""
+            insert into performance 
+                (classname,lat,lon,country,state,city,ms,ip,continent) 
+                values (%s,%s,%s,%s,%s,%s,%s,%s,%s)
+            """,(j['classname'],j['lat'],j['lon'],j['country'],
+                 j['stateprov'],j['city'],j['ms'],
+                 j['ip'],j['continent']
+                )
+        )
+        db.commit()
+        # print(request.headers)
+        # print(self.__data__)
 
     def setData(self, d):
         if d is not None:
