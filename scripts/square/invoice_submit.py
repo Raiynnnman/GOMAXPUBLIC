@@ -44,12 +44,12 @@ inv = db.query("""
             invoices i
             left join office o on i.office_id = o.id 
             left join invoice_items ii on ii.invoices_id = i.id 
-            left outer join user_cards uc on uc.user_id=i.user_id
+            left outer join office_cards uc on uc.office_id=o.id
          where 
             o.id = i.office_id and 
             i.billing_system_id = 2 and
             o.stripe_cust_id is not null and
-            i.billing_period < now() and 
+            i.billing_period <= now() and 
             invoice_status_id=%s
         group by
             i.id
