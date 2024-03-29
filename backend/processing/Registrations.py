@@ -339,6 +339,10 @@ class RegisterProvider(RegistrationsBase):
                 """,(uid,ENT['Provider'])
             )
             db.update("""
+                insert into user_entitlements (user_id,entitlements_id) values (%s,%s)
+                """,(uid,ENT['OfficeAdmin'])
+            )
+            db.update("""
                 insert into user_permissions (user_id,permissions_id) values (%s,%s)
                 """,(uid,PERM['Admin'])
             )

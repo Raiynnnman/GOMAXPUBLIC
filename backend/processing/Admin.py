@@ -1005,6 +1005,10 @@ class RegistrationUpdate(AdminBase):
                 """,(userid,ENT['Provider'])
             )
             db.update("""
+                insert into user_entitlements (user_id,entitlements_id) values (%s,%s)
+                """,(userid,ENT['OfficeAdmin'])
+            )
+            db.update("""
                 insert into user_permissions (user_id,permissions_id) values (%s,%s)
                 """,(userid,PERM['Admin'])
             )
@@ -1582,7 +1586,7 @@ class AdminReportGet(AdminBase):
                     select i.office_id,i.total,i.id,isi.name,max(i.billing_period) as bp
                         from invoices i,invoice_status isi where 
                         isi.id=i.invoice_status_id group by office_id
-                        order by max(i.billing_period)
+                        order by max(i.billing_period) desc
                 ) i2 on i2.office_id = o.id
             where
                 o.active = 1 and
