@@ -1576,11 +1576,13 @@ class AdminReportGet(AdminBase):
                     select i.office_id,i.total,i.id,isi.name,min(i.billing_period) as bp
                         from invoices i,invoice_status isi where 
                         isi.id=i.invoice_status_id group by office_id
+                        order by min(i.billing_period)
                 ) i1 on i1.office_id = o.id
                 left outer join (
                     select i.office_id,i.total,i.id,isi.name,max(i.billing_period) as bp
                         from invoices i,invoice_status isi where 
                         isi.id=i.invoice_status_id group by office_id
+                        order by max(i.billing_period)
                 ) i2 on i2.office_id = o.id
             where
                 o.active = 1 and
