@@ -16,8 +16,8 @@ from util.DBOps import Query
 
 
 con = None
-if os.path.exists("bin/data/ipmapping.db"):
-    F="bin/data/ipmapping.db"
+if os.path.exists("./bin/data/ipmapping.db"):
+    F="./bin/data/ipmapping.db"
     con = sqlite3.connect(F, check_same_thread=False)
 
 class performance():
@@ -27,6 +27,7 @@ class performance():
     __status__ = 0
 
     def start(self, subsys):
+        global con
         self.__subsys = subsys
         self.__start = datetime.datetime.now()
         j = {
@@ -56,17 +57,20 @@ class performance():
                     """
                 curs.execute(q, (g,))
                 for n in curs:
-                    j['location'] = {'lat': n[0], 'lon': n[1]}
+                    print(n)
+                    j['lat'] = n[0] 
+                    j['lon'] = n[1]
                     j['continent'] = n[2]
                     j['country'] = n[3]
                     j['stateprov'] = n[4]
                     j['city'] = n[5]
                     break
+            else:
+                print("no db")
             self.__data__ = j
-            haveit = True
             return j
         except Exception as e:
-            pass
+            print(str(e))
 
     def status(self,s):
         self.__status__ = s
