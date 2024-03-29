@@ -1557,7 +1557,7 @@ class AdminReportGet(AdminBase):
     def OfficeReport(self):
         q = """
             select
-                o.id,o.name,i.id as invoice_id,
+                o.id,o.name,o.email,i.id as invoice_id,
                 pd.description as subscription_plan,
                 pd.duration as subscription_duration,
                 op.start_date as plan_start,

@@ -304,21 +304,10 @@ class OfficeList extends Component {
                 )
             },
             {
-                dataField:'months_left',
-                sort:true,
-                align:'center',
-                text:'Rem Mnths',
-                formatter:(cellContent,row) => (
-                    <div>
-                        {row.plans && row.plans.months_left ? row.plans.months_left :'N/A'}
-                    </div>
-                )
-            },
-            {
                 dataField:'next_invoice',
                 sort:true,
                 align:'center',
-                text:'Next'
+                text:'Next Inv'
             },
             {
                 dataField:'updated',
