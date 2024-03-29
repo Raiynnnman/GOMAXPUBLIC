@@ -64,6 +64,7 @@ class InvoiceAdminList extends Component {
             var t = [];
             for (c = 0; c < p.invoiceAdmin.data.config.status.length; c++) { 
                 if (p.invoiceAdmin.data.config.status[c].name === 'PAID') { continue; }
+                if (p.invoiceAdmin.data.config.status[c].name === 'GENERATED') { continue; }
                 if (p.invoiceAdmin.data.config.status[c].name === 'IMPORTED') { continue; }
                 if (p.invoiceAdmin.data.config.status[c].name === 'VOID') { continue; }
                 if (p.invoiceAdmin.data.config.status[c].name === 'APPROVED') { continue; }

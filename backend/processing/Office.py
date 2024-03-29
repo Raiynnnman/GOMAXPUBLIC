@@ -127,6 +127,7 @@ class OfficeInvoicesList(OfficeBase):
                 o.id = i.office_id and
                 sis.invoices_id = i.id and 
                 ist.id = i.invoice_status_id and
+                ist.id > 5 and
                 i.office_id = %s
             group by
                 i.id
