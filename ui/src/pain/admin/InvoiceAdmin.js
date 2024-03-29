@@ -82,7 +82,7 @@ class InvoiceAdmin extends Component {
             this.state.page = e - 1;
         }
         this.props.dispatch(getInvoiceAdmin(
-            {limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
+            {limit:this.state.pageSize,offset:this.state.page,status:t}
         ));
         this.setState(this.state);
     } 
