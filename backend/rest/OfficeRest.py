@@ -62,3 +62,19 @@ class ClientUpdateRest(RestBase):
         u = Office.ClientUpdate()
         ret = u.process(args[0])
         return ret
+
+class ReferrerDashboardRest(RestBase):
+    def get(self, *args, **kwargs):
+        u = Office.ReferrerDashboard()
+        ret = u.process(args[0])
+        return ret
+
+class ReferrerUpdateRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Office.ReferrerUpdate()
+        ret = u.process(args[0])
+        return ret
+
+
+

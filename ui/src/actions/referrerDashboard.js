@@ -6,8 +6,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import handleError from './handleError';
 const cookies = new Cookies();
 
-export const RECEIVED_OCU_DATA_SUCCESS = 'RECEIVED_OCU_DATA_SUCCESS';
-export const RECEIVING_OCU_DATA = 'RECEIVING_OCU_DATA';
+export const RECEIVED_REFDASH_DATA_SUCCESS = 'RECEIVED_REFDASH_DATA_SUCCESS';
+export const RECEIVING_REFDASH_DATA = 'RECEIVING_REFDASH_DATA';
 
 export function receiveDataRequest(params) {
     return (dispatch) => {
@@ -19,21 +19,21 @@ export function receiveDataRequest(params) {
 
 export function receiveDataSuccess(payload) {
     return {
-        type: RECEIVED_OCU_DATA_SUCCESS,
+        type: RECEIVED_REFDASH_DATA_SUCCESS,
         payload
     }
 }
 
-export function clientUpdate(params,callback,args) { 
+export function getReferrerDashboard(params) { 
   return async (dispatch) => {
-    dispatch(receivingData(params,callback,args));
+    dispatch(receivingData(params));
   };
 } 
 
-export function receivingData(params,callback,args) {
+export function receivingData(params) {
   return async (dispatch) => {
     dispatch({
-        type: RECEIVING_OCU_DATA
+        type: RECEIVING_REFDASH_DATA
     });
     const response = await axios.create({
             baseURL: apiBaseUrl(),
@@ -42,19 +42,12 @@ export function receivingData(params,callback,args) {
               Accept: "application/json",
               "Content-Type": "application/json",
             },
-        }).post('/office/client/update',params)
+        }).get('/referrer/dashboard')
       .then((e) => { 
           dispatch({
-                type: RECEIVED_OCU_DATA_SUCCESS,
+                type: RECEIVED_REFDASH_DATA_SUCCESS,
                 payload: e.data.data
-          });
-          if (callback) { 
-            if (!e.data.data.success) { 
-                callback(e.data.data,args); 
-            } else { 
-                callback(null,args,e.data.data); 
-            } 
-          } 
+            });
       })
       .catch((e) => { 
         handleError(e);

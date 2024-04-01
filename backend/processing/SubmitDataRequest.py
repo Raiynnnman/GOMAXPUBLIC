@@ -146,7 +146,12 @@ class SubmitDataRequest(ProcessingBase):
         s3path = data['s3data']
         jobstate.jobStarted()
         if 's3data' in data and config.getKey("local_storage"):
-            data = task['data']
+            s3path = data['s3data']
+            H=open(s3path,"r")
+            r = H.read()
+            r = json.loads(r)
+            H.close()
+            data = r
         elif 's3data' in data and not config.getKey("local_storage"):
             s3path = data['s3data']
             data = S3Processing.downloadS3ItemFromBucket(

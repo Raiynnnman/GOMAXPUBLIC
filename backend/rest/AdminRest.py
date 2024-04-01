@@ -165,3 +165,11 @@ class AdminBookingRegisterRest(RestBase):
         ret = u.process(args[0])
         return ret
 
+class ReferrerListRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Admin.ReferrerList()
+        ret = u.process(args[0])
+        return ret
+
+

@@ -1703,3 +1703,56 @@ class AdminBookingRegister(AdminBase):
             )
         db.commit()
         return ret
+
+class ReferrerList(AdminBase):
+
+    def __init__(self):
+        super().__init__()
+
+    def isDeferred(self):
+        return False
+
+    @check_admin
+    def execute(self, *args, **kwargs):
+        ret = {}
+        job,user,off_id,params = self.getArgs(*args,**kwargs)
+        limit = 10000
+        if 'limit' in params:
+            limit = params['limit']
+        offset = 0
+        if 'offset' in params:
+            offset = params['offset']
+        if 'search' in params:
+            if params['search'] == None or len(params['search']) == 0:
+                del params['search']
+        db = Query()
+        ret['config'] = {}
+        ret['config']['status'] = db.query("select id,name from referrer_users_status")
+        q = """
+            select 
+                ru.id,ru.email,ru.name,ru.phone,o.name as office_name,ru.referred,
+                ru.referrer_users_status_id, rs.name as status,ru.zipcode,
+                ru.updated,o.id as office_id, ro.name as referrer_name
+            from 
+                referrer_users ru
+                left join referrer_users_status rs on ru.referrer_users_status_id=rs.id
+                left join office ro on ru.referrer_id=ro.id
+                left outer join office o on o.id = ru.office_id
+            """
+        p = []
+        if 'status' in params:
+            q += " and ("
+            arr = []
+            for z in params['status']:
+                arr.append("referrer_users_status_id = %s " % z)
+            q += " or ".join(arr)
+            q += ")"
+        p.append(limit)
+        p.append(offset*limit)
+        cnt = db.query("select count(id) as cnt from (%s) as t" % (q,))
+        ret['total'] = cnt[0]['cnt']
+        q += " limit %s offset %s " 
+        o = db.query(q,p)
+        ret['data'] = o
+        return ret
+

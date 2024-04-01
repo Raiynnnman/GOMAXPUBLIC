@@ -47,7 +47,12 @@ def uploadS3ItemToBucket(access, secret, bucket, path, mime, data):
         if not os.path.exists(g):
             os.makedirs(g)
         H = open(f, "wb")
-        H.write(data.encode('UTF-8'))
+        if isinstance(data,list):
+            H.write(json.dumps(data).encode('utf-8'))
+        elif isinstance(data,bytes):
+            H.write(data)
+        else:
+            H.write(data.encode('utf-8'))
         H.close()
         return
     if access is None:

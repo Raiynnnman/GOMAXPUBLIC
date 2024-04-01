@@ -162,3 +162,10 @@ def reportget(*args, **kwargs):
 def searchreg(*args, **kwargs):
     po = AdminRest.AdminBookingRegisterRest()
     return po.postWrapper(*args,**kwargs)
+
+@admin.route('/admin/referrer/list', methods=['POST'])
+@token_required
+@swag_from(docs_dir + 'registrationlist.yaml')
+def reflist(*args, **kwargs):
+    po = AdminRest.ReferrerListRest()
+    return po.postWrapper(*args,**kwargs)

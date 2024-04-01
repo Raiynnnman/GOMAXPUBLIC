@@ -63,3 +63,17 @@ def dashboard(*args, **kwargs):
 def clientupdate(*args, **kwargs):
     po = OfficeRest.ClientUpdateRest()
     return po.postWrapper(*args,**kwargs)
+
+@office_set.route('/referrer/dashboard', methods=['GET'])
+@token_required
+@swag_from(docs_dir + 'office_procedures_search.yaml')
+def refdashboard(*args, **kwargs):
+    po = OfficeRest.ReferrerDashboardRest()
+    return po.getWrapper(*args,**kwargs)
+
+@office_set.route('/office/referrer/update', methods=['POST'])
+@token_required
+@swag_from(docs_dir + 'office_users_update.yaml')
+def refupdate(*args, **kwargs):
+    po = OfficeRest.ReferrerUpdateRest()
+    return po.postWrapper(*args,**kwargs)

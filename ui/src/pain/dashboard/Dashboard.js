@@ -13,6 +13,7 @@ import UserDashboard from './UserDashboard';
 import AdminDashboard from './AdminDashboard';
 import LegalDashboard from './LegalDashboard';
 import PhysicianDashboard from './PhysicianDashboard';
+import ReferrerDashboard from './ReferrerDashboard';
 
 class Dashboard extends Component {
     constructor(props) { 
@@ -45,6 +46,9 @@ class Dashboard extends Component {
                 )}
                 {(this.props.currentUser && this.props.currentUser.entitlements && this.props.currentUser.entitlements.includes('Legal')) && (
                     <LegalDashboard/>
+                )}
+                {(this.props.currentUser && this.props.currentUser.entitlements && this.props.currentUser.entitlements.includes('Referrer')) && (
+                    <ReferrerDashboard/>
                 )}
                 </>
                 </Col>                

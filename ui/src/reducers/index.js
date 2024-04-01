@@ -1,5 +1,8 @@
 import { combineReducers } from 'redux';
 import auth from './auth';
+import referrerDashboard from './referrerDashboard';
+import referrerUpload from './referrerUpload';
+import referrerAdminList from './referrerAdminList';
 import registrationAdminUpdate from './registrationAdminUpdate';
 import officeClients from './officeClients';
 import officeClientUpdate from './officeClientUpdate';
@@ -162,6 +165,8 @@ export default (history) =>
     searchRegisterAdmin,
     searchProvider,
     searchConfig,
+    referrerDashboard,
+    referrerAdminList,
     officeReportDownload,
     officeClients,
     mydayReceiptSave,

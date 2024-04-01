@@ -2,13 +2,15 @@
 
 import sys
 import os
+import base64
 import json
 import unittest
 import jwt
+import pandas as pd
 
 sys.path.append(os.path.realpath(os.curdir))
 
-from util import encryption
+from util import encryption,S3Processing,calcdate
 from util.Logging import Logging
 from common import settings
 from util.DBOps import Query
@@ -491,5 +493,132 @@ class ClientUpdate(OfficeBase):
         ret['success'] = True
         return ret
 
+class ReferrerDashboard(OfficeBase):
+    def __init__(self):
+        super().__init__()
 
+    def isDeferred(self):
+        return False
 
+    @check_office
+    def execute(self, *args, **kwargs):
+        ret = {}
+        job,user,off_id,params = self.getArgs(*args,**kwargs)
+        ret['clients'] = {}
+        return ret
+
+class ReferrerUpdate(OfficeBase):
+
+    def __init__(self):
+        super().__init__()
+
+    def isDeferred(self):
+        return True
+
+    def processRow(self,office_id,row,docid,db):
+        o = db.query("""
+            select id from referrer_users where
+                office_id = %s and phone = %s 
+                and name = %s
+            """,(office_id,row['name'],row['name'])
+        )
+        if len(o) > 0:
+            print("WARNING: Dup detected skipping")
+            return
+        db.update("""
+            insert into referrer_users 
+                (referrer_id,referrer_users_status_id,referrer_documents_id,row_meta) 
+                values (%s,1,%s,%s)
+            """,(office_id,docid,json.dumps(row))
+        )
+        insid = db.query("select LAST_INSERT_ID()");
+        insid = insid[0]['LAST_INSERT_ID()']
+        if 'name' in row:
+            db.update("""
+                update referrer_users set name=%s where id = %s
+                """,(row['name'],insid)
+            )
+        if 'email' in row:
+            db.update("""
+                update referrer_users set email=%s where id = %s
+                """,(row['email'],insid)
+            )
+        if 'phone' in row:
+            db.update("""
+                update referrer_users set phone=%s where id = %s
+                """,(row['phone'],insid)
+            )
+        if 'zipcode' in row:
+            lat = lon = 0 
+            o = db.query("""
+                select lat,lon from position_zip where zipcode=%s
+                """,(row['zipcode'],)
+            )
+            if len(o) > 0:
+                lat = o[0]['lat']
+                lon = o[0]['lon']
+            db.update("""
+                update referrer_users set zipcode=%s,lat=%s,lon=%s where id = %s
+                """,(row['zipcode'],lat,lon,insid)
+            )
+
+    @check_office
+    def execute(self, *args, **kwargs):
+        ret = {}
+        job,user,off_id,params = self.getArgs(*args,**kwargs)
+        db = Query()
+        s3path = 'referrer/%s/%s' % (
+            off_id,
+            encryption.getSHA256("%s-%s" % (off_id,calcdate.getTimestampUTC()))
+        )
+        ext = '.json'
+        if 'content' in params:
+            data = params['content'].split('base64,')
+            if len(data) != 2:
+                raise Exception('CONTENT_MALFORMED')
+            cont = base64.b64decode(data[1])
+            ext = '.xlsx'
+            path = '%s%s' % (s3path,ext)
+            q=db.update("""
+                insert into referrer_documents (office_id,s3path) values 
+                    (%s,%s)
+            """,(off_id,path)
+            )
+            insid = db.query("select LAST_INSERT_ID()");
+            insid = insid[0]['LAST_INSERT_ID()']
+            S3Processing.uploadS3ItemToBucket(
+                config.getKey("document_bucket_access_key"),
+                config.getKey("document_bucket_access_secret"),
+                config.getKey("document_bucket"),
+                path,
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                cont
+            )
+            df = pd.read_excel(cont)
+            df = df.fillna('')
+            df.columns = [x.lower() for x in df.columns]
+            df = df.to_dict(orient='index')
+            for x in df:
+                self.processRow(off_id,df[x],insid,db)
+        else:
+            path = '%s%s' % (s3path,ext)
+            q=db.update("""
+                insert into referrer_documents (office_id,s3path) values 
+                    (%s,%s)
+            """,(off_id,path)
+            )
+            insid = db.query("select LAST_INSERT_ID()");
+            insid = insid[0]['LAST_INSERT_ID()']
+            S3Processing.uploadS3ItemToBucket(
+                config.getKey("document_bucket_access_key"),
+                config.getKey("document_bucket_access_secret"),
+                config.getKey("document_bucket"),
+                path,
+                "application/json",
+                json.dumps(params['clients'])
+            )
+            for x in params['clients']:
+                self.processRow(off_id,x,insid,db)
+        db.commit()
+        ret['success'] = True
+        return ret

@@ -74,6 +74,7 @@ class Profile(SubmitDataRequest):
                     user_id=%s
             """,(user_id,)
         ) 
+        OT = self.getOfficeTypes()
         for x in p:
             B.append(x['name'])
         o = db.query(
@@ -101,6 +102,9 @@ class Profile(SubmitDataRequest):
                 A.append(c[0]['type'])
                 context = True
                 contextValue = c[0]
+            if 'Referrer' in A:
+                A.append('OfficeAdmin')
+                A.append('Referrer')
             if 'Chiropractor' in A:
                 A.append('OfficeAdmin')
                 A.append('Provider')

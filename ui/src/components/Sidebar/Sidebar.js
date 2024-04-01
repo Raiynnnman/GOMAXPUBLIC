@@ -1,4 +1,6 @@
 import React from 'react';
+import DynamicFeedIcon from '@mui/icons-material/DynamicFeed';
+import UploadIcon from '@mui/icons-material/Upload';
 import PropTypes from 'prop-types';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import ConnectWithoutContactIcon from '@mui/icons-material/ConnectWithoutContact';
@@ -151,6 +153,17 @@ class Sidebar extends React.Component {
           {(this.props.currentUser && this.props.currentUser.entitlements && 
             this.props.currentUser.entitlements.includes("Admin") && !this.props.currentUser.context) && (
           <LinksGroup
+            header="Referrals"
+            link="/app/main/admin/referrer"
+            isHeader
+            iconElement={<DynamicFeedIcon/>}
+            iconName="flaticon-users"
+            labelColor="info"
+          />
+          )}
+          {(this.props.currentUser && this.props.currentUser.entitlements && 
+            this.props.currentUser.entitlements.includes("Admin") && !this.props.currentUser.context) && (
+          <LinksGroup
             header="Map"
             link="/app/main/admin/map"
             isHeader
@@ -182,6 +195,17 @@ class Sidebar extends React.Component {
           />
           )}
           {(this.props.currentUser && this.props.currentUser.entitlements && 
+            this.props.currentUser.entitlements.includes("Referrer")) && (
+          <LinksGroup
+            header="Upload"
+            link="/app/main/office/upload"
+            isHeader
+            iconElement={<UploadIcon/>}
+            iconName="flaticon-users"
+            labelColor="info"
+          />
+          )}
+          {(this.props.currentUser && this.props.currentUser.entitlements && 
             this.props.currentUser.entitlements.includes("Provider")) && (
           <LinksGroup
             header="Customers"
@@ -193,7 +217,8 @@ class Sidebar extends React.Component {
           />
           )}
           {(this.props.currentUser && this.props.currentUser.entitlements && 
-            this.props.currentUser.entitlements.includes("OfficeAdmin")) && (
+            this.props.currentUser.entitlements.includes("OfficeAdmin") && 
+            this.props.currentUser.entitlements.includes("Provider")) && (
           <LinksGroup
             onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
             activeItem={this.props.activeItem}

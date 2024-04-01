@@ -33,6 +33,7 @@ class performance():
         j = {
             'lat':0,
             'lon':0,
+            'ms': 0,
             'stateprov':'',
             'ip':'',
             'city':'',
@@ -57,7 +58,6 @@ class performance():
                     """
                 curs.execute(q, (g,))
                 for n in curs:
-                    print(n)
                     j['lat'] = n[0] 
                     j['lon'] = n[1]
                     j['continent'] = n[2]
@@ -66,7 +66,8 @@ class performance():
                     j['city'] = n[5]
                     break
             else:
-                print("no db")
+                # print("no db")
+                pass
             self.__data__ = j
             return j
         except Exception as e:

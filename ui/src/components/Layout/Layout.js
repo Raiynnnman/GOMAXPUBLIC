@@ -31,8 +31,10 @@ import Dashboard from '../../pain/dashboard/Dashboard';
 import LegalAdmin from '../../pain/admin/LegalAdmin';
 import PricingList from '../../pain/admin/PricingList';
 import UserAdmin from '../../pain/admin/UserAdmin';
+import Referrers from '../../pain/admin/Referrers';
 import InvoiceAdmin from '../../pain/admin/InvoiceAdmin';
 import LegalAppointment from '../../pain/legal/LegalAppointment';
+import ReferrerUpload from '../../pain/office/ReferrerUpload';
 import LegalBilling from '../../pain/legal/LegalBilling';
 import LegalSettings from '../../pain/legal/LegalSettings';
 import OfficeInvoices from '../../pain/office/OfficeInvoices';
@@ -120,11 +122,13 @@ class Layout extends React.Component {
                     <Route path="/app/main/office/invoices" exact component={OfficeInvoices} />
                     <Route path="/app/main/office/users" exact component={Users} />
                     <Route path="/app/main/office/customers" exact component={Customers} />
+                    <Route path="/app/main/office/upload" exact component={ReferrerUpload} />
                     <Route path="/app/main/office/associations" exact component={OfficeAssociation} />
                     <Route path="/app/main/admin/office" exact component={OfficeAdmin} />
                     <Route path="/app/main/admin/registrations" exact component={Registrations} />
                     <Route path="/app/main/admin/map" exact component={Map} />
                     <Route path="/app/main/admin/plans" exact component={PricingList} />
+                    <Route path="/app/main/admin/referrer" exact component={Referrers} />
                     <Route path="/app/main/admin/legal" exact component={LegalAdmin} />
                     <Route path="/app/main/admin/search" exact component={SearchAdmin} />
                     <Route path="/app/main/admin/users" exact component={UserAdmin} />
