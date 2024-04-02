@@ -2,7 +2,8 @@
 
 import os
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta,date
+import calendar
 import time
 import json
 
@@ -71,6 +72,24 @@ l = db.query(q,(BS,OT['Chiropractor'],))
 
 for x in l:
     # print(json.dumps(x,indent=4))
+    newdate = ''
+    try:
+        newdate = date(
+            int(datetime.utcnow().strftime("%Y")),
+            int(datetime.utcnow().strftime("%m")),
+            x['dom']
+        )
+    except:
+        r = calendar.monthrange(
+            int(datetime.utcnow().strftime("%Y")),
+            int(datetime.utcnow().strftime("%m"))
+        )
+        newdate = date(
+            int(datetime.utcnow().strftime("%Y")),
+            int(datetime.utcnow().strftime("%m")),
+            r[1]
+        )
+    # print(newdate)
     x['items'] = json.loads(x['items'])
     o = db.query("""
         select 
@@ -97,8 +116,8 @@ for x in l:
         office_id,invoice_status_id,billing_period,stripe_tax_id,billing_system_id
         ) 
         values
-        (%s,%s,concat(year(now()),'-',month(now()),'-',%s),'txcd_10000000',%s)
-        """,(x['office_id'],INV['CREATED'],x['dom'],x['billing_system_id'])
+        (%s,%s,%s,'txcd_10000000',%s)
+        """,(x['office_id'],INV['CREATED'],newdate,x['billing_system_id'])
     )
     cnt = db.query("""
         select count(id) cnt from client_intake_offices
