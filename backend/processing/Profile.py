@@ -39,6 +39,7 @@ class Profile(SubmitDataRequest):
         else:
             user_id = user['id']
         db = Query()
+        print(user_id)
         u = db.query(
             """
             select 

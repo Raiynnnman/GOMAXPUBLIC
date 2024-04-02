@@ -100,7 +100,7 @@ class performance():
         if self.__start is None:
             return 0
         ret = datetime.datetime.now() - self.__start
-        ms = ret.total_seconds()
+        ms = float("%s.%s" % (ret.seconds,ret.microseconds))
         current = calcdate.getTimestampNow()
         self.__data__['ms'] = ms
         return ms
