@@ -521,13 +521,13 @@ class RegisterReferrer(RegistrationsBase):
         BS = self.getBillingSystem()
         HAVE = False
         userid = 0
-        print(params)
         l = db.query("""
             select id from users where email=%s
             """,(params['email'],)
         )
-        for t in l:
-            userid = t['id']
+        if len(l) > 0:
+            log.info("Already have %s in referrers" % params['email'])
+            return {'success': True}
         l = db.query("""
             select id 
                 from office o, office_user ou 

@@ -953,7 +953,7 @@ class RegistrationUpdate(AdminBase):
                 left outer join office_addresses oa on oa.office_id = o.id
                 left outer join office_plans op on op.office_id = o.id
                 left outer join office_user ou on ou.office_id = o.id
-                left outer join users u on u.id = ou.office_id 
+                left outer join users u on u.id = ou.user_id
             where
                 o.id = %s
             group by 
@@ -963,7 +963,6 @@ class RegistrationUpdate(AdminBase):
         for x in l:
             offid = x['office_id']
             pqid = x['id']
-            userid = x['uid']
             planid = x['planid']
         if pqid == 0:
             db.update("""

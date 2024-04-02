@@ -53,13 +53,13 @@ class UserLogin(SubmitDataRequest):
             raise InvalidCredentials("EMAIL_REQUIRED")
         if 'password' not in user:
             raise InvalidCredentials("PASSWORD_REQUIRED")
-        email = user['email']
+        email = user['email'].lower()
         if '@' not in email:
             raise InvalidCredentials("INVALID_EMAIL")
         if len(email) < 1:
             raise InvalidCredentials("EMAIL_REQUIRED")
         if ' ' in email:
-            email = email.replace(" ","")
+            raise InvalidCredentials("INVALID_EMAIL")
         passw = user['password']
         if len(passw) < 1:
             log.info("user %s had no password" % email)

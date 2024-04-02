@@ -39,7 +39,6 @@ class Profile(SubmitDataRequest):
         else:
             user_id = user['id']
         db = Query()
-        print(user_id)
         u = db.query(
             """
             select 
@@ -92,7 +91,6 @@ class Profile(SubmitDataRequest):
         ) 
         u = u[0]
         for x in o:
-            print(x)
             C.append(x['office_id'])
             if x['active'] == 0:
                 u['active'] == 0
