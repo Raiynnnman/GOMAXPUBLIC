@@ -89,11 +89,11 @@ class Profile(SubmitDataRequest):
                     
             """,(user_id,)
         ) 
+        u = u[0]
         for x in o:
             C.append(x['office_id'])
             if x['active'] == 0:
                 u['active'] == 0
-        u = u[0]
         context = False
         contextValue = {}
         D = []
