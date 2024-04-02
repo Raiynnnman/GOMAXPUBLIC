@@ -91,6 +91,7 @@ class Profile(SubmitDataRequest):
         ) 
         u = u[0]
         for x in o:
+            print(x)
             C.append(x['office_id'])
             if x['active'] == 0:
                 u['active'] == 0
