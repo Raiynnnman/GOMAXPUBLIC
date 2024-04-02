@@ -498,3 +498,100 @@ class RegistrationSearchProvider(RegistrationsBase):
 
         ret['potentials'] = pots
         return ret
+
+class RegisterReferrer(RegistrationsBase):
+
+    def __init__(self):
+        super().__init__()
+
+    def isDeferred(self):
+        return False
+
+    def execute(self, *args, **kwargs):
+        ret = {}
+        ret['success'] = True
+        params = args[1][0]
+        db = Query()
+        insid = 0
+        OT = self.getOfficeTypes()
+        ST = self.getLeadStrength()
+        ENT = self.getEntitlementIDs()
+        PERM = self.getPermissionIDs()
+        PL = self.getPlans()
+        BS = self.getBillingSystem()
+        HAVE = False
+        userid = 0
+        print(params)
+        l = db.query("""
+            select id from users where email=%s
+            """,(params['email'],)
+        )
+        for t in l:
+            userid = t['id']
+        l = db.query("""
+            select id 
+                from office o, office_user ou 
+            where
+                ou.office_id=o.id and
+                ou.user_id = %s
+            """,(userid,)
+        )
+        for t in l:
+            insid = t['id']
+        params['phone'] = params['phone'].replace(')','').replace('(','').replace('-','').replace(' ','')
+        if insid == 0:
+            db.update("insert into office (name,office_type_id,email,active) values (%s,%s,%s,0)",
+                (params['name'],OT['Referrer'],params['email'])
+            )
+            insid = db.query("select LAST_INSERT_ID()");
+            insid = insid[0]['LAST_INSERT_ID()']
+            db.update("""
+                insert into office_addresses (office_id,phone) values
+                    (%s,%s)
+                """,(insid,params['phone'])
+            )
+        if not HAVE:
+            db.update(
+                """
+                insert into provider_queue (office_id,provider_queue_lead_strength_id) 
+                    values (%s,%s)
+                """,(insid,ST['Potential Provider'])
+            )
+            l = db.query("""
+                select id from users where email = %s
+                """,(params['email'],)
+            )
+            uid = 0
+            for o in l:
+                uid = o['id']
+            if uid == 0:
+                db.update(
+                    """
+                    insert into users (first_name,last_name,email,phone) values (%s,%s,%s,%s)
+                    """,(params['first'],params['last'],params['email'],params['phone'])
+                )
+                uid = db.query("select LAST_INSERT_ID()");
+                uid = uid[0]['LAST_INSERT_ID()']
+            db.update("""
+                update office set user_id=%s where id=%s
+                """,(uid,insid)
+            )
+            db.update("""
+                insert into office_user (office_id,user_id) values (%s,%s)
+                """,(insid,uid)
+            )
+            db.update("""
+                insert into user_entitlements (user_id,entitlements_id) values (%s,%s)
+                """,(uid,ENT['Referrer'])
+            )
+            db.update("""
+                insert into user_entitlements (user_id,entitlements_id) values (%s,%s)
+                """,(uid,ENT['OfficeAdmin'])
+            )
+            db.update("""
+                insert into user_permissions (user_id,permissions_id) values (%s,%s)
+                """,(uid,PERM['Admin'])
+            )
+        ### TODO: Send invite link
+        db.commit()
+        return ret

@@ -45,6 +45,7 @@ class Registrations extends Component {
         this.close = this.close.bind(this);
         this.search = this.search.bind(this);
         this.onStatusChange = this.onStatusChange.bind(this);
+        this.onTypeChange = this.onTypeChange.bind(this);
         this.onLeadStrengthChange = this.onLeadStrengthChange.bind(this);
         this.onPlansChange = this.onPlansChange.bind(this);
         this.onStatusFilter = this.onStatusFilter.bind(this);
@@ -216,6 +217,7 @@ class Registrations extends Component {
             addr:this.state.selected.addr,
             phone: this.state.selected.phone,
             office_id: this.state.selected.office_id,
+            office_type_id: this.state.selected.office_type_id,
             pricing_id: this.state.selected.pricing_id,
             status: this.state.selected.provider_queue_status_id,
         } 
@@ -251,6 +253,14 @@ class Registrations extends Component {
     } 
     onLeadStrengthChange(e) { 
         this.state.selected.lead_strength_id = e.value;
+        this.setState(this.state);
+    } 
+    onTypeChange(e) { 
+        this.state.selected.office_type_id = e.value;
+        var t = this.props.registrationsAdminList.data.config.type.filter((g) => e.value === g.id);
+        if (t.length > 0) { 
+            this.state.selected.office_type = t[0].name;
+        } 
         this.setState(this.state);
     } 
     onStatusChange(e) { 
@@ -311,14 +321,6 @@ class Registrations extends Component {
           hideSizePerPage:true,
           //onPageChange:(page,sizePerPage) => this.pageChange(page,sizePerPage)
         };
-        var fields = [
-            {name:'Email',value:'email'},
-            {name:'First',value:'first_name'},
-            {name:'Last',value:'last_name'},
-            {name:'Phone',value:'phone'},
-            {name:'Status',value:'status'},
-            {name:'GoogleID',value:'places_id'},
-        ]
         var offheads = [
             {
                 dataField:'id',
@@ -382,7 +384,7 @@ class Registrations extends Component {
                 align:'right',
                 formatter: (cellContent,row) => (
                     <div>
-                        ${row.price.toFixed ?  row.price.toFixed(2) : row.price}
+                        ${row.price && row.price.toFixed ?  row.price.toFixed(2) : row.price}
                     </div>
                 )
             }
@@ -394,6 +396,10 @@ class Registrations extends Component {
                 sort:true,
                 hidden:true,
                 text:'ID'
+            },
+            {
+                dataField:'billing_period',
+                text:'Period'
             },
             {
                 dataField:'description',
@@ -493,6 +499,17 @@ class Registrations extends Component {
                     </div>
                 )
             },*/
+            {
+                dataField:'office_type',
+                sort:true,
+                align:'center',
+                text:'Office Type',
+                formatter:(cellContent,row) => (
+                    <div>
+                        {row.office_type}
+                    </div>
+                )
+            },
             {
                 dataField:'lead_strength',
                 sort:true,
@@ -636,7 +653,7 @@ class Registrations extends Component {
                             </Row>
                             </>
                             )}
-                            {(this.state.selected !== null) && (
+                            {(this.state.selected !== null ) && (
                             <Row md="12" style={{marginTop:10}}>
                                 <Col md="12">
                                     <Row md="12">
@@ -719,6 +736,38 @@ class Registrations extends Component {
                                           </FormGroup>
                                           <FormGroup row>
                                             <Label for="normal-field" md={1} className="text-md-right">
+                                              Type
+                                            </Label>
+                                            <Col md={5}>
+                                              {(this.props.registrationsAdminList && this.props.registrationsAdminList.data &&
+                                                this.props.registrationsAdminList.data.config && 
+                                                this.props.registrationsAdminList.data.config.status) && (
+                                              <Select
+                                                  closeMenuOnSelect={true}
+                                                  isSearchable={false}
+                                                  onChange={this.onTypeChange}
+                                                  value={{
+                                                    label:
+                                                        this.props.registrationsAdminList.data.config.type.filter((g) =>
+                                                            this.state.selected.office_type_id == g.id).length > 0 ? 
+                                                        this.props.registrationsAdminList.data.config.type.filter((g) => 
+                                                            this.state.selected.office_type_id == g.id
+                                                    )[0].name : ''
+                                                  }}
+                                                  options={this.props.registrationsAdminList.data.config.type.map((g) => { 
+                                                    return (
+                                                        { 
+                                                        label: g.name,
+                                                        value: g.id
+                                                        }
+                                                    )
+                                                  })}
+                                                />
+                                                )}
+                                            </Col>
+                                          </FormGroup>
+                                          <FormGroup row>
+                                            <Label for="normal-field" md={1} className="text-md-right">
                                               Status
                                             </Label>
                                             <Col md={5}>
@@ -732,8 +781,10 @@ class Registrations extends Component {
                                                   value={{
                                                     label:
                                                         this.props.registrationsAdminList.data.config.status.filter((g) => 
+                                                            this.state.selected.provider_queue_status_id == g.id).length > 0 ? 
+                                                        this.props.registrationsAdminList.data.config.status.filter((g) => 
                                                             this.state.selected.provider_queue_status_id == g.id
-                                                    )[0].name
+                                                    )[0].name : ''
                                                   }}
                                                   options={this.props.registrationsAdminList.data.config.status.map((g) => { 
                                                     return (
@@ -776,6 +827,7 @@ class Registrations extends Component {
                                         </Col>
                                     </Row>
                                     <Row md="12">
+                                        {this.state.selected.office_type !== 'Referrer' && (
                                         <Col md="12">
                                             <Nav tabs  className={`${s.coloredNav}`} style={{backgroundColor:"#e8ecec"}}>
                                                 <NavItem>
@@ -856,6 +908,7 @@ class Registrations extends Component {
                                                 </TabPane>
                                             </TabContent>
                                         </Col>
+                                        )}
                                     </Row>
                                     <Row md="12">
                                         <Col md="12">

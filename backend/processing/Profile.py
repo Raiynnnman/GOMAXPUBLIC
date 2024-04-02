@@ -79,15 +79,20 @@ class Profile(SubmitDataRequest):
             B.append(x['name'])
         o = db.query(
             """ select 
-                   office_id
+                   ou.office_id,o.active
                 from 
-                   office_user
+                   office_user ou,
+                   office o
                 where 
-                    user_id=%s
+                    ou.user_id=%s and
+                    o.id = ou.office_id
+                    
             """,(user_id,)
         ) 
         for x in o:
             C.append(x['office_id'])
+            if x['active'] == 0:
+                u['active'] == 0
         u = u[0]
         context = False
         contextValue = {}

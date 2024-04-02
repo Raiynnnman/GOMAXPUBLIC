@@ -44,3 +44,9 @@ def setupintent(*args, **kwargs):
 def searchprov(*args, **kwargs):
     po = RegistrationRest.RegistrationSearchProviderRest()
     return po.postWrapper(*args,**kwargs)
+
+@registrations.route('/register/referrer', methods=['POST'])
+@swag_from(docs_dir + 'registerprovider.yaml')
+def registerreferrer(*args, **kwargs):
+    po = RegistrationRest.RegisterReferrerRest()
+    return po.postWrapper(*args,**kwargs)

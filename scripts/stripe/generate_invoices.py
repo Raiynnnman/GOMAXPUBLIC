@@ -87,7 +87,7 @@ for x in l:
     for t in o:
         HAVE=True
     if HAVE:
-        print("Office %s already has an invoice for this month, skipping"%x['office_id'])
+        # print("Office %s already has an invoice for this month, skipping"%x['office_id'])
         continue
     print(json.dumps(x,indent=4))
     insid = 0

@@ -50,3 +50,10 @@ class RegistrationSearchProviderRest(RestBase):
         u = Registrations.RegistrationSearchProvider()
         ret = u.process(args)
         return ret
+
+class RegisterReferrerRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Registrations.RegisterReferrer()
+        ret = u.process(args[0])
+        return ret

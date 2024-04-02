@@ -933,6 +933,7 @@ class RegistrationUpdate(AdminBase):
         email = params['email']
         offid = 0
         userid = 0
+        invid = 0
         pqid = 0
         planid = 0
         l = db.query("""
@@ -982,7 +983,7 @@ class RegistrationUpdate(AdminBase):
                     (%s,%s,%s,%s,%s)
                 """,
                 (
-                params['name'],OT['Chiropractor'],params['email'],userid,BS
+                params['name'],params['office_type_id'],params['email'],userid,BS
                 )
             )
             offid = db.query("select LAST_INSERT_ID()");
@@ -1012,14 +1013,17 @@ class RegistrationUpdate(AdminBase):
                 insert into user_permissions (user_id,permissions_id) values (%s,%s)
                 """,(userid,PERM['Admin'])
             )
-            selplan = int(params['pricing_id'])
-            db.update("""
-                insert into office_plans (office_id,start_date,end_date,pricing_data_id) 
-                    values (%s,now(),date_add(now(),INTERVAL %s MONTH),%s)
-                """,(offid,PL[selplan]['duration'],selplan)
-            )
-            planid = db.query("select LAST_INSERT_ID()");
-            planid = planid[0]['LAST_INSERT_ID()']
+            selplan = 0 
+            planid = 0
+            if 'pricing_id' in params and params['pricing_id'] is not None and params['pricing_id'] > 0:
+                selplan = int(params['pricing_id'])
+                db.update("""
+                    insert into office_plans (office_id,start_date,end_date,pricing_data_id) 
+                        values (%s,now(),date_add(now(),INTERVAL %s MONTH),%s)
+                    """,(offid,PL[selplan]['duration'],selplan)
+                )
+                planid = db.query("select LAST_INSERT_ID()");
+                planid = planid[0]['LAST_INSERT_ID()']
             
         db.update("""
             update users set 
@@ -1042,23 +1046,24 @@ class RegistrationUpdate(AdminBase):
             """,(params['status'],params['lead_strength_id'],
                  params['initial_payment'],pqid)
         )
-        db.update("""
-            update office_plans set pricing_data_id=%s where office_id=%s
-            """,(params['pricing_id'],offid)
-        )
-        db.update("""
-            delete from office_plan_items where office_plans_id=%s
-            """,(planid,)
-        )
-        selplan = int(params['pricing_id'])
-        db.update("""
-            insert into office_plan_items (
-                office_plans_id,price,quantity,description) 
-            values 
-                (%s,%s,%s,%s)
-            """,(planid,PL[selplan]['price'],1,PL[selplan]['description'])
-                
-        )
+        if 'pricing_id' in params and params['pricing_id'] is not None and params['pricing_id'] > 0:
+            db.update("""
+                update office_plans set pricing_data_id=%s where office_id=%s
+                """,(params['pricing_id'],offid)
+            )
+            db.update("""
+                delete from office_plan_items where office_plans_id=%s
+                """,(planid,)
+            )
+            selplan = int(params['pricing_id'])
+            db.update("""
+                insert into office_plan_items (
+                    office_plans_id,price,quantity,description) 
+                values 
+                    (%s,%s,%s,%s)
+                """,(planid,PL[selplan]['price'],1,PL[selplan]['description'])
+                    
+            )
         db.update("""
             delete from office_addresses where office_id=%s
             """,(offid,)
@@ -1153,7 +1158,8 @@ class RegistrationList(AdminBase):
                 pq.id,o.name,o.id as office_id,pqs.name as status,
                 pq.provider_queue_status_id,pq.sf_id,pqls.name as lead_strength,
                 pqls.id as lead_strength_id, pq.created,pq.updated,pq.places_id,
-                pq.initial_payment,ot.name as office_type,op.pricing_data_id as pricing_id
+                pq.initial_payment,ot.id as office_type_id,
+                ot.name as office_type,op.pricing_data_id as pricing_id
             from
                 provider_queue pq
                 left outer join office o on pq.office_id = o.id
@@ -1275,6 +1281,7 @@ class RegistrationList(AdminBase):
                 x['invoice']['items'] = json.loads(x['invoice']['items'])
             k.append(x)
         ret['config'] = {}
+        ret['config']['type'] = db.query("select id,name from office_type")
         ret['config']['status'] = db.query("select id,name from provider_queue_status")
         ret['config']['strength'] = db.query("select id,name from provider_queue_lead_strength")
         ret['registrations'] = k
