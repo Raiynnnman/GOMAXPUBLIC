@@ -963,6 +963,7 @@ class RegistrationUpdate(AdminBase):
         for x in l:
             offid = x['office_id']
             pqid = x['id']
+            userid = x['uid']
             planid = x['planid']
         if pqid == 0:
             db.update("""
