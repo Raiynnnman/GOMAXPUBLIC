@@ -89,7 +89,9 @@ class Profile(SubmitDataRequest):
                     
             """,(user_id,)
         ) 
-        u = u[0]
+        if isinstance(u,list):
+            print(u)
+            u = u[0]
         for x in o:
             C.append(x['office_id'])
             if x['active'] == 0:

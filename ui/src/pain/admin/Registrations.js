@@ -55,6 +55,7 @@ class Registrations extends Component {
         this.reload = this.reload.bind(this);
         this.edit = this.edit.bind(this);
         this.add = this.add.bind(this);
+        this.onCommissionChange = this.onCommissionChange.bind(this);
         this.addInvoiceRow = this.addInvoiceRow.bind(this);
         this.pageChange = this.pageChange.bind(this);
         this.toggleTab = this.toggleTab.bind(this);
@@ -116,6 +117,12 @@ class Registrations extends Component {
         ));
         this.setState(this.state);
     } 
+    onCommissionChange(e,t) { 
+        this.state.commission_user_id = e.value;
+        this.state.selected.commission_name = 
+            this.props.registrationsAdminList.data.config.commission_users.filter((g) => g.id === e.value)[0].name
+        this.setState(this.state);
+    }
 
 
     onStatusFilter(e,t) { 
@@ -733,6 +740,31 @@ class Registrations extends Component {
                                                 <Input type="text" id="normal-field" readOnly
                                                 value={this.state.selected.places_id}/>
                                             </Col>
+                                          </FormGroup>
+                                          <FormGroup row>
+                                            <Label for="normal-field" md={1} className="text-md-right">
+                                                Sales Owner
+                                            </Label>
+                                            <Col md="5" style={{zIndex:9995}}>
+                                              {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
+                                                this.props.registrationsAdminList.data.config &&
+                                                this.props.registrationsAdminList.data.config.status && this.state.statusSelected !== null) && (
+                                                  <Select
+                                                      closeMenuOnSelect={true}
+                                                      isSearchable={false}
+                                                      onChange={this.onCommissionChange}
+                                                      value={{label:this.state.selected.commission_name}}
+                                                      options={this.props.registrationsAdminList.data.config.commission_users.map((e) => { 
+                                                        return (
+                                                            { 
+                                                            label: e.name,
+                                                            value: e.id
+                                                            }
+                                                        )
+                                                      })}
+                                                    />
+                                                )}
+                                            </Col>                
                                           </FormGroup>
                                           <FormGroup row>
                                             <Label for="normal-field" md={1} className="text-md-right">

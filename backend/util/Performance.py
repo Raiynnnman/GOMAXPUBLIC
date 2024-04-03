@@ -67,7 +67,7 @@ class performance():
                     j['city'] = n[5]
                     break
             else:
-                print("no db")
+                print("no db or ip is missing")
             self.__data__ = j
             return j
         except Exception as e:

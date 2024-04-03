@@ -50,6 +50,7 @@ class OfficeList extends Component {
         this.renderTotalLabel = this.renderTotalLabel.bind(this);
         this.toggleSubTab = this.toggleSubTab.bind(this);
         this.onStatusFilter = this.onStatusFilter.bind(this);
+        this.onCommissionChange = this.onCommissionChange.bind(this);
         this.save = this.save.bind(this);
         this.delRow = this.delRow.bind(this);
         this.addAddress = this.addAddress.bind(this);
@@ -87,6 +88,12 @@ class OfficeList extends Component {
     officeReport() { 
         this.props.dispatch(officeReportDownload({report:'office_report'}));
     } 
+    onCommissionChange(e,t) { 
+        this.state.commission_user_id = e.value;
+        this.state.selected.commission_name = 
+            this.props.offices.data.config.commission_users.filter((g) => g.id === e.value)[0].name
+        this.setState(this.state);
+    }
     onStatusFilter(e,t) { 
         if (e.length < 1 ) { return; }
         var c = 0;
@@ -606,6 +613,35 @@ class OfficeList extends Component {
                                   </p>
                                 }
                               </Col>
+                            </FormGroup>
+                          </Col>
+                        </Row>
+                        <Row md="12">
+                          <Col md={4}>
+                            <FormGroup row>
+                                <Label for="normal-field" md={4} className="text-md-right">
+                                    Sales Owner
+                                </Label>
+                                <Col md="8" style={{zIndex:9995}}>
+                                  {(this.props.offices && this.props.offices.data && 
+                                    this.props.offices.data.config &&
+                                    this.props.offices.data.config.provider_status && this.state.statusSelected !== null) && (
+                                      <Select
+                                          closeMenuOnSelect={true}
+                                          isSearchable={false}
+                                          onChange={this.onCommissionChange}
+                                          value={{label:this.state.selected.commission_name}}
+                                          options={this.props.offices.data.config.commission_users.map((e) => { 
+                                            return (
+                                                { 
+                                                label: e.name,
+                                                value: e.id
+                                                }
+                                            )
+                                          })}
+                                        />
+                                    )}
+                                </Col>                
                             </FormGroup>
                           </Col>
                         </Row>

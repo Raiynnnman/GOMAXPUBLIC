@@ -35,15 +35,23 @@ l = db.query("""
         op.id,op.start_date,op.end_date,op.office_id,
         JSON_ARRAYAGG(
             JSON_OBJECT(
-                'id',opi.id,'price',opi.price,'description',opi.description,'quantity',opi.quantity
+                'id',opi.id,'price',opi.price,
+                'description',opi.description,'quantity',opi.quantity
             )
-        ) as items,pq.initial_payment,pd.duration,pd.upfront_cost,pd.price
+        ) as items,pq.initial_payment,pd.duration,
+        pd.upfront_cost,pd.price,o.commission_user_id,
+        cs.id as commission_structure_id,
+        cs.commission
     from 
         office_plans op,
+        office o,
         office_plan_items opi,
         pricing_data pd,
+        commission_structure cs,
         provider_queue pq
     where 
+        op.office_id=o.id and
+        cs.pricing_data_id = op.pricing_data_id and
         opi.office_plans_id = op.id and
         op.pricing_data_id = pd.id and
         pq.office_id = op.office_id and 
@@ -78,6 +86,12 @@ for x in l:
                 (%s,%s,%s,%s)
             """,
             (insid,y['description'],sum,y['quantity'])
+        )
+    if x['commission_user_id'] is not None:
+        db.update("""
+            insert into commission_users (user_id,commission_structure_id,amount)
+                values (%s,%s,%s)
+            """,(x['commission_user_id'],insid,sum*x['commission'])
         )
     db.update(""" 
         update invoices set total = %s where id = %s

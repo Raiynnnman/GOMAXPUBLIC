@@ -26,7 +26,8 @@ args = parser.parse_args()
 db = Query()
 
 l = db.query("""
-    select id,lat,lon from search_no_results where zipcode is null
+    select id,lat,lon from search_no_results 
+        where zipcode is null and lat <> 0
     """)
 
 for x in l:

@@ -684,13 +684,15 @@ class OfficeList(AdminBase):
                             'id',oa.id,'addr1',oa.addr1,'addr2',oa.addr2,'phone',oa.phone,
                             'city',oa.city,'state',oa.state,'zipcode',oa.zipcode)
                     ) as addr,u.phone,u.first_name,u.last_name,o.stripe_cust_id,o.old_stripe_cust_id,
-                    ot.name as office_type,o.updated
+                    ot.name as office_type,o.updated,o.commission_user_id,
+                    concat(comu.first_name, ' ', comu.last_name) as commission_name
                 from 
                     office o
                     left outer join office_addresses oa on oa.office_id=o.id
                     left outer join office_type ot on o.office_type_id = ot.id
                     left outer join provider_queue pq on pq.office_id = o.id
                     left outer join provider_queue_status pqs on pq.provider_queue_status_id=pqs.id
+                    left outer join users comu on comu.id = o.commission_user_id
                     left join  users u on u.id = o.user_id
                 where 
                     o.office_type_id <> %s and
@@ -784,6 +786,10 @@ class OfficeList(AdminBase):
                 x['plans']['items'] = json.loads(x['plans']['items'])
             ret['offices'].append(x)
         ret['config'] = {}
+        ret['config']['commission_users'] = db.query("""
+            select id,concat(first_name,' ',last_name) as name from users 
+                where id in (select user_id from user_entitlements where entitlements_id=10)
+        """)
         ret['config']['provider_status'] = db.query("select id,name from provider_queue_status")
         ret['config']['invoice_status'] = db.query("select id,name from invoice_status")
         return ret
@@ -817,6 +823,11 @@ class OfficeSave(AdminBase):
                     where id = %s
                 """,(params['name'],params['email'],params['active'],params['id']))
             insid = params['id']
+        if 'commission_user_id' in params:
+            db.update("""
+                update office set commission_user_id=%s where id = %s
+                """,(params['commission_user_id'],insid)
+            )
         db.update("""
             delete from office_addresses where office_id = %s
             """,(insid,)
@@ -1046,6 +1057,11 @@ class RegistrationUpdate(AdminBase):
             """,(params['status'],params['lead_strength_id'],
                  params['initial_payment'],pqid)
         )
+        if 'commission_user_id' in params:
+            db.update("""
+                update office set commission_user_id=%s where office_id=%s
+                """,(params['commission_user_id'],offid)
+            )
         if 'pricing_id' in params and params['pricing_id'] is not None and params['pricing_id'] > 0:
             db.update("""
                 update office_plans set pricing_data_id=%s where office_id=%s
@@ -1159,7 +1175,9 @@ class RegistrationList(AdminBase):
                 pq.provider_queue_status_id,pq.sf_id,pqls.name as lead_strength,
                 pqls.id as lead_strength_id, pq.created,pq.updated,pq.places_id,
                 pq.initial_payment,ot.id as office_type_id,
-                ot.name as office_type,op.pricing_data_id as pricing_id
+                ot.name as office_type,op.pricing_data_id as pricing_id,
+                o.commission_user_id,
+                concat(comu.first_name, ' ', comu.last_name) as commission_name
             from
                 provider_queue pq
                 left outer join office o on pq.office_id = o.id
@@ -1167,6 +1185,7 @@ class RegistrationList(AdminBase):
                 left outer join provider_queue_lead_strength pqls on pq.provider_queue_lead_strength_id=pqls.id
                 left outer join office_plans op on op.office_id = o.id
                 left outer join office_type ot on ot.id=o.office_type_id
+                left outer join users comu on comu.id = o.commission_user_id
             where
                 1 = 1 
         """
@@ -1283,6 +1302,10 @@ class RegistrationList(AdminBase):
         ret['config'] = {}
         ret['config']['type'] = db.query("select id,name from office_type")
         ret['config']['status'] = db.query("select id,name from provider_queue_status")
+        ret['config']['commission_users'] = db.query("""
+            select id,concat(first_name,' ',last_name) as name from users 
+                where id in (select user_id from user_entitlements where entitlements_id=10)
+        """)
         ret['config']['strength'] = db.query("select id,name from provider_queue_lead_strength")
         ret['registrations'] = k
         return ret
