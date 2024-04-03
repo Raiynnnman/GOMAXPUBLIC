@@ -16,6 +16,7 @@ from util import encryption,calcdate
 from util import getIDs
 
 import argparse
+from nameparser import HumanName
 import stripe
 config = settings.config()
 config.read("settings.cfg")
@@ -45,7 +46,25 @@ for x in df:
         continue
     del j['Unnamed: 1']
     myid = int(j['id'])
+    s = j['doctor']
+    if str(s) == '0':
+        s = ''
     OFF[myid] = {}
+    n = HumanName(s)
+    if '.' not in n.title and 'Dr' in n.title:
+        n.title = "%s." % n.title
+    n.suffix = n.suffix.replace('D.C', 'DC')
+    n.suffix = n.suffix.replace('D.C.', 'DC')
+    n.suffix = n.suffix.replace('DC.', 'DC')
+    n.suffix = n.suffix.replace('DC', ', DC')
+    n.last = n.last.rstrip()
+    n.first = n.first.rstrip()
+    OFF[myid]['title'] = n.title
+    OFF[myid]['first'] = "%s %s" % (n.first,n.middle)
+    OFF[myid]['last'] = "%s %s" % (n.last,n.suffix)
+    if ' , D' in OFF[myid]['last']:
+        OFF[myid]['last'] = OFF[myid]['last'].replace(" , D",", D")
+    OFF[myid]['last'] = OFF[myid]['last'].rstrip()
     OFF[myid]['practice'] = j['practice name']
     OFF[myid]['address'] = [{
         'addr':j['address'],
@@ -84,6 +103,24 @@ for x in OFF:
     j = OFF[x]
     myid = x
     print(j)
+    continue
+    o = db.query("""
+        select user_id from office_user
+            where office_id = %s
+        """,(myid,)
+    )
+    userid = 0
+    if len(o) < 1:
+        print("Warning: No ou for %s" % myid)
+    else:
+        userid = o[0]['user_id']
+
+    if userid != 0:
+        db.update("""
+            update users set title=%s,first_name=%s,last_name=%s
+                where id = %s
+            """,(j['title'],j['first'],j['last'])
+        )
     db.update("""
         update office set email = %s,name=%s 
             where id = %s
