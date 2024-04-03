@@ -56,6 +56,7 @@ class performance():
                         country, stateprov, city 
                        from dbip_lookup where ? between ip_st_int and ip_en_int
                     """
+                print(q,g)
                 curs.execute(q, (g,))
                 for n in curs:
                     j['lat'] = n[0] 
@@ -66,8 +67,7 @@ class performance():
                     j['city'] = n[5]
                     break
             else:
-                # print("no db")
-                pass
+                print("no db")
             self.__data__ = j
             return j
         except Exception as e:
