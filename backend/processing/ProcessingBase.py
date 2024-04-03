@@ -13,6 +13,16 @@ class ProcessingBase:
         ret = o[0]['billing_system_id']
         return ret
 
+    def getReferrerUserStatus(self):
+        db = Query()
+        ret = {}
+        o = db.query("select id,name from referrer_users_status")
+        for x in o:
+            n = x['name']
+            i = x['id']
+            ret[n] = i
+        return ret 
+
     def getClientIntake(self):
         db = Query()
         ret = {}

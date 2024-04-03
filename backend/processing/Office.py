@@ -500,11 +500,43 @@ class ReferrerDashboard(OfficeBase):
     def isDeferred(self):
         return False
 
+    def getCustomers(self,off_id):
+        db= Query()
+        CI = self.getReferrerUserStatus()
+        o = db.query("""
+            select
+                ifnull(t1.num1,0) as num1, /* */
+                ifnull(t2.num2,0) as num2, /* */
+                ifnull(t3.num3,0) as num3, /* */
+                ifnull(t4.num4,0) as num4
+            from
+                (select count(ci.id) as num1 from 
+                    referrer_users ci
+                    where 
+                    referrer_id = %s) as t1,
+                (select count(ci.id) as num2 from 
+                    referrer_users ci
+                    where 
+                        referrer_id = %s and month(ci.created) = month(now())
+                        and year(ci.created) = year(now())) as t2,
+                (select count(ci.id) as num3 from 
+                    referrer_users ci
+                    where 
+                    referrer_id = %s and year(ci.created) = year(now())) as t3,
+                (select count(ci.id) as num4 from client_intake_offices cio,
+                    referrer_users ci,referrer_users_status rus
+                    where 
+                    referrer_id = %s and
+                    ci.referrer_users_status_id = rus.id 
+                    and ci.referrer_users_status_id=%s) as t4
+            """,(off_id,off_id,off_id,off_id,CI['REFERRED']))
+        return o[0]
+
     @check_office
     def execute(self, *args, **kwargs):
         ret = {}
         job,user,off_id,params = self.getArgs(*args,**kwargs)
-        ret['clients'] = {}
+        ret['clients'] = self.getCustomers(off_id)
         return ret
 
 class ReferrerUpdate(OfficeBase):

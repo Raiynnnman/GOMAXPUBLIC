@@ -30,12 +30,12 @@ class Template extends Component {
         return (
         <>
             {(this.props.referrerDashboard && this.props.referrerDashboard.data && 
-              this.props.referrerDashboard.data.customers) && (
+              this.props.referrerDashboard.data.clients) && (
                 <Row md="12">
                     <Col md="3">
-                        {/*<TrendHeroWithStats data={this.props.referrerDashboard.data.customers}
-                            title="Clients Gained" num2title="Month" num3title="Year" 
-                            num4title="Converted"/> */}
+                        <TrendHeroWithStats data={this.props.referrerDashboard.data.clients}
+                            title="Clients Uploaded" num2title="Month" num3title="Year" 
+                            num4title="Converted"/> 
                     </Col>
                 </Row>
             )}
