@@ -108,6 +108,11 @@ for x in l:
                 """,(INV['PAID'],x['id'])
             )
             db.update("""
+                replace into invoice_check (invoices_id,nextcheck) values
+                    (%s,date_add(now(), INTERVAL 24*30*6 DAY)
+                """,(x['id'],)
+            )
+            db.update("""
                 insert into invoice_history (invoices_id,user_id,text) values 
                     (%s,%s,%s)
                 """,(x['id'],1,'Progress invoice to PAID ($0 invoice)')

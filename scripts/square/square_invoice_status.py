@@ -5,6 +5,7 @@ import sys
 import time
 import json
 import traceback
+from random import random
 
 sys.path.append(os.getcwd())  # noqa: E402
 
@@ -33,19 +34,19 @@ else:
 
 q = """
     select 
-        i.office_id,invoices_id,i.stripe_invoice_id,
-        i.nextcheck,i.id
+        i.office_id,sis.invoices_id,i.stripe_invoice_id,
+        ic.nextcheck,i.id
     from 
-        stripe_invoice_status sis,
         invoices i
+        left join stripe_invoice_status sis on i.id = sis.invoices_id 
+        left outer join invoice_check ic on i.id = ic.invoices_id
     where 
-        i.id = sis.invoices_id and
         i.billing_system_id = 2 and
         date_add(sis.created,interval 160 day) > now() 
     """
 
 if not args.force:
-    q+= "and (i.nextcheck is null or i.nextcheck < now())"
+    q+= "and (ic.nextcheck is null or ic.nextcheck < now())"
 
 l = db.query(q)
 
@@ -55,62 +56,63 @@ for x in l:
             continue
         r = client.invoices.get_invoice(invoice_id = x['stripe_invoice_id'])
         if r.is_error():
-            raise Exception(json.dumps(s.errors))
-        r=r.body
+            r = None
+        else:
+            r=r.body
         # print(json.dumps(r,indent=4))
         s_fee = 0
         #if r['status'] == 'paid':
         #    p = stripe.PaymentIntent.retrieve(payment_intent,expand=['latest_charge.balance_transaction'])
         #    s_fee = p['latest_charge']['balance_transaction']['fee']/100
-        db.update("""
-            update stripe_invoice_status
-                set status=%s
-            where
-                invoices_id = %s
-            """,(
-                    r['invoice']['status'],
-                    x['id']
+        if r is not None:
+            db.update("""
+                update stripe_invoice_status
+                    set status=%s
+                where
+                    invoices_id = %s
+                """,(
+                        r['invoice']['status'],
+                        x['id']
+                    )
+            )
+            if 'invoice_number' in r['invoice']:
+                db.update("""
+                    update stripe_invoice_status
+                        set stripe_invoice_number=%s
+                    where invoices_id = %s
+                    """,(r['invoice']['invoice_number'],x['id'])
                 )
-        )
-        if 'invoice_number' in r['invoice']:
+            if 'public_url' in r['invoice']:
+                db.update("""
+                    update stripe_invoice_status
+                        set invoice_pay_url=%s
+                    where invoices_id = %s
+                    """,(r['invoice']['public_url'],x['id'])
+                )
             db.update("""
-                update stripe_invoice_status
-                    set stripe_invoice_number=%s
-                where invoices_id = %s
-                """,(r['invoice']['invoice_number'],x['id'])
+                update invoices set updated=now() where id=%s
+                """,(x['id'],)
             )
-        if 'public_url' in r['invoice']:
-            db.update("""
-                update stripe_invoice_status
-                    set invoice_pay_url=%s
-                where invoices_id = %s
-                """,(r['invoice']['public_url'],x['id'])
-            )
+            print("invoice %s in %s" % (x['invoices_id'],r['invoice']['status']))
         hours = 48
-        print("invoice %s in %s" % (x['invoices_id'],r['invoice']['status']))
-        if r['invoice']['status'] == "OPEN":
+        if r is not None and r['invoice']['status'] == "OPEN":
             hours = 4
-        if r['invoice']['status'] == "UNPAID":
+        if r is not None and r['invoice']['status'] == "UNPAID":
             hours = 4
-        if r['invoice']['status'] == "DRAFT":
+        if r is not None and r['invoice']['status'] == "DRAFT":
             hours = .5
-        if r['invoice']['status'] == "VOID":
+        if r is not None and r['invoice']['status'] == "VOID":
             # if its void, put it out 6 months
             hours = 24*30*6
         db.update("""
-            update invoices set nextcheck = date_add(now(),interval %s hour) 
-            where id = %s
-            """,(hours,x['invoices_id'])
+            replace into invoice_check (invoices_id,nextcheck) values
+                (%s,date_add(date_add(now(),interval %s hour),INTERVAL %s minute))
+            """,(x['invoices_id'],hours,random()*100)
         )
-        #db.update("""
-        #    insert into invoice_history (invoices_id,user_id,text) values 
-        #        (%s,%s,%s)
-        #    """,(x['invoices_id'],1,'Updated stripe status of invoice' )
-        #)
         print("updated status for %s" % x['invoices_id'])
+        db.commit()
     except Exception as e:
         print(str(e))
         exc_type, exc_value, exc_traceback = sys.exc_info()
         traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
-    db.commit()
    
