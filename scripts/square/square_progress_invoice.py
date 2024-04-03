@@ -63,17 +63,17 @@ INV = getIDs.getInvoiceIDs()
 for x in l:
     try:
         print(x)
-        if x['invoice_status'] == 'CANCELED' and x['status'] != 'ERROR': 
+        if x['invoice_status'] == 'CANCELED' and x['status'] != 'VOID': 
             print("changing status to ERROR: %s " % x['id'])
             db.update("""
                 update invoices set invoice_status_id=%s
                     where id=%s
-                """,(INV['ERROR'],x['id'])
+                """,(INV['VOID'],x['id'])
             )
             db.update("""
                 insert into invoice_history (invoices_id,user_id,text) values 
                     (%s,%s,%s)
-                """,(x['id'],1,'Progress invoice to ERROR')
+                """,(x['id'],1,'Progress invoice to VOID (CANCELLED)')
             )
         if x['invoice_status'] == 'REFUNDED' and x['status'] != 'ERROR': 
             print("changing status to ERROR: %s (REFUNDED)" % x['id'])
