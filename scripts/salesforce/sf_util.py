@@ -61,5 +61,78 @@ def compareDicts(sf,pain):
         return False
     return True
 
+def synchronizeData(prow,srow,sfschema,pschema,db):
+    # print(json.dumps(prow,indent=4))
+    upd = 0 # default to PAIN
+    ret = {}
+    upd = 1
+    for y in pschema:
+        if not pschema[y]['include_in_update']:
+            continue
+        SFFIELD = pschema[y]['sf_field_name']
+        if y not in sfschema:
+            raise Exception('"%s" missing from SF schema' % y)
+        SFCOLNAME = sfschema[y]['name']
+        print(pschema[y])
+        field = pschema[y]['pain_field_name']
+        table = pschema[y]['pain_table_name']
+        filt = pschema[y]['pain_special_filter']
+        join = pschema[y]['pain_join_col']
+        if len(join) < 1:
+            join = 'id'
+        val = 0
+        if '.' in join:
+            j = join.split('.')
+            val = prow[j[1]]
+        else:
+            val = prow[join]
+        if join == 'oa_id':
+            join = 'id'
+        ftable = table
+        jtable = table
+        if ',' in ftable:
+            j = table
+            ftable = j.split(',')[0]
+            jtable = j.split(',')[1]
+
+        q = """
+            select %s.%s as s,%s.updated as u,%s.id as i from %s where %s.%s = %s %s
+        """ % (ftable,field,ftable,ftable,table,jtable,join,val,filt)
+        print("q=%s" % q)
+        o = db.query(q)
+        print("o=%s" %o)
+        v = None
+        if len(o) > 0:
+            v = o[0]['s']
+        ret[SFCOLNAME] = v
+        print("-----")
+
+    return (upd,ret)
+
+
+def compareDicts(n,f):
+    if n is None:
+        return False
+    if f is None:
+        return False
+    sfmod = f['LastModifiedDate']
+    del f['LastModifiedDate']
+    ret = False
+    print("n=%s" % json.dumps(n,sort_keys=True))
+    print("f=%s" % json.dumps(f,sort_keys=True))
+    for x in n:
+        if x not in f:
+            print("%s wasnt in f" % x)
+            return False
+        if isinstance(f[x],bool):
+            if n[x] == 1:
+                n[x] = True
+            if n[x] == 0:
+                n[x] = False
+        if n[x] != f[x]:
+            print("%s != %s"  % (n[x],f[x]))
+            return False
+    print("ret true")
+    return True
 
 
