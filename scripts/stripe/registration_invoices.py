@@ -89,9 +89,9 @@ for x in l:
         )
     if x['commission_user_id'] is not None:
         db.update("""
-            insert into commission_users (user_id,commission_structure_id,amount)
-                values (%s,%s,%s)
-            """,(x['commission_user_id'],insid,sum*x['commission'])
+            insert into commission_users (user_id,commission_structure_id,amount,office_id)
+                values (%s,%s,%s,%s)
+            """,(x['commission_user_id'],insid,sum*x['commission'],x['office_id'])
         )
     db.update(""" 
         update invoices set total = %s where id = %s

@@ -1786,3 +1786,47 @@ class ReferrerList(AdminBase):
         ret['data'] = o
         return ret
 
+class CommissionList(AdminBase):
+    def __init__(self):
+        super().__init__()
+
+    def isDeferred(self):
+        return False
+
+    @check_admin
+    def execute(self, *args, **kwargs):
+        ret = {}
+        job,user,off_id,params = self.getArgs(*args,**kwargs)
+        limit = 10000
+        OT = self.getOfficeTypes()
+        offset = 0
+        if 'limit' in params:
+            limit = int(params['limit'])
+        if 'offset' in params:
+            offset = int(params['offset'])
+        db = Query()
+        ENT = self.getEntitlementIDs()
+        q = """
+            select 
+                u.id,concat(u.first_name,' ',u.last_name) as name,amount,cus.created,
+                o.id as office_id,o.name as office_name
+            from 
+                office o,
+                users u,
+                commission_users cus
+            where 
+                cus.user_id = u.id and
+                cus.office_id = o.id and
+                u.id = cus.user_id
+        """
+        p = []
+        if 'CommissionsAdmin' not in user['entitlements']:
+            q += ' and cus.user_id = %s ' % user['id']
+        cnt = db.query("select count(id) as cnt from (%s) as t" % (q,))
+        ret['total'] = cnt[0]['cnt']
+        q +=  " limit %s offset %s " 
+        p.append(limit)
+        p.append(offset*limit)
+        o = db.query(q,p)
+        ret['commissions'] = o
+        return ret

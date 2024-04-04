@@ -283,6 +283,9 @@ class Sidebar extends React.Component {
               {
                 header: 'Users', link: '/app/main/admin/users',
               },
+              {
+                header: 'Commissions', link: '/app/main/admin/commissions',
+              },
             ]}
           />
           )}

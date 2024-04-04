@@ -36,6 +36,8 @@ o = db.query("""
     select id,ip from performance where lat=0
     """)
 
+curs = con.cursor()
+
 for x in o:
     g = 0
     try:

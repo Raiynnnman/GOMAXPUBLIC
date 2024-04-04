@@ -29,6 +29,7 @@ import Search from '../../pain/search/Search';
 import SearchAdmin from '../../pain/admin/SearchAdmin';
 import Dashboard from '../../pain/dashboard/Dashboard';
 import LegalAdmin from '../../pain/admin/LegalAdmin';
+import CommissionAdminList from '../../pain/admin/CommissionAdminList';
 import PricingList from '../../pain/admin/PricingList';
 import UserAdmin from '../../pain/admin/UserAdmin';
 import Referrers from '../../pain/admin/Referrers';
@@ -123,7 +124,7 @@ class Layout extends React.Component {
                     <Route path="/app/main/office/users" exact component={Users} />
                     <Route path="/app/main/office/customers" exact component={Customers} />
                     <Route path="/app/main/office/upload" exact component={ReferrerUpload} />
-                    <Route path="/app/main/office/associations" exact component={OfficeAssociation} />
+                    <Route path="/app/main/admin/commissions" exact component={CommissionAdminList} />
                     <Route path="/app/main/admin/office" exact component={OfficeAdmin} />
                     <Route path="/app/main/admin/registrations" exact component={Registrations} />
                     <Route path="/app/main/admin/map" exact component={Map} />

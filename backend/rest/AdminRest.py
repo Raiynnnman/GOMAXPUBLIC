@@ -173,3 +173,9 @@ class ReferrerListRest(RestBase):
         return ret
 
 
+class CommissionListRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Admin.CommissionList()
+        ret = u.process(args[0])
+        return ret

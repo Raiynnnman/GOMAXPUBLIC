@@ -169,3 +169,10 @@ def searchreg(*args, **kwargs):
 def reflist(*args, **kwargs):
     po = AdminRest.ReferrerListRest()
     return po.postWrapper(*args,**kwargs)
+
+@admin.route('/admin/commission/list', methods=['POST'])
+@token_required
+@swag_from(docs_dir + 'admin_office_list.yaml')
+def commissionlist(*args, **kwargs):
+    po = AdminRest.CommissionListRest()
+    return po.postWrapper(*args,**kwargs)
