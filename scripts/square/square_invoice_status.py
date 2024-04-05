@@ -89,10 +89,6 @@ for x in l:
                     where invoices_id = %s
                     """,(r['invoice']['public_url'],x['id'])
                 )
-            db.update("""
-                update invoices set updated=now() where id=%s
-                """,(x['id'],)
-            )
             print("invoice %s in %s" % (x['invoices_id'],r['invoice']['status']))
         hours = 48
         if r is not None and r['invoice']['status'] == "OPEN":
