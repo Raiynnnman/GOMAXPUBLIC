@@ -54,26 +54,104 @@ def compareDicts(sf,pain):
     pdata = json.dumps(pain1,sort_keys=True)
     psha = encryption.getSHA256(pdata)
     ssha = encryption.getSHA256(sdata)
-    print("p=%s" % pdata)
-    print("s=%s" % sdata)
-    print("p-%s = sf-%s" % (psha,ssha))
+    #print("p=%s" % pdata)
+    #print("s=%s" % sdata)
+    #print("p-%s = sf-%s" % (psha,ssha))
     if psha != ssha:
         return False
     return True
 
-def synchronizeData(prow,srow,sfschema,pschema,db):
+def updatePAIN():
+    return 0
+
+def updateSF():
+    return 1
+
+def updatePAINDB(prow,srow,sfschema,pschema,db):
+
+    oldvalues = getPAINData(prow,srow,sfschema,pschema,db)
+    print("p=%s" % json.dumps(prow,sort_keys=True))
+    print("s=%s" % json.dumps(srow,sort_keys=True))
+    print("o=%s" % json.dumps(oldvalues,sort_keys=True))
+    for x in srow:
+        pcol = None
+        for t in sfschema:
+            if sfschema[t]['name'] == x:
+                v = sfschema[t]['label']
+                pcol = pschema[v]
+        if pcol is None:
+            raise Exception("Column %s not found in schema")
+        if not pcol['include_in_back_sync']:
+            # print("Skipping field %s, not in back sync" % x)
+            continue
+        field = pcol['pain_field_name']
+        table = pcol['pain_table_name']
+        filt = pcol['pain_special_filter']
+        join = pcol['pain_join_col']
+        newval = srow[x]
+        oldval = oldvalues[1][x]
+        if newval == oldval:
+            # print("Field %s (%s/%s) identical, skip" % (x,newval,oldval))
+            continue
+        print('comp: %s=%s' % (oldval,newval))
+        print(x)
+        print("pcol=%s" % pcol)
+        if len(join) < 1:
+            join = 'id'
+        val = 0
+        if '.' in join:
+            j = join.split('.')
+            val = prow[j[1]]
+        else:
+            val = prow[join]
+        if join == 'oa_id':
+            join = 'id'
+        if val == None:
+            val = 0
+        ftable = table
+        jtable = table
+        if ',' in ftable:
+            j = table
+            ftable = j.split(',')[1]
+            jtable = j.split(',')[0]
+        q = """
+             update %s set %s=** where %s.%s = %s 
+        """ % (ftable,field,ftable,join,val)
+        q = q.replace("**","%s")
+        db.update(q,(newval,))
+        print(q)
+
+def getPAINData(prow,srow,sfschema,pschema,db):
     # print(json.dumps(prow,indent=4))
-    upd = 0 # default to PAIN
+    upd = updatePAIN() # default to PAIN
     ret = {}
-    upd = 1
+    sfmod = None
+    if srow is not None and 'LastModifiedDate' in srow:
+        sfmod = srow['LastModifiedDate']
+    ret['LastModifiedDate'] = pmod = prow['LastModifiedDate']
+    if sfmod is None:
+        upd = updateSF()
+    else:
+        p = calcdate.parseDate(pmod)
+        s = calcdate.parseDate(sfmod)
+        print("p=%s" % p)
+        print("s=%s" % s)
+        if p > s:
+            upd = updateSF()
+        if s > p:
+            print("update pain")
+            upd = updatePAIN()
     for y in pschema:
         if not pschema[y]['include_in_update']:
             continue
         SFFIELD = pschema[y]['sf_field_name']
         if y not in sfschema:
             raise Exception('"%s" missing from SF schema' % y)
+        TYPE = sfschema[y]['type']
+        print("type=%s" % sfschema[y]['type'])
         SFCOLNAME = sfschema[y]['name']
         print(pschema[y])
+        print(json.dumps(sfschema[y]))
         field = pschema[y]['pain_field_name']
         table = pschema[y]['pain_table_name']
         filt = pschema[y]['pain_special_filter']
@@ -88,6 +166,8 @@ def synchronizeData(prow,srow,sfschema,pschema,db):
             val = prow[join]
         if join == 'oa_id':
             join = 'id'
+        if val == None:
+            val = 0
         ftable = table
         jtable = table
         if ',' in ftable:
@@ -104,6 +184,15 @@ def synchronizeData(prow,srow,sfschema,pschema,db):
         v = None
         if len(o) > 0:
             v = o[0]['s']
+            if TYPE == 'string':
+                v = str(v)
+            if TYPE == 'double':
+                v = float(v)
+            if TYPE == 'boolean':
+                if v:
+                    v=True
+                else:
+                    v=False
         ret[SFCOLNAME] = v
         print("-----")
 
@@ -115,24 +204,37 @@ def compareDicts(n,f):
         return False
     if f is None:
         return False
-    sfmod = f['LastModifiedDate']
-    del f['LastModifiedDate']
-    ret = False
-    print("n=%s" % json.dumps(n,sort_keys=True))
-    print("f=%s" % json.dumps(f,sort_keys=True))
+    n = json.loads(json.dumps(n))
+    f = json.loads(json.dumps(f))
+    if  'LastModifiedDate' in n:
+        pmod = n['LastModifiedDate']
+        del n['LastModifiedDate']
+    if  'LastModifiedDate' in f:
+        sfmod = f['LastModifiedDate']
+        del f['LastModifiedDate']
+    ret = True
+    if 'IsActive' in n:
+        if n['IsActive']:
+            n['IsActive'] = True
+        else:
+            n['IsActive'] = False
     for x in n:
         if x not in f:
             print("%s wasnt in f" % x)
-            return False
+            ret = False
+            break
         if isinstance(f[x],bool):
+            print("changing bool")
             if n[x] == 1:
                 n[x] = True
             if n[x] == 0:
                 n[x] = False
         if n[x] != f[x]:
             print("%s != %s"  % (n[x],f[x]))
-            return False
-    print("ret true")
-    return True
+            ret = False
+            break
+    print("n=%s" % json.dumps(n,sort_keys=True))
+    print("f=%s" % json.dumps(f,sort_keys=True))
+    return ret
 
 

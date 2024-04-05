@@ -103,7 +103,6 @@ for x in OFF:
     j = OFF[x]
     myid = x
     print(j)
-    continue
     o = db.query("""
         select user_id from office_user
             where office_id = %s
@@ -119,7 +118,7 @@ for x in OFF:
         db.update("""
             update users set title=%s,first_name=%s,last_name=%s
                 where id = %s
-            """,(j['title'],j['first'],j['last'])
+            """,(j['title'],j['first'],j['last'],userid)
         )
     db.update("""
         update office set email = %s,name=%s 

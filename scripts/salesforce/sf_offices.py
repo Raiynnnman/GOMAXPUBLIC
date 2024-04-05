@@ -45,22 +45,33 @@ PSCHEMA = sf_util.getPainSchema(TYPE)
 
 db = Query()
 
-PAIN = db.query("""
+q = """
     select 
         o.id as office_id,oa.id as oa_id,concat(oa.addr1, ' ',oa.addr2) as addr1,
-        oa.city,oa.zipcode,oa.state,oa.sf_id,o.id,o.sf_parent_id,
+        oa.city,oa.zipcode,oa.state,oa.sf_id,o.id,o.sf_id as sf_parent_id,
         op.id as office_plans_id,pd.id as pricing_data_id,o.name as office_name,
-        o.updated as office_updated,oa.updated as updated
+        oa.updated as updated01,o.sf_updated as updated02,oa.sf_updated as updated03
     from 
-        office_addresses oa
-        left outer join office o on oa.office_id = o.id
+        office o
+        left outer join office_addresses oa on oa.office_id = o.id
         left outer join office_plans op on  op.office_id = o.id
         left outer join pricing_data pd on pd.id = op.pricing_data_id
     where 
         o.active = 1 
         and o.office_type_id in (%s,%s)
-    """,(OT['Chiropractor'],OT['Urgent Care'])
-)
+"""
+if args.sf_id is not None:
+    q += " and oa.sf_id = '%s'" % args.sf_id
+
+PAIN = db.query(q,(OT['Chiropractor'],OT['Urgent Care']))
+
+PARENTS = {}
+
+o = db.query("""select id,sf_id from office where sf_id is not null""")
+for x in o:
+    PARENTS[x['id']] = x['sf_id']
+
+# print(PAIN)
 
 SCHEMA = {}
 schema_f = 'sf_account_schema.json'
@@ -107,13 +118,26 @@ if args.sfonly:
 
 CNTR = 0
 random.shuffle(PAIN)
-PARENTS={}
+
 for x in PAIN:
-    # print(x)
+    print(x)
     SF_ID = x['sf_id']
     SF_ROW = None
+    LAST_MOD = None
     if SF_ID in SF_DATA:
         SF_ROW = SF_DATA[SF_ID]
+        print(json.dumps(SF_ROW))
+        LAST_MOD = SF_ROW['LastModifiedDate']
+        LAST_MOD = calcdate.parseDate(LAST_MOD).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+        print("LAST_MOD:%s" % LAST_MOD)
+
+    try:
+        x['LastModifiedDate'] = max(x['updated01'],x['updated02'])
+    except:
+        x['LastModifiedDate'] = x['updated01']
+
+    if x['updated03'] is not None and x['updated03'] > x['LastModifiedDate']:
+        x['LastModifiedDate'] = x['updated03']
 
     if SF_ID is not None and SF_ROW is None:
         print("ERROR: Cached results found, skipping %s" % x['sf_id'])
@@ -136,34 +160,62 @@ for x in PAIN:
         )
         PARENTS[x['office_id']] = r['id']
         x['sf_parent_id'] = r['id']
-    (update,newdata) = sf_util.synchronizeData(x,SF_ROW,SFSCHEMA,PSCHEMA,db)
+    if x['oa_id'] is None:
+        print("Not creating empty records for address")
+        continue
+    (update,newdata) = sf_util.getPAINData(x,SF_ROW,SFSCHEMA,PSCHEMA,db)
     #print("----")
     #print(json.dumps(newdata,indent=4))
     #print("----")
-
+    if 'LastModifiedDate' in newdata:
+        del newdata['LastModifiedDate']
+    if newdata['Name'] is None or len(newdata['Name']) < 1 or newdata['Name'] == "None":
+        newdata['Name'] = x['office_name']
+    
+    print("upd=%s" % update)
     SAME = sf_util.compareDicts(newdata,SF_ROW)
     
-    if update == 1 and not SAME: # Update SF
+    if update == sf_util.updateSF() and not SAME: # Update SF
         if 'Id' in newdata and newdata['Id'] is not None:
             print("updating SF record: %s" % newdata['Id'])
+            db.update("""
+                update office_addresses set sf_updated=now() where id = %s
+                """,(x['oa_id'],)
+            )
             # r = sf.Account.update(newdata)
         else:
             del newdata['Id']
             print("creating SF record:%s " % x['office_name'])
             try:
-                r = sf.Account.create(newdata)
+                print(json.dumps(newdata,indent=4))
+                r = sf.Account.create(newdata,headers={'Sforce-Duplicate-Rule-Header': 'allowSave=true'})
                 db.update("""
-                    update office_addresses set sf_id = %s where id = %s
+                    update office_addresses set sf_id = %s,sf_updated=now() where id = %s
                     """,(r['id'],x['oa_id'])
                 )
             except Exception as e:
                 print(str(e))
                 print(json.dumps(newdata,indent=4))
-                continue
-    elif update == 0 and not SAME:
+                raise e
+    elif update == sf_util.updatePAIN() and not SAME:
         print("Updating PAIN")
+        try:
+            sf_util.updatePAINDB(x,SF_ROW,SFSCHEMA,PSCHEMA,db)
+            #db.update("""
+            #    update office_addresses set sf_updated=%s where id = %s
+            #    """,(LAST_MOD,x['oa_id'],)
+            #)
+        except Exception as e:
+            print(str(e))
+            print(json.dumps(newdata,indent=4))
+            raise e
     else:
         print("No changes required")
+        if x['updated03'] is None:
+            db.update("""
+                update office_addresses set sf_updated=%s where id = %s
+                """,(LAST_MOD,x['oa_id'],)
+            )
     db.commit()
     CNTR += 1
     if args.limit is not None:

@@ -1,0 +1,16 @@
+use pain;
+update salesforce_mapping set include_in_back_sync = 1;
+ /*Lead ID*/update salesforce_mapping set include_in_back_sync=0 where sf_field_name='Lead ID' and sf_table_schema='Lead';
+ /*Original Subscription Date*/ update salesforce_mapping set include_in_back_sync=0 where sf_field_name='Original Subscription Date' and sf_table_schema='Lead'; 
+ /*PainID*/ update salesforce_mapping set include_in_back_sync=0 where sf_field_name='PainID' and sf_table_schema='Lead'; 
+ /*Package Type*/ update salesforce_mapping set include_in_back_sync=0 where sf_field_name='Package Type' and sf_table_schema='Lead'; 
+ /*Created Date*/ update salesforce_mapping set include_in_back_sync=0 where sf_field_name='Created Date' and sf_table_schema='Lead'; 
+ /*Last Modified Date*/ update salesforce_mapping set include_in_back_sync=0 where sf_field_name='Last Modified Date' and sf_table_schema='Lead'; 
+ /*Last Modified Date*/ update salesforce_mapping set include_in_back_sync=0 where sf_field_name='Last Modified Date' and sf_table_schema='Lead'; 
+ /*PainURL*/update salesforce_mapping set include_in_back_sync=0 where sf_field_name='PainURL' and sf_table_schema='Lead';
+ /*Account ID*/ update salesforce_mapping set include_in_back_sync=0 where sf_field_name='Account ID' and sf_table_schema='Account';
+ /*Parent Account ID*/update salesforce_mapping set include_in_back_sync=0 where sf_field_name='Parent Account ID' and sf_table_schema='Account'; 
+ /*Last Modified Date*/ update salesforce_mapping set include_in_back_sync=0 where sf_field_name='Last Modified Date' and sf_table_schema='Account';
+ /*IsActive*/ update salesforce_mapping set include_in_back_sync=0 where sf_field_name='IsActive' and sf_table_schema='Account';
+ /*Subscription Plan*/update salesforce_mapping set include_in_back_sync=0 where sf_field_name='Subscription Plan' and sf_table_schema='Account'; 
+ /*PainID*/ update salesforce_mapping set include_in_back_sync=0 where sf_field_name='PainID' and sf_table_schema='Account';
