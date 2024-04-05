@@ -61,10 +61,10 @@ for x in o:
         break
     db.update("""
         update performance set 
-                classname=%s,lat=%s,lon=%s,country=%s,
+                lat=%s,lon=%s,country=%s,
                 state=%s,city=%s,ms=%s,ip=%s,continent=%s
             where id=%s
-        """,(j['classname'],j['lat'],j['lon'],j['country'],
+        """,(j['lat'],j['lon'],j['country'],
              j['stateprov'],j['city'],j['ms'],
              j['ip'],j['continent'],x['id']
             )
