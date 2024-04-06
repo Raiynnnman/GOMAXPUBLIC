@@ -41,20 +41,16 @@ l = db.query("""
         ) as items,pq.initial_payment,pd.duration,
         pd.upfront_cost,pd.price,o.commission_user_id,
         cs.id as commission_structure_id,
-        cs.commission
+        cs.commission,concat(u.first_name,' ',u.last_name) as comm_user
     from 
-        office_plans op,
-        office o,
-        office_plan_items opi,
-        pricing_data pd,
-        commission_structure cs,
-        provider_queue pq
+        office_plans op
+        left join office o on op.office_id = o.id
+        left join office_plan_items opi on opi.office_plans_id = op.id 
+        left join pricing_data pd on op.pricing_data_id=pd.id
+        left outer join commission_structure cs on cs.pricing_data_id = pd.id
+        left outer join users u on commission_user_id = u.id 
+        left join provider_queue pq on pq.office_id = op.office_id 
     where 
-        op.office_id=o.id and
-        cs.pricing_data_id = op.pricing_data_id and
-        opi.office_plans_id = op.id and
-        op.pricing_data_id = pd.id and
-        pq.office_id = op.office_id and 
         op.office_id not in (select office_id from invoices) and
         (pq.provider_queue_status_id = %s or pq.provider_queue_status_id = %s)
     group by
@@ -92,6 +88,11 @@ for x in l:
             insert into commission_users (user_id,commission_structure_id,amount,office_id)
                 values (%s,%s,%s,%s)
             """,(x['commission_user_id'],insid,sum*x['commission'],x['office_id'])
+        )
+        db.update("""
+            insert into invoice_history (invoices_id,user_id,text) values 
+                (%s,%s,%s)
+            """,(insid,1,'Calculated commission to %s based on plan' % x['comm_user'] )
         )
     db.update(""" 
         update invoices set total = %s where id = %s
