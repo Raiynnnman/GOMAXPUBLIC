@@ -62,11 +62,11 @@ for x in o:
     db.update("""
         update performance set 
                 lat=%s,lon=%s,country=%s,
-                state=%s,city=%s,ms=%s,ip=%s,continent=%s
+                state=%s,city=%s,continent=%s
             where id=%s
         """,(j['lat'],j['lon'],j['country'],
-             j['stateprov'],j['city'],j['ms'],
-             j['ip'],j['continent'],x['id']
+             j['stateprov'],j['city'],
+             j['continent'],x['id']
             )
     )
     db.commit()
