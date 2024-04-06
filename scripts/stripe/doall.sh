@@ -7,8 +7,8 @@ fi
 
 T="
     square/square_customers \
-    stripe/generate_invoices \
     stripe/registration_invoices \
+    stripe/generate_invoices \
     square/invoice_submit \
     square/square_invoice_status \
     stripe/stripe_progress_invoice \
