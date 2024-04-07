@@ -73,6 +73,7 @@ def updatePAINDB(prow,srow,sfschema,pschema,db):
     for g in o:
         com_user[g['sf_id']] = g['id']
     oldvalues = getPAINData(prow,srow,sfschema,pschema,db)
+    oldvalues = oldvalues[1]
     print("p=%s" % json.dumps(prow,sort_keys=True))
     print("s=%s" % json.dumps(srow,sort_keys=True))
     print("o=%s" % json.dumps(oldvalues,sort_keys=True))
@@ -92,7 +93,7 @@ def updatePAINDB(prow,srow,sfschema,pschema,db):
         filt = pcol['pain_special_filter']
         join = pcol['pain_join_col']
         newval = srow[x]
-        oldval = oldvalues[1][x]
+        oldval = oldvalues[x]
         if newval == oldval:
             # print("Field %s (%s/%s) identical, skip" % (x,newval,oldval))
             continue
@@ -115,6 +116,7 @@ def updatePAINDB(prow,srow,sfschema,pschema,db):
         if join == 'commission_user_id':
             COMM = True
             join = 'id'
+            val = prow['office_id']
             newval = com_user[newval]
         ftable = table
         jtable = table
@@ -129,7 +131,7 @@ def updatePAINDB(prow,srow,sfschema,pschema,db):
         """ % (ftable,field,ftable,join,val)
         q = q.replace("**","%s")
         print(q,newval)
-        db.update(q,(newval,))
+        # db.update(q,(newval,))
 
 def getPAINData(prow,srow,sfschema,pschema,db):
     # print(json.dumps(prow,indent=4))
