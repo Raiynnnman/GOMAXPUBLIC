@@ -71,7 +71,7 @@ def updatePAINDB(prow,srow,sfschema,pschema,db):
     com_user = {}
     o = db.query("select id,sf_id from users where sf_id is not null")
     for g in o:
-        com_user[g['id']] = g['sf_id']
+        com_user[g['sf_id']] = g['id']
     oldvalues = getPAINData(prow,srow,sfschema,pschema,db)
     print("p=%s" % json.dumps(prow,sort_keys=True))
     print("s=%s" % json.dumps(srow,sort_keys=True))
@@ -115,6 +115,7 @@ def updatePAINDB(prow,srow,sfschema,pschema,db):
         if join == 'commission_user_id':
             COMM = True
             join = 'id'
+            newval = com_user[newval]
         ftable = table
         jtable = table
         if ',' in ftable:
@@ -126,10 +127,8 @@ def updatePAINDB(prow,srow,sfschema,pschema,db):
         q = """
              update %s set %s=** where %s.%s = %s 
         """ % (ftable,field,ftable,join,val)
-        if COMM:
-            q += " and office.id = %s " % prow['office_id']
         q = q.replace("**","%s")
-        print(q)
+        print(q,newval)
         db.update(q,(newval,))
 
 def getPAINData(prow,srow,sfschema,pschema,db):
