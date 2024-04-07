@@ -50,11 +50,13 @@ q = """
         o.id as office_id,oa.id as oa_id,concat(oa.addr1, ' ',oa.addr2) as addr1,
         oa.city,oa.zipcode,oa.state,oa.sf_id,o.id,o.sf_id as sf_parent_id,
         op.id as office_plans_id,pd.id as pricing_data_id,o.name as office_name,
-        oa.updated as updated01,o.sf_updated as updated02,oa.sf_updated as updated03
+        u.id as commission_user_id,u.sf_id as user_sf_id,oa.updated as updated01,
+        o.sf_updated as updated02,oa.sf_updated as updated03
     from 
         office o
         left outer join office_addresses oa on oa.office_id = o.id
         left outer join office_plans op on  op.office_id = o.id
+        left outer join users u on u.id = o.commission_user_id
         left outer join pricing_data pd on pd.id = op.pricing_data_id
     where 
         o.active = 1 
@@ -71,7 +73,7 @@ o = db.query("""select id,sf_id from office where sf_id is not null""")
 for x in o:
     PARENTS[x['id']] = x['sf_id']
 
-# print(PAIN)
+print(PAIN)
 
 SCHEMA = {}
 schema_f = 'sf_account_schema.json'
@@ -178,11 +180,14 @@ for x in PAIN:
     if update == sf_util.updateSF() and not SAME: # Update SF
         if 'Id' in newdata and newdata['Id'] is not None:
             print("updating SF record: %s" % newdata['Id'])
+            print(json.dumps(newdata,indent=4))
             db.update("""
                 update office_addresses set sf_updated=now() where id = %s
                 """,(x['oa_id'],)
             )
-            # r = sf.Account.update(newdata)
+            sfid = newdata['Id']
+            del newdata['Id']
+            r = sf.Account.update(sfid,data=newdata)
         else:
             del newdata['Id']
             print("creating SF record:%s " % x['office_name'])

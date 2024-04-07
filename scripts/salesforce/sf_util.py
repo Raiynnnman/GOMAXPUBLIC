@@ -68,7 +68,10 @@ def updateSF():
     return 1
 
 def updatePAINDB(prow,srow,sfschema,pschema,db):
-
+    com_user = {}
+    o = db.query("select id,sf_id from users where sf_id is not null")
+    for g in o:
+        com_user[g['id']] = g['sf_id']
     oldvalues = getPAINData(prow,srow,sfschema,pschema,db)
     print("p=%s" % json.dumps(prow,sort_keys=True))
     print("s=%s" % json.dumps(srow,sort_keys=True))
@@ -108,22 +111,34 @@ def updatePAINDB(prow,srow,sfschema,pschema,db):
             join = 'id'
         if val == None:
             val = 0
+        COMM = False
+        if join == 'commission_user_id':
+            COMM = True
+            join = 'id'
         ftable = table
         jtable = table
         if ',' in ftable:
             j = table
             ftable = j.split(',')[1]
             jtable = j.split(',')[0]
+        if COMM:
+            ftable = 'office'
         q = """
              update %s set %s=** where %s.%s = %s 
         """ % (ftable,field,ftable,join,val)
+        if COMM:
+            q += " and office.id = %s " % prow['office_id']
         q = q.replace("**","%s")
-        db.update(q,(newval,))
         print(q)
+        db.update(q,(newval,))
 
 def getPAINData(prow,srow,sfschema,pschema,db):
     # print(json.dumps(prow,indent=4))
-    upd = updatePAIN() # default to PAIN
+    com_user = {}
+    o = db.query("select id,sf_id from users where sf_id is not null")
+    for g in o:
+        com_user[g['id']] = g['sf_id']
+    upd = updateSF() # default to SF (plat is system of record)
     ret = {}
     sfmod = None
     if srow is not None and 'LastModifiedDate' in srow:
@@ -138,8 +153,10 @@ def getPAINData(prow,srow,sfschema,pschema,db):
         print("s=%s" % s)
         if p > s:
             upd = updateSF()
+            print("Picking sf because p.updated > s.updated")
         if s > p:
             print("update pain")
+            print("Picking pain because s.updated > p.updated")
             upd = updatePAIN()
     for y in pschema:
         if not pschema[y]['include_in_update']:
@@ -152,6 +169,7 @@ def getPAINData(prow,srow,sfschema,pschema,db):
         SFCOLNAME = sfschema[y]['name']
         print(pschema[y])
         print(json.dumps(sfschema[y]))
+        print(prow)
         field = pschema[y]['pain_field_name']
         table = pschema[y]['pain_table_name']
         filt = pschema[y]['pain_special_filter']
@@ -166,6 +184,10 @@ def getPAINData(prow,srow,sfschema,pschema,db):
             val = prow[join]
         if join == 'oa_id':
             join = 'id'
+        COMM = False
+        if join == 'commission_user_id':
+            COMM = True
+            join = 'id'
         if val == None:
             val = 0
         ftable = table
@@ -178,12 +200,18 @@ def getPAINData(prow,srow,sfschema,pschema,db):
         q = """
             select %s.%s as s,%s.updated as u,%s.id as i from %s where %s.%s = %s %s
         """ % (ftable,field,ftable,ftable,table,jtable,join,val,filt)
+        if COMM:
+            q += " and office.id = %s " % prow['office_id']
         print("q=%s" % q)
         o = db.query(q)
-        print("o=%s" %o)
+        if len(o) > 1:
+            print(o)
+            raise Exception("query returned more than one result")
         v = None
         if len(o) > 0:
             v = o[0]['s']
+            if COMM:
+                v = com_user[v]
             if TYPE == 'string':
                 v = str(v)
             if TYPE == 'double':
