@@ -217,6 +217,5 @@ for c in OFF:
     if not args.dryrun:
         db.commit()
     print("Saved %s (%s)" % (CUST['name'],CUST['address']['zipcode']))
-    break
     
         
