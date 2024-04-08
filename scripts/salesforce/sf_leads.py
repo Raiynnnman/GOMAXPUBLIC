@@ -170,13 +170,14 @@ for x in PAIN:
         if 'Id' in newdata and newdata['Id'] is not None:
             print("updating SF record: %s" % newdata['Id'])
             print(json.dumps(newdata,indent=4))
-            db.update("""
-                update provider_queue set sf_updated=now() where id = %s
-                """,(x['pq_id'],)
-            )
-            sfid = newdata['Id']
-            del newdata['Id']
-            r = sf.Lead.update(sfid,data=newdata)
+            if not args.dryrun:
+                db.update("""
+                    update provider_queue set sf_updated=now() where id = %s
+                    """,(x['pq_id'],)
+                )
+                sfid = newdata['Id']
+                del newdata['Id']
+                r = sf.Lead.update(sfid,data=newdata)
         else:
             del newdata['Id']
             if newdata['OwnerId'] is None:
@@ -188,11 +189,12 @@ for x in PAIN:
             print("creating SF record:%s " % x['office_name'])
             try:
                 print(json.dumps(newdata,indent=4))
-                r = sf.Lead.create(newdata,headers={'Sforce-Duplicate-Rule-Header': 'allowSave=true'})
-                db.update("""
-                    update provider_queue set sf_id = %s,sf_updated=now() where id = %s
-                    """,(r['id'],x['pq_id'])
-                )
+                if not args.dryrun:
+                    r = sf.Lead.create(newdata,headers={'Sforce-Duplicate-Rule-Header': 'allowSave=true'})
+                    db.update("""
+                        update provider_queue set sf_id = %s,sf_updated=now() where id = %s
+                        """,(r['id'],x['pq_id'])
+                    )
             except Exception as e:
                 print(str(e))
                 print(json.dumps(newdata,indent=4))
@@ -200,7 +202,8 @@ for x in PAIN:
     elif False and update == sf_util.updatePAIN() and not SAME:
         print("Updating PAIN")
         try:
-            sf_util.updatePAINDB(x,SF_ROW,SFSCHEMA,PSCHEMA,db)
+            if not args.dryrun:
+                sf_util.updatePAINDB(x,SF_ROW,SFSCHEMA,PSCHEMA,db)
             #db.update("""
             #    update office_addresses set sf_updated=%s where id = %s
             #    """,(LAST_MOD,x['pq_id'],)
@@ -212,11 +215,13 @@ for x in PAIN:
     else:
         print("No changes required")
         if x['updated03'] is None:
-            db.update("""
-                update provider_queue set sf_updated=%s where id = %s
-                """,(LAST_MOD,x['pq_id'],)
-            )
-    db.commit()
+            if not args.dryrun:
+                db.update("""
+                    update provider_queue set sf_updated=%s where id = %s
+                    """,(LAST_MOD,x['pq_id'],)
+                )
+    if not args.dryrun:
+        db.commit()
 
 
     if args.limit is not None and CNTR > int(args.limit):
