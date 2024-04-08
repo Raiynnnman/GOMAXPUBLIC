@@ -49,7 +49,7 @@ res = sf_util.cacheOrLoad(schema_f,sf.User.describe)
 SFSCHEMA = {}
 FIELDS = []
 for x in res['fields']:
-    print(x['label'])
+    # print(x['label'])
     FIELDS.append(x['name'])
     lab = x['label']
     SFSCHEMA[lab] = x
@@ -73,7 +73,7 @@ else:
     H.close()
 
 for x in res['records']:
-    # print(json.dumps(x,indent=4))
+    print(json.dumps(x,indent=4))
     if 'uatpart' in x['Username']:
         x['Username'] = x['Username'].replace(".uatpart","")
     if x['Username'] == "admin@poundpain.com":

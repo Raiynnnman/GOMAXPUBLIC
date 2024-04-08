@@ -167,7 +167,7 @@ for x in PAIN:
     SAME = sf_util.compareDicts(newdata,SF_ROW)
     
     if update == sf_util.updateSF() and not SAME: # Update SF
-        if False and 'Id' in newdata and newdata['Id'] is not None:
+        if 'Id' in newdata and newdata['Id'] is not None:
             print("updating SF record: %s" % newdata['Id'])
             print(json.dumps(newdata,indent=4))
             db.update("""
