@@ -42,4 +42,15 @@ for x in l:
         """,(o[0]['code1'],x['id'])
     )
 
+l = db.query("""
+     select id,zipcode from office_addresses where locate('.',zipcode) > 1
+    """)
+
+for x in l:
+    z = str(int(x['zipcode']))
+    db.update("""
+        update office_addresses set zipcode=%s where id = %s
+        """,(z,x['id'])
+    )
+
 db.commit()

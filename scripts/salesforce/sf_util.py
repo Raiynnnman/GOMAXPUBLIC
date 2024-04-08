@@ -201,6 +201,10 @@ def getPAINData(prow,srow,sfschema,pschema,db):
             join = "id"
         if join == "office_id" and jtable == 'office':
             join = "id"
+        if 'zipcode' in field.lower() or 'postalcode' in field.lower():
+            # Convert zipcodes incase they have the .0 in them
+            if val is not None:
+                val = str(int(val))
 
         q = """
             select %s.%s as s,%s.updated as u,%s.id as i from %s where %s.%s = %s %s
