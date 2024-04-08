@@ -82,7 +82,6 @@ for x in df:
         }
     
     j['commission_user_id'] = args.commission
-    print("name=%s" % j['Name'])
     if 'Name' in j:
         if not isinstance(j['Name'],str) or j['Name'] == str("0"):
             j['Contact First'] = "Unknown"
