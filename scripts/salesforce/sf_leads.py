@@ -243,6 +243,8 @@ for x in PAIN:
             newdata['LastName'] = 'Unknown'
     if 'FirstName' not in newdata or newdata['FirstName'] is None or len(newdata['FirstName']) < 2:
         newdata['FirstName'] = 'Unknown'
+    if 'LastName' not in newdata or newdata['LastName'] is None or len(newdata['LastName']) < 2:
+        newdata['LastName'] = 'Unknown'
     newdata['Email'] = newdata['Email'].replace(" ",",")
     if newdata['OwnerId'] is None:
         del newdata['OwnerId']
