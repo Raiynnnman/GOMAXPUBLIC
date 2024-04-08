@@ -167,6 +167,13 @@ for x in PAIN:
     SAME = sf_util.compareDicts(newdata,SF_ROW)
     if 'PainURL__c' in newdata:
         newdata['PainURL__c'] = '%s/#/app/main/admin/office/%s' % (config.getKey("host_url"),newdata['PainURL__c'])
+    if 'LastName' not in newdata or newdata['LastName'] is None or len(newdata['LastName']) < 2:
+        newdata['LastName'] = 'Unknown'
+    if 'FirstName' not in newdata or newdata['FirstName'] is None or len(newdata['FirstName']) < 2:
+        newdata['LastName'] = 'Unknown'
+    newdata['Email'] = newdata['Email'].replace(" ",",")
+    if newdata['OwnerId'] is None:
+        del newdata['OwnerId']
     
     if update == sf_util.updateSF() and not SAME: # Update SF
         if 'Id' in newdata and newdata['Id'] is not None:
@@ -182,13 +189,6 @@ for x in PAIN:
                 r = sf.Lead.update(sfid,data=newdata)
         else:
             del newdata['Id']
-            if newdata['OwnerId'] is None:
-                del newdata['OwnerId']
-            if 'LastName' not in newdata or newdata['LastName'] is None or len(newdata['LastName']) < 2:
-                newdata['LastName'] = 'Unknown'
-            if 'FirstName' not in newdata or newdata['FirstName'] is None or len(newdata['FirstName']) < 2:
-                newdata['LastName'] = 'Unknown'
-            newdata['Email'] = newdata['Email'].replace(" ",",")
             print("creating SF record:%s " % x['office_name'])
             try:
                 print(json.dumps(newdata,indent=4))

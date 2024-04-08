@@ -36,7 +36,7 @@ for x in l:
     )
     if len(o) < 1:
         continue
-    print(x)
+    # print(x)
     db.update("""
         update office_addresses set state = %s where id = %s
         """,(o[0]['code1'],x['id'])
