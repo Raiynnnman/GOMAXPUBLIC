@@ -6,6 +6,7 @@ import sys
 from datetime import datetime, timedelta
 import time
 import json
+from nameparser import HumanName
 
 sys.path.append(os.getcwd())  # noqa: E402
 
@@ -29,7 +30,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--dryrun', dest="dryrun", action="store_true")
 parser.add_argument('--sf_id', dest="sf_id", action="store")
 parser.add_argument('--limit', dest="limit", action="store")
-parser.add_argument('--forcesf', dest="force_sf", action="store_true")
+parser.add_argument('--force_sf', dest="force_sf", action="store_true")
 args = parser.parse_args()
 
 sf = None
@@ -168,8 +169,13 @@ for x in PAIN:
     SAME = sf_util.compareDicts(newdata,SF_ROW)
     if 'PainURL__c' in newdata:
         newdata['PainURL__c'] = '%s/#/app/main/admin/office/%s' % (config.getKey("host_url"),newdata['PainURL__c'])
-    if 'LastName' not in newdata or newdata['LastName'] is None or len(newdata['LastName']) < 2:
-        newdata['LastName'] = 'Unknown'
+    if 'LastName' not in newdata or newdata['LastName'] is None or len(newdata['LastName']) < 2 or newdata['LastName'] == 'Unknown':
+        if 'Dr' in newdata['Company'] or 'd.c.' in newdata['Company'].lower() or 'dc' in newdata['Company'].lower():
+            t1 = HumanName(newdata['Company'])
+            newdata['FirstName'] = "%s %s" % (t1.title,t1.first)
+            newdata['LastName'] = "%s %s" % (t1.last,t1.suffix)
+        else:
+            newdata['LastName'] = 'Unknown'
     if 'FirstName' not in newdata or newdata['FirstName'] is None or len(newdata['FirstName']) < 2:
         newdata['FirstName'] = 'Unknown'
     newdata['Email'] = newdata['Email'].replace(" ",",")
