@@ -47,7 +47,7 @@ l = db.query("""
     """)
 
 for x in l:
-    z = str(int(x['zipcode']))
+    z = str(int(float(x['zipcode'])))
     db.update("""
         update office_addresses set zipcode=%s where id = %s
         """,(z,x['id'])

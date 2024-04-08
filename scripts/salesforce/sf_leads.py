@@ -119,17 +119,47 @@ else:
 
 
 #---- MAIN
-if not os.path.exists('./sf_out'):
-    os.makedirs('./sf_out')
 
 SF_DATA = {}
 #print(res)
 #print(type(res))
 CNTR = 0
+PHONES = {}
 for x in res['records']:
     # print(json.dumps(x,indent=4))
     SF_ID = x['Id']
     SF_DATA[SF_ID] = x
+    p = x['Phone']
+    if p is None:
+        p = x['Email']
+    if p not in PHONES:
+        PHONES[p] = []
+    PHONES[p].append({'Id':x['Id']})
+
+C = 0
+for x in PHONES:
+    i = PHONES[x]
+    TODEL = []
+    PD = {}
+    if len(i) > 1:
+        C += 1
+        print("Duplicate %s (%s)" % (x,len(i)))
+        for g in i:
+            v = SF_DATA[g['Id']]
+            if v['PainID__c'] is None:
+                TODEL.append(v['Id'])
+            else:
+                k = v['PainID__c']
+                if k in PD:
+                    TODEL.append(v['Id'])
+                PD[k] = 1
+            # print(json.dumps(v,sort_keys=True))
+        if len(TODEL) == len(i):
+            print("Cant delete, no pain ids found")
+        else:
+            print("TD:%s" % TODEL)
+        
+print("DUPS: %s" % C)
 
 random.shuffle(PAIN)
 for x in PAIN:
