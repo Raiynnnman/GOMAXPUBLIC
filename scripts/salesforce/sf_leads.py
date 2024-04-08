@@ -188,6 +188,7 @@ for x in PAIN:
                 newdata['LastName'] = 'Unknown'
             if 'FirstName' not in newdata or newdata['FirstName'] is None or len(newdata['FirstName']) < 2:
                 newdata['LastName'] = 'Unknown'
+            newdata['Email'] = newdata['Email'].replace(" ",",")
             print("creating SF record:%s " % x['office_name'])
             try:
                 print(json.dumps(newdata,indent=4))
