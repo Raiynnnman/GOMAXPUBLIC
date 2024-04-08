@@ -83,13 +83,14 @@ for x in df:
     
     j['commission_user_id'] = args.commission
     print("name=%s" % j['Name'])
-    if not isinstance(j['Name'],str) or j['Name'] == str("0"):
-        j['Contact First'] = "Unknown"
-        j['Contact Last'] = "Unknown"
-    elif 'Name' in j:
-        n = HumanName(j['Name'])
-        j['Contact First'] = "%s %s" % (n.title,n.first)
-        j['Contact Last'] = "%s %s" % (n.last,n.suffix)
+    if 'Name' in j:
+        if not isinstance(j['Name'],str) or j['Name'] == str("0"):
+            j['Contact First'] = "Unknown"
+            j['Contact Last'] = "Unknown"
+        elif 'Name' in j:
+            n = HumanName(j['Name'])
+            j['Contact First'] = "%s %s" % (n.title,n.first)
+            j['Contact Last'] = "%s %s" % (n.last,n.suffix)
         
     OFF[sha]['providers'].append({
         'first_name': j['Contact First'],
