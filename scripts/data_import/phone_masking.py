@@ -65,4 +65,8 @@ db.update("""
     update users set phone = replace(phone,'-','')
         where locate('-',phone) > 0;
     """)
+db.update("""
+    update users set phone = replace(phone,'.','')
+        where locate('.',phone) > 0;
+    """)
 db.commit()

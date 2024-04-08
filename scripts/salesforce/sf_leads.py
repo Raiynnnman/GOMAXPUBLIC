@@ -31,6 +31,7 @@ parser.add_argument('--dryrun', dest="dryrun", action="store_true")
 parser.add_argument('--sf_id', dest="sf_id", action="store")
 parser.add_argument('--limit', dest="limit", action="store")
 parser.add_argument('--force_sf', dest="force_sf", action="store_true")
+parser.add_argument('--del_dups', dest="del_dups", action="store_true")
 args = parser.parse_args()
 
 sf = None
@@ -132,8 +133,13 @@ for x in res['records']:
     p = x['Phone']
     if p is None:
         p = x['Email']
+    print(x)
+    if p is None:
+        continue
+    p = p.replace(")",'').replace("(",'').replace("-",'').replace(" ",'').replace('.','')
     if p not in PHONES:
         PHONES[p] = []
+    
     PHONES[p].append({'Id':x['Id']})
 
 C = 0
@@ -142,6 +148,7 @@ for x in PHONES:
     TODEL = []
     PD = {}
     if len(i) > 1:
+        LOOK = None
         C += 1
         print("Duplicate %s (%s)" % (x,len(i)))
         for g in i:
@@ -155,11 +162,29 @@ for x in PHONES:
                 PD[k] = 1
             # print(json.dumps(v,sort_keys=True))
         if len(TODEL) == len(i):
-            print("Cant delete, no pain ids found")
+            print("No pain ids found")
+            LOOK = i[0]
+            i.pop()
+            for g in i:
+                if args.del_dups:
+                    sf.Leads.delete(g['Id'])
+                else:
+                    print("would del %s" % g['Id'])
         else:
             print("TD:%s" % TODEL)
+            for g in i:
+                if args.del_dups:
+                    sf.Leads.delete(g['Id'])
+                else:
+                    print("would del %s" % g['Id'])
+        o = db.query("""
+            select office_id from office_addresses where phone = %s
+            """,(p,)
+        )
+        print(p,o)
         
 print("DUPS: %s" % C)
+sys.exit(0)
 
 random.shuffle(PAIN)
 for x in PAIN:
