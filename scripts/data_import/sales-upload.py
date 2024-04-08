@@ -24,6 +24,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--dryrun', dest="dryrun", action="store_true")
 parser.add_argument('--file', dest="file", action="store")
 parser.add_argument('--commission', dest="commission", action="store")
+parser.add_argument('--limit', dest="limit", action="store")
 args = parser.parse_args()
 
 if args.file is None:
@@ -96,6 +97,7 @@ for x in df:
 #print("---")
 #print(json.dumps(OFF,indent=4))
 
+CNTR = 0
 for c in OFF:
     CUST = OFF[c]
     if 'email' not in CUST:
@@ -217,5 +219,8 @@ for c in OFF:
     if not args.dryrun:
         db.commit()
     print("Saved %s (%s)" % (CUST['name'],CUST['address']['zipcode']))
+    CNTR += 1
+    if args.limit is not None and CNTR > int(args.limit):
+        break
     
         
