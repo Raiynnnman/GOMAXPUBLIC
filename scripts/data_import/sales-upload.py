@@ -54,7 +54,7 @@ for x in df:
     if '-' in str(j['Zipcode']):
         j['Zipcode'] = str(j['Zipcode']).split('-')[0]
     if isinstance(j['Company Name'],int) or j['Company Name'] == str("0"):
-        if j['Name'] != str(0):
+        if 'Name' in j and j['Name'] != str(0):
             j['Company Name'] = j['Name']
         else:
             j['Company Name'] = j['Email']
