@@ -29,6 +29,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--dryrun', dest="dryrun", action="store_true")
 parser.add_argument('--sf_id', dest="sf_id", action="store")
 parser.add_argument('--limit', dest="limit", action="store")
+parser.add_argument('--forcesf', dest="force_sf", action="store_true")
 args = parser.parse_args()
 
 sf = None
@@ -174,6 +175,9 @@ for x in PAIN:
     newdata['Email'] = newdata['Email'].replace(" ",",")
     if newdata['OwnerId'] is None:
         del newdata['OwnerId']
+
+    if args.force_sf:
+        update = sf_util.updateSF()
     
     if update == sf_util.updateSF() and not SAME: # Update SF
         if 'Id' in newdata and newdata['Id'] is not None:
