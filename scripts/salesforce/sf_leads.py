@@ -184,7 +184,6 @@ for x in PHONES:
         print(p,o)
         
 print("DUPS: %s" % C)
-sys.exit(0)
 
 random.shuffle(PAIN)
 for x in PAIN:
@@ -219,6 +218,10 @@ for x in PAIN:
         del newdata['LastModifiedDate']
     if newdata['Company'] is None or len(newdata['Company']) < 1 or newdata['Company'] == "None":
         newdata['Company'] = x['office_name']
+    if 'Phone' in newdata and newdata['Phone'] is not None:
+        p = newdata['Phone']
+        p = p.replace(")",'').replace("(",'').replace("-",'').replace(" ",'').replace('.','')
+        newdata['Phone'] = p
     
     print("upd=%s" % update)
     SAME = sf_util.compareDicts(newdata,SF_ROW)
