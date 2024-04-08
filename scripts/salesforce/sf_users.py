@@ -74,6 +74,10 @@ else:
 
 for x in res['records']:
     # print(json.dumps(x,indent=4))
+    if 'uatpart' in x['Username']:
+        x['Username'] = x['Username'].replace(".uatpart","")
+    if x['Username'] == "admin@poundpain.com":
+        x['Username'] = "rain@poundpain.com"
     o = db.query("""
         select id,sf_id from users where email = %s
         """,(x['Username'].lower(),)

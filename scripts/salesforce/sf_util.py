@@ -197,6 +197,10 @@ def getPAINData(prow,srow,sfschema,pschema,db):
             j = table
             ftable = j.split(',')[0]
             jtable = j.split(',')[1]
+        if join == "user_id" and jtable == 'users':
+            join = "id"
+        if join == "office_id" and jtable == 'office':
+            join = "id"
 
         q = """
             select %s.%s as s,%s.updated as u,%s.id as i from %s where %s.%s = %s %s

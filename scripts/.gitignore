@@ -20,3 +20,4 @@ common/version.py
 *.json
 *.xlsx
 log
+bin/*

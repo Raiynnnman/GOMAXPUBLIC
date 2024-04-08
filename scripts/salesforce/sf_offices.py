@@ -51,12 +51,13 @@ q = """
         oa.city,oa.zipcode,oa.state,oa.sf_id,o.id,o.sf_id as sf_parent_id,
         op.id as office_plans_id,pd.id as pricing_data_id,o.name as office_name,
         u.id as commission_user_id,u.sf_id as user_sf_id,oa.updated as updated01,
-        o.sf_updated as updated02,oa.sf_updated as updated03
+        o.sf_updated as updated02,oa.sf_updated as updated03,com.id as comm_user_id
     from 
         office o
         left outer join office_addresses oa on oa.office_id = o.id
         left outer join office_plans op on  op.office_id = o.id
-        left outer join users u on u.id = o.commission_user_id
+        left outer join users u on u.id = o.office_id
+        left outer join users com on o.commission_user_id = u.id
         left outer join pricing_data pd on pd.id = op.pricing_data_id
     where 
         o.active = 1 
