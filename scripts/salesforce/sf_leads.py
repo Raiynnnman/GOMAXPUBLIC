@@ -184,9 +184,9 @@ for x in PAIN:
             del newdata['Id']
             if newdata['OwnerId'] is None:
                 del newdata['OwnerId']
-            if 'LastName' not in newdata or newdata['LastName'] is None:
+            if 'LastName' not in newdata or newdata['LastName'] is None or len(newdata['LastName']) < 2:
                 newdata['LastName'] = 'Unknown'
-            if 'FirstName' not in newdata or newdata['FirstName'] is None:
+            if 'FirstName' not in newdata or newdata['FirstName'] is None or len(newdata['FirstName']) < 2:
                 newdata['LastName'] = 'Unknown'
             print("creating SF record:%s " % x['office_name'])
             try:
