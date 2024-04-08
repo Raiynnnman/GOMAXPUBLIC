@@ -157,8 +157,15 @@ for x in PHONES:
                 TODEL.append(v['Id'])
             else:
                 k = v['PainID__c']
+                q = db.query("""
+                    select sf_id from provider_queue where office_id = %s
+                    """,(k,)
+                )
+                if len(q) > 0:
+                    q = q[0]['sf_id']
                 if k in PD:
-                    TODEL.append(v['Id'])
+                    if v['Id'] != q:
+                        TODEL.append(v['Id'])
                 PD[k] = 1
             # print(json.dumps(v,sort_keys=True))
         if len(TODEL) == len(i):
@@ -172,15 +179,15 @@ for x in PHONES:
                     print("would del %s" % g['Id'])
         else:
             print("TD:%s" % TODEL)
+            o = db.query("""
+                select office_id from office_addresses where phone = %s
+                """,(p,)
+            )
             for g in i:
                 if args.del_dups:
                     sf.Leads.delete(g['Id'])
                 else:
                     print("would del %s" % g['Id'])
-        o = db.query("""
-            select office_id from office_addresses where phone = %s
-            """,(p,)
-        )
         print(p,o)
         
 print("DUPS: %s" % C)
