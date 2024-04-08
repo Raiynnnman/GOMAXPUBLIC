@@ -118,7 +118,7 @@ class Registrations extends Component {
         this.setState(this.state);
     } 
     onCommissionChange(e,t) { 
-        this.state.commission_user_id = e.value;
+        this.state.selected.commission_user_id = e.value;
         this.state.selected.commission_name = 
             this.props.registrationsAdminList.data.config.commission_users.filter((g) => g.id === e.value)[0].name
         this.setState(this.state);
@@ -221,6 +221,7 @@ class Registrations extends Component {
             initial_payment:this.state.selected.initial_payment,
             last_name:this.state.selected.last_name,
             lead_strength_id:this.state.selected.lead_strength_id,
+            commission_user_id:this.state.selected.commission_user_id,
             addr:this.state.selected.addr,
             phone: this.state.selected.phone,
             office_id: this.state.selected.office_id,
@@ -403,10 +404,6 @@ class Registrations extends Component {
                 sort:true,
                 hidden:true,
                 text:'ID'
-            },
-            {
-                dataField:'billing_period',
-                text:'Period'
             },
             {
                 dataField:'description',

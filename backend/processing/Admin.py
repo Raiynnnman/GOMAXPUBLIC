@@ -1059,7 +1059,7 @@ class RegistrationUpdate(AdminBase):
         )
         if 'commission_user_id' in params:
             db.update("""
-                update office set commission_user_id=%s where office_id=%s
+                update office set commission_user_id=%s where id=%s
                 """,(params['commission_user_id'],offid)
             )
         if 'pricing_id' in params and params['pricing_id'] is not None and params['pricing_id'] > 0:
