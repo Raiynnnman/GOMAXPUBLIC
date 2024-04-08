@@ -165,6 +165,8 @@ for x in PAIN:
     
     print("upd=%s" % update)
     SAME = sf_util.compareDicts(newdata,SF_ROW)
+    if 'PainURL__c' in newdata:
+        newdata['PainURL__c'] = '%s/#/app/main/admin/office/%s' % (config.getKey("host_url"),newdata['PainURL__c'])
     
     if update == sf_util.updateSF() and not SAME: # Update SF
         if 'Id' in newdata and newdata['Id'] is not None:
