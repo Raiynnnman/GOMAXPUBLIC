@@ -217,9 +217,6 @@ class RegistrationLandingData(RegistrationsBase):
             select id,trial,price,locations,duration,start_date,end_date,active,slot
             from
                 pricing_data p
-            where 
-                active = 1 and
-                end_date > now()
             order by 
                 slot asc,
                 start_date desc

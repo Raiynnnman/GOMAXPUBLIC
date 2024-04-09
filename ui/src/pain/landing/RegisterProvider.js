@@ -446,7 +446,7 @@ class RegisterProvider extends Component {
                     {(this.state.selPlan && this.state.selPlan.trial === 0 && this.state.page === 2) && (
                     <>
                     <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        Enter your credit card info. You will not be charged until the first client. 
+                        Enter your credit card information. 
                     </div>
                     <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                         <div style={{width:400}}>
