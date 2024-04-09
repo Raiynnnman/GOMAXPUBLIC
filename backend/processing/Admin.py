@@ -40,6 +40,22 @@ class AdminDashboard(AdminBase):
     def isDeferred(self):
         return False
 
+    def getWebsiteTraffic(self):
+        db= Query()
+        o = db.query("""
+            select
+                ifnull(t1.num1,0) as num1, /* */
+                ifnull(t2.num2,0) as num2, /* */
+                ifnull(t3.num3,0) as num3, /* */
+                ifnull(t4.num4,0) as num4
+            from
+                (select count(id) as num1 from performance where created > date(now())) as t1,
+                (select round(avg(ms),3) as num2 from performance where created > date(now())) as t2,
+                (select round(max(ms),3) as num3 from performance where created > date(now())) as t3,
+                (select round(min(ms),3) as num4 from performance where created > date(now())) as t4
+        """)
+        return o[0]
+        
     def getCustomers(self,off_id):
         db= Query()
         CI = self.getClientIntake()
@@ -223,6 +239,7 @@ class AdminDashboard(AdminBase):
         ret['revenue_leads_month'] = self.getLeadsRevenueMonth()
         ret['lead_status'] = self.getLeadsStatus()
         ret['traffic'] = self.getTrafficStats()
+        ret['website_stats'] = self.getWebsiteTraffic()
         return ret
 
 class UserList(AdminBase):

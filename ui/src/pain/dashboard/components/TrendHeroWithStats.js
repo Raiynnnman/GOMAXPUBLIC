@@ -44,7 +44,7 @@ class TrendHeroWithStats extends Component {
                   <div className="d-flex flex-wrap justify-content-between">
                       <div className={cx('mt')}>
                         <div style={{height:10,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                          <h6>{this.props.num2isdollar ? "$" :""}{ convertToFormat(this.props.data.num2) }</h6>
+                          <h6>{this.props.num2isdollar ? "$" :""}{ this.props.num2pure ? this.props.data.num2 : convertToFormat(this.props.data.num2) }</h6>
                         </div>
                           <p className="text-muted mb-0 me-1">
                               <small>{this.props.num2title}</small>
@@ -52,7 +52,7 @@ class TrendHeroWithStats extends Component {
                       </div>
                       <div className={cx('mt')}>
                         <div style={{height:10,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                          <h6>{this.props.num3isdollar ? "$" :""}{ convertToFormat(this.props.data.num3)}{this.props.num3ispercent?'%':''}</h6>
+                          <h6>{this.props.num3isdollar ? "$" :""}{ this.props.num3pure ? this.props.data.num3 : convertToFormat(this.props.data.num3)}{this.props.num3ispercent?'%':''}</h6>
                         </div>
                           <p className="text-muted mb-0">
                               <small>{this.props.num3title}</small>
@@ -60,7 +60,7 @@ class TrendHeroWithStats extends Component {
                       </div>
                       <div className={cx('mt')}>
                         <div style={{height:10,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                          <h6>{this.props.num4isdollar ? "$" :""}{convertToFormat(this.props.data.num4)}</h6>
+                          <h6>{this.props.num4isdollar ? "$" :""}{this.props.num4pure ? this.props.data.num4 : convertToFormat(this.props.data.num4)}</h6>
                         </div>
                           <p className="text-muted mb-0 me-1">
                               <small>{this.props.num4title}</small>
