@@ -200,8 +200,17 @@ class RegisterProvider extends Component {
         this.setState(this.state);
     } 
     officePhoneChange(e) {
-        this.state.currentPhone = e.target.value;
+        let val = e.target.value.replace(/\D/g, "")
+        .match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+        let validPhone = !val[2] ? val[1]: "(" + val[1] + ") " + val[2] + (val[3] ? "-" + val[3] : "");
+        console.log(validPhone);
+        this.state.currentPhone = validPhone;
         this.setState(this.state);
+        if (validPhone.length < 14 && validPhone.length > 0) {
+            this.setState({ phoneMessage: 'Please add a 10 digit phone number' });
+        } else {
+            this.setState({ phoneMessage: '' });
+        }
     } 
     officeAddr1Change(e) {
         this.state.addresses[this.state.selectedAddrId].addr1 = e.target.value;
@@ -233,7 +242,18 @@ class RegisterProvider extends Component {
     }
 
     phoneChange(e) { 
-        this.state.phone = e.target.value;
+        //this.state.phone = e.target.value;
+        let val = e.target.value.replace(/\D/g, "")
+        .match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+        let validPhone = !val[2] ? val[1]: "(" + val[1] + ") " + val[2] + (val[3] ? "-" + val[3] : "");
+        console.log(validPhone);
+        this.state.phone = validPhone;
+        this.setState(this.state);
+        if (validPhone.length < 14 && validPhone.length > 0) {
+            this.setState({ phoneMessage: 'Please add a 10 digit phone number' });
+        } else {
+            this.setState({ phoneMessage: '' });
+        }
         this.setState(this.state);
         this.checkValid();
     }
@@ -364,11 +384,12 @@ class RegisterProvider extends Component {
                             </div>
                             <div className="form-group mb-1" style={{borderBottom:'1px solid black'}}>
                                 Phone:
-                                    <MaskedInput style={{backgroundColor:'white',border:'0px solid white'}}
+                                <input className="form-control no-border" style={{backgroundColor:'white'}} value={this.state.phone} onChange={this.phoneChange} type="phone" required name="phone" placeholder="Phone" />
+                                    {/*<MaskedInput style={{backgroundColor:'white',border:'0px solid white'}}
                                       className="form-control" id="mask-phone" mask="(111) 111-1111"
                                       onChange={this.phoneChange} value={this.state.phone}
                                       size="10"
-                                    />
+                                    />*/}
                             </div>
                         </form>
                     </Widget>
@@ -398,11 +419,13 @@ class RegisterProvider extends Component {
                                                 onChange={this.officeNameChange} required name="name" placeholder="Name" />
                                         </td>
                                         <td style={{width:200}}>
-                                            <MaskedInput style={{backgroundColor:'white',border:'0px solid white'}}
+                                            <input className="form-control no-border" style={{backgroundColor:'white'}} value={this.state.currentPhone} 
+                                                onChange={this.officePhoneChange} required name="phone" placeholder="Phone" />
+                                            {/*<MaskedInput style={{backgroundColor:'white',border:'0px solid white'}}
                                               className="form-control" id="mask-phone" mask="(111) 111-1111"
                                               onChange={this.officePhoneChange} value={this.state.currentPhone}
                                               size="10"
-                                            />
+                                            />*/}
                                         </td>
                                         <td style={{width:400}}>
                                             <GooglePlacesAutocomplete 

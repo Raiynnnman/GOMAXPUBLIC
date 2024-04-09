@@ -459,6 +459,8 @@ class RegistrationSearchProvider(RegistrationsBase):
         params['p'] = params['p'].replace(' ','')
         params['p'] = params['p'].replace(')','')
         params['p'] = params['p'].replace('(','')
+        if 'n' not in params:
+            params['n'] = ''
         o = db.query("""
             select distinct office_id from (
                 select id as office_id from office where 
