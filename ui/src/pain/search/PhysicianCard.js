@@ -202,9 +202,9 @@ class PhysicianCard extends Component {
                     </>
                     </div>
                     <Row md="12"> <Col md="12">{this.props.provider.miles.toFixed(2)} miles</Col> </Row>
-                    <Row md="12"> <Col md="12">{this.props.provider.addr[0][0].addr1 + " " + this.props.provider.addr[0][0].addr2}</Col> </Row>
+                    <Row md="12"> <Col md="12">{this.props.provider.addr[0][0].addr1 + " " + this.props.provider.addr[0][0].addr2 ? this.props.provider.addr[0][0].addr2 : ''}</Col> </Row>
                     <Row md="12">
-                        <Col md="12">{this.props.provider.addr[0][0].city},{this.props.provider.addr[0][0].state} {this.props.provider.addr[0][0].zipcode}
+                        <Col md="12">{this.props.provider.addr[0][0].city}, {this.props.provider.addr[0][0].state} {this.props.provider.addr[0][0].zipcode}
                         </Col> 
                     </Row>
                     {(false) && ( <Row md="12"> 
