@@ -87,7 +87,7 @@ for x in l:
         db.update("""
             insert into commission_users (user_id,commission_structure_id,amount,office_id)
                 values (%s,%s,%s,%s)
-            """,(x['commission_user_id'],insid,sum*x['commission'],x['office_id'])
+            """,(x['commission_user_id'],x['commission_structure_id'],sum*x['commission'],x['office_id'])
         )
         db.update("""
             insert into invoice_history (invoices_id,user_id,text) values 
