@@ -72,7 +72,7 @@ for x in l:
             )
             db.update("""
                 replace into invoice_check (invoices_id,nextcheck) values
-                    (%s,date_add(now(), INTERVAL 24*30*6 DAY)
+                    (%s,date_add(now(), INTERVAL 24*30*6 DAY))
                 """,(x['id'],)
             )
             db.update("""
@@ -114,7 +114,7 @@ for x in l:
             )
             db.update("""
                 replace into invoice_check (invoices_id,nextcheck) values
-                    (%s,date_add(now(), INTERVAL 24*30*6 DAY)
+                    (%s,date_add(now(), INTERVAL 24*30*6 DAY))
                 """,(x['id'],)
             )
             db.update("""

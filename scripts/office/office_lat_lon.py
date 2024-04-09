@@ -61,6 +61,9 @@ CNT = 0
 for x in o:
     lat = 0
     lon = 0
+    places_id = None
+    zipcode = None
+    # print(x)
     if x['office_type_id'] == OT['Customer']:
         t = db.query("""
             select lat,lon from position_zip where zipcode = %s
@@ -70,24 +73,34 @@ for x in o:
             lat = t[0]['lat']
             lon = t[0]['lon']
     else:
+        if len(x['addr1']) < 5:
+            continue
         res = gmaps.geocode('%s, %s, %s' % (x['addr1'],x['city'],x['state']))
         if len(res) < 1:
             print(x)
             print("Unable to find coordinates for %s" % x['id'])
         else:
             res = res[0]
+            # print(json.dumps(res,indent=4))
             #print(json.dumps(res,indent=4))
             #print("=----")
             #print(json.dumps(res['geometry'],indent=4))
             lat = res['geometry']['location']['lat']
             lon = res['geometry']['location']['lng']
+            places_id = res['place_id']
+            for y in res['address_components']:
+                # print(y)
+                if 'postal_code' in y['types']:
+                    zipcode = y['long_name']
     CNT += 1
+    # print(zipcode,places_id)
     db.update("""
         update office_addresses set lat=%s,lon=%s,
-            lat_attempt_count=lat_attempt_count+1,
+            lat_attempt_count=lat_attempt_count+1,places_id=%s,
+            zipcode = %s, 
             nextcheck=date_add(now(),INTERVAL 1 day)
         where id=%s
-        """,(lat,lon,x['id'])
+        """,(lat,lon,places_id,zipcode,x['id'])
     )
     db.commit()
 

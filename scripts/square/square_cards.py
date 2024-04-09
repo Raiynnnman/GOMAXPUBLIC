@@ -55,7 +55,7 @@ if args.id is not None:
 if args.square_id is not None:
     q += " and o.stripe_cust_id = '%s' " % args.square_id
 
-print(q)
+# print(q)
 
 l = db.query(q,(OT['Chiropractor'],))
 
@@ -71,7 +71,9 @@ for x in l:
             print(r.errors)
             raise Exception("ERROR retrieving cards")
         r = r.body
-        print(json.dumps(r,indent=4))
+        # print(json.dumps(r,indent=4))
+        if 'cards' not in r:
+            raise Exception("NO_CARD_DATA")
         for g in r['cards']:
             if not g['enabled']:
                 db.update("""
@@ -104,9 +106,16 @@ for x in l:
             )
         db.commit()
     except Exception as e:
-        print("ERROR: %s has an issue: %s" % (x['email'],str(e)))
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
+        if str(e) != 'NO_CARD_DATA':
+            print("ERROR: %s has an issue: %s" % (x['email'],str(e)))
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
+    db.update("""
+        update office set 
+            stripe_next_check=date_add(now(),INTERVAL 1 day)
+        where id=%s
+        """,(x['id'],)
+    )
     db.commit()
 
 print("Processed %s records" % CNT)

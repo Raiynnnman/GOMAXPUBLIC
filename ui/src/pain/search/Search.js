@@ -230,7 +230,7 @@ class SearchAdmin extends Component {
             )}
             {(Login.isAuthenticated()) && ( 
                 <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                    <h5>Use the zipcode box to find providers. Book an appointment in minutes.</h5>
+                    <h5>Use the zipcode box to find providers. Contact a provider in minutes.</h5>
                 </div>
             )}
             {(Login.isAuthenticated() && this.state.selectedProvider !== null) && ( 
@@ -265,7 +265,7 @@ class SearchAdmin extends Component {
                     <br/>
                     <div style={{height:50,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                         <font style={{textAlign:"center", fontSize:20}}>
-                            Find the best price for the highest quality providers. Book an appointment in minutes.
+                            Find the best price for the highest quality providers. Contact a provider in seconds.
                         </font>
                     </div>
                 </Col>
@@ -273,12 +273,11 @@ class SearchAdmin extends Component {
             )}
             {(this.props.searchConfig && this.props.searchConfig.data && this.props.searchConfig.data.types && 
               this.state.selectedProvider === null) && ( 
-                <Row md="12" style={{marginTop:20}}>
+                <div style={{cursor:'pointer',display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                     {this.props.searchConfig.data.types.map((e) => { 
                         return (
                             <>
-                            <Col md="4" onClick={() => this.setProviderType(e.id)} style={{cursor:'pointer'}}>
-                                <Card 
+                                <Card onClick={() => this.setProviderType(e.id)} 
                                     style={{borderRadius:"25px 25px 25px 25px",margin:20,width:400,height:300}} className="mb-xlg border-1">
                                     <CardBody>
                                         <Row md="12">
@@ -290,25 +289,22 @@ class SearchAdmin extends Component {
                                         </Row>
                                     </CardBody>
                                 </Card>
-                            </Col>
                             </>
                         )
                     })}
-                </Row>
+                </div>
             )}
             {(this.props.providerSearch && this.props.providerSearch.data && 
                 this.props.providerSearch.data && this.props.providerSearch.data.providers &&
                 this.props.providerSearch.data.providers.length > 0 && this.state.provider !== null &&
                 this.state.selectedAppt === null) && (
-                <Row md="12">
+                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'spread-evenly'}}>
                     {this.props.providerSearch.data.providers.map((e) => { 
                         return (
-                            <Col md="3">
                                 <PhysicianCard onScheduleAppt={this.scheduleAppt} provider={e}/>
-                            </Col>
                         )
                     })} 
-                </Row>
+                </div>
             )}
             {(this.props.providerSearch && this.props.providerSearch.data && 
                 this.props.providerSearch.data && this.props.providerSearch.data.providers &&

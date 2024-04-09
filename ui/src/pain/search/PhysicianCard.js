@@ -122,7 +122,7 @@ class PhysicianCard extends Component {
         <>
         {(this.props.provider) && (
             <Card style={{
-                margin:20,width:250,height:375,
+                margin:20,width:250,height:350,
                 borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}} className="mb-xlg border-1">
                 <CardBody>
                     <Row md="12">
@@ -219,8 +219,8 @@ class PhysicianCard extends Component {
                     <hr/>
                     <Row md="12"> 
                         <Col md="12">
-                            <div style={{height:30,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                                <Button color="primary" onClick={this.scheduleAppt}>Book</Button>
+                            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                                <Button color="primary" onClick={this.scheduleAppt}>Contact</Button>
                             </div>
                         </Col>
                     </Row>
