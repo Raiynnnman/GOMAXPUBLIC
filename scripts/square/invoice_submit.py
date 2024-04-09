@@ -185,7 +185,7 @@ for x in inv:
                 if s.is_error():
                     for g in s.errors:
                         if g['code'] == 'INVALID_CARD':
-                            db.upate("delete from office_cards where office_id=%s",(x['office_id'],))
+                            db.update("delete from office_cards where office_id=%s",(x['office_id'],))
                             db.commit()
                             continue
                     raise Exception(json.dumps(s.errors))
