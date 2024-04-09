@@ -83,6 +83,8 @@ for x in l:
             """,
             (insid,y['description'],sum,y['quantity'])
         )
+    if x['commission'] is None:
+        x['commission'] = 0
     if x['commission_user_id'] is not None:
         db.update("""
             insert into commission_users (user_id,commission_structure_id,amount,office_id)

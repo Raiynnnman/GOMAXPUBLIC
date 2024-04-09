@@ -142,7 +142,7 @@ class Registrations extends Component {
     addAddress() { 
         this.state.selected.addr.push({
             id:0,
-            name:'',
+            name:'Practice Name',
             addr1:'',
             city:'',
             state:'',
@@ -345,7 +345,7 @@ class Registrations extends Component {
                 text:'Phone',
                 formatter: (cellContent,row) => (
                     <div>
-                       {formatPhoneNumber(row.phone)} 
+                       {formatPhoneNumber(row.phone) ? formatPhoneNumber(row.phone) : row.phone} 
                     </div>
                 )
             },
