@@ -126,7 +126,9 @@ class Layout extends React.Component {
                     <Route path="/app/main/office/upload" exact component={ReferrerUpload} />
                     <Route path="/app/main/admin/commissions" exact component={CommissionAdminList} />
                     <Route path="/app/main/admin/office" exact component={OfficeAdmin} />
+                    <Route path="/app/main/admin/office/:id" exact component={OfficeAdmin} />
                     <Route path="/app/main/admin/registrations" exact component={Registrations} />
+                    <Route path="/app/main/admin/registrations/:id" exact component={Registrations} />
                     <Route path="/app/main/admin/map" exact component={Map} />
                     <Route path="/app/main/admin/plans" exact component={PricingList} />
                     <Route path="/app/main/admin/referrer" exact component={Referrers} />

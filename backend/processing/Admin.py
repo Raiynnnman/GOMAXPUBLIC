@@ -1215,9 +1215,12 @@ class RegistrationList(AdminBase):
             {'id':1,'col':'updated','active':False,'direction':'asc'},
             {'id':2,'col':'name','active':False,'direction':'asc'}
         ]
-        
         count_par = []
-        if 'status' in params and len(params['status']) > 0:
+        if 'pq_id' in params and params['pq_id'] != 0 and params['pq_id'] is not None:
+            q += " and pq.id = %s "
+            search_par.insert(0,int(params['pq_id']))
+            count_par.append(int(params['pq_id']))
+        elif 'status' in params and len(params['status']) > 0:
             q += " and provider_queue_status_id in ("
             arr = []
             for z in params['status']:

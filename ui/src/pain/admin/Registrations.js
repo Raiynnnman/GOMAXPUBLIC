@@ -42,6 +42,7 @@ class Registrations extends Component {
             subTab: "plans",
             sort:null,
             direction:0,
+            pq_id:0,
             page: 0,
             pageSize: 10
         }
@@ -85,9 +86,16 @@ class Registrations extends Component {
             this.state.statusSelected = t;
             this.state.filter = t;
             this.setState(this.state);
-            this.props.dispatch(getRegistrations(
-                {limit:this.state.pageSize,offset:this.state.page,status:t}
-            ));
+            if (this.props.match.params.id) { 
+                this.props.dispatch(getRegistrations(
+                    {pq_id:this.props.match.params.id,limit:this.state.pageSize,offset:this.state.page}
+                ));
+            }
+            if (!this.props.match.params.id) { 
+                this.props.dispatch(getRegistrations(
+                    {limit:this.state.pageSize,offset:this.state.page,status:t}
+                ));
+            }
         } 
     }
 
@@ -196,8 +204,13 @@ class Registrations extends Component {
     }
 
     componentDidMount() {
+        var i = 0;
+        if (this.props.match.params.id) { 
+            i = this.props.match.params.id;
+        } 
         this.props.dispatch(getRegistrations({
             limit:this.state.pageSize,
+            pq_id:i,
             offset:this.state.page
         }));
         this.props.dispatch(getPlansList({}));
