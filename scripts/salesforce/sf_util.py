@@ -211,6 +211,8 @@ def getPAINData(prow,srow,sfschema,pschema,db):
         """ % (ftable,field,ftable,ftable,table,jtable,join,val,filt)
         if COMM:
             q += " and office.id = %s " % prow['office_id']
+        if 'office_plans' in pschema[y]['pain_field_name']:
+            q += " and office.id = %s " % prow['office_id']
         print("q=%s" % q)
         o = db.query(q)
         if len(o) > 1:
