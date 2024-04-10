@@ -276,4 +276,23 @@ def compareDicts(n,f):
     print("f=%s" % json.dumps(f,sort_keys=True))
     return ret
 
-
+def getLastUpdate(t):
+    db = Query()
+    o = db.query("""
+        select last_check from salesforce_last_update
+            where sf_table_schema = %s
+        """,(t,)
+    )
+    ret = None
+    for x in o:
+        ret = x['last_check']
+    return ret
+    
+def setLastUpdate(t):
+    db = Query()
+    db.update("""
+        replace into salesforce_last_update (sf_table_schema,last_check) 
+            values (%s,now())
+        """,(t,)
+    )
+    db.commit()
