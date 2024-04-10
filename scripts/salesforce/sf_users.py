@@ -85,8 +85,17 @@ for x in res['records']:
     if len(o) < 1:
         print("User %s doesnt have a platform account" % x['Username'])
         continue 
-    if o[0]['sf_id'] is not None:
+    if o[0]['sf_id'] == x['Id']:
         continue
+    j = db.query("""
+        select id from users where sf_id=%s
+        """,(x['Id'],)
+    )
+    if len(j) > 0:
+        db.update("""
+            update users set sf_id = null where id = %s
+            """,(x['Id'],j[0]['id'])
+        )
     db.update("""
         update users set sf_id = %s where id = %s
         """,(x['Id'],o[0]['id'])
