@@ -28,6 +28,7 @@ import { registrationAdminUpdate } from '../../actions/registrationAdminUpdate';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import formatPhoneNumber from '../utils/formatPhone';
+import PainTable from '../utils/PainTable';
 
 class Registrations extends Component {
     constructor(props) { 
@@ -39,6 +40,8 @@ class Registrations extends Component {
             search:null,
             filter: [],
             subTab: "plans",
+            sort:null,
+            direction:0,
             page: 0,
             pageSize: 10
         }
@@ -58,6 +61,8 @@ class Registrations extends Component {
         this.onCommissionChange = this.onCommissionChange.bind(this);
         this.addInvoiceRow = this.addInvoiceRow.bind(this);
         this.pageChange = this.pageChange.bind(this);
+        this.sortChange = this.sortChange.bind(this);
+        this.pageRowsChange = this.pageRowsChange.bind(this);
         this.toggleTab = this.toggleTab.bind(this);
         this.toggleSubTab = this.toggleSubTab.bind(this);
         this.updatePhone = this.updatePhone.bind(this);
@@ -85,14 +90,32 @@ class Registrations extends Component {
             ));
         } 
     }
-    pageChange(e,t) { 
-        if (e === '>') { 
-            this.state.page = this.state.page + 1;
-        } else { 
-            this.state.page = e - 1;
-        }
+
+    sortChange(t) { 
+        var g = this.props.registrationsAdminList.data.sort.filter((e) => t.dataField === e.col);
+        if (g.length > 0) { 
+            g = g[0]
+            this.state.sort = g.id
+            this.state.direction = g.direction === 'asc' ? 'desc' : 'asc'
+            this.props.dispatch(getRegistrations(
+                {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
+            ));
+            this.setState(this.state);
+        } 
+    } 
+
+    pageRowsChange(t) { 
+        this.state.pageSize = t
+        this.state.page = 0
         this.props.dispatch(getRegistrations(
-            {search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
+            {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
+        ));
+        this.setState(this.state);
+    } 
+    pageChange(e) { 
+        this.state.page = e
+        this.props.dispatch(getRegistrations(
+            {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
         ));
         this.setState(this.state);
     } 
@@ -113,7 +136,7 @@ class Registrations extends Component {
             this.state.search = null;
         } 
         this.props.dispatch(getRegistrations(
-            {search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
+            {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
         ));
         this.setState(this.state);
     } 
@@ -135,7 +158,7 @@ class Registrations extends Component {
         this.state.statusSelected = t;
         this.state.filter = t;
         this.props.dispatch(getRegistrations(
-            {search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
+            {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
         ));
         this.setState(this.state)
     } 
@@ -210,7 +233,9 @@ class Registrations extends Component {
     } 
     reload() { 
         this.props.dispatch(getRegistrations(
-            {search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
+            {sort:this.state.sort,direction:this.state.direction,
+             search:this.state.search,limit:this.state.pageSize,
+            offset:this.state.page,status:this.state.filter}
         ));
     }
     save() { 
@@ -238,7 +263,7 @@ class Registrations extends Component {
         }
         this.props.dispatch(registrationAdminUpdate(tosend,function(err,args) { 
             args.props.dispatch(getRegistrations(
-                {search:args.state.search,limit:args.state.pageSize,offset:args.state.page,status:args.state.filter},function(err,args) { 
+                {sort:args.state.sort,direction:args.state.direction,search:args.state.search,limit:args.state.pageSize,offset:args.state.page,status:args.state.filter},function(err,args) { 
               toast.success('Successfully saved registration.',
                 {
                     position:"top-right",
@@ -564,6 +589,25 @@ class Registrations extends Component {
                 )
             },
         ]
+        if (this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
+            this.props.registrationsAdminList.data.sort) { 
+            var c = 0; 
+            for (c=0;c < regheads.length; c++) { 
+                var q = regheads[c]
+                var t = this.props.registrationsAdminList.data.sort.filter((g) => q.dataField === g.col);
+                if (t.length > 0) { 
+                    t = t[0]
+                    regheads[c].sort=true;
+                    if (t.active) { 
+                        regheads[c].order = t['direction']
+                    } else { 
+                        regheads[c].order = 'asc'
+                    } 
+                } else { 
+                    regheads[c].sort=false;
+                } 
+            } 
+        }  
         return (
         <>
             {(this.props.plansList && this.props.plansList.isReceiving) && (
@@ -641,11 +685,18 @@ class Registrations extends Component {
                                     {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
                                       this.props.registrationsAdminList.data.registrations && 
                                       this.props.registrationsAdminList.data.registrations.length > 0)&& ( 
-                                    <BootstrapTable 
-                                        keyField='id' data={this.props.registrationsAdminList.data.registrations} 
-                                        pagination={paginationFactory(options)}
-                                        columns={regheads}>
-                                    </BootstrapTable>
+                                        <PainTable
+                                            keyField='id' 
+                                            data={this.props.registrationsAdminList.data.registrations} 
+                                            pagination={paginationFactory(options)}
+                                            total={this.props.registrationsAdminList.data.total}
+                                            page={this.state.page}
+                                            pageSize={this.state.pageSize}
+                                            onPageChange={this.pageChange}
+                                            onSort={this.sortChange}
+                                            onPageRowsPerPageChange={this.pageRowsChange}
+                                            columns={regheads}>
+                                        </PainTable> 
                                     )}
                                     {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
                                       this.props.registrationsAdminList.data.registrations && 

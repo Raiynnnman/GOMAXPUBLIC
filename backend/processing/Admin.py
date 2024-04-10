@@ -1208,11 +1208,16 @@ class RegistrationList(AdminBase):
         """
         status_ids = []
         search_par = [
-            limit,
-            offset*limit
+            int(limit),
+            int(offset)*int(limit)
         ]
+        ret['sort'] = [
+            {'id':1,'col':'updated','active':False,'direction':'asc'},
+            {'id':2,'col':'name','active':False,'direction':'asc'}
+        ]
+        
         count_par = []
-        if 'status' in params:
+        if 'status' in params and len(params['status']) > 0:
             q += " and provider_queue_status_id in ("
             arr = []
             for z in params['status']:
@@ -1226,12 +1231,30 @@ class RegistrationList(AdminBase):
             search_par.insert(0,params['search']+'%%')
             count_par.insert(0,params['search']+'%%')
             count_par.insert(0,params['search']+'%%')
-        q += """
-            order by
-                updated desc
-        """
         cnt = db.query("select count(id) as cnt from (" + q + ") as t", count_par)
         ret['total'] = cnt[0]['cnt']
+        if 'sort' not in params or params['sort'] == None:
+            q += """
+                order by
+                    updated desc
+            """
+            ret['sort'][0]['active'] = True
+            ret['sort'][0]['direction'] = 'desc'
+        else:
+            h = params['sort']
+            v = 'updated'
+            d = 'desc'
+            if 'direction' not in params:
+                params['direction'] = 'asc'
+            for x in ret['sort']:
+                if x['id'] == h:
+                    v = x['col']
+                    d = params['direction']
+                    x['active'] = True
+                    x['direction'] = params['direction']
+            q += """
+                order by %s %s
+            """ % (v,d)
         q += " limit %s offset %s " 
         o = []
         o = db.query(q,search_par)
