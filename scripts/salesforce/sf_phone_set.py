@@ -156,8 +156,7 @@ for x in SF_DATA:
         t['PainURL__c'] = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),o[0]['id'])
         t['PainID__c'] = o[0]['id']
         try:
-            pass
-            # sf.Lead.update(j['Id'],t)
+            sf.Lead.update(j['Id'],t)
         except Exception as e:
             print("ERROR: %s: %s" % (j['Id'],str(e)))
 
