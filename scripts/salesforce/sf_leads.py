@@ -429,11 +429,11 @@ for x in SF_DATA:
                 values (%s,%s,%s,%s)
             """,(
                 off_id,PQ['QUEUED'],ST['Potential Provider'],
-                j['website']
+                j['Website']
                 )
             )
             pq_id = db.query("select LAST_INSERT_ID()")
-            pq_id = PQ_ID[0]['LAST_INSERT_ID()']
+            pq_id = pq_id[0]['LAST_INSERT_ID()']
             j['PainID__c'] = pq_id
             db.update("""
                 insert into users(email,first_name,last_name,phone,active) 
@@ -622,8 +622,9 @@ for x in SF_DATA:
         if pq_id == 0:
             raise Exception("PQ_ID = 0")
         if 'Invoice_Paid__c' in t:
-            b = PAINHASH[x]
-            print(b)
+            if x in PAINHASH:
+                b = PAINHASH[x]
+                print(b)
         db.update("""
             update provider_queue set sf_id = %s where id = %s
             """,(j['Id'],int(pq_id))
