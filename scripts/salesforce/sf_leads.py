@@ -83,16 +83,17 @@ q = """
 
 BS = getIDs.getBillingSystem()
 
-if LASTMOD is not None and args.sf_id is None:
-    q += " and (pq.updated > %s or pq.sf_updated > %s) " 
-    PAIN = db.query(q,(LASTMOD,LASTMOD))
-elif args.sf_id is not None:
+#if LASTMOD is not None and args.sf_id is None:
+#    q += " and (pq.updated > %s or pq.sf_updated > %s) " 
+#    PAIN = db.query(q,(LASTMOD,LASTMOD))
+if args.sf_id is not None:
     q += " and pq.sf_id = '%s'" % args.sf_id
     print(q)
     PAIN = db.query(q)
 else:
     PAIN = db.query(q)
 
+print(len(PAIN))
 
 for x in PAIN:
     if x['sf_id'] is not None:
@@ -363,11 +364,11 @@ for x in PAIN:
     if not args.dryrun:
         db.commit()
 
-
+    CNTR += 1
     if args.limit is not None and CNTR > int(args.limit):
         break
-    CNTR += 1
 
+CNTR = 0
 for x in SF_DATA:
     j = SF_DATA[x]
     off_id = 0
@@ -634,7 +635,14 @@ for x in SF_DATA:
         print(json.dumps(t,indent=4))
     else:
         print("SF Leads Subscription unnecessary")
+        db.update("""
+            update provider_queue set sf_id = %s where id = %s
+            """,(j['Id'],int(pq_id))
+        )
     db.commit()
+    CNTR += 1
+    if args.limit is not None and CNTR > int(args.limit):
+        break
 
 sf_util.setLastUpdate(TYPE)
 
