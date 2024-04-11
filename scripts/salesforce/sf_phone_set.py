@@ -29,6 +29,8 @@ inst = config.getKey("sf_instance")
 parser = argparse.ArgumentParser()
 parser.add_argument('--dryrun', dest="dryrun", action="store_true")
 parser.add_argument('--limit', dest="limit", action="store")
+parser.add_argument('--sf_id', dest="sf_id", action="store")
+parser.add_argument('--painid', dest="painid", action="store")
 args = parser.parse_args()
 db = Query()
 
@@ -38,6 +40,17 @@ if config.getKey("sf_test"):
     sf = Salesforce(security_token=token, password=passw, username=user, instance=inst,domain='test')
 else:
     sf = Salesforce(security_token=token, password=passw, username=user, instance=inst)
+
+
+if args.sf_id is not None and args.painid is not None:
+    t['PainURL__c'] = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),args.painid)
+    t['PainID__c'] = args.painid
+    try:
+        sf.Lead.update(args.sf_id,t)
+    except Exception as e:
+        print("ERROR: %s: %s" % (j['Id'],str(e)))
+    print("Successfully updated %s" % args.sf_id)
+    sys.exit(0)
 
 SCHEMA = {}
 schema_f = 'sf_leads_schema.json'
@@ -151,7 +164,7 @@ for x in SF_DATA:
                 if h[1] != g[1]:
                     print("%s = %s" % (j['Email'],o[0]['email']))
                     print("%s = %s" % (j['Company'],o[0]['name']))
-                    print("%s: Email mismatch, continuing" % j['Id'])
+                    print("%s (%s) : Email mismatch, continuing" % (j['Id'],o[0]['id']))
                     continue
         t['PainURL__c'] = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),o[0]['id'])
         t['PainID__c'] = o[0]['id']
