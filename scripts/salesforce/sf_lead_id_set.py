@@ -52,7 +52,10 @@ for x in o:
     j['PainURL__c'] = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),x['id'])
     print(i,j)
     if not args.dryrun:
-        r = sf.Lead.update(i,data=j)
+        try:
+            r = sf.Lead.update(i,data=j)
+        except Exception as e:
+            print("%s: %s" % (i,str(e)))
     CNTR += 1
     if args.limit is not None and CNTR > int(args.limit):
         break
