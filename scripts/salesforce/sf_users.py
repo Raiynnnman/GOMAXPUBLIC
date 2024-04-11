@@ -94,7 +94,7 @@ for x in res['records']:
     if len(j) > 0:
         db.update("""
             update users set sf_id = null where id = %s
-            """,(x['Id'],j[0]['id'])
+            """,(j[0]['id'],)
         )
     db.update("""
         update users set sf_id = %s where id = %s
