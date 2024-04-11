@@ -204,7 +204,7 @@ class Registrations extends Component {
     }
 
     componentDidMount() {
-        var i = 0;
+        var i = null;
         if (this.props.match.params.id) { 
             i = this.props.match.params.id;
         } 
@@ -215,6 +215,7 @@ class Registrations extends Component {
         }));
         this.props.dispatch(getPlansList({}));
     }
+
     addInvoiceRow() { 
         this.state.selected.invoice.items.push({
             price:0,

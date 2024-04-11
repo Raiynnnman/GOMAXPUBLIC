@@ -78,7 +78,16 @@ class OfficeList extends Component {
 
 
     componentDidMount() {
-        this.props.dispatch(getOffices({page:this.state.page,limit:this.state.pageSize}))
+        var i = null;
+        if (this.props.match.params.id) { 
+            i = this.props.match.params.id;
+        } 
+        this.props.dispatch(getRegistrations({
+            limit:this.state.pageSize,
+            office_id:i,
+            offset:this.state.page
+        }));
+        // this.props.dispatch(getOffices({page:this.state.page,limit:this.state.pageSize}))
     }
 
     activeChange(e,t) { 

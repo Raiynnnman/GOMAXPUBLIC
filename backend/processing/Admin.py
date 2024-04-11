@@ -716,13 +716,19 @@ class OfficeList(AdminBase):
                     o.office_type_id <> %s 
             """ % (OT['Customer'],OT['Legal'])
         stat_params = []
-        if 'status' in params:
+        count_par = []
+        q_params = [
+            limit,offset*limit
+        ]
+        if 'status' in params and params['office_id'] is None:
             q += " and pq.provider_queue_status_id in (%s) " % ','.join(map(str,params['status']))
+        if 'office_id' in params and params['office_id'] is not None and params['office_id'] > 0:
+            q += " and pq.id = %s " % params['office_id']
         q += " group by o.id order by o.updated desc "
         cnt = db.query("select count(id) as cnt from (%s) as t" % (q,))
         q += " limit %s offset %s " 
         ret['total'] = cnt[0]['cnt']
-        o = db.query(q,(limit,offset*limit))
+        o = db.query(q,q_params)
         ret['offices'] = []
         for x in o:
             x['addr'] = json.loads(x['addr'])
@@ -1216,7 +1222,7 @@ class RegistrationList(AdminBase):
             {'id':2,'col':'name','active':False,'direction':'asc'}
         ]
         count_par = []
-        if 'pq_id' in params and params['pq_id'] != 0 and params['pq_id'] is not None:
+        if 'pq_id' in params and params['pq_id'] is not None:
             q += " and pq.id = %s "
             search_par.insert(0,int(params['pq_id']))
             count_par.append(int(params['pq_id']))

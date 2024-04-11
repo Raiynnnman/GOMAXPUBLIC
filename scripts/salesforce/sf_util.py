@@ -74,9 +74,11 @@ def updatePAINDB(prow,srow,sfschema,pschema,db):
         com_user[g['sf_id']] = g['id']
     oldvalues = getPAINData(prow,srow,sfschema,pschema,db)
     oldvalues = oldvalues[1]
-    print("p=%s" % json.dumps(prow,sort_keys=True))
-    print("s=%s" % json.dumps(srow,sort_keys=True))
-    print("o=%s" % json.dumps(oldvalues,sort_keys=True))
+    if 'attributes' in srow:
+        del srow['attributes']
+    #print("p=%s" % json.dumps(prow,sort_keys=True))
+    #print("s=%s" % json.dumps(srow,sort_keys=True))
+    #print("o=%s" % json.dumps(oldvalues,sort_keys=True))
     for x in srow:
         pcol = None
         for t in sfschema:
@@ -84,7 +86,7 @@ def updatePAINDB(prow,srow,sfschema,pschema,db):
                 v = sfschema[t]['label']
                 pcol = pschema[v]
         if pcol is None:
-            raise Exception("Column %s not found in schema")
+            raise Exception("Column %s not found in schema" % x)
         if not pcol['include_in_back_sync']:
             # print("Skipping field %s, not in back sync" % x)
             continue
@@ -97,9 +99,9 @@ def updatePAINDB(prow,srow,sfschema,pschema,db):
         if newval == oldval:
             # print("Field %s (%s/%s) identical, skip" % (x,newval,oldval))
             continue
-        print('comp: %s=%s' % (oldval,newval))
-        print(x)
-        print("pcol=%s" % pcol)
+        #print('comp: %s=%s' % (oldval,newval))
+        #print(x)
+        #print("pcol=%s" % pcol)
         if len(join) < 1:
             join = 'id'
         val = 0
@@ -124,6 +126,10 @@ def updatePAINDB(prow,srow,sfschema,pschema,db):
             j = table
             ftable = j.split(',')[1]
             jtable = j.split(',')[0]
+        if ftable=='users' and join =='user_id':
+            join = 'id'
+        if ftable=='office_addresses' and field =='website':
+            ftable = 'provider_queue'
         if COMM:
             ftable = 'office'
         q = """
@@ -131,7 +137,7 @@ def updatePAINDB(prow,srow,sfschema,pschema,db):
         """ % (ftable,field,ftable,join,val)
         q = q.replace("**","%s")
         print(q,newval)
-        # db.update(q,(newval,))
+        db.update(q,(newval,))
 
 def getPAINData(prow,srow,sfschema,pschema,db):
     # print(json.dumps(prow,indent=4))
@@ -156,7 +162,6 @@ def getPAINData(prow,srow,sfschema,pschema,db):
             upd = updateSF()
             print("Picking sf because p.updated > s.updated")
         if s > p:
-            print("update pain")
             print("Picking pain because s.updated > p.updated")
             upd = updatePAIN()
     for y in pschema:
@@ -166,11 +171,11 @@ def getPAINData(prow,srow,sfschema,pschema,db):
         if y not in sfschema:
             raise Exception('"%s" missing from SF schema' % y)
         TYPE = sfschema[y]['type']
-        print("type=%s" % sfschema[y]['type'])
+        #print("type=%s" % sfschema[y]['type'])
         SFCOLNAME = sfschema[y]['name']
-        print(pschema[y])
-        print(json.dumps(sfschema[y]))
-        print(prow)
+        #print(pschema[y])
+        #print(json.dumps(sfschema[y]))
+        #print(prow)
         field = pschema[y]['pain_field_name']
         table = pschema[y]['pain_table_name']
         filt = pschema[y]['pain_special_filter']
@@ -263,7 +268,7 @@ def compareDicts(n,f):
             ret = False
             break
         if isinstance(f[x],bool):
-            print("changing bool")
+            #print("changing bool")
             if n[x] == 1:
                 n[x] = True
             if n[x] == 0:
@@ -272,8 +277,8 @@ def compareDicts(n,f):
             print("%s != %s"  % (n[x],f[x]))
             ret = False
             break
-    print("n=%s" % json.dumps(n,sort_keys=True))
-    print("f=%s" % json.dumps(f,sort_keys=True))
+    #print("n=%s" % json.dumps(n,sort_keys=True))
+    #print("f=%s" % json.dumps(f,sort_keys=True))
     return ret
 
 def getLastUpdate(t):

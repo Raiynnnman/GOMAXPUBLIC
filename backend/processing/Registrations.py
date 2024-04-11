@@ -212,6 +212,7 @@ class RegistrationLandingData(RegistrationsBase):
 
     def execute(self, *args, **kwargs):
         ret = {'pricing':[]}
+        params = args[1][0]
         db = Query()
         o = db.query("""
             select id,trial,price,locations,duration,start_date,end_date,active,slot
@@ -231,6 +232,38 @@ class RegistrationLandingData(RegistrationsBase):
                 otd.office_type_id = ot.id
             """)
         ret['roles'] = l
+        if 'pq_id' in params and params['pq_id'] is not None:
+            o = db.query("""
+                select
+                    pq.id,
+                    JSON_ARRAYAGG(
+                        JSON_OBJECT(
+                            'id',oa.id,'addr1',oa.addr1,'addr2',oa.addr2,'phone',oa.phone,
+                            'city',oa.city,'state',oa.state,'zipcode',oa.zipcode,'verified','1')
+                    ) as addr,u.phone,u.first_name,u.last_name,o.name,o.active,o.email,
+                    op.pricing_data_id as plan
+                from
+                    provider_queue pq
+                    left join office o on pq.office_id = o.id
+                    left join office_plans op on op.office_id = o.id
+                    left join users u on u.id = o.user_id 
+                    left outer join office_addresses oa on oa.office_id = o.id
+                where 
+                    pq.id = %s
+                group by
+                    o.id
+                """,(params['pq_id'],)
+            )
+            if len(o) > 0:
+                o = o[0]
+                addr = []
+                o['addr'] = json.loads(o['addr'])
+                for x in o['addr']:
+                    if x['id'] is None:
+                        continue
+                    addr.append(x)
+                o['addr'] = addr
+                ret['pq'] = o
         return ret
 
 class RegisterProvider(RegistrationsBase):
@@ -246,15 +279,17 @@ class RegisterProvider(RegistrationsBase):
         ret['success'] = True
         params = args[1][0]
         db = Query()
-        insid = 0
         OT = self.getOfficeTypes()
         ST = self.getLeadStrength()
         ENT = self.getEntitlementIDs()
         PERM = self.getPermissionIDs()
         PL = self.getPlans()
+        PQ = self.getProviderQueueStatus()
         BS = self.getBillingSystem()
         HAVE = False
+        off_id = 0
         userid = 0
+        pq_id = 0
         if 'cust_id' not in params:
             params['cust_id'] = "cust-%s" % (encryption.getSHA256(params['email']))
         l = db.query("""
@@ -263,30 +298,39 @@ class RegisterProvider(RegistrationsBase):
         )
         for t in l:
             userid = t['id']
-        l = db.query("""
-            select id 
-                from office o, office_user ou 
-            where
-                ou.office_id=o.id and
-                ou.user_id = %s
-            """,(userid,)
-        )
-        for t in l:
-            insid = t['id']
-        if insid == 0:
+        if 'pq_id' in params and params['pq_id'] is not None:
+            HAVE = True
+            pq_id = int(params['pq_id'])
+            l = db.query("""
+                select office_id from provider_queue where id=%s
+                """,(pq_id,)
+            )
+            off_id = l[0]['office_id']
+        if off_id == 0:
+            l = db.query("""
+                select id 
+                    from office o, office_user ou 
+                where
+                    ou.office_id=o.id and
+                    ou.user_id = %s
+                """,(userid,)
+            )
+            for t in l:
+                off_id = t['id']
+        if off_id == 0:
             db.update("insert into office (name,office_type_id,email,cust_id,active,billing_system_id) values (%s,%s,%s,%s,0,%s)",
                 (params['name'],OT['Chiropractor'],params['email'],params['cust_id'],BS)
             )
-            insid = db.query("select LAST_INSERT_ID()");
-            insid = insid[0]['LAST_INSERT_ID()']
-        db.update("delete from office_addresses where office_id=%s",(insid,))
+            off_id = db.query("select LAST_INSERT_ID()");
+            off_id = off_id[0]['LAST_INSERT_ID()']
+        db.update("delete from office_addresses where office_id=%s",(off_id,))
         for x in params['addresses']:
             db.update(
                 """
                     insert into office_addresses (
                         office_id,name,addr1,phone,city,state,zipcode
                     ) values (%s,%s,%s,%s,%s,%s,%s)
-                """,(insid,x['name'],x['addr1'],x['phone'],x['city'],x['state'],x['zipcode'])
+                """,(off_id,x['name'],x['addr1'],x['phone'],x['city'],x['state'],x['zipcode'])
             )
             oaid = db.query("select LAST_INSERT_ID()");
             oaid = oaid[0]['LAST_INSERT_ID()']
@@ -298,9 +342,6 @@ class RegisterProvider(RegistrationsBase):
                 db.update("update office_addresses set places_id=%s where id=%s",(
                     x['places_id'],oaid)
                 )
-            # If its claimed, remove it from the pool
-            if 'id' in x:
-                db.update(""" delete from office_addresses where id=%s """,(x['id'],))
         if not HAVE:
             db.update(
                 """
@@ -343,22 +384,39 @@ class RegisterProvider(RegistrationsBase):
                 insert into user_permissions (user_id,permissions_id) values (%s,%s)
                 """,(uid,PERM['Admin'])
             )
-        selplan = int(params['plan'])
-        db.update("""
-            insert into office_plans (office_id,start_date,end_date,pricing_data_id) 
-                values (%s,now(),date_add(now(),INTERVAL %s MONTH),%s)
-            """,(insid,PL[selplan]['duration'],selplan)
-        )
-        planid = db.query("select LAST_INSERT_ID()");
-        planid = planid[0]['LAST_INSERT_ID()']
-        db.update("""
-            insert into office_plan_items (
-                office_plans_id,price,quantity,description) 
-            values 
-                (%s,%s,%s,%s)
-            """,(planid,PL[selplan]['price'],1,PL[selplan]['description'])
-                
-        )
+        if 'plan' in params and params['plan'] is not None:
+            if 'pq' not in params or params['pq'] is None:
+                selplan = int(params['plan'])
+                o = db.query("""
+                    select id from office_plans where office_id = %s
+                    """,(off_id,)
+                )
+                if len(o) > 0:
+                    db.update("""
+                        delete from office_plan_items opi
+                            where opi.office_plans_id = %s
+                        """,(o[0]['id'],)
+                    )
+                    db.update("""
+                        delete from office_plans op
+                            where op.office_id = %s
+                        """,(off_id,)
+                    )
+                db.update("""
+                    insert into office_plans (office_id,start_date,end_date,pricing_data_id) 
+                        values (%s,now(),date_add(now(),INTERVAL %s MONTH),%s)
+                    """,(insid,PL[selplan]['duration'],selplan)
+                )
+                planid = db.query("select LAST_INSERT_ID()");
+                planid = planid[0]['LAST_INSERT_ID()']
+                db.update("""
+                    insert into office_plan_items (
+                        office_plans_id,price,quantity,description) 
+                    values 
+                        (%s,%s,%s,%s)
+                    """,(planid,PL[selplan]['price'],1,PL[selplan]['description'])
+                        
+                )
         if 'card' in params and params['card'] is not None:
             stripe_id = None
             if BS == 1:
@@ -399,7 +457,7 @@ class RegisterProvider(RegistrationsBase):
                         exp_month,exp_year,is_default,brand
                     ) values (%s,%s,%s,%s,%s,%s,1,%s)
                     """,(
-                        insid,
+                        off_id,
                         card['token']['token'],
                         card['token']['token'],
                         card['token']['details']['card']['last4'],
@@ -408,6 +466,15 @@ class RegisterProvider(RegistrationsBase):
                         card['token']['details']['card']['brand']
                         )
                 )
+        if 'pq_id' in params and params['pq_id'] is not None: 
+            db.update("""
+                update provider_queue set sf_lead_executed=1,provider_queue_status_id = %s where id = %s
+                """,(PQ['INVITED'],pq_id)
+            )
+            db.update("""
+                update office set active = 1 where id = %s
+                """,(off_id,)
+            )
         ### TODO: Send invite link
         db.commit()
         return ret

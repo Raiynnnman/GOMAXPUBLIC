@@ -48,6 +48,7 @@ class RegisterProvider extends Component {
             last:'',
             phone:'',
             email:'',
+            pq_id:null,
             addresses:[],
             showAddresses:[],
             intentid:'',
@@ -85,6 +86,22 @@ class RegisterProvider extends Component {
     } 
 
     componentWillReceiveProps(p) { 
+        if (p.landingData && p.landingData.data && p.landingData.data.pq && this.state.pq_id !== null
+            && this.state.phone.length < 1) { 
+            console.log("found",p.landingData.data.pq);
+            this.state.phone = p.landingData.data.pq.phone;
+            this.state.first = p.landingData.data.pq.first_name + " " + p.landingData.data.pq.last_name;
+            this.state.name = p.landingData.data.pq.name;
+            this.state.email = p.landingData.data.pq.email;
+            this.state.showAddresses = p.landingData.data.pq.addr;
+            this.setState(this.state);
+            this.state.selPlan = p.landingData.data.pricing.filter((e) => parseInt(p.landingData.data.pq.plan) === e.id)
+            if (this.state.selPlan.length > 0) { 
+                this.state.selPlan = this.state.selPlan[0]
+            } 
+            this.checkValid()
+            
+        } 
         if (p.landingData && p.landingData.data && p.landingData.data.pricing && this.state.selPlan === null) { 
             this.state.selPlan = p.landingData.data.pricing.filter((e) => parseInt(this.state.plan) === e.id)
             if (this.state.selPlan.length > 0) { 
@@ -93,7 +110,7 @@ class RegisterProvider extends Component {
             this.setState(this.state);
         } 
         var relList = false;
-        if (p.searchProvider.data && p.searchProvider.data.potentials && this.state.page === 1) {  
+        if (p.searchProvider.data && p.searchProvider.data.potentials && this.state.page === 1 && this.state.pq_id === null) {  
             var g = p.searchProvider.data.potentials.map((e) => { 
                 return (e.id)
             }) 
@@ -111,13 +128,9 @@ class RegisterProvider extends Component {
 
 
     componentDidMount() {
-        this.props.dispatch(getLandingData({}));
         this.state.plan = this.props.match.params.id;
-        // Turn off, using square
-        /*this.props.dispatch(setupIntent()).then((e) =>  { 
-            this.state.newcard = {id:0};
-            this.setState(this.state);
-        }) */
+        this.state.pq_id = this.props.match.params.pq_id;
+        this.props.dispatch(getLandingData({pq_id:this.state.pq_id}));
     }
 
     checkValid() { 
@@ -148,6 +161,7 @@ class RegisterProvider extends Component {
     } 
 
     updateVerified(e) { 
+        console.log("uv",e);
         var c = 0;
         var i = -1;
         for (c=0;c<this.state.showAddresses.length;c++) { 
@@ -169,6 +183,7 @@ class RegisterProvider extends Component {
     } 
 
     search() { 
+        if (this.state.pq_id !== null) { return; }
         var ts = { 
             n:this.state.name,
             p:this.state.phone,
@@ -228,6 +243,10 @@ class RegisterProvider extends Component {
             card: this.state.card,
             last: this.state.last,
             addresses: a 
+        } 
+        if (this.state.pq_id !== null) { 
+            tosend.pq_id = this.state.pq_id
+            delete tosend.plan
         } 
         this.props.dispatch(registerProvider(tosend,function(err,args) { 
             window.location = "/#/welcome";
@@ -314,6 +333,8 @@ class RegisterProvider extends Component {
 
 
     render() {
+        console.log("p",this.props);
+        console.log("s",this.state);
         var heads = [
             {
                 dataField:'name',

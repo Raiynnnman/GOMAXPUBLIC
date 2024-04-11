@@ -39,6 +39,7 @@ l = db.query("""
                 'description',opi.description,'quantity',opi.quantity
             )
         ) as items,pq.initial_payment,pd.duration,
+        pq.sf_lead_executed,
         pd.upfront_cost,pd.price,o.commission_user_id,
         cs.id as commission_structure_id,pq.initial_payment,
         cs.commission,concat(u.first_name,' ',u.last_name) as comm_user
@@ -52,10 +53,13 @@ l = db.query("""
         left join provider_queue pq on pq.office_id = op.office_id 
     where 
         op.office_id not in (select office_id from invoices) and
-        (pq.provider_queue_status_id = %s or pq.provider_queue_status_id = %s)
+        (
+            pq.provider_queue_status_id = %s or pq.provider_queue_status_id = %s or
+            pq.provider_queue_status_id = %s
+        )
     group by
         op.id
-    """,(PQS['APPROVED'],PQS['QUEUED'])
+    """,(PQS['APPROVED'],PQS['QUEUED'],PQS['INVITED'])
 )
 CNT = 0
 for x in l:
@@ -87,6 +91,17 @@ for x in l:
         )
     if x['commission'] is None:
         x['commission'] = 0
+    if x['sf_lead_executed']:
+        db.update("""
+            update invoices set invoice_status_id = %s
+                where id = %s
+            """,(INV['APPROVED'],insid)
+        )
+        db.update("""
+            insert into invoice_history (invoices_id,user_id,text) values 
+                (%s,%s,%s)
+            """,(insid,1,'Auto set to APPROVED as its an SF_LEAD')
+        )
     if x['commission_user_id'] is not None:
         db.update("""
             insert into commission_users (user_id,commission_structure_id,amount,office_id)
@@ -115,7 +130,7 @@ for x in l:
     if x['price'] != 0:
         # months = int(x['upfront_cost'] / x['price'])
         months = x['duration']
-    for t in range(0,months):
+    for t in range(1,months):
         j = db.query("""
             select
                 date_add(%s, INTERVAL %s month) as bp
@@ -143,6 +158,11 @@ for x in l:
             insert into invoice_history (invoices_id,user_id,text) values 
                 (%s,%s,%s)
             """,(newid,1,'Generated invoice' )
+        )
+        db.update("""
+            insert into invoice_history (invoices_id,user_id,text) values 
+                (%s,%s,%s)
+            """,(newid,1,'Set invoice to $0 for plan' )
         )
         db.update("""
             insert into stripe_invoice_status (office_id,invoices_id,status) values (%s,%s,%s)

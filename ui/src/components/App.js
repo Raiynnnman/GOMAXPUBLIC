@@ -50,6 +50,7 @@ class App extends React.PureComponent {
                       <Route path="/verify/:token" exact component={Verified}/> 
                       <Route path="/register" exact component={Register}/>}
                       <Route path="/register-provider/:id" exact component={RegisterProvider}/>
+                      <Route path="/register-provider/o/:pq_id" exact component={RegisterProvider}/>
                       <Route path="/register-referrer" exact component={RegisterReferrer}/>
                       <AuthRoute path="/login" exact component={Login}/>
                       <AuthRoute path="/welcome" exact component={Welcome}/>
