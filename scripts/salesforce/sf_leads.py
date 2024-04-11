@@ -81,6 +81,7 @@ q = """
         o.import_sf = 1 
     """
 
+BS = getIDs.getBillingSystem()
 
 if LASTMOD is not None and args.sf_id is None:
     q += " and (pq.updated > %s or pq.sf_updated > %s) " 
@@ -133,7 +134,8 @@ for x in PSCHEMA:
 SFQUERY += ','.join(ARR)
 SFQUERY += " from Lead "
 if LASTMOD is not None and args.sf_id is None:
-    SFQUERY += " where ModifiedDate > %s" % LASTMOD
+    pass
+    # SFQUERY += " where ModifiedDate > %s" % LASTMOD
 if args.sf_id is not None:
     SFQUERY += " where Id = '%s'" % args.sf_id
 print(SFQUERY)
@@ -411,12 +413,12 @@ for x in SF_DATA:
                     (%s,%s,%s,%s,%s,%s,%s)
                 """,(
                     off_id,
-                    j['Street'],
-                    j['Phone'],
-                    j['City'],
-                    j['State'],
-                    j['PostalCode'],
-                    j['Company']
+                    j['Street'] if 'Street' in j else '',
+                    j['Phone'] if 'Phone' in j else '',
+                    j['City'] if 'City' in j else '',
+                    j['State'] if 'State' in j else '',
+                    j['PostalCode'] if 'PostalCode' in j else '',
+                    j['Company'] 
                     )
             )
             db.update("""
@@ -507,7 +509,7 @@ for x in SF_DATA:
             print("Updating null PainID: %s" % j['PainID__c'])
             if not args.dryrun:
                 sf.Lead.update(j['Id'],{
-                    'PainID__c': o[0]['t1'],
+                    'PainID__c': pq_id,
                     'PainURL__c':j['PainURL__c']
                 })
             db.update("""
