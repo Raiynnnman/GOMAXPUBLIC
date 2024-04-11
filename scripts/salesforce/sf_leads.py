@@ -537,18 +537,7 @@ for x in SF_DATA:
                 print("PQ given, office not found: %s" % pq_id)
                 continue
         elif len(off_id) < 1 and len(off_id2) > 0:
-            pq_id = db.query("select id from provider_queue where office_id=%s",(off_id2[0]['id'],))
-            if len(pq_id) < 1:
-                raise Exception("PQ given, office not found on 2nd try: %s" % pq_id)
-            off_id = off_id2[0]['id']
-            pq_id = pq_id[0]['id']
-            j['PainID__c'] = pq_id
-            j['PainURL__c'] = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),pq_id)
-            if not args.dryrun:
-                sf.Lead.update(j['Id'],{
-                    'PainID__c': pq_id,
-                    'PainURL__c':j['PainURL__c']
-                })
+            raise Exception("PQ given, office found instead: %s" % pq_id)
         else:
             off_id = off_id[0]['office_id']
     print("off_id=%s" % off_id)
