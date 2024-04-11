@@ -157,6 +157,8 @@ for x in SF_DATA:
     if len(o) > 0:
         t = {}
         # print("%s = %s" % (j['Id'],o[0]['id']))
+        if j['Email'] is None:
+            j['Email'] = 'nobody@nobody.com'
         if j['Email'] != o[0]['email']:
             h = j['Email'].split('@')
             g = o[0]['email'].split('@')
