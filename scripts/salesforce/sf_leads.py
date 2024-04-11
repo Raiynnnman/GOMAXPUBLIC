@@ -31,6 +31,7 @@ parser.add_argument('--dryrun', dest="dryrun", action="store_true")
 parser.add_argument('--sf_id', dest="sf_id", action="store")
 parser.add_argument('--limit', dest="limit", action="store")
 parser.add_argument('--force_sf', dest="force_sf", action="store_true")
+parser.add_argument('--excp_pass', dest="excp_pass", action="store_true")
 parser.add_argument('--force_pain', dest="force_pain", action="store_true")
 parser.add_argument('--del_dups', dest="del_dups", action="store_true")
 parser.add_argument('--doall', dest="do_all", action="store_true")
@@ -238,7 +239,6 @@ for x in PAIN:
         LAST_MOD = SF_ROW['LastModifiedDate']
         LAST_MOD = calcdate.parseDate(LAST_MOD).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
         print("LAST_MOD:%s" % LAST_MOD)
-
     try:
         x['LastModifiedDate'] = max(x['updated01'],x['updated02'])
     except:
@@ -371,6 +371,9 @@ for x in PAIN:
 CNTR = 0
 for x in SF_DATA:
     j = SF_DATA[x]
+    if j['Email'] is None:
+        print("Record %s has no email, skipping" % j['Id'])
+        continue
     off_id = 0
     user_id = 0
     pq_id = 0
@@ -380,8 +383,8 @@ for x in SF_DATA:
     if 'attributes' in j:
         del j['attributes']
     sub = None
-    print("START---")
-    print(json.dumps(j,indent=4))
+    #print("START---")
+    print(json.dumps(j))
     if j['PainID__c'] is None:
         o = db.query("""
             select pq.id as t1 from office_addresses oa,office o,provider_queue pq  
@@ -523,9 +526,31 @@ for x in SF_DATA:
             select office_id from provider_queue where id = %s
             """,(pq_id,)
         )
-        if len(off_id) < 1:
-            raise Exception("PQ given, office not found")
-        off_id = off_id[0]['office_id']
+        off_id2 = db.query("""
+            select id from office where id = %s
+            """,(pq_id,)
+        )
+        if len(off_id) < 1 and len(off_id2) < 1:
+            if not args.excp_pass:
+                raise Exception("PQ given, office not found: %s" % pq_id)
+            else:
+                print("PQ given, office not found: %s" % pq_id)
+                continue
+        elif len(off_id) < 1 and len(off_id2) > 0:
+            pq_id = db.query("select id from provider_queue where office_id=%s",(off_id2[0]['id'],))
+            if len(pq_id) < 1:
+                raise Exception("PQ given, office not found on 2nd try: %s" % pq_id)
+            off_id = off_id2[0]['id']
+            pq_id = pq_id[0]['id']
+            j['PainID__c'] = pq_id
+            j['PainURL__c'] = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),pq_id)
+            if not args.dryrun:
+                sf.Lead.update(j['Id'],{
+                    'PainID__c': pq_id,
+                    'PainURL__c':j['PainURL__c']
+                })
+        else:
+            off_id = off_id[0]['office_id']
     print("off_id=%s" % off_id)
     if 'Subscription_Plan__c' in j and j['Subscription_Plan__c'] is not None:
         o = db.query("""
@@ -543,7 +568,7 @@ for x in SF_DATA:
         cur = db.query("""
             select id,pricing_data_id from office_plans where
                 office_id = %s
-            """,(j['PainID__c'],)
+            """,(off_id,)
         )
         if len(cur) > 0:
             print("Replacing office plan")

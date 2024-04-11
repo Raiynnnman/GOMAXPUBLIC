@@ -130,6 +130,8 @@ def updatePAINDB(prow,srow,sfschema,pschema,db):
             join = 'id'
         if ftable=='office_addresses' and field =='website':
             ftable = 'provider_queue'
+        if ftable=='office' and join =='office_id':
+            join = 'id'
         if COMM:
             ftable = 'office'
         q = """
@@ -275,10 +277,10 @@ def compareDicts(n,f):
                 n[x] = False
         if n[x] != f[x]:
             print("%s != %s"  % (n[x],f[x]))
+            print("n=%s" % json.dumps(n,sort_keys=True))
+            print("f=%s" % json.dumps(f,sort_keys=True))
             ret = False
             break
-    #print("n=%s" % json.dumps(n,sort_keys=True))
-    #print("f=%s" % json.dumps(f,sort_keys=True))
     return ret
 
 def getLastUpdate(t):
