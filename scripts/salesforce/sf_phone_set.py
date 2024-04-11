@@ -47,6 +47,11 @@ if args.sf_id is not None and args.painid is not None:
     t['PainID__c'] = args.painid
     try:
         sf.Lead.update(args.sf_id,t)
+        db.update("""
+            update provider_queue set sf_id = %s where id = %s
+            """,(args.sf_id,x['id'])
+        )
+        db.commit()
     except Exception as e:
         print("ERROR: %s: %s" % (j['Id'],str(e)))
     print("Successfully updated %s" % args.sf_id)
@@ -144,7 +149,7 @@ for x in SF_DATA:
     p = j['Phone']
     p = p.replace(")",'').replace("(",'').replace("-",'').replace(" ",'').replace('.','')
     o = db.query("""
-        select pq.id,o.name,o.email from 
+        select pq.id,o.name,o.email,pq.sf_id from 
             provider_queue pq,
             office o,
             office_addresses oa
@@ -164,16 +169,23 @@ for x in SF_DATA:
             g = o[0]['email'].split('@')
             if len(h) > 1 and len(g) > 1:
                 if h[1] != g[1]:
+                    print("%s (%s) : Email mismatch, continuing" % (j['Id'],o[0]['id']))
                     print("%s = %s" % (j['Email'],o[0]['email']))
                     print("%s = %s" % (j['Company'],o[0]['name']))
-                    print("%s (%s) : Email mismatch, continuing" % (j['Id'],o[0]['id']))
+                    print("-----")
                     continue
         t['PainURL__c'] = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),o[0]['id'])
         t['PainID__c'] = o[0]['id']
         try:
             sf.Lead.update(j['Id'],t)
+            if x['sf_id'] is None:
+                db.update("""
+                    update provider_queue set sf_id = %s where id = %s
+                    """,(j['Id'],x['id'])
+                )
         except Exception as e:
             print("ERROR: %s: %s" % (j['Id'],str(e)))
+    db.commit()
 
 
 
