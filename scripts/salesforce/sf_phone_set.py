@@ -178,13 +178,14 @@ for x in SF_DATA:
         t['PainID__c'] = o[0]['id']
         try:
             sf.Lead.update(j['Id'],t)
-            if x['sf_id'] is None:
+            if o[0]['sf_id'] is None:
                 db.update("""
                     update provider_queue set sf_id = %s where id = %s
-                    """,(j['Id'],x['id'])
+                    """,(j['Id'],o[0]['id'])
                 )
         except Exception as e:
             print("ERROR: %s: %s" % (j['Id'],str(e)))
+            # raise e
     db.commit()
 
 
