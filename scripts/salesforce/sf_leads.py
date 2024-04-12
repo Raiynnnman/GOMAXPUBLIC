@@ -545,7 +545,10 @@ for x in SF_DATA:
                 print("PQ given, office not found: %s" % pq_id)
                 continue
         elif len(off_id) < 1 and len(off_id2) > 0:
-            raise Exception("PQ given, office found instead: %s" % pq_id)
+            if not args.excp_pass:
+                raise Exception("PQ given, office not found: %s" % pq_id)
+            else:
+                raise Exception("PQ given, office found instead: %s" % pq_id)
         else:
             off_id = off_id[0]['office_id']
     print("off_id=%s" % off_id)

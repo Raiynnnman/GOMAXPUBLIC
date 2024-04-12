@@ -105,6 +105,8 @@ for x in SF_DATA:
     j = SF_DATA[x]
     # print(j)
     p = j['Phone']
+    if p is None:
+        continue
     if 'x' in p:
         p = p.split('x')[0]
     if ')' in p or '.' in p or ' ' in p or len(p) > 10:
