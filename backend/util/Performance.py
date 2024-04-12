@@ -56,7 +56,7 @@ class performance():
                         country, stateprov, city 
                        from dbip_lookup where ? between ip_st_int and ip_en_int
                     """
-                print(q,g)
+                # print(q,g)
                 curs.execute(q, (g,))
                 for n in curs:
                     j['lat'] = n[0] 

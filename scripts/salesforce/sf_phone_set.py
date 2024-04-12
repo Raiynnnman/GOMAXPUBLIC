@@ -148,6 +148,11 @@ for x in SF_DATA:
         continue
     p = j['Phone']
     p = p.replace(")",'').replace("(",'').replace("-",'').replace(" ",'').replace('.','')
+    if p.startswith("+1"):
+        p = p.replace("+1","")
+    if p.startswith("1") and len(p) == 11:
+        p = p[1:]
+    print("p=%s" % p)
     o = db.query("""
         select pq.id,o.name,o.email,pq.sf_id from 
             provider_queue pq,

@@ -46,6 +46,14 @@ db.update("""
         where locate('-',phone) > 0;
     """)
 db.update("""
+    update office_addresses set phone = replace(phone,'.','')
+        where locate('-',phone) > 0;
+    """)
+db.update("""
+    update office_addresses set phone = substring(phone,2,10)
+        where length(phone) = 11
+    """)
+db.update("""
     update users set phone = replace(phone,'+1','')
         where phone like '+1%'
     """)
@@ -68,5 +76,9 @@ db.update("""
 db.update("""
     update users set phone = replace(phone,'.','')
         where locate('.',phone) > 0;
+    """)
+db.update("""
+    update users set phone = substring(phone,2,10)
+        where length(phone) = 11
     """)
 db.commit()

@@ -172,6 +172,10 @@ for x in res['records']:
     if p is None:
         continue
     p = p.replace(")",'').replace("(",'').replace("-",'').replace(" ",'').replace('.','')
+    if p.startswith("+1"):
+        p = p.replace("+1","")
+    if p.startswith("1") and len(p) == 11:
+        p = p[1:]
     if p not in PHONES:
         PHONES[p] = []
     
@@ -262,6 +266,10 @@ for x in PAIN:
     if 'Phone' in newdata and newdata['Phone'] is not None:
         p = newdata['Phone']
         p = p.replace(")",'').replace("(",'').replace("-",'').replace(" ",'').replace('.','')
+        if p.startswith("+1"):
+            p = p.replace("+1","")
+        if p.startswith("1") and len(p) == 11:
+            p = p[1:]
         newdata['Phone'] = p
     
     print("upd=%s" % update)
