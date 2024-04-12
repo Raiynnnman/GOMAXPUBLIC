@@ -702,7 +702,6 @@ class Registrations extends Component {
                                         <PainTable
                                             keyField='id' 
                                             data={this.props.registrationsAdminList.data.registrations} 
-                                            pagination={paginationFactory(options)}
                                             total={this.props.registrationsAdminList.data.total}
                                             page={this.state.page}
                                             pageSize={this.state.pageSize}

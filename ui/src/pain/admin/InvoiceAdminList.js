@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Col, Row } from 'reactstrap';
+import AutorenewIcon from '@mui/icons-material/Autorenew';
 import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
 import { getInvoiceAdmin } from '../../actions/invoiceAdmin';
 import { FormGroup, Label, Input } from 'reactstrap';
@@ -26,6 +27,7 @@ import PhysicianCard from '../search/PhysicianCard';
 import AliceCarousel from 'react-alice-carousel';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import PainTable from '../utils/PainTable';
 
 const { SearchBar } = Search;
 class InvoiceAdminList extends Component {
@@ -35,19 +37,26 @@ class InvoiceAdminList extends Component {
             selected: null,
             assignPhysician: null,
             filter: [],
+            page: 0,
+            pageSize: 10,
             statusSelected:null,
             commentAdd:false
         } 
         this.onStatusChange = this.onStatusChange.bind(this);
         this.onInvoiceStatusChange = this.onInvoiceStatusChange.bind(this);
         this.statusChange = this.statusChange.bind(this);
+        this.search = this.search.bind(this);
         this.edit = this.edit.bind(this);
         this.addComment = this.addComment.bind(this);
         this.comment = this.comment.bind(this);
+        this.sortChange = this.sortChange.bind(this);
+        this.pageRowsChange = this.pageRowsChange.bind(this);
+        this.sortChange = this.sortChange.bind(this);
         this.cancelComment = this.cancelComment.bind(this);
         this.saveComment = this.saveComment.bind(this);
         this.cancel = this.cancel.bind(this);
         this.save = this.save.bind(this);
+        this.reload = this.reload.bind(this);
         this.emailChange = this.emailChange.bind(this);
         this.zipcodeChange = this.zipcodeChange.bind(this);
         this.firstChange = this.firstChange.bind(this);
@@ -82,8 +91,51 @@ class InvoiceAdminList extends Component {
     componentDidMount() {
     }
 
-    pageChange(e,t) { 
-        this.props.pageChange(e,this.state.filter);
+    search(e) { 
+        this.state.search = e.target.value;
+        if (this.state.search.length === 0) { 
+            this.state.search = null;
+        } 
+        this.props.dispatch(getInvoiceAdmin(
+            {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
+        ));
+        this.setState(this.state);
+    } 
+
+    reload() { 
+        this.props.dispatch(getInvoiceAdmin(
+            {sort:this.state.sort,direction:this.state.direction,
+             search:this.state.search,limit:this.state.pageSize,
+            offset:this.state.page,status:this.state.filter}
+        ));
+    }
+
+    sortChange(t) { 
+        var g = this.props.invoiceAdmin.data.sort.filter((e) => t.dataField === e.col);
+        if (g.length > 0) { 
+            g = g[0]
+            this.state.sort = g.id
+            this.state.direction = g.direction === 'asc' ? 'desc' : 'asc'
+            this.props.dispatch(getInvoiceAdmin(
+                {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
+            ));
+            this.setState(this.state);
+        } 
+    } 
+
+    pageRowsChange(t) { 
+        this.state.pageSize = t
+        this.state.page = 0
+        this.props.dispatch(getInvoiceAdmin(
+            {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
+        ));
+        this.setState(this.state);
+    } 
+    pageChange(e) { 
+        this.state.page = e
+        this.props.dispatch(getInvoiceAdmin(
+            {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
+        ));
         this.setState(this.state);
     } 
 
@@ -350,6 +402,25 @@ class InvoiceAdminList extends Component {
                 )
             }
         ];
+        if (this.props.invoiceAdmin && this.props.invoiceAdmin.data && 
+            this.props.invoiceAdmin.data.sort) { 
+            var c = 0; 
+            for (c=0;c < heads.length; c++) { 
+                var q = heads[c]
+                var t = this.props.invoiceAdmin.data.sort.filter((g) => q.dataField === g.col);
+                if (t.length > 0) { 
+                    t = t[0]
+                    heads[c].sort=true;
+                    if (t.active) { 
+                        heads[c].order = t['direction']
+                    } else { 
+                        heads[c].order = 'asc'
+                    } 
+                } else { 
+                    heads[c].sort=false;
+                } 
+            } 
+        }  
         return (
         <>
             {(this.props.invoiceAdmin && this.props.invoiceAdmin.isReceiving) && (
@@ -360,7 +431,8 @@ class InvoiceAdminList extends Component {
             <>
             <Row md="12">
                 {(this.state.statusSelected && this.state.statusSelected.length > 0) && (
-                <Col md="7" style={{marginBottom:10}}>
+                <>
+                <Col md="6" style={{marginBottom:10}}>
                       <Select
                           closeMenuOnSelect={true}
                           isSearchable={false}
@@ -384,15 +456,38 @@ class InvoiceAdminList extends Component {
                           })}
                         />
                 </Col>
+                <Col md={3}>
+                    <Input type="text" id="normal-field" onChange={this.search}
+                    placeholder="Search" value={this.state.search}/>
+                </Col>
+                <Col md={3}>
+                    <div class='pull-right'>
+                        <Button onClick={() => this.reload()} style={{marginRight:5,height:35}} outline 
+                            color="primary"><AutorenewIcon/></Button>
+                    </div>
+                </Col>
+                </>
                 )}
             </Row>
             <Row md="12">
                 <Col md="12">
-                    <BootstrapTable 
-                        keyField='id' data={this.props.invoiceAdmin.data.invoices} 
+                    {/*<BootstrapTable 
+                        keyField='id' 
+                        data={this.props.invoiceAdmin.data.invoices} 
                         cellEdit={ cellEditFactory({ mode: 'click',blurToSave:true })}
                         columns={heads} pagination={ paginationFactory(options)}>
-                    </BootstrapTable>
+                    </BootstrapTable>*/}
+                    <PainTable
+                        keyField='id' 
+                        data={this.props.invoiceAdmin.data.invoices} 
+                        total={this.props.invoiceAdmin.data.total}
+                        page={this.state.page}
+                        pageSize={this.state.pageSize}
+                        onPageChange={this.pageChange}
+                        onSort={this.sortChange}
+                        onPageRowsPerPageChange={this.pageRowsChange}
+                        columns={heads}>
+                    </PainTable> 
                 </Col>                
             </Row>
             </>

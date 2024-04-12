@@ -486,6 +486,10 @@ class InvoicesList(AdminBase):
         ret['config'] = {}
         ret['config']['status'] = db.query("select id,name from invoice_status")
         ret['invoices'] = []
+        ret['sort'] = [
+            {'id':1,'col':'updated','active':False,'direction':'asc'},
+            {'id':2,'col':'name','active':False,'direction':'asc'}
+        ]
         q = """
             select
                 i.id,ist.name as invoice_status,i.physician_schedule_id,
@@ -522,7 +526,6 @@ class InvoicesList(AdminBase):
                 sis.invoices_id = i.id and 
                 ist.id = i.invoice_status_id 
             """
-        p = []
         if 'status' in params:
             q += " and ("
             arr = []
@@ -530,13 +533,45 @@ class InvoicesList(AdminBase):
                 arr.append("invoice_status_id = %s " % z)
             q += " or ".join(arr)
             q += ")"
-        p.append(limit)
-        p.append(offset*limit)
-        q += " group by i.id order by updated desc"
-        cnt = db.query("select count(id) as cnt from (%s) as t" % (q,))
+        count_par = []
+        search_par = [
+            int(limit),
+            int(offset)*int(limit)
+        ]
+        if 'search' in params and params['search'] is not None:
+            q += """ and (o.email like %s  or o.name like %s ) 
+            """
+            search_par.insert(0,params['search']+'%%')
+            search_par.insert(0,params['search']+'%%')
+            count_par.insert(0,params['search']+'%%')
+            count_par.insert(0,params['search']+'%%')
+        q += " group by i.id "
+        cnt = db.query("select count(id) as cnt from (%s) as t" % (q,),count_par)
         ret['total'] = cnt[0]['cnt']
+        if 'sort' not in params or params['sort'] == None:
+            q += """
+                order by
+                    updated desc
+            """
+            ret['sort'][0]['active'] = True
+            ret['sort'][0]['direction'] = 'desc'
+        else:
+            h = params['sort']
+            v = 'updated'
+            d = 'desc'
+            if 'direction' not in params:
+                params['direction'] = 'asc'
+            for x in ret['sort']:
+                if x['id'] == h:
+                    v = x['col']
+                    d = params['direction']
+                    x['active'] = True
+                    x['direction'] = params['direction']
+            q += """
+                order by %s %s
+            """ % (v,d)
         q += " limit %s offset %s " 
-        o = db.query(q,p)
+        o = db.query(q,search_par)
         for x in o:
             x['items'] = json.loads(x['items'])
             x['assignee'] = db.query("""
@@ -584,12 +619,16 @@ class InvoicesList(AdminBase):
                 """,(x['id'],)
             )
             for cc in comms: 
-                bb2 = encryption.decrypt(
-                    cc['text'],
-                    config.getKey('encryption_key')
-                    )
-                cc['text'] = bb2
-                x['comments'].append(cc)
+                # This happens when we switch environments, just skip
+                try:
+                    bb2 = encryption.decrypt(
+                        cc['text'],
+                        config.getKey('encryption_key')
+                        )
+                    cc['text'] = bb2
+                    x['comments'].append(cc)
+                except:
+                    pass
             x['history'] = db.query("""
                 select 
                     uh.id,uh.text,uh.user_id,uh.created,
