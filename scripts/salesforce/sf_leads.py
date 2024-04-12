@@ -243,7 +243,7 @@ for x in PAIN:
     if o[0]['a'] == 0:
         db.update("""
             insert into office_addresses (office_id) value (%s)
-            """,(x['office_id'])
+            """,(x['office_id'],)
         )
     SF_ID = x['sf_id']
     SF_ROW = None
