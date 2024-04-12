@@ -230,11 +230,13 @@ def getPAINData(prow,srow,sfschema,pschema,db):
             v = o[0]['s']
             if COMM:
                 v = com_user[v]
-            if TYPE == 'string':
+            if v == None:
+                v = None
+            elif TYPE == 'string':
                 v = str(v)
-            if TYPE == 'double':
+            elif TYPE == 'double':
                 v = float(v)
-            if TYPE == 'boolean':
+            elif TYPE == 'boolean':
                 if v:
                     v=True
                 else:
