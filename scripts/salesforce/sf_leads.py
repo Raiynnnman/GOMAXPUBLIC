@@ -589,16 +589,6 @@ for x in SF_DATA:
         if j['Status'] == 'Converted':
             print("%s: Cant modify when status == Converted" % j['Id'])
             continue
-        if j['Status'] == 'Converted':
-            print("Moving to converted status")
-            db.update("""
-                update provider_queue set status = %s where office_id = %s
-                """,(PQ['INVITED'],off_id)
-            )
-            db.update("""
-                update office set active = 1 where id = %s
-                """,(off_id,)
-            )
         o = db.query("""
             select id,description,duration,price from pricing_data where description = %s
             """,(j['Subscription_Plan__c'],)
@@ -688,7 +678,7 @@ for x in SF_DATA:
                 b = PAINHASH[x]
                 print(b)
         db.update("""
-            update provider_queue set sf_id = %s where id = %s
+            update provider_queue set sf_lead_executed=1, sf_id = %s where id = %s
             """,(j['Id'],int(pq_id))
         )
         if not args.dryrun:
