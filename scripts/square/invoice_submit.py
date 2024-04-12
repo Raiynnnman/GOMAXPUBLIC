@@ -39,7 +39,7 @@ db = Query()
 inv = db.query("""
         select 
             i.id,o.stripe_cust_id,i.office_id as office_id,
-            sum(ii.price * ii.quantity) as total
+            sum(ii.price * ii.quantity) as total,count(id) as minv
         from 
             invoices i
             left join office o on i.office_id = o.id 
@@ -57,6 +57,7 @@ inv = db.query("""
     )
 print(inv)
 for x in inv:
+    x['minv'] += 1
     if x['id'] is None:
         print("No invoices to process")
         continue
@@ -131,6 +132,7 @@ for x in inv:
             s = {}
             print("mode=%s,card=%s" % (mode,card_id))
             print(x)
+            
             if mode == 'send_invoice':
                 s = client.invoices.create_invoice(
                     body = {
@@ -141,6 +143,7 @@ for x in inv:
                                 'customer_id': x['stripe_cust_id']
                             },
                             'delivery_method':'EMAIL',
+                            'invoice_number': str(x['minv']).zfill(7),
                             'store_payment_method_enabled': True,
                             'accepted_payment_methods': { 
                                 'card':True,
@@ -166,6 +169,7 @@ for x in inv:
                             'primary_recipient': { 
                                 'customer_id': x['stripe_cust_id']
                             },
+                            'invoice_number': str(x['minv']).zfill(7),
                             'delivery_method':'EMAIL',
                             'store_payment_method_enabled': True,
                             'accepted_payment_methods': { 
