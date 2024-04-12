@@ -31,6 +31,7 @@ import { PaymentForm,CreditCard } from 'react-square-web-payments-sdk';
 import {searchProvider} from '../../actions/searchProvider';
 import { getLandingData } from '../../actions/landingData';
 import googleKey from '../../googleConfig';
+import formatPhoneNumber from '../utils/formatPhone';
 
 const stripePromise = loadStripe(stripeKey());
 
@@ -89,7 +90,7 @@ class RegisterProvider extends Component {
         if (p.landingData && p.landingData.data && p.landingData.data.pq && this.state.pq_id !== null
             && this.state.phone.length < 1) { 
             console.log("found",p.landingData.data.pq);
-            this.state.phone = p.landingData.data.pq.phone;
+            this.state.phone = formatPhoneNumber(p.landingData.data.pq.phone);
             this.state.first = p.landingData.data.pq.first_name + " " + p.landingData.data.pq.last_name;
             this.state.name = p.landingData.data.pq.name;
             this.state.email = p.landingData.data.pq.email;

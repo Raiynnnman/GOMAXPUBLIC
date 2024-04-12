@@ -383,6 +383,8 @@ print("Processing SF Records")
 CNTR = 0
 for x in SF_DATA:
     j = SF_DATA[x]
+    if j['Status'] == 'Converted':
+        continue
     if j['Email'] is None:
         print("Record %s has no email, skipping" % j['Id'])
         continue
@@ -578,6 +580,25 @@ for x in SF_DATA:
             off_id = off_id[0]['office_id']
     # print("off_id=%s" % off_id)
     if 'Subscription_Plan__c' in j and j['Subscription_Plan__c'] is not None:
+        if j['Status'] == 'New':
+            print("%s: Not progressing with status New" % j['Id'])
+            continue
+        if j['Status'] == 'Working':
+            print("%s: Not progressing with status Working" % j['Id'])
+            continue
+        if j['Status'] == 'Converted':
+            print("%s: Cant modify when status == Converted" % j['Id'])
+            continue
+        if j['Status'] == 'Converted':
+            print("Moving to converted status")
+            db.update("""
+                update provider_queue set status = %s where office_id = %s
+                """,(PQ['INVITED'],off_id)
+            )
+            db.update("""
+                update office set active = 1 where id = %s
+                """,(off_id,)
+            )
         o = db.query("""
             select id,description,duration,price from pricing_data where description = %s
             """,(j['Subscription_Plan__c'],)
@@ -652,19 +673,9 @@ for x in SF_DATA:
             )
         j['Sales_Link__c'] = '%s/#/register-provider/o/%s' % (config.getKey("host_url"),pq_id)
         j['PainURL__c'] = '%s/#/app/main/admin/office/%s' % (config.getKey("host_url"),pq_id)
-        # Dont auto move for now, wait for payment
-        #if j['Status'] == 'Converted':
-        #    print("Moving to converted status")
-        #    db.update("""
-        #        update provider_queue set status = %s where office_id = %s
-        #        """,(PQ['INVITED'],off_id)
-        #    )
-        #    db.update("""
-        #        update office set active = 1 where id = %s
-        #        """,(off_id,)
-        #    )
         t = {}
-        fie = args.only_fields.split(",")
+        FIELDS = 'PainID__c,PainURL__c,Sales_Link__c,Invoice_Paid__c'
+        fie = FIELDS.split(",")
         nd2 = {}
         for f in j:
             if f in fie:

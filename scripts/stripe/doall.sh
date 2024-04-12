@@ -9,6 +9,7 @@ T="
     square/square_customers \
     square/square_cards \
     stripe/registration_invoices \
+    square/square_progress_leads \
     stripe/generate_invoices \
     square/invoice_submit \
     square/square_invoice_status \
