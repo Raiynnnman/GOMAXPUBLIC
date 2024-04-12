@@ -50,11 +50,11 @@ if args.sf_id is not None and args.painid is not None:
         sf.Lead.update(args.sf_id,t)
         db.update("""
             update provider_queue set sf_id = %s where id = %s
-            """,(args.sf_id,x['id'])
+            """,(args.sf_id,args.painid)
         )
         db.commit()
     except Exception as e:
-        print("ERROR: %s: %s" % (j['Id'],str(e)))
+        print("ERROR: %s: %s" % (args.sf_id,str(e)))
     print("Successfully updated %s" % args.sf_id)
     sys.exit(0)
 
