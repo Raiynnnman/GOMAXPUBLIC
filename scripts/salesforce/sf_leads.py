@@ -277,7 +277,7 @@ for x in PAIN:
     if 'PainURL__c' in newdata:
         newdata['PainURL__c'] = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),newdata['PainURL__c'])
     if 'Sales_Link__c' in newdata and 'Subscription_Plan__c' in newdata and newdata['Subscription_Plan__c'] is not None:
-        newdata['Sales_Link__c'] = '%s/#/register-provider/%s' % (config.getKey("host_url"),x['office_id'])
+        newdata['Sales_Link__c'] = '%s/#/register-provider/%s' % (config.getKey("host_url"),x['pq_id'])
         # On hold
         print("Subplan %s" % newdata['Sales_Link__c'])
         del newdata['Sales_Link__c']
