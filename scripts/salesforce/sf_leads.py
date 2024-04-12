@@ -496,10 +496,13 @@ for x in SF_DATA:
             j['PainURL__c'] = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),pq_id)
             print("Found %s (%s)" % (j['Id'],pq_id))
             if not args.dryrun:
-                sf.Lead.update(j['Id'],{
-                    'PainID__c': o[0]['t1'],
-                    'PainURL__c':j['PainURL__c']
-                })
+                try:
+                    sf.Lead.update(j['Id'],{
+                        'PainID__c': o[0]['t1'],
+                        'PainURL__c':j['PainURL__c']
+                    })
+                except Exception as e:
+                    print("%s: ERROR: %s" % (j['Id'],str(e)))
         else:
             pq_id = o[0]['t1']
             print("Found pq %s" % pq_id)
@@ -520,10 +523,13 @@ for x in SF_DATA:
                 raise Exception("ERROR: Established off but not in provider queue")
             print("Updating null PainID: %s" % j['PainID__c'])
             if not args.dryrun:
-                sf.Lead.update(j['Id'],{
-                    'PainID__c': pq_id,
-                    'PainURL__c':j['PainURL__c']
-                })
+                try:
+                    sf.Lead.update(j['Id'],{
+                        'PainID__c': pq_id,
+                        'PainURL__c':j['PainURL__c']
+                    })
+                except Exception as e:
+                    print("%s: ERROR: %s" % (j['Id'],str(e)))
             db.update("""
                 update provider_queue set sf_id = %s where id = %s
                 """,(j['Id'],int(pq_id))
@@ -656,7 +662,10 @@ for x in SF_DATA:
             """,(j['Id'],int(pq_id))
         )
         if not args.dryrun:
-            sf.Lead.update(x,t)
+            try:
+                sf.Lead.update(x,t)
+            except Exception as e:
+                print("%s : ERROR : %s" % (x,str(e)))
         print(json.dumps(t,indent=4))
     else:
         print("SF Leads Subscription unnecessary")
