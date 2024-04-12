@@ -48,6 +48,7 @@ q = """
         office_addresses oa, office o
     where
         oa.office_id = o.id and
+        oa.addr1 is not null and
         oa.lat_attempt_count < 5 and
         lat = 0
     """

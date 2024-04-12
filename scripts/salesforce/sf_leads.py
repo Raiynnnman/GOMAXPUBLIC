@@ -236,6 +236,15 @@ print("DUPS: %s" % C)
 random.shuffle(PAIN)
 for x in PAIN:
     print(x)
+    o = db.query("""
+        select count(id) as a from office_addresses where office_id = %s
+        """,(x['office_id'],)
+    )
+    if o[0]['a'] == 0:
+        db.update("""
+            insert into office_addresses (office_id) value (%s)
+            """,(x['office_id'])
+        )
     SF_ID = x['sf_id']
     SF_ROW = None
     LAST_MOD = None
