@@ -167,6 +167,8 @@ for x in res['records']:
     SF_ID = x['Id']
     SF_DATA[SF_ID] = x
     p = x['Phone']
+    if 'attributes' in x:
+        del x['attributes']
     if p is None:
         p = x['Email']
     if p is None:
