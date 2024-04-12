@@ -96,9 +96,6 @@ o = db.query("""
 for x in o:
     SF_IDS[x['sf_id']] = x['email']
 
-ARR.append('Notes__c')
-ARR.append('Status')
-ARR.append('LastModifiedById')
 SFQUERY += ','.join(ARR)
 SFQUERY += " from Lead "
 
