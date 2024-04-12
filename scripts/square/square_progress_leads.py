@@ -74,7 +74,7 @@ INV = getIDs.getInvoiceIDs()
 for x in l:
     try:
         print(x)
-        if x['invoice_status'] == 'CREATED' and x['status'] != 'SENT': 
+        if x['invoice_status'] == 'CREATED': 
             print("changing status to APPROVED : %s " % x['id'])
             db.update("""
                 update invoices set invoice_status_id=%s
