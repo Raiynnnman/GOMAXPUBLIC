@@ -24,6 +24,7 @@ stripe.api_key = key
 parser = argparse.ArgumentParser()
 parser.add_argument('--dryrun', dest="dryrun", action="store_true")
 parser.add_argument('--office', dest="office", action="store")
+parser.add_argument('--limit', dest="limit", action="store")
 args = parser.parse_args()
 
 APT = getIDs.getAppointStatus()
@@ -42,7 +43,7 @@ q = """
             )
         ) as items,o.stripe_cust_id,o.billing_system_id,
         day(op.start_date) as dom,pd.customers_required,
-        now() > op.end_date as expired
+        now() > op.end_date as expired,o.migrated_stripe
         
     from 
         office_plans op,
@@ -69,7 +70,7 @@ if args.office is not None:
 q += " group by op.id order by o.id "
 l = db.query(q,(BS,OT['Chiropractor'],))
 
-
+CNTR = 0
 for x in l:
     # print(json.dumps(x,indent=4))
     newdate = ''
@@ -127,13 +128,32 @@ for x in l:
     x['cust_total'] = cnt[0]['cnt']
     insid = db.query("select LAST_INSERT_ID()")
     insid = insid[0]['LAST_INSERT_ID()']
+    db.update("""
+        insert into invoice_history (invoices_id,user_id,text) values 
+            (%s,%s,%s)
+        """,(insid,1,'Invoice created' )
+    )
     price = 0
     for g in x['items']:
         # print(g)
         subtotal = round(g['price']*g['quantity'],2)
         price = round(g['price']*g['quantity'],2)
-        if x['expired'] and x['customers_required'] == 1 and x['cust_total'] == 0:
+        if x['migrated_stripe'] and x['customers_required'] == 1 and x['cust_total'] == 0:
             price = 0
+            db.update("""
+                insert into invoice_history (invoices_id,user_id,text) values 
+                    (%s,%s,%s)
+                """,(insid,1,'Price set to 0 as customers_required is true (Migrated from Stripe)' )
+            )
+        elif x['expired'] and x['customers_required'] == 1 and x['cust_total'] == 0:
+            price = 0
+            db.update("""
+                insert into invoice_history (invoices_id,user_id,text) values 
+                    (%s,%s,%s)
+                """,(insid,1,'Price set to 0 as customers_required is true (New Customer)' )
+            )
+        print("price=%s" % price)
+        print(x)
         db.update("""
             insert into invoice_items (
                     invoices_id,description,price,quantity
@@ -148,11 +168,8 @@ for x in l:
         insert into stripe_invoice_status (office_id,invoices_id,status) values (%s,%s,%s)
         """,(x['office_id'],insid,'draft')
     )
-    if price == 0 and x['expired'] and x['customers_required']:
-        db.update("""
-            insert into invoice_history (invoices_id,user_id,text) values 
-                (%s,%s,%s)
-            """,(insid,1,'Price set to 0 as customers_required is true' )
-        )
     db.commit()
+    CNTR += 1
+    if args.limit is not None and CNTR > int(args.limit):
+        break
     
