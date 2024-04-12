@@ -383,8 +383,6 @@ print("Processing SF Records")
 CNTR = 0
 for x in SF_DATA:
     j = SF_DATA[x]
-    if j['Status'] == 'Converted':
-        continue
     if j['Email'] is None:
         print("Record %s has no email, skipping" % j['Id'])
         continue
@@ -585,9 +583,6 @@ for x in SF_DATA:
             continue
         if j['Status'] == 'Working':
             print("%s: Not progressing with status Working" % j['Id'])
-            continue
-        if j['Status'] == 'Converted':
-            print("%s: Cant modify when status == Converted" % j['Id'])
             continue
         o = db.query("""
             select id,description,duration,price from pricing_data where description = %s
