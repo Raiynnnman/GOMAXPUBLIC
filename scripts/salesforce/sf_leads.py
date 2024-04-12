@@ -657,6 +657,7 @@ for x in SF_DATA:
         print(json.dumps(t,indent=4))
     else:
         print("SF Leads Subscription unnecessary")
+        # Looks silly, but when we change environments this really helps
         db.update("""
             update provider_queue set sf_id = %s where id = %s
             """,(j['Id'],int(pq_id))
