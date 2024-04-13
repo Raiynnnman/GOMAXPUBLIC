@@ -489,6 +489,18 @@ for x in SF_DATA:
                 (%s,1)
                 """,(user_id,)
             )
+            j['PainID__c'] = pq_id
+            j['PainURL__c'] = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),pq_id)
+            if not args.dryrun:
+                try:
+                    sf.Lead.update(j['Id'],{
+                        'PainID__c': pq_id,
+                        'PainURL__c':j['PainURL__c']
+                    })
+                except Exception as e:
+                    print(json.dumps(j))
+                    print("%s: ERROR: %s" % (j['Id'],str(e)))
+            print("Created office: %s = %s" % (j['Id'],pq_id))
         elif len(o) > 1:
             l = {}
             print(o)
