@@ -39,7 +39,8 @@ db = Query()
 inv = db.query("""
         select 
             i.id,o.stripe_cust_id,i.office_id as office_id,
-            sum(ii.price * ii.quantity) as total,count(i.id) as minv
+            sum(ii.price * ii.quantity) as total,count(i.id) as minv,
+            i.version
         from 
             invoices i
             left join office o on i.office_id = o.id 

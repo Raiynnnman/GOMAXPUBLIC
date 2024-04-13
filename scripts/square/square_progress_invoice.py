@@ -36,6 +36,7 @@ q = """
     select 
         i.id,i.office_id,i.stripe_invoice_id,
         i.nextcheck, sis.status, i.physician_schedule_id, 
+        i.version,
         ist.name as invoice_status,sum(ii.price * ii.quantity) as total
     from 
         stripe_invoice_status sis,
@@ -125,7 +126,7 @@ for x in l:
         if x['status']  == 'DRAFT' and x['invoice_status'] != 'SENT' and x['total'] > 0:      
             r = client.invoices.publish_invoice(
                 invoice_id = x['stripe_invoice_id'],
-                body = { 'version': 0 }
+                body = { 'version': x['version'] }
             )
             if r.is_error():
                 raise Exception(json.dumps(r.errors))

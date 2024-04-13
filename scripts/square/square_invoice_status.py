@@ -59,7 +59,9 @@ for x in l:
             r = None
         else:
             r=r.body
-        # print(json.dumps(r,indent=4))
+        print(r)
+        print("here")
+        print(json.dumps(r,indent=4))
         s_fee = 0
         #if r['status'] == 'paid':
         #    p = stripe.PaymentIntent.retrieve(payment_intent,expand=['latest_charge.balance_transaction'])
@@ -74,6 +76,11 @@ for x in l:
                         r['invoice']['status'],
                         x['id']
                     )
+            )
+            db.update("""
+                update invoice set version = %s
+                where id = %s
+                """,(r['version',x['id'])
             )
             if 'invoice_number' in r['invoice']:
                 db.update("""
