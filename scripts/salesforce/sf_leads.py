@@ -272,7 +272,7 @@ for x in PAIN:
     try:
         (update,newdata) = sf_util.getPAINData(x,SF_ROW,SFSCHEMA,PSCHEMA,db)
     except Exception as e:
-        print("%s : ERROR : %s" % (x['id'],str(e)))
+        print("%s : ERROR : %s" % (x['office_id'],str(e)))
         print("x=%s" % x)
         print("SF_ROW=%s" % SF_ROW)
         exc_type, exc_value, exc_traceback = sys.exc_info()
