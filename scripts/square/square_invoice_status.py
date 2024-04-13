@@ -80,7 +80,7 @@ for x in l:
             db.update("""
                 update invoice set version = %s
                 where id = %s
-                """,(r['version'],x['id'])
+                """,(r['invoice']['version'],x['id'])
             )
             if 'invoice_number' in r['invoice']:
                 db.update("""
