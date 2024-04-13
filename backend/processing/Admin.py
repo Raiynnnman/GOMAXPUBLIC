@@ -781,11 +781,12 @@ class OfficeList(AdminBase):
         ret['offices'] = []
         for x in o:
             x['history'] = db.query("""
-                select ph.id,user_id,text,concat(u.first_name, ' ', u.last_name) as user,created
+                select ph.id,user_id,text,concat(u.first_name, ' ', u.last_name) as user,ph.created
                     from office_history ph,users u
                 where 
                     ph.user_id=u.id and
-                    ph.provider_queue_id = %s
+                    ph.office_id = %s
+                order by created desc
                 """,(x['id'],)
             )
             x['addr'] = json.loads(x['addr'])
@@ -1342,11 +1343,12 @@ class RegistrationList(AdminBase):
             x['phone'] = x['addr'][0]['phone'] if len(x['addr']) > 0 else ''
             x['email'] = x['addr'][0]['email'] if len(x['addr']) > 0 else ''
             x['history'] = db.query("""
-                select ph.id,user_id,text,concat(u.first_name, ' ', u.last_name) as user,created
+                select ph.id,user_id,text,concat(u.first_name, ' ', u.last_name) as user,ph.created
                     from provider_queue_history ph,users u
                 where 
                     ph.user_id=u.id and
                     ph.provider_queue_id = %s
+                order by created desc
                 """,(x['id'],)
             )
             x['addr'] = db.query("""

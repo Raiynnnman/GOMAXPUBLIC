@@ -152,6 +152,11 @@ def processLocation(row,res):
                 update office set updated=now() where id=%s
                 """,(x['office_id'],)
             )
+            db.update("""
+                insert into office_history(user_id,text) values (
+                    1,'Updated address with a score > .8'
+                )
+            """)
         else:
             if 'website' not in q:
                 q['website'] = ''
@@ -184,6 +189,11 @@ def processLocation(row,res):
             off_id = db.query("select LAST_INSERT_ID()");
             off_id = off_id[0]['LAST_INSERT_ID()']
             db.update("""
+                insert into office_history(office_id,user_id,text) values (
+                    %s,1,'Imported from google places'
+                )
+            """,(off_id,))
+            db.update("""
                 insert into office_user (office_id,user_id) values (%s,%s)
                 """,(off_id,user_id)
             )
@@ -214,6 +224,13 @@ def processLocation(row,res):
                     STR['Potential Provider']
                     )
             )
+            pq_id = db.query("select LAST_INSERT_ID()");
+            pq_id = pq_id[0]['LAST_INSERT_ID()']
+            db.update("""
+                insert into provider_queue_history(provider_queue_id,user_id,text) values (
+                    %s,1,'Imported from google places'
+                )
+            """,(pq_id,))
             db.update("""
                 insert into office_potential_places (
                     office_id,office_addresses_id,name,

@@ -405,6 +405,33 @@ class Registrations extends Component {
                 text:'Zipcode'
             },
         ]
+        var historyheads = [
+            {
+                dataField:'id',
+                hidden:true,
+                text:'ID'
+            },
+            {
+                dataField:'user',
+                text:'Changed By'
+            },
+            {
+                dataField:'text',
+                align:'left',
+                text:'Message'
+            },
+            {
+                dataField:'created',
+                align:'center',
+                text:'Created',
+                formatter:(cellContent,row) => (
+                    <div>
+                        {moment(row['created']).format('LLL')} 
+                    </div>
+                )
+            },
+            
+        ]
         var planheads = [
             {
                 dataField:'id',
@@ -941,6 +968,12 @@ class Registrations extends Component {
                                                         <span>{translate('Invoice')}</span>
                                                     </NavLink>
                                                 </NavItem>
+                                                <NavItem>
+                                                    <NavLink className={classnames({ active: this.state.subTab === 'history' })}
+                                                        onClick={() => { this.toggleSubTab('history') }}>
+                                                        <span>{translate('History')}</span>
+                                                    </NavLink>
+                                                </NavItem>
                                             </Nav>
                                             <TabContent className='mb-lg' activeTab={this.state.subTab}>
                                                 <TabPane tabId="plans">
@@ -971,6 +1004,16 @@ class Registrations extends Component {
                                                         keyField='id' data={this.state.selected.plans.items} 
                                                         cellEdit={ cellEditFactory({ mode: 'click',blurToSave:true })}
                                                         columns={planheads}>
+                                                    </BootstrapTable>
+                                                    </>
+                                                    )}
+                                                </TabPane>
+                                                <TabPane tabId="history">
+                                                    {(this.state.selected.addr && this.state.selected.addr) && (
+                                                    <>
+                                                    <BootstrapTable 
+                                                        keyField='id' data={this.state.selected.history} 
+                                                        columns={historyheads}>
                                                     </BootstrapTable>
                                                     </>
                                                     )}

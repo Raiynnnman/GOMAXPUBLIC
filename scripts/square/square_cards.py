@@ -74,6 +74,11 @@ for x in l:
         # print(json.dumps(r,indent=4))
         if 'cards' not in r:
             raise Exception("NO_CARD_DATA")
+        db.update("""
+            insert into office_history(office_id,user_id,text) values (
+                %s,1,'Added card to Square'
+            )
+        """,(x['id'],))
         for g in r['cards']:
             if not g['enabled']:
                 db.update("""

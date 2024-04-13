@@ -330,6 +330,33 @@ class OfficeList extends Component {
           hideSizePerPage:true,
           //onPageChange:(page,sizePerPage) => this.pageChange(page,sizePerPage)
         };
+        var historyheads = [
+            {
+                dataField:'id',
+                hidden:true,
+                text:'ID'
+            },
+            {
+                dataField:'user',
+                text:'Changed By'
+            },
+            {
+                dataField:'text',
+                align:'left',
+                text:'Message'
+            },
+            {
+                dataField:'created',
+                align:'center',
+                text:'Created',
+                formatter:(cellContent,row) => (
+                    <div>
+                        {moment(row['created']).format('LLL')} 
+                    </div>
+                )
+            },
+            
+        ]
         var heads = [
             {
                 dataField:'id',
@@ -797,8 +824,21 @@ class OfficeList extends Component {
                                     <span>{translate('Potentials')}</span>
                                 </NavLink>
                             </NavItem>
+                            <NavItem>
+                                <NavLink className={classnames({ active: this.state.subTab === 'history' })}
+                                    onClick={() => { this.toggleSubTab('history') }}>
+                                    <span>{translate('History')}</span>
+                                </NavLink>
+                            </NavItem>
                         </Nav>
                         <TabContent className='mb-lg' activeTab={this.state.subTab}>
+                            <TabPane tabId="history">
+                              <BootstrapTable 
+                                  keyField="id"
+                                  data={this.state.selected.history} 
+                                  columns={ historyheads }>
+                              </BootstrapTable>
+                            </TabPane>
                             <TabPane tabId="potentials">
                               <BootstrapTable 
                                   keyField="id"

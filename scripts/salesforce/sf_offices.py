@@ -211,6 +211,11 @@ for x in PAIN:
     elif update == sf_util.updatePAIN() and not SAME:
         print("Updating PAIN")
         try:
+            db.update("""
+                insert into office_history(office_id,user_id,text) values (
+                    %s,1,'Updated data from SF'
+                )
+            """,(x['office_id'],))
             sf_util.updatePAINDB(x,SF_ROW,SFSCHEMA,PSCHEMA,db)
             #db.update("""
             #    update office_addresses set sf_updated=%s where id = %s

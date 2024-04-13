@@ -81,10 +81,10 @@ for x in PSCHEMA:
     ARR.append(sfcol['name'])
 
 SFQUERY += ','.join(ARR)
-SFQUERY += " from Lead where 1 = 1 "
+SFQUERY += " from Lead "
 
 if args.sf_id is not None:
-    SFQUERY += " and Id = '%s'" % args.sf_id
+    SFQUERY += " where Id = '%s'" % args.sf_id
 
 res = []
 if os.path.exists(data_f):
@@ -124,6 +124,11 @@ for x in SF_DATA:
             update provider_queue set sf_id = %s where id = %s
             """,(j['Id'],j['PainID__c'])
         )
+        db.update("""
+            insert into provider_queue_history(provider_queue_id,user_id,text) values (
+                %s,1,'Migrated from SF'
+            )
+        """,(j['PainID__c',))
         print("Successfully migrated %s to %s" % (j['PainID__c'],j['Id']))
     except Exception as e:
         print("ERROR: %s: %s" % (j['Id'],str(e)))

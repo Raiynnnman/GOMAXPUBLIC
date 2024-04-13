@@ -43,7 +43,7 @@ q = """
     select 
         oa.id,oa.zipcode,oa.state,
         oa.city,addr1,o.office_type_id,
-        oa.lat,oa.lon
+        oa.lat,oa.lon,o.id as office_id
     from 
         office_addresses oa, office o
     where
@@ -93,6 +93,11 @@ for x in o:
                 # print(y)
                 if 'postal_code' in y['types']:
                     zipcode = y['long_name']
+            db.update("""
+                insert into office_history(provider_queue_id,user_id,text) values (
+                    %s,1,'Set lat,lon for search'
+                )
+            """,(x['office_id'],))
     CNT += 1
     # print(zipcode,places_id)
     db.update("""

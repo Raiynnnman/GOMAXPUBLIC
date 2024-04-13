@@ -363,6 +363,11 @@ for x in PAIN:
     elif update == sf_util.updatePAIN() and not SAME:
         print("Updating PAIN")
         try:
+            db.update("""
+                insert into provider_queue_history(office_id,user_id,text) values (
+                    %s,1,'Updated data from SF'
+                )
+            """,(x['pq_id'],))
             if not args.dryrun:
                 sf_util.updatePAINDB(x,SF_ROW,SFSCHEMA,PSCHEMA,db)
             #db.update("""
