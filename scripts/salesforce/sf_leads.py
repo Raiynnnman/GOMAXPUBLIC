@@ -771,7 +771,7 @@ for x in SF_DATA:
                 b = PAINHASH[x]['nd']
                 print("b=%s" % b)
             else:
-                print("ph=%s" PAINHASH)
+                print("ph=%s" % PAINHASH)
         if j['Ready_To_Buy__c']:
             db.update("""
                 update provider_queue set sf_lead_executed=1, sf_id = %s where id = %s
