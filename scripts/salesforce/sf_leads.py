@@ -624,36 +624,58 @@ for x in SF_DATA:
             """,(off_id,)
         )
         if len(cur) > 0:
-            print("Replacing office plan")
             i = cur[0]['id']
             cur = cur[0]
-            db.update("""
-                delete from office_plan_items where office_plans_id=%s
-                """,(i,)
-            )
-            print("dur",sub['duration'])
-            db.update("""
-                update office_plans set 
-                    pricing_data_id = %s,
-                    start_date = now(),
-                    end_date = date_add(now(),INTERVAL %s MONTH)
+            oc = db.query("""
+                select pd.description,pq.initial_payment,i.id as invoices_id from
+                    office_plans op
+                    left join pricing_data pd on op.pricing_data_id=pd.id
+                    left join provider_queue pq on pq.office_id = op.office_id
+                    left outer join invoices i on i.office_id = op.office_id
                 where
-                    id = %s
-                """,(sub['id'],sub['duration'],cur['id'])
+                    pq.office_id = op.office_id and
+                    op.office_id = %s and 
+                    op.pricing_data_id=pd.id
+                """,(off_id,)
             )
-            db.update("""
-                insert into office_plan_items 
-                    (office_plans_id,price,description,quantity)
-                values
-                    (%s,%s,%s,%s)
-                """,(i,price,sub['description'],1)
-            )
-            if initial_payment is not None:
+            UPDATE = True
+            if len(oc) > 0:
+                u = oc[0]
+                if u['description'] == j['Subscription_Plan__c'] and u['initial_payment'] == j['Payment_Amount__c']:
+                    UPDATE = False
+                    print("Not updating plan as it hasnt changed")
+                if u['invoices_id'] is not None:
+                    UPDATE = False
+                    print("Not updating plan as its already submitted")
+            if UPDATE:
+                print("Replacing office plan")
                 db.update("""
-                    update provider_queue set initial_payment = %s
-                        where office_id = %s
-                    """,(initial_payment,off_id)
+                    delete from office_plan_items where office_plans_id=%s
+                    """,(i,)
                 )
+                print("dur",sub['duration'])
+                db.update("""
+                    update office_plans set 
+                        pricing_data_id = %s,
+                        start_date = now(),
+                        end_date = date_add(now(),INTERVAL %s MONTH)
+                    where
+                        id = %s
+                    """,(sub['id'],sub['duration'],cur['id'])
+                )
+                db.update("""
+                    insert into office_plan_items 
+                        (office_plans_id,price,description,quantity)
+                    values
+                        (%s,%s,%s,%s)
+                    """,(i,price,sub['description'],1)
+                )
+                if initial_payment is not None:
+                    db.update("""
+                        update provider_queue set initial_payment = %s
+                            where office_id = %s
+                        """,(initial_payment,off_id)
+                    )
         else:
             print("Creating new office plan")
             db.update("""
@@ -687,12 +709,13 @@ for x in SF_DATA:
             if f in fie:
                 nd2[f] = j[f]
         t = nd2
+        print("t=%s" % )
         if pq_id == 0:
             raise Exception("PQ_ID = 0")
         if 'Invoice_Paid__c' in t:
             if x in PAINHASH:
                 b = PAINHASH[x]
-                print(b)
+                print("b=%s" % b)
         db.update("""
             update provider_queue set sf_lead_executed=1, sf_id = %s where id = %s
             """,(j['Id'],int(pq_id))
