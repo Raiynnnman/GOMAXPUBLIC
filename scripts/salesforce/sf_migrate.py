@@ -30,7 +30,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--dryrun', dest="dryrun", action="store_true")
 parser.add_argument('--limit', dest="limit", action="store")
 parser.add_argument('--sf_id', dest="sf_id", action="store")
-parser.add_argument('--painid', dest="painid", action="store")
+parser.add_argument('--reload', dest="reload", action="store_true")
 args = parser.parse_args()
 db = Query()
 
@@ -45,6 +45,13 @@ else:
 SCHEMA = {}
 schema_f = 'sf_leads_schema.json'
 data_f = 'sf_leads_data.json'
+
+if args.reload and os.path.exists(schema_f):
+    os.unlink(schema_f)
+
+if args.reload and os.path.exists(data_f):
+    os.unlink(data_f)
+
 res = sf_util.cacheOrLoad(schema_f,sf.Lead.describe)
 SFSCHEMA = {}
 for x in res['fields']:
@@ -76,6 +83,9 @@ for x in PSCHEMA:
 SFQUERY += ','.join(ARR)
 SFQUERY += " from Lead "
 
+if args.sf_id is not None:
+    SFQUERY += " and Id = '%s'" % args.sf_id
+
 res = []
 if os.path.exists(data_f):
     print("Loading %s from disk" % data_f)
@@ -103,7 +113,7 @@ for x in res['records']:
 
 for x in SF_DATA:
     j = SF_DATA[x]
-    # print(j)
+    print(j)
     if j['PainID__c'] is None:
         continue
     t = {}
