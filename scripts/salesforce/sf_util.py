@@ -185,13 +185,13 @@ def getPAINData(prow,srow,sfschema,pschema,db):
         if len(join) < 1:
             join = 'id'
         val = 0
+        if join == 'oa_id':
+            join = 'id'
         if '.' in join:
             j = join.split('.')
             val = prow[j[1]]
         else:
             val = prow[join]
-        if join == 'oa_id':
-            join = 'id'
         COMM = False
         if join == 'commission_user_id':
             COMM = True
