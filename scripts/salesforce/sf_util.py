@@ -119,6 +119,8 @@ def updatePAINDB(prow,srow,sfschema,pschema,db):
             COMM = True
             join = 'id'
             val = prow['office_id']
+            if newval not in com_user:
+                raise Exception("User %s Missing!" % newval)
             newval = com_user[newval]
         ftable = table
         jtable = table
@@ -158,8 +160,8 @@ def getPAINData(prow,srow,sfschema,pschema,db):
     else:
         p = calcdate.parseDate(pmod)
         s = calcdate.parseDate(sfmod)
-        print("p=%s" % p)
-        print("s=%s" % s)
+        # print("p=%s" % p)
+        # print("s=%s" % s)
         if p > s:
             upd = updateSF()
             print("Picking sf because p.updated > s.updated")
@@ -220,7 +222,7 @@ def getPAINData(prow,srow,sfschema,pschema,db):
             q += " and office.id = %s " % prow['office_id']
         if 'office_plans' in pschema[y]['pain_field_name']:
             q += " and office.id = %s " % prow['office_id']
-        print("q=%s" % q)
+        # print("q=%s" % q)
         o = db.query(q)
         if len(o) > 1:
             print(o)
@@ -242,7 +244,7 @@ def getPAINData(prow,srow,sfschema,pschema,db):
                 else:
                     v=False
         ret[SFCOLNAME] = v
-        print("-----")
+        # print("-----")
 
     return (upd,ret)
 
@@ -278,9 +280,9 @@ def compareDicts(n,f):
             if n[x] == 0:
                 n[x] = False
         if n[x] != f[x]:
-            print("%s != %s"  % (n[x],f[x]))
-            print("n=%s" % json.dumps(n,sort_keys=True))
-            print("f=%s" % json.dumps(f,sort_keys=True))
+            #print("%s != %s"  % (n[x],f[x]))
+            #print("n=%s" % json.dumps(n,sort_keys=True))
+            #print("f=%s" % json.dumps(f,sort_keys=True))
             ret = False
             break
     return ret

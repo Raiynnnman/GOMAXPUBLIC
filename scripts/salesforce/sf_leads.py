@@ -317,7 +317,7 @@ for x in PAIN:
     if newdata['OwnerId'] is None:
         del newdata['OwnerId']
 
-    print("upd=%s" % update)
+    # print("upd=%s" % update)
     SAME = sf_util.compareDicts(newdata,SF_ROW)
 
     if args.force_sf:
@@ -386,9 +386,9 @@ for x in PAIN:
             #    """,(LAST_MOD,x['pq_id'],)
             #)
         except Exception as e:
-            print(str(e))
+            print("%s : ERROR : %s" % (x['office_id'],str(e)))
             print("newdata=%s" % json.dumps(newdata,indent=4))
-            raise e
+            continue
     else:
         print("No changes required")
         if x['updated03'] is None:
