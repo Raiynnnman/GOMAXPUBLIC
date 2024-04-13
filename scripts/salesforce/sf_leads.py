@@ -271,7 +271,7 @@ for x in PAIN:
     newdata = {}
     try:
         (update,newdata) = sf_util.getPAINData(x,SF_ROW,SFSCHEMA,PSCHEMA,db)
-    except Exception e:
+    except Exception as e:
         print("%s : ERROR : %s" % (x['id'],str(e)))
         exc_type, exc_value, exc_traceback = sys.exc_info()
         traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
