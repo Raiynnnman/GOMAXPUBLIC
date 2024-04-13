@@ -81,7 +81,7 @@ for x in PSCHEMA:
     ARR.append(sfcol['name'])
 
 SFQUERY += ','.join(ARR)
-SFQUERY += " from Lead "
+SFQUERY += " from Lead where 1 = 1 "
 
 if args.sf_id is not None:
     SFQUERY += " and Id = '%s'" % args.sf_id
@@ -101,11 +101,11 @@ else:
 #---- MAIN
 
 SF_DATA = {}
-#print(res)
+print(res)
 #print(type(res))
 CNTR = 0
 for x in res['records']:
-    # print(json.dumps(x,indent=4))
+    print(json.dumps(x,indent=4))
     SF_ID = x['Id']
     if 'attributes' in x:
         del x['attributes']
