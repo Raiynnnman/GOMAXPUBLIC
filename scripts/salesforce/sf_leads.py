@@ -364,7 +364,7 @@ for x in PAIN:
         print("Updating PAIN")
         try:
             db.update("""
-                insert into provider_queue_history(office_id,user_id,text) values (
+                insert into provider_queue_history(provider_queue_id,user_id,text) values (
                     %s,1,'Updated data from SF'
                 )
             """,(x['pq_id'],))
@@ -431,9 +431,9 @@ for x in SF_DATA:
             print("Need to create office for %s" % j['Id'])
             db.update("""
                 insert into office 
-                    (name,office_type_id,email,billing_system_id,active)
+                    (name,office_type_id,email,billing_system_id,active,import_sf)
                     values
-                    (%s,%s,%s,%s,0)
+                    (%s,%s,%s,%s,0,1)
                 """,(j['Company'],OT['Chiropractor'],j['Email'].lower(),BS)
             )
             off_id = db.query("select LAST_INSERT_ID()")
@@ -466,6 +466,11 @@ for x in SF_DATA:
             )
             pq_id = db.query("select LAST_INSERT_ID()")
             pq_id = pq_id[0]['LAST_INSERT_ID()']
+            db.update("""
+                insert into provider_queue_history(provider_queue_id,user_id,text) values (
+                    %s,1,'Imported from SF'
+                )
+            """,(pq_id,))
             j['PainID__c'] = pq_id
             db.update("""
                 insert into users(email,first_name,last_name,phone,active) 
@@ -608,18 +613,38 @@ for x in SF_DATA:
     if 'Subscription_Plan__c' in j and j['Subscription_Plan__c'] is not None:
         if j['Status'] == 'New':
             print("%s: Not progressing with status New" % j['Id'])
+            db.update("""
+                insert into provider_queue_history(provider_queue_id,user_id,text) values (
+                    %s,1,'Not progression subscription plan: Status is New'
+                )
+            """,(pq_id,))
             continue
         if j['Status'] == 'Working':
             print("%s: Not progressing with status Working" % j['Id'])
+            db.update("""
+                insert into provider_queue_history(provider_queue_id,user_id,text) values (
+                    %s,1,'Not progression subscription plan: Status is Working'
+                )
+            """,(pq_id,))
             continue
         if j['Status'] == 'Converted':
             print("%s: Cant update Converted status" % j['Id'])
+            db.update("""
+                insert into provider_queue_history(provider_queue_id,user_id,text) values (
+                    %s,1,'Cant update Converted Status'
+                )
+            """,(pq_id,))
             continue
         o = db.query("""
             select id,description,duration,price from pricing_data where description = %s
             """,(j['Subscription_Plan__c'],)
         )
         if len(o) < 1:
+            db.update("""
+                insert into provider_queue_history(provider_queue_id,user_id,text) values (
+                    %s,1,'Plan wasnt found'
+                )
+            """,(pq_id,))
             raise Exception("PLAN_NOT_FOUND")
         sub = o[0]
         print(sub)
@@ -627,6 +652,11 @@ for x in SF_DATA:
         initial_payment = None
         if 'Payment_Amount__c' in j and j['Payment_Amount__c'] is not None and j['Payment_Amount__c'] > 0:
             price = initial_payment = j['Payment_Amount__c']
+            db.update("""
+                insert into provider_queue_history(provider_queue_id,user_id,text) values (
+                    %s,1,'Override price from SF'
+                )
+            """,(pq_id,))
         cur = db.query("""
             select id,pricing_data_id from office_plans where
                 office_id = %s
@@ -659,6 +689,11 @@ for x in SF_DATA:
             if UPDATE:
                 print("Replacing office plan")
                 db.update("""
+                    insert into provider_queue_history(provider_queue_id,user_id,text) values (
+                        %s,1,'Replacing plan with update'
+                    )
+                """,(pq_id,))
+                db.update("""
                     delete from office_plan_items where office_plans_id=%s
                     """,(i,)
                 )
@@ -688,6 +723,11 @@ for x in SF_DATA:
         else:
             print("Creating new office plan")
             db.update("""
+                insert into provider_queue_history(provider_queue_id,user_id,text) values (
+                    %s,1,'Creating new plan from SF'
+                )
+            """,(pq_id,))
+            db.update("""
                 insert into office_plans
                     (office_id,start_date,end_date,pricing_data_id)
                 values
@@ -709,6 +749,11 @@ for x in SF_DATA:
                     where office_id = %s
                 """,(initial_payment,off_id)
             )
+            db.update("""
+                insert into provider_queue_history(provider_queue_id,user_id,text) values (
+                    %s,1,'Override payment amount from SF'
+                )
+            """,(pq_id,))
         j['Sales_Link__c'] = '%s/#/register-provider/o/%s' % (config.getKey("host_url"),pq_id)
         j['PainURL__c'] = '%s/#/app/main/admin/office/%s' % (config.getKey("host_url"),pq_id)
         t = {}
@@ -726,12 +771,23 @@ for x in SF_DATA:
                 b = PAINHASH[x]['nd']
                 print("b=%s" % b)
             else:
-                print(PAINHASH)
+                print("ph=%s" PAINHASH)
         if j['Ready_To_Buy__c']:
             db.update("""
                 update provider_queue set sf_lead_executed=1, sf_id = %s where id = %s
                 """,(j['Id'],int(pq_id))
             )
+            db.update("""
+                insert into provider_queue_history(provider_queue_id,user_id,text) values (
+                    %s,1,'Sending to invoicing'
+                )
+            """,(pq_id,))
+        else:
+            db.update("""
+                insert into provider_queue_history(provider_queue_id,user_id,text) values (
+                    %s,1,'Not sending to invoices, as customer isnt Ready to Buy'
+                )
+            """,(pq_id,))
         if not args.dryrun:
             try:
                 sf.Lead.update(x,t)
