@@ -32,12 +32,14 @@ parser.add_argument('--force', dest="force", action="store_true")
 args = parser.parse_args()
 db = Query()
 
+PQ = getIDs.getProviderQueueStatus()
+
 q = """
     select 
         i.id,i.office_id,i.stripe_invoice_id,
         i.nextcheck, sis.status, i.physician_schedule_id, 
         ist.name as invoice_status,sum(ii.price * ii.quantity) as total,
-        pq.sf_lead_executed
+        pq.sf_lead_executed,o.user_id,o.id as office_id
     from 
         stripe_invoice_status sis,
         office o,
@@ -86,6 +88,21 @@ for x in l:
                 insert into invoice_history (invoices_id,user_id,text) values 
                     (%s,%s,%s)
                 """,(x['id'],1,'Progress invoice to APPROVED (sf_lead)')
+            )
+            db.update("""
+                update provider_queue set provider_queue_lead_strength_id = %s
+                    where office_id = %s
+                """,(PQ['Preferred Provider'],x['office_id')
+            )
+            db.update("""
+                update office set active=1
+                    where id=%s
+                """,(x['office_id'],)
+            )
+            db.update("""
+                update users set active=1
+                    where id=%s
+                """,(x['user_id'],)
             )
         db.commit()
     except Exception as e:
