@@ -267,6 +267,7 @@ for x in PAIN:
         continue
 
     (update,newdata) = sf_util.getPAINData(x,SF_ROW,SFSCHEMA,PSCHEMA,db)
+    PAINHASH[SF_ID]['nd'] = newdata
     #print("----")
     #print(json.dumps(newdata,indent=4))
     #print("----")
@@ -717,14 +718,13 @@ for x in SF_DATA:
             raise Exception("PQ_ID = 0")
         if 'Invoice_Paid__c' in t:
             if x in PAINHASH:
-                b = PAINHASH[x]
+                b = PAINHASH[x]['nd']
                 print("b=%s" % b)
-            else:
-                print("HASH=%s" % PAINHASH)
-        db.update("""
-            update provider_queue set sf_lead_executed=1, sf_id = %s where id = %s
-            """,(j['Id'],int(pq_id))
-        )
+        if j['Ready_To_Buy__c']:
+            db.update("""
+                update provider_queue set sf_lead_executed=1, sf_id = %s where id = %s
+                """,(j['Id'],int(pq_id))
+            )
         if not args.dryrun:
             try:
                 sf.Lead.update(x,t)
