@@ -766,12 +766,6 @@ for x in SF_DATA:
         print("t=%s" % t)
         if pq_id == 0:
             raise Exception("PQ_ID = 0")
-        if 'Invoice_Paid__c' in t:
-            if x in PAINHASH:
-                b = PAINHASH[x]['nd']
-                print("b=%s" % b)
-            else:
-                print("ph=%s" % PAINHASH)
         if j['Ready_To_Buy__c']:
             db.update("""
                 update provider_queue set sf_lead_executed=1, sf_id = %s where id = %s

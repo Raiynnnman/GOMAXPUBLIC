@@ -180,6 +180,11 @@ class RegistrationVerify(RegistrationsBase):
             )
             offid = db.query("select LAST_INSERT_ID()");
             offid = offid[0]['LAST_INSERT_ID()']
+            db.update("""
+                insert into office_history(office_id,user_id,text) values (
+                    %s,1,'Created (Customer Registration)'
+                )
+            """,(offid,))
             db.update("insert into office_addresses (office_id,zipcode) values (%s,%s)",
                 (offid,u['zipcode'])
             )
@@ -323,6 +328,11 @@ class RegisterProvider(RegistrationsBase):
             )
             off_id = db.query("select LAST_INSERT_ID()");
             off_id = off_id[0]['LAST_INSERT_ID()']
+            db.update("""
+                insert into office_history(office_id,user_id,text) values (
+                    %s,1,'Created (Registration)'
+                )
+            """,(off_id,))
         db.update("delete from office_addresses where office_id=%s",(off_id,))
         for x in params['addresses']:
             db.update(
@@ -349,6 +359,13 @@ class RegisterProvider(RegistrationsBase):
                     values (%s,%s)
                 """,(insid,ST['Potential Provider'])
             )
+            pqid = db.query("select LAST_INSERT_ID()");
+            pqid = pqid[0]['LAST_INSERT_ID()']
+            db.update("""
+                insert into provider_queue_history(provider_queue_id,user_id,text) values (
+                    %s,1,'Created (Registration)'
+                )
+            """,(pq_id,))
             l = db.query("""
                 select id from users where email = %s
                 """,(params['email'],)
@@ -417,6 +434,11 @@ class RegisterProvider(RegistrationsBase):
                     """,(planid,PL[selplan]['price'],1,PL[selplan]['description'])
                         
                 )
+                db.update("""
+                    insert into office_history(office_id,user_id,text) values (
+                        %s,1,'Created Plan'
+                    )
+                """,(insid,))
         if 'card' in params and params['card'] is not None:
             stripe_id = None
             if BS == 1:
@@ -468,13 +490,24 @@ class RegisterProvider(RegistrationsBase):
                 )
         if 'pq_id' in params and params['pq_id'] is not None: 
             db.update("""
-                update provider_queue set sf_lead_executed=1,provider_queue_status_id = %s where id = %s
+                update provider_queue set sf_lead_executed=1,
+                import_sf=1,provider_queue_status_id = %s where id = %s
                 """,(PQ['INVITED'],pq_id)
             )
+            db.update("""
+                insert into provider_queue_history(provider_queue_id,user_id,text) values (
+                    %s,1,'User Registered, Set to INVITED (SF Lead Registration)'
+                )
+            """,(params['pq_id'],))
             db.update("""
                 update office set active = 1 where id = %s
                 """,(off_id,)
             )
+            db.update("""
+                insert into office_history(office_id,user_id,text) values (
+                    %s,1,'Set to active (SF Lead Registration)'
+                )
+            """,(off_id,))
         ### TODO: Send invite link
         db.commit()
         return ret
@@ -616,6 +649,11 @@ class RegisterReferrer(RegistrationsBase):
                     (%s,%s)
                 """,(insid,params['phone'])
             )
+            db.update("""
+                insert into office_history(office_id,user_id,text) values (
+                    %s,1,'Created (Referrer Registration)'
+                )
+            """,(insid,))
         if not HAVE:
             db.update(
                 """

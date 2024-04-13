@@ -197,6 +197,40 @@ class AdminDashboard(AdminBase):
         )
         return o[0]
 
+    def getCommissionsThisMonth(self):
+        db = Query()
+        PQS = self.getProviderQueueStatus()
+        OT = self.getOfficeTypes()
+        o = db.query("""
+            select 
+                ifnull(t1.num1,0) as num1, /* commissions */
+                ifnull(t2.num2,0) as num2, /* Total paid */
+                ifnull(t3.num3,0) as num3, /* sent */
+                ifnull(t4.num4,0) as num4 /* Voided */
+            from 
+                (select round(sum(amount),2) as num1 from commission_users a
+                    where 
+                    a.created > 
+                    date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t1,
+                (select round(sum(total),2) as num2 from invoices a
+                    where 
+                    a.invoice_status_id = 15 
+                    and a.billing_period > 
+                    date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t2,
+                (select round(sum(total),2) as num3 from invoices a
+                    where 
+                    a.invoice_status_id = 10 
+                    and a.billing_period > 
+                    date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t3,
+                (select round(sum(total),2) as num4 from invoices a
+                    where 
+                    a.invoice_status_id = 25 
+                    and a.billing_period > 
+                    date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t4
+            """
+        )
+        return o[0]
+
     def getRevenueThisMonth(self):
         db = Query()
         PQS = self.getProviderQueueStatus()
@@ -235,6 +269,7 @@ class AdminDashboard(AdminBase):
     def execute(self, *args, **kwargs):
         ret = {}
         ret['visits'] = self.getVisits()
+        ret['commissions'] = self.getCommissionsThisMonth()
         ret['revenue_month'] = self.getRevenueThisMonth()
         ret['revenue_leads_month'] = self.getLeadsRevenueMonth()
         ret['lead_status'] = self.getLeadsStatus()
@@ -895,6 +930,11 @@ class OfficeSave(AdminBase):
             )
             insid = db.query("select LAST_INSERT_ID()");
             insid = insid[0]['LAST_INSERT_ID()']
+            db.update("""
+                insert into office_history(office_id,user_id,text) values (
+                    %s,%s,'Created (New)'
+                )
+            """,(insid,user['id']))
         else:
             db.update("""
                 update office set
@@ -904,6 +944,11 @@ class OfficeSave(AdminBase):
                     where id = %s
                 """,(params['name'],params['email'],params['active'],params['id']))
             insid = params['id']
+            db.update("""
+                insert into office_history(office_id,user_id,text) values (
+                    %s,%s,'Updated Record'
+                )
+            """,(insid,user['id']))
         if 'commission_user_id' in params:
             db.update("""
                 update office set commission_user_id=%s where id = %s
@@ -928,81 +973,6 @@ class OfficeSave(AdminBase):
         """,(params['id'],user['id']))
         db.commit()
         return {'success': True}
-
-class CorporationList(AdminBase):
-
-    def __init__(self):
-        super().__init__()
-
-    def isDeferred(self):
-        return False
-
-    @check_admin
-    def execute(self, *args, **kwargs):
-        ret = []
-        job,user,off_id,params = self.getArgs(*args,**kwargs)
-        limit = 10000
-        offset = 0
-        if 'limit' in params:
-            limit = int(params['limit'])
-        if 'offset' in params:
-            offset = int(params['offset'])
-        db = Query()
-        OT = self.getOfficeTypes()
-        ret = db.query("""
-            select id,name,active 
-            from office
-            where 
-            office_type_id = %s""",(OT['Corporation'],)
-        )
-        return ret
-
-class CorporationUpdate(AdminBase):
-
-    def __init__(self):
-        super().__init__()
-
-    def isDeferred(self):
-        return False
-
-    @check_admin
-    def execute(self, *args, **kwargs):
-        ret = []
-        job,user,off_id,params = self.getArgs(*args,**kwargs)
-        db = Query()
-        OT = self.getOfficeTypes()
-        PL = self.getPlans()
-        insid = 0
-        if 'id' in params:
-            db.update("""
-                update office set updated=now(),name = %s where id=%s
-                """,(params['name'],params['id'],)
-            )
-        else: 
-            db.update("""
-                insert into office (name) values (%s)
-                """,(params['name'],)
-            )
-            insid = db.query("select LAST_INSERT_ID()");
-            insid = insid[0]['LAST_INSERT_ID()']
-        if 'addr' in params:
-            g = params['addr']
-            g = g[0]
-            if 'addr1' in g:
-                db.update("""
-                    delete from office_addresses where office_id=%s
-                    """,(insid,)
-                )
-                db.update("""
-                    insert into office_addresses (office_id,
-                        addr1,addr2,phone,zipcode,city,state)
-                        values (%s,%s,%s,%s,%s,%s,%s)
-                    """,(insid,g['addr1'],g['addr2'],g['phone'],
-                         g['zipcode'],g['city'],g['state']
-                        )
-                )
-        db.commit()        
-        return ret
 
 class RegistrationUpdate(AdminBase):
 
@@ -1073,6 +1043,8 @@ class RegistrationUpdate(AdminBase):
             )
             userid = db.query("select LAST_INSERT_ID()");
             userid = userid[0]['LAST_INSERT_ID()']
+            if 'office_type_id' not in params:
+                params['office_type_id'] = OT['Chiropractor']
             db.update("""
                 insert into office(
                         name,office_type_id,email,user_id,billing_system_id
@@ -1086,16 +1058,21 @@ class RegistrationUpdate(AdminBase):
             offid = db.query("select LAST_INSERT_ID()");
             offid = offid[0]['LAST_INSERT_ID()']
             db.update("""
+                insert into office_history(office_id,user_id,text) values (
+                    %s,%s,'Created (New Record)'
+                )
+            """,(offid,user['id']))
+            db.update("""
                 insert into provider_queue(office_id,provider_queue_lead_strength_id) values (%s,%s)
                 """,(offid,STR['Potential Provider'])
             )
             pqid = db.query("select LAST_INSERT_ID()");
             pqid = pqid[0]['LAST_INSERT_ID()']
             db.update("""
-                insert into provider_queue_history(office_id,user_id,text) values (
-                    %s,%s,'Created provider_queue_entry'
+                insert into provider_queue_history(provider_queue_id,user_id,text) values (
+                    %s,%s,'Created (New Record)'
                 )
-            """,(x['pq_id'],user['id']))
+            """,(pqid,user['id']))
             db.update("""
                 insert into office_user(office_id,user_id) values
                     (%s,%s)
@@ -1126,6 +1103,11 @@ class RegistrationUpdate(AdminBase):
                 )
                 planid = db.query("select LAST_INSERT_ID()");
                 planid = planid[0]['LAST_INSERT_ID()']
+                db.update("""
+                    insert into office_history(office_id,user_id,text) values (
+                        %s,%s,'Created Plan'
+                    )
+                """,(offid,user['id']))
         else:
             db.update("""
                 insert into provider_queue_history(provider_queue_id,user_id,text) values (
@@ -1144,6 +1126,10 @@ class RegistrationUpdate(AdminBase):
                 userid
                 )
         )
+        if 'lead_strength_id' not in params:
+            params['lead_strength_id'] = STR['Potential Provider']
+        if 'initial_payment' not in params:
+            params['initial_payment'] = None
         db.update("""
             update provider_queue set 
                 provider_queue_status_id=%s,

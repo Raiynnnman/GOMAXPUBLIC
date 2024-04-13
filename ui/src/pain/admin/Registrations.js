@@ -1009,7 +1009,7 @@ class Registrations extends Component {
                                                     )}
                                                 </TabPane>
                                                 <TabPane tabId="history">
-                                                    {(this.state.selected.addr && this.state.selected.addr) && (
+                                                    {(this.state.selected.history && this.state.selected.history) && (
                                                     <>
                                                     <BootstrapTable 
                                                         keyField='id' data={this.state.selected.history} 
