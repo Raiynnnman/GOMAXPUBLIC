@@ -32,14 +32,13 @@ parser.add_argument('--force', dest="force", action="store_true")
 args = parser.parse_args()
 db = Query()
 
-PQ = getIDs.getProviderQueueStatus()
 
 q = """
     select 
         i.id,i.office_id,i.stripe_invoice_id,
         i.nextcheck, sis.status, i.physician_schedule_id, 
         ist.name as invoice_status,sum(ii.price * ii.quantity) as total,
-        pq.sf_lead_executed,o.user_id,o.id as office_id
+        pq.sf_lead_executed,o.user_id,o.id as office_id,pq.id as pq_id
     from 
         stripe_invoice_status sis,
         office o,
@@ -73,6 +72,8 @@ key = config.getKey("square_api_key")
 loc = config.getKey("square_loc_key")
 APT = getIDs.getAppointStatus()
 INV = getIDs.getInvoiceIDs()
+ST = getIDs.getLeadStrength()
+PQ = getIDs.getProviderQueueStatus()
 
 for x in l:
     try:
@@ -87,17 +88,7 @@ for x in l:
             db.update("""
                 insert into invoice_history (invoices_id,user_id,text) values 
                     (%s,%s,%s)
-                """,(x['id'],1,'Progress invoice to APPROVED (sf_lead)')
-            )
-            db.update("""
-                update provider_queue set provider_queue_lead_strength_id = %s
-                    where office_id = %s
-                """,(PQ['Preferred Provider'],x['office_id')
-            )
-            db.update("""
-                update office set active=1
-                    where id=%s
-                """,(x['office_id'],)
+                """,(x['id'],1,'Progress invoice to APPROVED (SF Lead)')
             )
             db.update("""
                 update users set active=1

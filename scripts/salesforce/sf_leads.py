@@ -767,15 +767,41 @@ for x in SF_DATA:
         if pq_id == 0:
             raise Exception("PQ_ID = 0")
         if j['Ready_To_Buy__c']:
+            print("Customer ready to buy, updating")
             db.update("""
-                update provider_queue set sf_lead_executed=1, sf_id = %s where id = %s
-                """,(j['Id'],int(pq_id))
+                update provider_queue set 
+                    sf_lead_executed=1, sf_id = %s,
+                    provider_queue_lead_strength_id = %s,
+                    provider_queue_status_id = %s
+                where id = %s
+                """,(j['Id'],ST['Preferred Provider'],PQ['INVITED'],int(pq_id))
             )
             db.update("""
                 insert into provider_queue_history(provider_queue_id,user_id,text) values (
-                    %s,1,'Sending to invoicing'
+                    %s,1,'Sending to invoicing (SF Lead)'
                 )
             """,(pq_id,))
+            db.update("""
+                insert into provider_queue_history(provider_queue_id,user_id,text) values (
+                    %s,1,'Set to Preferred Provider (SF Lead)'
+                )
+            """,(pq_id,))
+            db.update("""
+                insert into provider_queue_history(provider_queue_id,user_id,text) values (
+                    %s,1,'Set to INVITED (SF Lead)'
+                )
+            """,(pq_id,))
+            db.update("""
+                update office set 
+                    active=1
+                where id = %s
+                """,(off_id,)
+            )
+            db.update("""
+                insert into office_history(office_id,user_id,text) values (
+                    %s,1,'Set to ACTIVE (SF LEAD)'
+                )
+            """,(off_id,))
         else:
             db.update("""
                 insert into provider_queue_history(provider_queue_id,user_id,text) values (
