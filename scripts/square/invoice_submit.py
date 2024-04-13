@@ -55,9 +55,16 @@ inv = db.query("""
             i.id
     """,(INV['APPROVED'],)
     )
+
+minv = db.query("""
+    select count(id) as a from invoices
+    """)
+minv = minv[0]['a']
+if config.getKey("environment") != "prod":
+    minv += 10000
 print(inv)
 for x in inv:
-    x['minv'] += 1
+    minv += 1
     if x['id'] is None:
         print("No invoices to process")
         continue
@@ -143,7 +150,7 @@ for x in inv:
                                 'customer_id': x['stripe_cust_id']
                             },
                             'delivery_method':'EMAIL',
-                            'invoice_number': str(x['minv']).zfill(7),
+                            'invoice_number': str(minv).zfill(7),
                             'store_payment_method_enabled': True,
                             'accepted_payment_methods': { 
                                 'card':True,
@@ -169,7 +176,7 @@ for x in inv:
                             'primary_recipient': { 
                                 'customer_id': x['stripe_cust_id']
                             },
-                            'invoice_number': str(x['minv']).zfill(7),
+                            'invoice_number': str(minv).zfill(7),
                             'delivery_method':'EMAIL',
                             'store_payment_method_enabled': True,
                             'accepted_payment_methods': { 
