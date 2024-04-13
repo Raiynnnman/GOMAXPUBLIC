@@ -2,6 +2,7 @@
 
 import os
 import random
+import traceback
 import sys
 from datetime import datetime, timedelta
 import time
@@ -266,7 +267,15 @@ for x in PAIN:
         print("ERROR: Cached results found, skipping %s" % x['sf_id'])
         continue
 
-    (update,newdata) = sf_util.getPAINData(x,SF_ROW,SFSCHEMA,PSCHEMA,db)
+    update = 0
+    newdata = {}
+    try:
+        (update,newdata) = sf_util.getPAINData(x,SF_ROW,SFSCHEMA,PSCHEMA,db)
+    except Exception e:
+        print("%s : ERROR : %s" % (x['id'],str(e)))
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
+        continue
     PAINHASH[SF_ID]['nd'] = newdata
     #print("----")
     #print(json.dumps(newdata,indent=4))
