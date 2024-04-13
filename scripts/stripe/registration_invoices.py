@@ -66,6 +66,8 @@ for x in l:
     CNT += 1
     print(x)
     x['items'] = json.loads(x['items'])
+    if x['initial_payment'] is None:
+        x['initial_payment'] = 0
     # All new customers go to new system
     db.update("""
         insert into invoices (office_id,invoice_status_id,
