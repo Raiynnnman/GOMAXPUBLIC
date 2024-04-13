@@ -392,9 +392,10 @@ print("Processing SF Records")
 CNTR = 0
 for x in SF_DATA:
     j = SF_DATA[x]
+    FIELDS = 'PainID__c,PainURL__c,Sales_Link__c,Invoice_Paid__c'
     if j['Email'] is None:
-        print("Record %s has no email, skipping" % j['Id'])
-        continue
+        j['Email'] = "unknown-%s@poundpain.com" encryption.getSHA256()[:6]
+        FIELDS += ",Email"
     off_id = 0
     user_id = 0
     pq_id = 0
@@ -668,7 +669,6 @@ for x in SF_DATA:
         j['Sales_Link__c'] = '%s/#/register-provider/o/%s' % (config.getKey("host_url"),pq_id)
         j['PainURL__c'] = '%s/#/app/main/admin/office/%s' % (config.getKey("host_url"),pq_id)
         t = {}
-        FIELDS = 'PainID__c,PainURL__c,Sales_Link__c,Invoice_Paid__c'
         fie = FIELDS.split(",")
         nd2 = {}
         for f in j:
