@@ -94,7 +94,7 @@ for x in o:
                 if 'postal_code' in y['types']:
                     zipcode = y['long_name']
             db.update("""
-                insert into office_history(provider_queue_id,user_id,text) values (
+                insert into office_history(office_id,user_id,text) values (
                     %s,1,'Set lat,lon for search'
                 )
             """,(x['office_id'],))
