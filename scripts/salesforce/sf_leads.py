@@ -313,6 +313,8 @@ for x in PAIN:
         newdata['FirstName'] = 'Unknown'
     if 'LastName' not in newdata or newdata['LastName'] is None or len(newdata['LastName']) < 2:
         newdata['LastName'] = 'Unknown'
+    if newdata['Email'] is None:
+        newdata['Email'] = "unknown-%s@poundpain.com" % encryption.getSHA256()[:6]
     newdata['Email'] = newdata['Email'].replace(" ",",")
     if newdata['OwnerId'] is None:
         del newdata['OwnerId']
