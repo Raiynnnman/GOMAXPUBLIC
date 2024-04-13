@@ -151,7 +151,7 @@ for x in inv:
                             },
                             'payment_requests': [{
                                 'request_type':'BALANCE',
-                                'due_date':calcdate.getYearMonthDay(),
+                                'due_date': calcdate.getTimeIntervalAddMonths(None,1).strftime('%Y-%m-%d'),
                                 'tipping_enabled':False,
                             }]
                         }
