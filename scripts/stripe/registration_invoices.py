@@ -38,10 +38,9 @@ l = db.query("""
                 'id',opi.id,'price',opi.price,
                 'description',opi.description,'quantity',opi.quantity
             )
-        ) as items,ifnull(pq.initial_payment,0),pd.duration,
-        pq.sf_lead_executed,
-        pd.upfront_cost,pd.price,o.commission_user_id,
-        cs.id as commission_structure_id,pq.initial_payment,
+        ) as items,ifnull(pq.initial_payment,0) as initial_payment,pd.duration,
+        pq.sf_lead_executed, pd.upfront_cost,pd.price,o.commission_user_id,
+        cs.id as commission_structure_id,
         cs.commission,concat(u.first_name,' ',u.last_name) as comm_user
     from 
         office_plans op
