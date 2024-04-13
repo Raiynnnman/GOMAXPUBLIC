@@ -376,7 +376,7 @@ for x in PAIN:
             #)
         except Exception as e:
             print(str(e))
-            print(json.dumps(newdata,indent=4))
+            print("newdata=%s" % json.dumps(newdata,indent=4))
             raise e
     else:
         print("No changes required")
