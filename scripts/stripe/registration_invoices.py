@@ -141,8 +141,8 @@ for x in l:
         print("Creating billing period %s ($0 invoice) for %s" % (bp,x['office_id']))
         o = db.update("""
             insert into invoices (office_id,invoice_status_id,office_plans_id,billing_period,billing_system_id) 
-                values (%s,%s,%s,date_add(%s,interval %s month),%s)
-            """,(x['office_id'],INV['CREATED'],x['id'],bp,t,BS)
+                values (%s,%s,%s,%s,%s)
+            """,(x['office_id'],INV['CREATED'],x['id'],bp,BS)
         )
         newid = db.query("select LAST_INSERT_ID()")
         newid = newid[0]['LAST_INSERT_ID()']
