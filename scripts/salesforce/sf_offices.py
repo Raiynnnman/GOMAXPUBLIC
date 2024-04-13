@@ -167,7 +167,16 @@ for x in PAIN:
     if x['oa_id'] is None:
         print("Not creating empty records for address")
         continue
-    (update,newdata) = sf_util.getPAINData(x,SF_ROW,SFSCHEMA,PSCHEMA,db)
+    try:
+        (update,newdata) = sf_util.getPAINData(x,SF_ROW,SFSCHEMA,PSCHEMA,db)
+    except Exception as e:
+        print("%s : ERROR : %s" % (x['office_id'],str(e)))
+        print("x=%s" % x)
+        print("SF_ROW=%s" % SF_ROW)
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
+        continue
+    
     #print("----")
     #print(json.dumps(newdata,indent=4))
     #print("----")
