@@ -45,7 +45,7 @@ class Office extends Component {
                         <NavItem>
                             <NavLink className={classnames({ active: this.state.activeTab === 'office' })}
                                 onClick={() => { this.toggleTab('office') }}>
-                                <span>{translate('Offices')}</span>
+                                <span>{translate('Providers')}</span>
                             </NavLink>
                         </NavItem>
                     </Nav>

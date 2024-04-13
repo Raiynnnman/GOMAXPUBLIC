@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import moment from 'moment';
 import { connect } from 'react-redux';
 import AssessmentIcon from '@mui/icons-material/Assessment';
+import AutorenewIcon from '@mui/icons-material/Autorenew';
 import { Col, Row } from 'reactstrap';
 import ToolkitProvider from 'react-bootstrap-table2-toolkit';
 import { push } from 'connected-react-router';
@@ -28,6 +29,8 @@ import { getOffices } from '../../actions/offices';
 import { getContext } from '../../actions/context';
 import { officeSave } from '../../actions/officeSave';
 import { officeReportDownload } from '../../actions/officeReportDownload';
+import formatPhoneNumber from '../utils/formatPhone';
+import PainTable from '../utils/PainTable';
 
 const { SearchBar } = Search;
 class OfficeList extends Component {
@@ -39,16 +42,21 @@ class OfficeList extends Component {
             subTab: "plans",
             filter: [],
             statusSelected:null,
+            search:null,
             selProvider:null,
             page: 0,
             pageSize: 10,
             selectedID: 0
         } 
         this.cancel = this.cancel.bind(this);
+        this.search = this.search.bind(this);
         this.pageChange = this.pageChange.bind(this);
+        this.sortChange = this.sortChange.bind(this);
+        this.pageRowsChange = this.pageRowsChange.bind(this);
         this.activeChange = this.activeChange.bind(this);
         this.officeReport = this.officeReport.bind(this);
         this.renderTotalLabel = this.renderTotalLabel.bind(this);
+        this.reload = this.reload.bind(this);
         this.toggleSubTab = this.toggleSubTab.bind(this);
         this.onStatusFilter = this.onStatusFilter.bind(this);
         this.onCommissionChange = this.onCommissionChange.bind(this);
@@ -94,6 +102,14 @@ class OfficeList extends Component {
         // this.props.dispatch(getOffices({page:this.state.page,limit:this.state.pageSize}))
     }
 
+    reload() { 
+        this.props.dispatch(getOffices(
+            {sort:this.state.sort,direction:this.state.direction,
+             search:this.state.search,limit:this.state.pageSize,
+            offset:this.state.page,status:this.state.filter}
+        ));
+    }
+
     activeChange(e,t) { 
         this.state.selected.active = this.state.selected.active ? 0 : 1; 
         this.setState(this.state);
@@ -121,14 +137,42 @@ class OfficeList extends Component {
         ));
         this.setState(this.state)
     } 
-    pageChange(e,t) { 
-        if (e === '>') { 
-            this.state.page = this.state.page + 1;
-        } else { 
-            this.state.page = e - 1;
-        }
+
+    sortChange(t) { 
+        var g = this.props.offices.data.sort.filter((e) => t.dataField === e.col);
+        if (g.length > 0) { 
+            g = g[0]
+            this.state.sort = g.id
+            this.state.direction = g.direction === 'asc' ? 'desc' : 'asc'
+            this.props.dispatch(getOffices(
+                {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
+            ));
+            this.setState(this.state);
+        } 
+    } 
+
+    pageRowsChange(t) { 
+        this.state.pageSize = t
+        this.state.page = 0
         this.props.dispatch(getOffices(
-            {limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
+            {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
+        ));
+        this.setState(this.state);
+    } 
+    search(e) { 
+        this.state.search = e.target.value;
+        if (this.state.search.length === 0) { 
+            this.state.search = null;
+        } 
+        this.props.dispatch(getOffices(
+            {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
+        ));
+        this.setState(this.state);
+    } 
+    pageChange(e) { 
+        this.state.page = e
+        this.props.dispatch(getOffices(
+            {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
         ));
         this.setState(this.state);
     } 
@@ -518,9 +562,7 @@ class OfficeList extends Component {
             {(this.props.officeReportDownload && this.props.officeReportDownload.isReceiving) && (
                 <AppSpinner/>
             )}
-            {(this.props && this.props.offices && this.props.offices.data && this.props.offices.data.offices &&
-              this.props.offices.data.offices.length > 0 && this.state.selected === null) && ( 
-            <>
+            {(this.state.selected === null) && (
             <Row md="12">
                 <Col md="5" style={{zIndex:9995}}>
                   {(this.props.offices && this.props.offices.data && 
@@ -550,20 +592,43 @@ class OfficeList extends Component {
                         />
                     )}
                 </Col>                
-                <Col md="7">
+                <Col md={3}>
+                    <Input type="text" id="normal-field" onChange={this.search}
+                    placeholder="Search" value={this.state.search}/>
+                </Col>
+                <Col md="4">
                     <div class="pull-right">
-                        <Button onClick={this.officeReport} outline color="primary"><AssessmentIcon/></Button>
+                        <div style={{justifyContent:'spread-evenly'}}>
+                            <Button onClick={() => this.reload()} style={{marginRight:5,height:35}} outline 
+                                color="primary"><AutorenewIcon/></Button>
+                            <Button onClick={this.officeReport} outline color="primary"><AssessmentIcon/></Button>
+                        </div>
                     </div>
                 </Col>
             </Row>
+            )}
+            {(this.props && this.props.offices && this.props.offices.data && this.props.offices.data.offices &&
+              this.props.offices.data.offices.length > 0 && this.state.selected === null) && ( 
+            <>
             <Row md="12" style={{marginTop:10}}>
                 <Col md="12">
-                      <BootstrapTable 
+                      {/*<BootstrapTable 
                           keyField="id"
                           data={this.props.offices.data.offices} 
                           columns={ heads }
                             pagination={ paginationFactory(options) }>
-                      </BootstrapTable>
+                      </BootstrapTable>*/}
+                      <PainTable
+                            keyField='id' 
+                            data={this.props.offices.data.offices} 
+                            total={this.props.offices.data.total}
+                            page={this.state.page}
+                            pageSize={this.state.pageSize}
+                            onPageChange={this.pageChange}
+                            onSort={this.sortChange}
+                            onPageRowsPerPageChange={this.pageRowsChange}
+                            columns={heads}>
+                      </PainTable> 
                 </Col>                
             </Row>
             </>

@@ -756,20 +756,38 @@ class OfficeList(AdminBase):
             """ % (OT['Customer'],OT['Legal'])
         stat_params = []
         count_par = []
-        q_params = [
-            limit,offset*limit
+        search_par = [
+            int(limit),
+            int(offset)*int(limit)
         ]
         if 'office_id' in params and params['office_id'] is not None and int(params['office_id']) > 0:
             q += " and o.id = %s " % params['office_id']
+        elif 'search' in params and params['search'] is not None:
+            q += """ and (o.email like %s  or o.name like %s or oa.phone like %s ) 
+            """
+            search_par.insert(0,params['search']+'%%')
+            search_par.insert(0,params['search']+'%%')
+            search_par.insert(0,params['search']+'%%')
+            count_par.insert(0,params['search']+'%%')
+            count_par.insert(0,params['search']+'%%')
+            count_par.insert(0,params['search']+'%%')
         elif 'status' in params and params['status'] is not None:
             q += " and pq.provider_queue_status_id in (%s) " % ','.join(map(str,params['status']))
         q += " group by o.id order by o.updated desc "
-        cnt = db.query("select count(id) as cnt from (%s) as t" % (q,))
+        cnt = db.query("select count(id) as cnt from (" + q + ") as t", count_par)
         q += " limit %s offset %s " 
         ret['total'] = cnt[0]['cnt']
-        o = db.query(q,q_params)
+        o = db.query(q,search_par)
         ret['offices'] = []
         for x in o:
+            x['history'] = db.query("""
+                select ph.id,user_id,text,concat(u.first_name, ' ', u.last_name) as user,created
+                    from office_history ph,users u
+                where 
+                    ph.user_id=u.id and
+                    ph.provider_queue_id = %s
+                """,(x['id'],)
+            )
             x['addr'] = json.loads(x['addr'])
             x['potential'] = db.query("""
                 select
@@ -1323,6 +1341,14 @@ class RegistrationList(AdminBase):
             x['first_name'] = x['addr'][0]['first_name'] if len(x['addr']) > 0 else ''
             x['phone'] = x['addr'][0]['phone'] if len(x['addr']) > 0 else ''
             x['email'] = x['addr'][0]['email'] if len(x['addr']) > 0 else ''
+            x['history'] = db.query("""
+                select ph.id,user_id,text,concat(u.first_name, ' ', u.last_name) as user,created
+                    from provider_queue_history ph,users u
+                where 
+                    ph.user_id=u.id and
+                    ph.provider_queue_id = %s
+                """,(x['id'],)
+            )
             x['addr'] = db.query("""
                 select 
                     oa.id,oa.addr1,oa.addr2,oa.phone,
