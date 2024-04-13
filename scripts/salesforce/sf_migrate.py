@@ -128,7 +128,7 @@ for x in SF_DATA:
             insert into provider_queue_history(provider_queue_id,user_id,text) values (
                 %s,1,'Migrated from SF'
             )
-        """,(j['PainID__c',))
+        """,(j['PainID__c'],))
         print("Successfully migrated %s to %s" % (j['PainID__c'],j['Id']))
     except Exception as e:
         print("ERROR: %s: %s" % (j['Id'],str(e)))

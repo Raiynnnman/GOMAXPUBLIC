@@ -921,6 +921,11 @@ class OfficeSave(AdminBase):
                     ) values (%s,%s,%s,%s,%s,%s,%s)
                 """,(insid,x['addr1'],x['addr2'],x['phone'],x['city'],x['state'],x['zipcode'])
             )
+        db.update("""
+            insert into office_history(office_id,user_id,text) values (
+                %s,%s,'Updated Record'
+            )
+        """,(params['id'],user['id']))
         db.commit()
         return {'success': True}
 
@@ -1087,6 +1092,11 @@ class RegistrationUpdate(AdminBase):
             pqid = db.query("select LAST_INSERT_ID()");
             pqid = pqid[0]['LAST_INSERT_ID()']
             db.update("""
+                insert into provider_queue_history(office_id,user_id,text) values (
+                    %s,%s,'Created provider_queue_entry'
+                )
+            """,(x['pq_id'],user['id']))
+            db.update("""
                 insert into office_user(office_id,user_id) values
                     (%s,%s)
                 """,
@@ -1116,6 +1126,12 @@ class RegistrationUpdate(AdminBase):
                 )
                 planid = db.query("select LAST_INSERT_ID()");
                 planid = planid[0]['LAST_INSERT_ID()']
+        else:
+            db.update("""
+                insert into provider_queue_history(provider_queue_id,user_id,text) values (
+                    %s,%s,'Updated Record'
+                )
+            """,(pqid,user['id']))
             
         db.update("""
             update users set 
