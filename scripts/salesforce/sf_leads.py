@@ -606,6 +606,9 @@ for x in SF_DATA:
         if j['Status'] == 'Working':
             print("%s: Not progressing with status Working" % j['Id'])
             continue
+        if j['Status'] == 'Converted':
+            print("%s: Cant update Converted status" % j['Id'])
+            continue
         o = db.query("""
             select id,description,duration,price from pricing_data where description = %s
             """,(j['Subscription_Plan__c'],)
@@ -709,13 +712,15 @@ for x in SF_DATA:
             if f in fie:
                 nd2[f] = j[f]
         t = nd2
-        print("t=%s" % )
+        print("t=%s" % t)
         if pq_id == 0:
             raise Exception("PQ_ID = 0")
         if 'Invoice_Paid__c' in t:
             if x in PAINHASH:
                 b = PAINHASH[x]
                 print("b=%s" % b)
+            else:
+                print("HASH=%s" % PAINHASH)
         db.update("""
             update provider_queue set sf_lead_executed=1, sf_id = %s where id = %s
             """,(j['Id'],int(pq_id))
