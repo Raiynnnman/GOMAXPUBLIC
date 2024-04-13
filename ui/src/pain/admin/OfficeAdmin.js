@@ -51,7 +51,7 @@ class Office extends Component {
                     </Nav>
                     <TabContent className='mb-lg' activeTab={this.state.activeTab}>
                         <TabPane tabId="office">
-                            <OfficeAdminList/>
+                            <OfficeAdminList match={this.props.match}/>
                         </TabPane>
                     </TabContent>
                 </Col>                

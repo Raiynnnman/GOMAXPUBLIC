@@ -759,10 +759,10 @@ class OfficeList(AdminBase):
         q_params = [
             limit,offset*limit
         ]
-        if 'status' in params and params['office_id'] is None:
+        if 'office_id' in params and params['office_id'] is not None and int(params['office_id']) > 0:
+            q += " and o.id = %s " % params['office_id']
+        elif 'status' in params and params['status'] is not None:
             q += " and pq.provider_queue_status_id in (%s) " % ','.join(map(str,params['status']))
-        if 'office_id' in params and params['office_id'] is not None and params['office_id'] > 0:
-            q += " and pq.id = %s " % params['office_id']
         q += " group by o.id order by o.updated desc "
         cnt = db.query("select count(id) as cnt from (%s) as t" % (q,))
         q += " limit %s offset %s " 

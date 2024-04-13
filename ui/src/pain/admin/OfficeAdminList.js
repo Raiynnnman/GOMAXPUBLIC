@@ -39,6 +39,7 @@ class OfficeList extends Component {
             subTab: "plans",
             filter: [],
             statusSelected:null,
+            selProvider:null,
             page: 0,
             pageSize: 10,
             selectedID: 0
@@ -60,7 +61,8 @@ class OfficeList extends Component {
 
     componentWillReceiveProps(p) { 
         if (p.offices.data && p.offices.data.config && 
-            p.offices.data.config.provider_status && this.state.statusSelected === null) { 
+            p.offices.data.config.provider_status && 
+            this.state.statusSelected === null && this.state.selProvider === null) { 
             var c = 0;
             var t = [];
             for (c = 0; c < p.offices.data.config.provider_status.length; c++) { 
@@ -79,14 +81,16 @@ class OfficeList extends Component {
 
     componentDidMount() {
         var i = null;
-        if (this.props.match.params.id) { 
+        if (this.props.match && this.props.match.params && this.props.match.params.id) { 
             i = this.props.match.params.id;
         } 
-        this.props.dispatch(getRegistrations({
+        this.state.selProvider = i;
+        this.props.dispatch(getOffices({
             limit:this.state.pageSize,
             office_id:i,
             offset:this.state.page
         }));
+        this.setState(this.state);
         // this.props.dispatch(getOffices({page:this.state.page,limit:this.state.pageSize}))
     }
 
