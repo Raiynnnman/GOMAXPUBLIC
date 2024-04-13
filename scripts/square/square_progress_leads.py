@@ -57,6 +57,7 @@ q = """
         pq.sf_lead_executed = 1 and
         year(i.billing_period) = year(op.start_date) and
         month(i.billing_period) = month(op.start_date) and
+        stripe_invoice_id is null and
         year(i.billing_period) = year(now()) and
         month(i.billing_period) = month(now()) and
         date_add(sis.created,interval 160 day) > now() 

@@ -37,9 +37,11 @@ q = """
     select 
         o.name,o.id,o.email
     from 
-        office o
+        office o,
+        provider_queue pq
     where 
-        o.active = 1 and
+        pq.office_id = o.id and
+        (o.active = 1 or sf_lead_executed = 1) and
         o.office_type_id = %s and
         o.billing_system_id = 2 and
         o.stripe_cust_id is null

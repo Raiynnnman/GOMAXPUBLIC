@@ -62,7 +62,7 @@ INV = getIDs.getInvoiceIDs()
 
 for x in l:
     try:
-        print(x)
+        # print(x)
         if x['invoice_status'] == 'CANCELED' and x['status'] != 'VOID': 
             print("changing status to ERROR: %s " % x['id'])
             db.update("""
@@ -153,6 +153,7 @@ for x in l:
         db.commit()
     except Exception as e:
         print(str(e))
+        print(x)
         exc_type, exc_value, exc_traceback = sys.exc_info()
         traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
 
