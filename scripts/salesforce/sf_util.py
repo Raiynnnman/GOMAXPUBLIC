@@ -116,8 +116,6 @@ def updatePAINDB(prow,srow,sfschema,pschema,db,debug=False):
             val = prow[j[1]]
         else:
             val = prow[join]
-        if join == 'oa_id':
-            join = 'id'
         if val == None:
             val = 0
         COMM = False

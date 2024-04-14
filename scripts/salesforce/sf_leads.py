@@ -607,7 +607,7 @@ for x in SF_DATA:
             print("%s: Not progressing with status New" % j['Id'])
             db.update("""
                 insert into provider_queue_history(provider_queue_id,user_id,text) values (
-                    %s,1,'Not progression subscription plan: Status is New'
+                    %s,1,'Not progressing subscription plan: Status is New'
                 )
             """,(pq_id,))
             continue
@@ -615,7 +615,7 @@ for x in SF_DATA:
             print("%s: Not progressing with status Working" % j['Id'])
             db.update("""
                 insert into provider_queue_history(provider_queue_id,user_id,text) values (
-                    %s,1,'Not progression subscription plan: Status is Working'
+                    %s,1,'Not progressing subscription plan: Status is Working'
                 )
             """,(pq_id,))
             continue
