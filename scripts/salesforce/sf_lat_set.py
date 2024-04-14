@@ -116,10 +116,16 @@ for x in SF_DATA:
         continue
     if j['Addresses_ID__c'] is None:
         g = db.query("""
-            select id from office_addresses where office_id=%s
+            select id from office_addresses oa,provider_queue pq 
+            where 
+                pq.office_id = oa.office_id and 
+                pq.id=%s
             order by created limit 1
             """,(j['PainID__c'],)
         )
+        if len(g) < 1:
+            print("No addresses for %s" % j['PainID__c'])
+            continue
         t['Addresses_ID__c'] = g[0]['id']
         
     o = db.query("""
@@ -131,6 +137,8 @@ for x in SF_DATA:
         # basis since mechanics remove and reload. Reset for next pass
         print("ERROR: Couldnt find addresses for %s, resetting" % j['Addresses_ID__c'])
         t['Addresses_ID__c'] = None
+        t['Latitude'] = None
+        t['Longitude'] = None
     else:
         t['Latitude'] = o[0]['lat']
         t['Longitude'] = o[0]['lon']

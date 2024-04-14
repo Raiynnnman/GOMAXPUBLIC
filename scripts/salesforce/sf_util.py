@@ -184,9 +184,9 @@ def getPAINData(prow,srow,sfschema,pschema,db,debug=False):
         TYPE = sfschema[y]['type']
         SFCOLNAME = sfschema[y]['name']
         if debug:
-            print(pschema[y])
-            print(json.dumps(sfschema[y]))
-            print(prow)
+            print("pschema=%s" % pschema[y])
+            print("sfschema=%s" % json.dumps(sfschema[y]))
+            print("prow=%s" % prow)
         field = pschema[y]['pain_field_name']
         table = pschema[y]['pain_table_name']
         filt = pschema[y]['pain_special_filter']
@@ -194,8 +194,6 @@ def getPAINData(prow,srow,sfschema,pschema,db,debug=False):
         if len(join) < 1:
             join = 'id'
         val = 0
-        if join == 'oa_id':
-            join = 'id'
         if '.' in join:
             j = join.split('.')
             val = prow[j[1]]

@@ -763,6 +763,16 @@ class Registrations extends Component {
                                             </Col>
                                           </FormGroup>
                                           )}
+                                          {this.state.selected.office_id && (<FormGroup row>
+                                            <Label for="normal-field" md={1} className="text-md-right">
+                                              Office ID 
+                                            </Label>
+                                            <Col md={5}>
+                                                <Input type="text" id="normal-field" readOnly 
+                                                placeholder="Office ID" value={this.state.selected.office_id}/>
+                                            </Col>
+                                          </FormGroup>
+                                          )}
                                           <FormGroup row>
                                             <Label for="normal-field" md={1} className="text-md-right">
                                               Practice
