@@ -147,7 +147,7 @@ def updatePAINDB(prow,srow,sfschema,pschema,db,debug=False):
         if debug:
             print(q,newval)
         db.update(q,(newval,))
-        return cols_mod
+    return cols_mod
 
 def getPAINData(prow,srow,sfschema,pschema,db,debug=False):
     # print(json.dumps(prow,indent=4))
