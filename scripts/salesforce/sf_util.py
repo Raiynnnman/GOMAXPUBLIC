@@ -84,6 +84,8 @@ def updatePAINDB(prow,srow,sfschema,pschema,db,debug=False):
     for x in srow:
         pcol = None
         for t in sfschema:
+            if t == 'Addresses ID':
+                continue
             if sfschema[t]['name'] == x:
                 v = sfschema[t]['label']
                 pcol = pschema[v]
