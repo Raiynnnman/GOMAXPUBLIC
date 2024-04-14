@@ -140,6 +140,8 @@ def updatePAINDB(prow,srow,sfschema,pschema,db,debug=False):
             join = 'id'
         if COMM:
             ftable = 'office'
+        if join == 'oa_id':
+            join = 'id'
         q = """
              update %s set %s=** where %s.%s = %s 
         """ % (ftable,field,ftable,join,val)
