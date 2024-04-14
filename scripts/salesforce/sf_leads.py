@@ -332,6 +332,7 @@ for x in PAIN:
                         raise Exception("ERROR: Creating new record but phone found: %s (%s)" % (newdata['Phone'],o[0]['t1']))
                 if not args.dryrun and not args.no_new:
                     r = sf.Lead.create(newdata)
+                    print("set3: %s" % j['Id'])
                     db.update("""
                         update provider_queue set sf_id = %s,sf_updated=now() where id = %s
                         """,(r['id'],x['pq_id'])
@@ -540,10 +541,6 @@ for x in SF_DATA:
             update = False
             t = pq_id
             u = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),pq_id)
-            db.update("""
-                update provider_queue set sf_id = %s where id = %s
-                """,(j['Id'],int(pq_id))
-            )
             if t != j['PainID__c']:
                 update = True
             if u != j['PainURL__c']:
@@ -568,6 +565,7 @@ for x in SF_DATA:
                 except Exception as e:
                     print(json.dumps(j))
                     print("%s: ERROR: %s" % (j['Id'],str(e)))
+            print("set2: %s" % j['Id'])
             db.update("""
                 update provider_queue set sf_id = %s where id = %s
                 """,(j['Id'],int(pq_id))
@@ -596,6 +594,7 @@ for x in SF_DATA:
         else:
             off_id = off_id[0]['office_id']
         # Looks silly, but its great for testing
+        print("set1: %s" % j['Id'])
         db.update("""
             update provider_queue set sf_id = %s where id = %s
             """,(j['Id'],int(pq_id))
@@ -814,6 +813,7 @@ for x in SF_DATA:
     else:
         print("SF Leads Subscription unnecessary")
         # Looks silly, but when we change environments this really helps
+        print("set4: %s" % j['Id'])
         db.update("""
             update provider_queue set sf_id = %s where id = %s
             """,(j['Id'],int(pq_id))
