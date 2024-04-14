@@ -198,7 +198,7 @@ for x in PAIN:
         g = db.query("""
             select id from office_addresses where office_id=%s
             order by created limit 1
-            """,x['office_id']
+            """,(x['office_id'],)
         )
         x['oa_id'] = g[0]['id']
     SF_ID = x['sf_id']
