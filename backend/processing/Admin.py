@@ -1924,15 +1924,31 @@ class CommissionList(AdminBase):
             offset = int(params['offset'])
         db = Query()
         ENT = self.getEntitlementIDs()
+        ret['config'] = {}
+        ret['config']['period'] = db.query("""
+            select count(i.id) as count,
+                i.billing_period as value,
+                date_format(i.billing_period,'%b, %Y') as label from 
+                commission_users cu, invoices i
+            where cu.invoices_id = i.id
+            order by
+                i.billing_period desc
+        """)
         q = """
             select 
-                u.id,concat(u.first_name,' ',u.last_name) as name,amount,cus.created,
+                u.id,concat(u.first_name,' ',u.last_name) as name,
+                amount,
+                cus.created,
+                i.billing_period,
                 o.id as office_id,o.name as office_name
             from 
                 office o,
+                invoices i,
                 users u,
                 commission_users cus
             where 
+                i.office_id = o.id and
+                i.id = cus.invoices_id and
                 cus.user_id = u.id and
                 cus.office_id = o.id and
                 u.id = cus.user_id
@@ -1940,11 +1956,31 @@ class CommissionList(AdminBase):
         p = []
         if 'CommissionsAdmin' not in user['entitlements']:
             q += ' and cus.user_id = %s ' % user['id']
-        cnt = db.query("select count(id) as cnt from (%s) as t" % (q,))
+        if 'period' in params and params['period'] is not None:
+            q += ' and ( ' 
+            a = []
+            for x in params['period']:
+                a.append("""
+                    (
+                        month(%s) = month(i.billing_period) and
+                        year(%s) = year(i.billing_period)
+                    )
+                """)
+                p.append(x)
+                p.append(x)
+            q += " or ".join(a)
+            q += ")"
+        cnt = db.query("select count(id) as cnt from (" + q + ") as t",p)
         ret['total'] = cnt[0]['cnt']
-        q +=  " limit %s offset %s " 
-        p.append(limit)
-        p.append(offset*limit)
+        if 'report' not in params or params['report'] is None:
+            q +=  " limit %s offset %s " 
+            p.append(limit)
+            p.append(offset*limit)
         o = db.query(q,p)
+        if 'report' in params and params['report'] is not None:
+            ret['filename'] = 'commission_report.csv'
+            frame = pd.DataFrame.from_dict(o)
+            t = frame.to_csv()
+            ret['content'] = base64.b64encode(t.encode('utf-8')).decode('utf-8')
         ret['commissions'] = o
         return ret

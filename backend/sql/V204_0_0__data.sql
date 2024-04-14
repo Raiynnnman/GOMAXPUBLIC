@@ -2,6 +2,10 @@
 use pain;
 
 alter table office_addresses add column (created TIMESTAMP not null default CURRENT_TIMESTAMP);
+alter table commission_users add column (
+    invoices_id int,
+    FOREIGN KEY (invoices_id) REFERENCES invoices(id)
+);
 
 delete from salesforce_mapping where sf_table_schema='Lead' and sf_field_name='Street';
 insert into salesforce_mapping (

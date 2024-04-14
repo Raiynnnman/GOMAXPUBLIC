@@ -105,9 +105,12 @@ for x in l:
         )
     if x['commission_user_id'] is not None:
         db.update("""
-            insert into commission_users (user_id,commission_structure_id,amount,office_id)
-                values (%s,%s,%s,%s)
-            """,(x['commission_user_id'],x['commission_structure_id'],sum*x['commission'],x['office_id'])
+            insert into commission_users (user_id,commission_structure_id,amount,office_id,invoices_id)
+                values (%s,%s,%s,%s,%s)
+            """,(   x['commission_user_id'],
+                    x['commission_structure_id'],
+                    sum*x['commission'],x['office_id'],insid
+                )
         )
         db.update("""
             insert into invoice_history (invoices_id,user_id,text) values 

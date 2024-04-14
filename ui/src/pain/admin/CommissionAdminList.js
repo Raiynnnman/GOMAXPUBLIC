@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import AssessmentIcon from '@mui/icons-material/Assessment';
+import AutorenewIcon from '@mui/icons-material/Autorenew';
 import { connect } from 'react-redux';
 import { Col, Row } from 'reactstrap';
 import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
@@ -29,6 +31,7 @@ import AliceCarousel from 'react-alice-carousel';
 import { searchCheckRes } from '../../actions/searchCheckRes';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import PainTable from '../utils/PainTable';
 
 const { SearchBar } = Search;
 class CommissionAdminList extends Component {
@@ -39,6 +42,8 @@ class CommissionAdminList extends Component {
             assignPhysician: null,
             page: 0,
             pageSize: 10,
+            filter: null,
+            periodSelected: null,
             commentAdd:false
         } 
         this.edit = this.edit.bind(this);
@@ -52,17 +57,78 @@ class CommissionAdminList extends Component {
         this.lastChange = this.lastChange.bind(this);
         this.addr1Change = this.addr1Change.bind(this);
         this.addr2Change = this.addr2Change.bind(this);
+        this.commissionReport = this.commissionReport.bind(this);
         this.cityChange = this.cityChange.bind(this);
+        this.onPeriodFilter = this.onPeriodFilter.bind(this);
         this.stateChange = this.stateChange.bind(this);
         this.phoneChange = this.phoneChange.bind(this);
+        this.pageChange = this.pageChange.bind(this);
+        this.pageRowsChange = this.pageRowsChange.bind(this);
     } 
 
     componentWillReceiveProps(p) { 
+        if (p.commissions.data && p.commissions.data.config && 
+            p.commissions.data.config.period && this.state.periodSelected === null) { 
+            var c = 0;
+            var t = [];
+            this.state.periodSelected = []
+            this.state.periodSelected.push({
+                label:p.commissions.data.config.period[0].label,
+                value:p.commissions.data.config.period[0].value
+            })
+            this.state.filter = [p.commissions.data.config.period[0].value]
+            this.setState(this.state);
+            this.props.dispatch(getCommissionAdmin(
+                {period:this.state.filter,limit:this.state.pageSize,offset:this.state.page}
+            ));
+        }
     }
 
     componentDidMount() {
         this.props.dispatch(getCommissionAdmin({page:this.state.page,limit:this.state.pageSize}))
     }
+
+    commissionReport() { 
+        this.props.dispatch(getCommissionAdmin(
+            {direction:this.state.direction,
+             sort:this.state.sort,
+             search:this.state.search,
+             limit:this.state.pageSize,offset:this.state.page,
+             report:1,
+             period:this.state.filter}
+        ));
+    } 
+
+    onPeriodFilter(e,t) { 
+        if (e.length <2 ) { return; }
+        var c = 0;
+        var t = [];
+        for (c = 0; c < e.length; c++) { 
+            t.push(e[c].value); 
+        } 
+        this.state.statusSelected = t;
+        this.state.filter = t;
+        this.props.dispatch(getRegistrations(
+            {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,period:this.state.filter}
+        ));
+        this.setState(this.state)
+    } 
+
+    pageRowsChange(t) { 
+        this.state.pageSize = t
+        this.state.page = 0
+        this.props.dispatch(getCommissionAdmin(
+            {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,period:this.state.filter}
+        ));
+        this.setState(this.state);
+    } 
+    pageChange(e) { 
+        this.state.page = e
+        this.props.dispatch(getCommissionAdmin(
+            {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,period:this.state.filter}
+        ));
+        this.setState(this.state);
+    } 
 
     addr1Change(e) {
         this.state.selected.addr1 = e.target.value;
@@ -199,7 +265,6 @@ class CommissionAdminList extends Component {
         var heads = [
             {
                 dataField:'id',
-                sort:true,
                 hidden:true,
                 text:'ID'
             },
@@ -254,13 +319,55 @@ class CommissionAdminList extends Component {
                 </Col>
             </Row>
             <Row md="12">
+                <Col md="5" style={{marginBottom:10}}>
+                  {(this.props.commissions && this.props.commissions.data && 
+                    this.props.commissions.data.config &&
+                    this.props.commissions.data.config.period && this.state.periodSelected !== null) && (
+                      <Select
+                          closeMenuOnSelect={true}
+                          isSearchable={false}
+                          isMulti
+                          onChange={this.onPeriodFilter}
+                          value={this.state.periodSelected.map((g) => { 
+                            return (
+                                {
+                                label:this.props.commissions.data.config.period.filter((f) => f.billing_period === g.billing_period)[0].label,
+                                value:this.props.commissions.data.config.period.filter((f) => f.billing_period === g.billing_period)[0].value
+                                }
+                            )
+                          })}
+                          options={this.props.commissions.data.config.period.map((e) => { 
+                            return (
+                                { 
+                                label: e.label,
+                                value: e.value
+                                }
+                            )
+                          })}
+                        />
+                    )}
+                </Col>
+                <Col md="7">
+                    <div class="pull-right">
+                        <div style={{justifyContent:'spread-evenly'}}>
+                            <Button onClick={this.commissionReport} outline color="primary"><AssessmentIcon/></Button>
+                        </div>
+                    </div>
+                </Col>
+            </Row>
+            <Row md="12">
                 <Col md="12">
-                      <BootstrapTable 
-                          keyField="id"
-                          data={ this.props.commissions.data.commissions}
-                          columns={ heads }
-                          pagination={ paginationFactory(options) }>
-                      </BootstrapTable>
+                    <PainTable
+                        keyField='id' 
+                        data={this.props.commissions.data.commissions} 
+                        total={this.props.commissions.data.total}
+                        page={this.state.page}
+                        pageSize={this.state.pageSize}
+                        onPageChange={this.pageChange}
+                        onSort={this.sortChange}
+                        onPageRowsPerPageChange={this.pageRowsChange}
+                        columns={heads}>
+                    </PainTable> 
                 </Col>                
             </Row>
             </>
