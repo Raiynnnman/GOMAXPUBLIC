@@ -199,8 +199,6 @@ def getPAINData(prow,srow,sfschema,pschema,db,debug=False):
             val = prow[j[1]]
         else:
             val = prow[join]
-        if join == 'oa_id':
-            join = 'id'
         COMM = False
         if join == 'commission_user_id':
             COMM = True
@@ -217,6 +215,10 @@ def getPAINData(prow,srow,sfschema,pschema,db,debug=False):
             join = "id"
         if join == "office_id" and jtable == 'office':
             join = "id"
+        if join == 'oa_id':
+            join = 'id'
+        if debug:
+            print("join=%s" % join)
         if 'zipcode' in field.lower() or 'postalcode' in field.lower():
             # Convert zipcodes incase they have the .0 in them
             if val is not None:
