@@ -225,7 +225,7 @@ for x in PAIN:
         traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
         db.update("""
             insert into provider_queue_history(provider_queue_id,user_id,text) values (
-                %s,1,'Error: %s'
+                %s,1,concat('Error: ',%s)
             )
         """,(x['pq_id'],str(e)))
         continue
