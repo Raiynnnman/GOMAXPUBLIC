@@ -212,6 +212,7 @@ for x in PAIN:
         LAST_MOD = calcdate.parseDate(LAST_MOD).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
         if debug:
             print("LAST_MOD:%s" % LAST_MOD)
+        SF_DATA[SF_ID]['Addresses_ID__c'] = oa_id
     try:
         x['LastModifiedDate'] = max(x['updated01'],x['updated02'])
     except:
@@ -382,7 +383,7 @@ print("Processing SF Records")
 CNTR = 0
 for x in SF_DATA:
     j = SF_DATA[x]
-    FIELDS = 'PainID__c,PainURL__c,Sales_Link__c,Invoice_Paid__c'
+    FIELDS = 'PainID__c,PainURL__c,Sales_Link__c,Invoice_Paid__c,Addresses_ID__c'
     if j['Email'] is None:
         j['Email'] = "unknown-%s@poundpain.com" % encryption.getSHA256()[:6]
         FIELDS += ",Email"
