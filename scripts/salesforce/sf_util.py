@@ -69,6 +69,7 @@ def updateSF():
 
 def updatePAINDB(prow,srow,sfschema,pschema,db,debug=False):
     com_user = {}
+    cols_mod = []
     o = db.query("select id,sf_id from users where sf_id is not null")
     for g in o:
         com_user[g['sf_id']] = g['id']
@@ -102,6 +103,7 @@ def updatePAINDB(prow,srow,sfschema,pschema,db,debug=False):
             if debug:
                 print("Field %s (%s/%s) identical, skip" % (x,newval,oldval))
             continue
+        cols_mod.append(field)
         if debug:
             print('comp: %s=%s' % (oldval,newval))
             print(x)
@@ -147,6 +149,7 @@ def updatePAINDB(prow,srow,sfschema,pschema,db,debug=False):
         if debug:
             print(q,newval)
         db.update(q,(newval,))
+        return cols_mod
 
 def getPAINData(prow,srow,sfschema,pschema,db,debug=False):
     # print(json.dumps(prow,indent=4))

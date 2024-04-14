@@ -139,6 +139,7 @@ for x in PSCHEMA:
     # print(sfcol)
     ARR.append(sfcol['name'])
 
+ARR.append('Addresses_ID__c')
 SFQUERY += ','.join(ARR)
 SFQUERY += " from Lead "
 if LASTMOD is not None and args.sf_id is None:
@@ -185,11 +186,21 @@ for x in PAIN:
         select count(id) as a from office_addresses where office_id = %s
         """,(x['office_id'],)
     )
+    oa_id = 0
     if o[0]['a'] == 0:
         db.update("""
             insert into office_addresses (office_id) value (%s)
             """,(x['office_id'],)
         )
+        oa_id = db.query("select LAST_INSERT_ID()")
+        oa_id = oa_id[0]['LAST_INSERT_ID()']
+    if oa_id == 0:
+        g = db.query("""
+            select id from office_addresses where office_id=%s
+            order by created limit 1
+            """,x['office_id']
+        )
+        x['oa_id'] = g[0]['id']
     SF_ID = x['sf_id']
     SF_ROW = None
     LAST_MOD = None
@@ -334,13 +345,15 @@ for x in PAIN:
     elif update == sf_util.updatePAIN() and not SAME:
         print("Updating PAIN")
         try:
-            db.update("""
-                insert into provider_queue_history(provider_queue_id,user_id,text) values (
-                    %s,1,'Updated data from SF'
-                )
-            """,(x['pq_id'],))
             if not args.dryrun:
-                sf_util.updatePAINDB(x,SF_ROW,SFSCHEMA,PSCHEMA,db,debug=args.debug)
+                cmod = sf_util.updatePAINDB(x,SF_ROW,SFSCHEMA,PSCHEMA,db,debug=args.debug)
+                if len(cmd) > 0:
+                    for tt in cmod:
+                        db.update("""
+                            insert into provider_queue_history(provider_queue_id,user_id,text) values (
+                                %s,1,%s
+                            )
+                        """,(x['pq_id'],'SF: Updated field: %s' % tt))
             #db.update("""
             #    update office_addresses set sf_updated=%s where id = %s
             #    """,(LAST_MOD,x['pq_id'],)
