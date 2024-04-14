@@ -199,6 +199,8 @@ def getPAINData(prow,srow,sfschema,pschema,db,debug=False):
             val = prow[j[1]]
         else:
             val = prow[join]
+        if join == 'oa_id':
+            join = 'id'
         COMM = False
         if join == 'commission_user_id':
             COMM = True
