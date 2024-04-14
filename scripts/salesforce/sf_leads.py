@@ -37,6 +37,7 @@ parser.add_argument('--force_pain', dest="force_pain", action="store_true")
 parser.add_argument('--del_dups', dest="del_dups", action="store_true")
 parser.add_argument('--doall', dest="do_all", action="store_true")
 parser.add_argument('--only_fields', dest="only_fields", action="store")
+parser.add_argument('--debug', dest="debug", action="store_true")
 parser.add_argument('--no_new', dest="no_new", action="store_true")
 args = parser.parse_args()
 
@@ -51,6 +52,8 @@ TYPE='Lead'
 PQ = getIDs.getProviderQueueStatus()
 ST = getIDs.getLeadStrength()
 OT = getIDs.getOfficeTypes()
+
+debug = args.debug
 
 db = Query()
 PAINHASH = {}
@@ -90,12 +93,14 @@ BS = getIDs.getBillingSystem()
 #    PAIN = db.query(q,(LASTMOD,LASTMOD))
 if args.sf_id is not None:
     q += " and pq.sf_id = '%s'" % args.sf_id
-    print(q)
+    if args.debug:
+        print(q)
     PAIN = db.query(q)
 else:
     PAIN = db.query(q)
 
-print(len(PAIN))
+if args.debug:
+    print("len=%s" % len(PAIN))
 
 for x in PAIN:
     if x['sf_id'] is not None:
@@ -141,7 +146,8 @@ if LASTMOD is not None and args.sf_id is None:
     # SFQUERY += " where ModifiedDate > %s" % LASTMOD
 if args.sf_id is not None:
     SFQUERY += " where Id = '%s'" % args.sf_id
-print(SFQUERY)
+if args.debug:
+    print(SFQUERY)
 
 res = []
 if os.path.exists(data_f):
@@ -162,81 +168,19 @@ SF_DATA = {}
 #print(res)
 #print(type(res))
 CNTR = 0
-PHONES = {}
 for x in res['records']:
-    # print(json.dumps(x,indent=4))
+    if args.debug:
+        print(json.dumps(x,indent=4))
     SF_ID = x['Id']
     SF_DATA[SF_ID] = x
     p = x['Phone']
     if 'attributes' in x:
         del x['attributes']
-    if p is None:
-        p = x['Email']
-    if p is None:
-        continue
-    p = p.replace(")",'').replace("(",'').replace("-",'').replace(" ",'').replace('.','')
-    if p.startswith("+1"):
-        p = p.replace("+1","")
-    if p.startswith("1") and len(p) == 11:
-        p = p[1:]
-    if p not in PHONES:
-        PHONES[p] = []
     
-    PHONES[p].append({'Id':x['Id']})
-
-C = 0
-for x in PHONES:
-    i = PHONES[x]
-    TODEL = []
-    PD = {}
-    if len(i) > 1:
-        LOOK = None
-        C += 1
-        print("Duplicate %s (%s)" % (x,len(i)))
-        for g in i:
-            v = SF_DATA[g['Id']]
-            if v['PainID__c'] is None:
-                TODEL.append(v['Id'])
-            else:
-                k = v['PainID__c']
-                q = db.query("""
-                    select sf_id from provider_queue where office_id = %s
-                    """,(k,)
-                )
-                if len(q) > 0:
-                    q = q[0]['sf_id']
-                if k in PD:
-                    if v['Id'] != q:
-                        TODEL.append(v['Id'])
-                PD[k] = 1
-            # print(json.dumps(v,sort_keys=True))
-        if len(TODEL) == len(i):
-            print("No pain ids found")
-            LOOK = i[0]
-            i.pop()
-            for g in i:
-                if args.del_dups:
-                    sf.Leads.delete(g['Id'])
-                else:
-                    print("would del %s" % g['Id'])
-        else:
-            print("TD:%s" % TODEL)
-            o = db.query("""
-                select office_id from office_addresses where phone = %s
-                """,(p,)
-            )
-            for g in i:
-                if args.del_dups:
-                    sf.Leads.delete(g['Id'])
-                else:
-                    print("would del %s" % g['Id'])
-            print(p,o)
-        
-print("DUPS: %s" % C)
-
 random.shuffle(PAIN)
 for x in PAIN:
-    print(x)
+    if debug:
+        print("x=%s" % x)
     o = db.query("""
         select count(id) as a from office_addresses where office_id = %s
         """,(x['office_id'],)
@@ -251,10 +195,12 @@ for x in PAIN:
     LAST_MOD = None
     if SF_ID in SF_DATA:
         SF_ROW = SF_DATA[SF_ID]
-        print(json.dumps(SF_ROW))
+        if debug:
+            print("SF_ROW=%s" % json.dumps(SF_ROW))
         LAST_MOD = SF_ROW['LastModifiedDate']
         LAST_MOD = calcdate.parseDate(LAST_MOD).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
-        print("LAST_MOD:%s" % LAST_MOD)
+        if debug:
+            print("LAST_MOD:%s" % LAST_MOD)
     try:
         x['LastModifiedDate'] = max(x['updated01'],x['updated02'])
     except:
@@ -270,7 +216,7 @@ for x in PAIN:
     update = 0
     newdata = {}
     try:
-        (update,newdata) = sf_util.getPAINData(x,SF_ROW,SFSCHEMA,PSCHEMA,db)
+        (update,newdata) = sf_util.getPAINData(x,SF_ROW,SFSCHEMA,PSCHEMA,db,debug=args.debug)
     except Exception as e:
         print("%s : ERROR : %s" % (x['office_id'],str(e)))
         print("x=%s" % x)
@@ -283,10 +229,12 @@ for x in PAIN:
             )
         """,(x['pq_id'],str(e)))
         continue
+
     PAINHASH[SF_ID]['nd'] = newdata
-    #print("----")
-    #print(json.dumps(newdata,indent=4))
-    #print("----")
+    if debug:
+        print("---- NEWDATA")
+        print(json.dumps(newdata,indent=4))
+        print("----")
     if 'LastModifiedDate' in newdata:
         del newdata['LastModifiedDate']
     if newdata['Company'] is None or len(newdata['Company']) < 1 or newdata['Company'] == "None":
@@ -302,11 +250,12 @@ for x in PAIN:
     
     if 'PainURL__c' in newdata:
         newdata['PainURL__c'] = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),newdata['PainURL__c'])
+
     if 'Sales_Link__c' in newdata and 'Subscription_Plan__c' in newdata and newdata['Subscription_Plan__c'] is not None:
         newdata['Sales_Link__c'] = '%s/#/register-provider/%s' % (config.getKey("host_url"),x['pq_id'])
         # On hold
-        print("Subplan %s" % newdata['Sales_Link__c'])
         del newdata['Sales_Link__c']
+
     if 'LastName' not in newdata or newdata['LastName'] is None or len(newdata['LastName']) < 2 or newdata['LastName'] == 'Unknown':
         if 'Dr' in newdata['Company'] or 'd.c.' in newdata['Company'].lower() or 'dc' in newdata['Company'].lower():
             t1 = HumanName(newdata['Company'])
@@ -325,7 +274,7 @@ for x in PAIN:
         del newdata['OwnerId']
 
     # print("upd=%s" % update)
-    SAME = sf_util.compareDicts(newdata,SF_ROW)
+    SAME = sf_util.compareDicts(newdata,SF_ROW,debug=args.debug)
 
     if args.force_sf:
         update = sf_util.updateSF()
@@ -349,14 +298,18 @@ for x in PAIN:
                     if f in fie:
                         nd2[f] = newdata[f]
                 newdata = nd2
-            print(json.dumps(newdata,indent=4))
+            if debug:
+                print("--- UPDATING TO SF")
+                print(json.dumps(newdata,indent=4))
             if not args.dryrun:
                 r = sf.Lead.update(sfid,data=newdata)
         else:
             del newdata['Id']
             print("creating SF record:%s " % x['office_name'])
             try:
-                print(json.dumps(newdata,indent=4))
+                if debug:
+                    print("---- CREATING TO SF") 
+                    print(json.dumps(newdata,indent=4))
                 if 'Phone' in newdata and newdata['Phone'] is not None:
                     o = db.query("""
                         select pq.id as t1 from office_addresses oa,office o,provider_queue pq  
@@ -387,7 +340,7 @@ for x in PAIN:
                 )
             """,(x['pq_id'],))
             if not args.dryrun:
-                sf_util.updatePAINDB(x,SF_ROW,SFSCHEMA,PSCHEMA,db)
+                sf_util.updatePAINDB(x,SF_ROW,SFSCHEMA,PSCHEMA,db,debug=args.debug)
             #db.update("""
             #    update office_addresses set sf_updated=%s where id = %s
             #    """,(LAST_MOD,x['pq_id'],)
@@ -429,8 +382,9 @@ for x in SF_DATA:
     if 'attributes' in j:
         del j['attributes']
     sub = None
-    #print("START---")
-    # print(json.dumps(j))
+    if debug:
+        print("START---")
+        print(json.dumps(j))
     if j['PainID__c'] is None:
         o = db.query("""
             select pq.id as t1 from office_addresses oa,office o,provider_queue pq  
@@ -627,7 +581,13 @@ for x in SF_DATA:
                 raise Exception("PQ given, office found instead: %s" % pq_id)
         else:
             off_id = off_id[0]['office_id']
-    # print("off_id=%s" % off_id)
+        # Looks silly, but its great for testing
+        db.update("""
+            update provider_queue set sf_id = %s where id = %s
+            """,(j['Id'],int(pq_id))
+        )
+    if debug:
+        print("off_id=%s" % off_id)
     if 'Subscription_Plan__c' in j and j['Subscription_Plan__c'] is not None:
         if j['Status'] == 'New':
             print("%s: Not progressing with status New" % j['Id'])
@@ -665,7 +625,8 @@ for x in SF_DATA:
             """,(pq_id,))
             raise Exception("PLAN_NOT_FOUND")
         sub = o[0]
-        print(sub)
+        if debug:
+            print("sub=%s" % sub)
         price = sub['price']
         initial_payment = None
         if 'Payment_Amount__c' in j and j['Payment_Amount__c'] is not None and j['Payment_Amount__c'] > 0:
@@ -715,7 +676,6 @@ for x in SF_DATA:
                     delete from office_plan_items where office_plans_id=%s
                     """,(i,)
                 )
-                print("dur",sub['duration'])
                 db.update("""
                     update office_plans set 
                         pricing_data_id = %s,
@@ -762,6 +722,8 @@ for x in SF_DATA:
                 """,(newpid,price,sub['description'],1)
             )
         if initial_payment is not None:
+            if debug:
+                print("Updating initial_payment")
             db.update("""
                 update provider_queue set initial_payment = %s
                     where office_id = %s
@@ -781,7 +743,8 @@ for x in SF_DATA:
             if f in fie:
                 nd2[f] = j[f]
         t = nd2
-        print("t=%s" % t)
+        if debug:
+            print("t=%s" % t)
         if pq_id == 0:
             raise Exception("PQ_ID = 0")
         if j['Ready_To_Buy__c']:
@@ -826,12 +789,14 @@ for x in SF_DATA:
                     %s,1,'Not sending to invoices, as customer isnt Ready to Buy'
                 )
             """,(pq_id,))
+        if debug:
+            print("---- UPDATE SUBS")
+            print(json.dumps(t,indent=4))
         if not args.dryrun:
             try:
                 sf.Lead.update(x,t)
             except Exception as e:
                 print("%s : ERROR : %s" % (x,str(e)))
-        print(json.dumps(t,indent=4))
     else:
         print("SF Leads Subscription unnecessary")
         # Looks silly, but when we change environments this really helps
