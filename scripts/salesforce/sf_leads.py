@@ -343,13 +343,15 @@ for x in PAIN:
             except Exception as e:
                 print(str(e))
                 print(json.dumps(newdata,indent=4))
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
                 raise e
     elif update == sf_util.updatePAIN() and not SAME:
         print("Updating PAIN")
         try:
             if not args.dryrun:
                 cmod = sf_util.updatePAINDB(x,SF_ROW,SFSCHEMA,PSCHEMA,db,debug=args.debug)
-                if len(cmd) > 0:
+                if len(cmod) > 0:
                     for tt in cmod:
                         db.update("""
                             insert into provider_queue_history(provider_queue_id,user_id,text) values (
@@ -363,6 +365,8 @@ for x in PAIN:
         except Exception as e:
             print("%s : ERROR : %s" % (x['office_id'],str(e)))
             print("newdata=%s" % json.dumps(newdata,indent=4))
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
             continue
     else:
         print("No changes required")
@@ -810,6 +814,8 @@ for x in SF_DATA:
                 sf.Lead.update(x,t)
             except Exception as e:
                 print("%s : ERROR : %s" % (x,str(e)))
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
     else:
         print("SF Leads Subscription unnecessary")
         # Looks silly, but when we change environments this really helps
