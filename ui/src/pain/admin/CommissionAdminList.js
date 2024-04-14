@@ -216,12 +216,19 @@ class CommissionAdminList extends Component {
             {
                 dataField:'amount',
                 editable: false,
+                align:'right',
                 text:'Amount',
+                formatter:(cellContent,row) => (
+                    <div>
+                        ${row.amount.toFixed ? row.amount.toFixed(2) : row.amount}
+                    </div>
+                )
             },
             {
                 dataField:'updated',
                 sort:true,
                 editable: false,
+                align:'center',
                 text:'Updated',
                 formatter:(cellContent,row) => (
                     <div>

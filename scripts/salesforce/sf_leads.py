@@ -277,6 +277,11 @@ for x in PAIN:
         print("SF_ROW=%s" % SF_ROW)
         exc_type, exc_value, exc_traceback = sys.exc_info()
         traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
+        db.update("""
+            insert into provider_queue_history(provider_queue_id,user_id,text) values (
+                %s,1,'Error: %s'
+            )
+        """,(x['pq_id'],str(e)))
         continue
     PAINHASH[SF_ID]['nd'] = newdata
     #print("----")

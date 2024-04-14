@@ -78,7 +78,7 @@ for x in l:
                     )
             )
             db.update("""
-                update invoice set version = %s
+                update invoices set version = %s
                 where id = %s
                 """,(r['invoice']['version'],x['id'])
             )

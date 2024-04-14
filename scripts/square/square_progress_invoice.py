@@ -157,5 +157,10 @@ for x in l:
         print(x)
         exc_type, exc_value, exc_traceback = sys.exc_info()
         traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
+        db.update("""
+            insert into invoice_history (invoices_id,user_id,text) values 
+                (%s,%s,'Error: %s)
+            """,(x['id'],1,str(e))
+        )
 
-
+db.commit()
