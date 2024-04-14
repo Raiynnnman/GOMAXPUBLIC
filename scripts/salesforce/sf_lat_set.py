@@ -116,7 +116,7 @@ for x in SF_DATA:
         continue
     if j['Addresses_ID__c'] is None:
         g = db.query("""
-            select id from office_addresses oa,provider_queue pq 
+            select oa.id from office_addresses oa,provider_queue pq 
             where 
                 pq.office_id = oa.office_id and 
                 pq.id=%s
