@@ -120,7 +120,7 @@ for x in SF_DATA:
             where 
                 pq.office_id = oa.office_id and 
                 pq.id=%s
-            order by created limit 1
+            order by oa.created limit 1
             """,(j['PainID__c'],)
         )
         if len(g) < 1:
