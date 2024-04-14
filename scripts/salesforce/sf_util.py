@@ -83,6 +83,10 @@ def updatePAINDB(prow,srow,sfschema,pschema,db,debug=False):
         print("o=%s" % json.dumps(oldvalues,sort_keys=True))
     for x in srow:
         pcol = None
+        if debug:
+            print("x=%s" % x)
+        if x == 'Addresses_ID__c':
+            continue
         for t in sfschema:
             if t == 'Addresses ID':
                 continue
