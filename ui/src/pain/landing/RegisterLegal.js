@@ -55,10 +55,7 @@ class RegisterProvider extends Component {
             intentid:'',
             selPlan:null,
             license:'',
-            provtype:1,
-            provtypeSel:[
-                'Chiropractor'
-            ]
+            provtype:2
         }
         this.nameChange = this.nameChange.bind(this);
         this.nextPage = this.nextPage.bind(this);
@@ -106,6 +103,9 @@ class RegisterProvider extends Component {
             this.state.selPlan = p.landingData.data.pricing.filter((e) => parseInt(this.state.plan) === e.id)
             if (this.state.selPlan.length > 0) { 
                 this.state.selPlan = this.state.selPlan[0]
+            } 
+            if (this.state.plan === undefined) { 
+                this.state.selPlan = p.landingData.data.pricing[0]
             } 
             this.setState(this.state);
         } 
@@ -245,7 +245,7 @@ class RegisterProvider extends Component {
             last: this.state.last,
             addresses: a 
         } 
-        if (this.state.pq_id !== null) {
+        if (this.state.pq_id !== null) { 
             tosend.pq_id = this.state.pq_id
             delete tosend.plan
         } 

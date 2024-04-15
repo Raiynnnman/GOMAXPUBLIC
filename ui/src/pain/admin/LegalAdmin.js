@@ -6,45 +6,54 @@ import { TabContent, TabPane } from 'reactstrap';
 import cx from 'classnames';
 import classnames from 'classnames';
 
-import s from '../office/default.module.scss';
+import s from '../utils/default.module.scss';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
-import { getLegalAdmin } from '../../actions/legalAdmin';
-import { legalAdminUpdate } from '../../actions/legalAdminUpdate';
 import LegalAdminList from './LegalAdminList';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { getPlansList } from '../../actions/plansList';
 
-class Legal extends Component {
+class Office extends Component {
     constructor(props) { 
         super(props);
         this.state = { 
+            activeTab: "office"
         }
-        this.onSave = this.onSave.bind(this);
+        this.toggleTabs = this.toggleTab.bind(this);
     } 
 
     componentWillReceiveProps(p) { 
     }
 
-    onSave(e) { 
-    } 
-
     componentDidMount() {
-        this.props.dispatch(getLegalAdmin({page:0,limit:10000}))
+        this.props.dispatch(getPlansList({}));
     }
+
+    toggleTab(e) { 
+        this.state.activeTab = e;
+        this.setState(this.state);
+    } 
 
     render() {
         return (
         <>
-            {(this.props.legalAdmin && this.props.legalAdmin.isReceiving) && (
-                <AppSpinner/>
-            )}
-            {(this.props.legalAdminUpdate && this.props.legalAdminUpdate.isReceiving) && (
+            {(this.props.offices && this.props.offices.isReceiving) && (
                 <AppSpinner/>
             )}
             <Row md="12">
                 <Col md="12">
-                    <LegalAdminList onSave={this.onSave}/> 
+                    <Nav tabs  className={`${s.coloredNav}`} style={{backgroundColor:"#e8ecec"}}>
+                        <NavItem>
+                            <NavLink className={classnames({ active: this.state.activeTab === 'office' })}
+                                onClick={() => { this.toggleTab('office') }}>
+                                <span>{translate('Providers')}</span>
+                            </NavLink>
+                        </NavItem>
+                    </Nav>
+                    <TabContent className='mb-lg' activeTab={this.state.activeTab}>
+                        <TabPane tabId="office">
+                            <LegalAdminList match={this.props.match}/>
+                        </TabPane>
+                    </TabContent>
                 </Col>                
             </Row>
         </>
@@ -55,9 +64,8 @@ class Legal extends Component {
 function mapStateToProps(store) {
     return {
         currentUser: store.auth.currentUser,
-        legalAdminUpdate: store.legalAdminUpdate,
-        legalAdmin: store.legalAdmin
+        offices: store.offices,
     }
 }
 
-export default connect(mapStateToProps)(Legal);
+export default connect(mapStateToProps)(Office);

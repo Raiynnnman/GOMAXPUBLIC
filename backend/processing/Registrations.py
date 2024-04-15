@@ -7,6 +7,7 @@ import json
 import unittest
 import jwt
 import base64
+from nameparser import HumanName
 
 sys.path.append(os.path.realpath(os.curdir))
 
@@ -219,15 +220,20 @@ class RegistrationLandingData(RegistrationsBase):
         ret = {'pricing':[]}
         params = args[1][0]
         db = Query()
-        o = db.query("""
-            select id,trial,price,locations,duration,start_date,end_date,active,slot
+        q = """select id,trial,price,locations,duration,start_date,end_date,active,slot
             from
                 pricing_data p
+            """
+        p = []
+        if 'type' in params and params['type'] is not None:
+            q += " where office_type_id = %s " 
+            p = [params['type']]
+        q += """
             order by 
                 slot asc,
                 start_date desc
-            
-        """)
+            """
+        o = db.query(q,p)
         ret['pricing'] = o
         l = db.query("""
             select ot.id,otd.name,otd.description,otd.signup_description
@@ -322,9 +328,12 @@ class RegisterProvider(RegistrationsBase):
             )
             for t in l:
                 off_id = t['id']
+        provtype = OT['Chiropractor']
+        if 'provtype' in params and params['provtype'] is not None:
+            provtype = params['provtype']
         if off_id == 0:
             db.update("insert into office (name,office_type_id,email,cust_id,active,billing_system_id) values (%s,%s,%s,%s,0,%s)",
-                (params['name'],OT['Chiropractor'],params['email'],params['cust_id'],BS)
+                (params['name'],provtype,params['email'],params['cust_id'],BS)
             )
             off_id = db.query("select LAST_INSERT_ID()");
             off_id = off_id[0]['LAST_INSERT_ID()']
@@ -357,10 +366,10 @@ class RegisterProvider(RegistrationsBase):
                 """
                 insert into provider_queue (office_id,provider_queue_lead_strength_id) 
                     values (%s,%s)
-                """,(insid,ST['Potential Provider'])
+                """,(off_id,ST['Potential Provider'])
             )
-            pqid = db.query("select LAST_INSERT_ID()");
-            pqid = pqid[0]['LAST_INSERT_ID()']
+            pq_id = db.query("select LAST_INSERT_ID()");
+            pq_id = pq_id[0]['LAST_INSERT_ID()']
             db.update("""
                 insert into provider_queue_history(provider_queue_id,user_id,text) values (
                     %s,1,'Created (Registration)'
@@ -374,6 +383,9 @@ class RegisterProvider(RegistrationsBase):
             for o in l:
                 uid = o['id']
             if uid == 0:
+                n = HumanName(params['first'])    
+                params['first'] = "%s %s" % (n.title,n.first)
+                params['last'] = "%s %s" % (n.last,n.suffix)
                 db.update(
                     """
                     insert into users (first_name,last_name,email,phone) values (%s,%s,%s,%s)
@@ -383,11 +395,11 @@ class RegisterProvider(RegistrationsBase):
                 uid = uid[0]['LAST_INSERT_ID()']
             db.update("""
                 update office set user_id=%s where id=%s
-                """,(uid,insid)
+                """,(uid,off_id)
             )
             db.update("""
                 insert into office_user (office_id,user_id) values (%s,%s)
-                """,(insid,uid)
+                """,(off_id,uid)
             )
             db.update("""
                 insert into user_entitlements (user_id,entitlements_id) values (%s,%s)
@@ -401,6 +413,7 @@ class RegisterProvider(RegistrationsBase):
                 insert into user_permissions (user_id,permissions_id) values (%s,%s)
                 """,(uid,PERM['Admin'])
             )
+        print("par",params)
         if 'plan' in params and params['plan'] is not None:
             if 'pq' not in params or params['pq'] is None:
                 selplan = int(params['plan'])
@@ -422,7 +435,7 @@ class RegisterProvider(RegistrationsBase):
                 db.update("""
                     insert into office_plans (office_id,start_date,end_date,pricing_data_id) 
                         values (%s,now(),date_add(now(),INTERVAL %s MONTH),%s)
-                    """,(insid,PL[selplan]['duration'],selplan)
+                    """,(off_id,PL[selplan]['duration'],selplan)
                 )
                 planid = db.query("select LAST_INSERT_ID()");
                 planid = planid[0]['LAST_INSERT_ID()']
@@ -438,7 +451,7 @@ class RegisterProvider(RegistrationsBase):
                     insert into office_history(office_id,user_id,text) values (
                         %s,1,'Created Plan'
                     )
-                """,(insid,))
+                """,(off_id,))
         if 'card' in params and params['card'] is not None:
             stripe_id = None
             if BS == 1:
@@ -464,7 +477,7 @@ class RegisterProvider(RegistrationsBase):
                     ) values (
                         %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,1
                     )
-                    """,(insid,card['id'],card['last4'],
+                    """,(off_id,card['id'],card['last4'],
                          card['exp_month'],card['exp_year'],
                          params['card']['client_ip'],pid['payment_method'],card['address_line1'],
                          card['address_line2'],card['address_state'],card['address_city'],

@@ -331,134 +331,6 @@ class UserList(AdminBase):
             ret['users'].append(x)
         return ret
 
-class LegalList(AdminBase):
-    def __init__(self):
-        super().__init__()
-
-    def isDeferred(self):
-        return False
-
-    @check_admin
-    def execute(self, *args, **kwargs):
-        ret = {}
-        job,user,off_id,params = self.getArgs(*args,**kwargs)
-        limit = 10000
-        OT = self.getOfficeTypes()
-        offset = 0
-        if 'limit' in params:
-            limit = int(params['limit'])
-        if 'offset' in params:
-            offset = int(params['offset'])
-        db = Query()
-        ENT = self.getEntitlementIDs()
-        o = db.query("""
-            select 
-                c.id,c.name,active,email,
-                JSON_ARRAYAGG(
-                    JSON_OBJECT(
-                        'id',oa.id,'addr1',oa.addr1,'addr2',oa.addr2,'phone',oa.phone,
-                        'city',oa.city,'state',oa.state,'zipcode',oa.zipcode)
-                ) as addr
-            from 
-                office c 
-                left outer join office_addresses oa on oa.office_id=c.id
-            where 
-                c.office_type_id = %s 
-            group by 
-                c.id
-            """,(OT['Legal'],)
-        )
-        ret['legals'] = o
-        return ret
-
-class LegalUpdate(AdminBase):
-    def __init__(self):
-        super().__init__()
-
-    def isDeferred(self):
-        return False
-
-    @check_admin
-    def execute(self, *args, **kwargs):
-        ret = {}
-        job,user,off_id,params = self.getArgs(*args,**kwargs)
-        db = Query()
-        o = db.query("""
-            select id from users where email=%s""",(params['email'].lower(),)
-        )
-        user_id = 0
-        isnew = False
-        if 'first_name' not in params or params['first_name'] == '':
-            return { 'success': False, 'message': 'CONSULTANT_FIRSTNAME_REQUIRED' }
-        if 'last_name' not in params or params['last_name'] == '':
-            return { 'success': False, 'message': 'CONSULTANT_LASTNAME_REQUIRED' }
-        if 'email' not in params or params['email'] == '':
-            return { 'success': False, 'message': 'CONSULTANT_EMAIL_REQUIRED' }
-        if 'phone' not in params or params['phone'] == '':
-            return { 'success': False, 'message': 'CONSULTANT_PHONE_REQUIRED' }
-        if 'addr1' not in params or params['addr1'] == '':
-            return { 'success': False, 'message': 'CONSULTANT_ADDR1_REQUIRED' }
-        if 'city' not in params or params['city'] == '':
-            return { 'success': False, 'message': 'CONSULTANT_CITY_REQUIRED' } 
-        if 'state' not in params or params['state'] == '':
-            return { 'success': False, 'message': 'CONSULTANT_STATE_REQUIRED' } 
-        if 'zipcode' not in params or params['zipcode'] == '':
-            return { 'success': False, 'message': 'CONSULTANT_ZIP_REQUIRED' } 
-        if 'addr2' not in params:
-            params['addr2'] = ''
-        if len(o) < 1:
-            isnew = True
-            db.update("""
-                insert into users (email,first_name,last_name,phone) values (
-                    %s,%s,%s,%s
-                )
-                """,(params['email'].lower(),params['first_name'],params['last_name'],params['phone'])
-            )
-            db.commit()
-            user_id = db.query("select LAST_INSERT_ID()");
-            user_id = user_id[0]['LAST_INSERT_ID()']
-            PERM = self.getPermissionIDs()
-            ENT = self.getEntitlementIDs()
-            db.update("""
-                insert into user_entitlements (user_id,entitlements_id) values (%s,%s)
-                """,(user_id,ENT['Legal'])
-            )
-            db.update("""
-                insert into user_permissions (user_id,permissions_id) values (%s,%s)
-                """,(user_id,PERM['Write'])
-            )
-            db.commit()
-        else:
-            user_id = o[0]['id']
-        if 'id' in params and params['id'] != 0:
-            db.update("""
-                update users set updated=now(), 
-                email=%s,first_name=%s,last_name=%s,phone=%s where id=%s
-                """, (params['email'].lower(), params['first_name'],
-                      params['last_name'], params['phone'], params['id'])
-                      )
-            db.update("""
-                update office set updated=now(),active=%s,addr1=%s,addr2=%s,
-                phone=%s,city=%s,state=%s,zipcode=%s where user_id=%s
-                """,(params['active'],params['addr1'],params['addr2'],
-                     params['phone'],params['city'],params['state'],
-                     params['zipcode'],params['id']
-                )
-            )
-        else:
-            db.update("""
-                insert into office (name,user_id,addr1,addr2,phone,city,state,zipcode,office_type_id) values
-                (%s,%s,%s,%s,%s,%s,%s,%s,%s,2)
-                """,(user_id,params['name'],params['addr1'],params['addr2'],
-                     params['phone'],params['city'],params['state'],
-                     params['zipcode']
-                )
-            )
-            we = WelcomeEmail()
-            we.execute(*args,**kwargs)
-        db.commit()
-        return {'success': True}
-
 class InvoicesUpdate(AdminBase):
     def __init__(self):
         super().__init__()
@@ -1300,6 +1172,13 @@ class RegistrationList(AdminBase):
             search_par.insert(0,params['search']+'%%')
             count_par.insert(0,params['search']+'%%')
             count_par.insert(0,params['search']+'%%')
+        if 'type' in params and params['type'] is not None:
+            q += " and office_type_id in ("
+            arr = []
+            for z in params['type']:
+                arr.append(z)
+            q += ",".join(map(str,arr))
+            q += ")"
         cnt = db.query("select count(id) as cnt from (" + q + ") as t", count_par)
         ret['total'] = cnt[0]['cnt']
         if 'sort' not in params or params['sort'] == None:
@@ -1418,7 +1297,7 @@ class RegistrationList(AdminBase):
                 x['invoice']['items'] = json.loads(x['invoice']['items'])
             k.append(x)
         ret['config'] = {}
-        ret['config']['type'] = db.query("select id,name from office_type")
+        ret['config']['type'] = db.query("select id,name from office_type where name <> 'Customer'")
         ret['config']['status'] = db.query("select id,name from provider_queue_status")
         ret['config']['commission_users'] = db.query("""
             select id,concat(first_name,' ',last_name) as name from users 
@@ -1984,3 +1863,229 @@ class CommissionList(AdminBase):
             ret['content'] = base64.b64encode(t.encode('utf-8')).decode('utf-8')
         ret['commissions'] = o
         return ret
+
+class LegalList(AdminBase):
+
+    def __init__(self):
+        super().__init__()
+
+    def isDeferred(self):
+        return False
+
+    @check_admin
+    def execute(self, *args, **kwargs):
+        ret = {}
+        job,user,off_id,params = self.getArgs(*args,**kwargs)
+        limit = 10000
+        offset = 0
+        if 'limit' in params:
+            limit = int(params['limit'])
+        if 'offset' in params:
+            offset = int(params['offset'])
+        db = Query()
+        OT = self.getOfficeTypes()
+        q = """
+                select 
+                    o.id,o.name,o.active,o.email,pqs.name as status,
+                    JSON_ARRAYAGG(
+                        JSON_OBJECT(
+                            'id',oa.id,'addr1',oa.addr1,'addr2',oa.addr2,'phone',oa.phone,
+                            'city',oa.city,'state',oa.state,'zipcode',oa.zipcode)
+                    ) as addr,u.phone,u.first_name,u.last_name,o.stripe_cust_id,o.old_stripe_cust_id,
+                    ot.name as office_type,o.updated,o.commission_user_id,
+                    concat(comu.first_name, ' ', comu.last_name) as commission_name
+                from 
+                    office o
+                    left outer join office_addresses oa on oa.office_id=o.id
+                    left outer join office_type ot on o.office_type_id = ot.id
+                    left outer join provider_queue pq on pq.office_id = o.id
+                    left outer join provider_queue_status pqs on pq.provider_queue_status_id=pqs.id
+                    left outer join users comu on comu.id = o.commission_user_id
+                    left join  users u on u.id = o.user_id
+                where 
+                    o.office_type_id = %s 
+            """ % (OT['Legal'],)
+        stat_params = []
+        count_par = []
+        search_par = [
+            int(limit),
+            int(offset)*int(limit)
+        ]
+        if 'office_id' in params and params['office_id'] is not None and int(params['office_id']) > 0:
+            q += " and o.id = %s " % params['office_id']
+        elif 'search' in params and params['search'] is not None:
+            q += """ and (o.email like %s  or o.name like %s or oa.phone like %s ) 
+            """
+            search_par.insert(0,params['search']+'%%')
+            search_par.insert(0,params['search']+'%%')
+            search_par.insert(0,params['search']+'%%')
+            count_par.insert(0,params['search']+'%%')
+            count_par.insert(0,params['search']+'%%')
+            count_par.insert(0,params['search']+'%%')
+        elif 'status' in params and params['status'] is not None:
+            q += " and pq.provider_queue_status_id in (%s) " % ','.join(map(str,params['status']))
+        q += " group by o.id order by o.updated desc "
+        cnt = db.query("select count(id) as cnt from (" + q + ") as t", count_par)
+        q += " limit %s offset %s " 
+        ret['total'] = cnt[0]['cnt']
+        o = db.query(q,search_par)
+        ret['legal'] = []
+        for x in o:
+            x['history'] = db.query("""
+                select ph.id,user_id,text,concat(u.first_name, ' ', u.last_name) as user,ph.created
+                    from office_history ph,users u
+                where 
+                    ph.user_id=u.id and
+                    ph.office_id = %s
+                order by created desc
+                """,(x['id'],)
+            )
+            x['addr'] = json.loads(x['addr'])
+            x['potential'] = db.query("""
+                select
+                    name,places_id,addr1,phone,city,state,
+                    zipcode,score,lat,lon,website,google_url,
+                    rating,updated
+                from 
+                    office_potential_places
+                where office_id = %s
+                """,(x['id'],)
+            )
+            x['next_invoice'] = db.query("""
+                select date_add(max(billing_period),INTERVAL 1 MONTH) as next_invoice
+                from invoices where office_id = %s group by office_id
+                """,(x['id'],)
+            )
+            if len(x['next_invoice']) > 0:
+                x['next_invoice'] = x['next_invoice'][0]['next_invoice']
+            else:
+                x['next_invoice'] = None
+            t = db.query("""
+                select 
+                    i.id,i.invoice_status_id,isi.name as status,i.total,i.billing_period,
+                    JSON_ARRAYAGG(
+                        JSON_OBJECT(
+                            'id',ii.id,'price',ii.price,
+                            'description',ii.description,'quantity',ii.quantity
+                        )
+                    ) as items,i.stripe_invoice_id,sis.status as stripe_status 
+                
+                from
+                    invoices i,
+                    invoice_status isi,
+                    stripe_invoice_status sis,
+                    invoice_items ii
+                where
+                    i.invoice_status_id = isi.id and
+                    sis.invoices_id = i.id and
+                    ii.invoices_id = i.id and
+                    i.office_id = %s
+                group by
+                    i.id
+                order by 
+                    billing_period desc
+                """,(x['id'],)
+            )
+            x['invoices'] = []
+            for j in t:
+                if j['id'] is None:
+                    continue
+                j['items'] = json.loads(j['items'])
+                x['invoices'].append(j)
+                x['service_start_date'] = j['billing_period']
+            t = db.query("""
+                select 
+                    op.id,start_date,end_date,
+                    JSON_ARRAYAGG(
+                        JSON_OBJECT(
+                            'id',opi.id,'price',opi.price,'description',
+                            opi.description,'quantity',opi.quantity
+                        )
+                    ) as items,round(datediff(end_date,now())/30,0) as months_left
+                from 
+                    office_plans op,
+                    office_plan_items opi
+                where 
+                    opi.office_plans_id = op.id and
+                    office_id = %s 
+            """,(x['id'],)
+            )
+            x['plans'] = []
+            for j in t:
+                if j['id'] is None:
+                    continue
+                x['plans'] = j
+                x['plans']['items'] = json.loads(x['plans']['items'])
+            ret['legal'].append(x)
+        ret['config'] = {}
+        ret['config']['commission_users'] = db.query("""
+            select id,concat(first_name,' ',last_name) as name from users 
+                where id in (select user_id from user_entitlements where entitlements_id=10)
+        """)
+        ret['config']['provider_status'] = db.query("select id,name from provider_queue_status")
+        ret['config']['invoice_status'] = db.query("select id,name from invoice_status")
+        return ret
+
+class LegalSave(AdminBase):
+    def __init__(self):
+        super().__init__()
+
+    def isDeferred(self):
+        return False
+
+    @check_admin
+    def execute(self, *args, **kwargs):
+        ret = {}
+        job,user,off_id,params = self.getArgs(*args,**kwargs)
+        db = Query()
+        insid = 0
+        OT = self.getOfficeTypes()
+        if 'id' not in params:
+            db.update("insert into office (name,office_type_id,email,billing_system_id) values (%s,%s,%s,%s,%s)",
+                (params['name'],OT['Provider'],params['email'],BS)
+            )
+            insid = db.query("select LAST_INSERT_ID()");
+            insid = insid[0]['LAST_INSERT_ID()']
+            db.update("""
+                insert into office_history(office_id,user_id,text) values (
+                    %s,%s,'Created (New)'
+                )
+            """,(insid,user['id']))
+        else:
+            db.update("""
+                update office set
+                    name = %s, 
+                    email = %s, 
+                    active = %s
+                    where id = %s
+                """,(params['name'],params['email'],params['active'],params['id']))
+            insid = params['id']
+            db.update("""
+                insert into office_history(office_id,user_id,text) values (
+                    %s,%s,'Updated Record'
+                )
+            """,(insid,user['id']))
+        if 'commission_user_id' in params:
+            db.update("""
+                update office set commission_user_id=%s where id = %s
+                """,(params['commission_user_id'],insid)
+            )
+        db.update("""
+            delete from office_addresses where office_id = %s
+            """,(insid,)
+        )
+        for x in params['addr']:
+            db.update(
+                """
+                    insert into office_addresses (
+                        office_id,addr1,addr2,phone,city,state,zipcode
+                    ) values (%s,%s,%s,%s,%s,%s,%s)
+                """,(insid,x['addr1'],x['addr2'],x['phone'],x['city'],x['state'],x['zipcode'])
+            )
+        db.update("""
+            insert into office_history(office_id,user_id,text) values (
+                %s,%s,'Updated Record'
+            )
+        """,(params['id'],user['id']))
+        db.commit()
+        return {'success': True}

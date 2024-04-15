@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { toast } from 'react-toastify';
 import Select from 'react-select';
+import AddBoxIcon from '@mui/icons-material/AddBox';
 import MaskedInput from 'react-maskedinput';
 import moment from 'moment';
 import { Badge } from 'reactstrap';
@@ -36,9 +37,12 @@ class Registrations extends Component {
         this.state = { 
             selected: null,
             activeTab: "registrations",
+            typeSelected:null,
             statusSelected:null,
+            Selected:null,
             search:null,
             filter: [],
+            filterType: [],
             subTab: "plans",
             sort:null,
             direction:0,
@@ -53,6 +57,7 @@ class Registrations extends Component {
         this.onLeadStrengthChange = this.onLeadStrengthChange.bind(this);
         this.onPlansChange = this.onPlansChange.bind(this);
         this.onStatusFilter = this.onStatusFilter.bind(this);
+        this.onTypeFilter = this.onTypeFilter.bind(this);
         this.renderTotalLabel = this.renderTotalLabel.bind(this);
         this.addAddress = this.addAddress.bind(this);
         this.save = this.save.bind(this);
@@ -85,6 +90,13 @@ class Registrations extends Component {
             } 
             this.state.statusSelected = t;
             this.state.filter = t;
+            var v = [];
+            c = 0;
+            for (c = 0; c < p.registrationsAdminList.data.config.type.length; c++) { 
+                v.push(p.registrationsAdminList.data.config.type[c].id); 
+            } 
+            this.state.typeSelected = v;
+            this.state.filterType = v;
             this.setState(this.state);
             if (this.props.match.params.id) { 
                 this.props.dispatch(getRegistrations(
@@ -93,7 +105,7 @@ class Registrations extends Component {
             }
             if (!this.props.match.params.id) { 
                 this.props.dispatch(getRegistrations(
-                    {limit:this.state.pageSize,offset:this.state.page,status:t}
+                    {type:v,limit:this.state.pageSize,offset:this.state.page,status:t}
                 ));
             }
         } 
@@ -156,8 +168,28 @@ class Registrations extends Component {
     }
 
 
+    onTypeFilter(e,t) { 
+        if (e.length < 1 ) { return; }
+        var c = 0;
+        var t = [];
+        for (c = 0; c < e.length; c++) { 
+            t.push(e[c].value); 
+        } 
+        this.state.typeSelected = t;
+        this.state.filterType = t;
+        this.props.dispatch(getRegistrations(
+            {type:this.state.filterType,
+             direction:this.state.direction,
+             sort:this.state.sort,
+             search:this.state.search,
+             limit:this.state.pageSize,offset:this.state.page,
+             status:this.state.filter}
+        ));
+        this.setState(this.state)
+    } 
+
     onStatusFilter(e,t) { 
-        if (e.length <2 ) { return; }
+        if (e.length < 1 ) { return; }
         var c = 0;
         var t = [];
         for (c = 0; c < e.length; c++) { 
@@ -166,7 +198,10 @@ class Registrations extends Component {
         this.state.statusSelected = t;
         this.state.filter = t;
         this.props.dispatch(getRegistrations(
-            {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
+            {type:this.state.filterType,
+            direction:this.state.direction,
+            sort:this.state.sort,
+            search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
         ));
         this.setState(this.state)
     } 
@@ -247,7 +282,7 @@ class Registrations extends Component {
     } 
     reload() { 
         this.props.dispatch(getRegistrations(
-            {sort:this.state.sort,direction:this.state.direction,
+            {type:this.state.filterType,sort:this.state.sort,direction:this.state.direction,
              search:this.state.search,limit:this.state.pageSize,
             offset:this.state.page,status:this.state.filter}
         ));
@@ -277,7 +312,7 @@ class Registrations extends Component {
         }
         this.props.dispatch(registrationAdminUpdate(tosend,function(err,args) { 
             args.props.dispatch(getRegistrations(
-                {sort:args.state.sort,direction:args.state.direction,search:args.state.search,limit:args.state.pageSize,offset:args.state.page,status:args.state.filter},function(err,args) { 
+                {type:args.state.filterType,sort:args.state.sort,direction:args.state.direction,search:args.state.search,limit:args.state.pageSize,offset:args.state.page,status:args.state.filter},function(err,args) { 
               toast.success('Successfully saved registration.',
                 {
                     position:"top-right",
@@ -520,16 +555,6 @@ class Registrations extends Component {
                 text:'Email'
             },
             {
-                dataField:'first_name',
-                sort:true,
-                text:'Name',
-                formatter:(cellContent,row) => (
-                    <div>
-                        {row.first_name + ' ' + row.last_name}
-                    </div>
-                )
-            },
-            {
                 dataField:'office_type',
                 sort:true,
                 text:'Type'
@@ -676,11 +701,11 @@ class Registrations extends Component {
                             <>
                             <div style={{zIndex:512}}>
                                 <Row md="12">
-                                    <Col md="1"> 
-                                        <Button onClick={this.add} 
-                                            color="primary">Add</Button>
+                                    <Col md="1">
+                                        <Button onClick={this.add} style={{width:50}}
+                                            color="primary"><AddBoxIcon/></Button>
                                     </Col>
-                                    <Col md="5" style={{zIndex:9995}}>
+                                    <Col md="4" style={{zIndex:9995}}>
                                       {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
                                         this.props.registrationsAdminList.data.config &&
                                         this.props.registrationsAdminList.data.config.status && this.state.statusSelected !== null) && (
@@ -708,11 +733,39 @@ class Registrations extends Component {
                                             />
                                         )}
                                     </Col>                
-                                    <Col md={3}>
+                                    <Col md="4" style={{zIndex:9995}}>
+                                      {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
+                                        this.props.registrationsAdminList.data.config &&
+                                        this.props.registrationsAdminList.data.config.type && this.state.statusSelected !== null) && (
+                                          <Select
+                                              closeMenuOnSelect={true}
+                                              isSearchable={false}
+                                              isMulti
+                                              onChange={this.onTypeFilter}
+                                              value={this.state.typeSelected.map((g) => { 
+                                                return (
+                                                    {
+                                                    label:this.props.registrationsAdminList.data.config.type.filter((f) => f.id === g)[0].name,
+                                                    value:this.props.registrationsAdminList.data.config.type.filter((f) => f.id === g)[0].id
+                                                    }
+                                                )
+                                              })}
+                                              options={this.props.registrationsAdminList.data.config.type.map((e) => { 
+                                                return (
+                                                    { 
+                                                    label: e.name,
+                                                    value: e.id
+                                                    }
+                                                )
+                                              })}
+                                            />
+                                        )}
+                                    </Col>                
+                                    <Col md={2}>
                                         <Input type="text" id="normal-field" onChange={this.search}
                                         placeholder="Search" value={this.state.search}/>
                                     </Col>
-                                    <Col md={3}>
+                                    <Col md={1}>
                                         <div class='pull-right'>
                                             <Button onClick={() => this.reload()} style={{marginRight:5,height:35}} outline 
                                                 color="primary"><AutorenewIcon/></Button>

@@ -22,6 +22,7 @@ import ThankYou from '../pain/landing/ThankYou';
 import Verified from '../pain/landing/Verified';
 import Register from '../pain/landing/Register';
 import RegisterProvider from '../pain/landing/RegisterProvider';
+import RegisterLegal from '../pain/landing/RegisterLegal';
 import RegisterReferrer from '../pain/landing/RegisterReferrer';
 
 const CloseButton = ({closeToast}) => <i onClick={closeToast} className="la la-close notifications-close"/>
@@ -51,6 +52,9 @@ class App extends React.PureComponent {
                       <Route path="/register" exact component={Register}/>}
                       <Route path="/register-provider/:id" exact component={RegisterProvider}/>
                       <Route path="/register-provider/o/:pq_id" exact component={RegisterProvider}/>
+                      <Route path="/register-legal" exact component={RegisterLegal}/>
+                      <Route path="/register-legal/:id" exact component={RegisterLegal}/>
+                      <Route path="/register-legal/o/:pq_id" exact component={RegisterLegal}/>
                       <Route path="/register-referrer" exact component={RegisterReferrer}/>
                       <AuthRoute path="/login" exact component={Login}/>
                       <AuthRoute path="/welcome" exact component={Welcome}/>
