@@ -1054,6 +1054,8 @@ class RegistrationUpdate(AdminBase):
                 """,(invid,)
             )
             sum = 0
+            if params['initial_payment'] is None:
+                params['initial_payment'] = 0
             for y in params['invoice_items']:
                 if float(params['initial_payment']) > 0:
                     # If there is an initial payment, charge that upfront
