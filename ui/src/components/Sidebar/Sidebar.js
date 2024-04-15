@@ -269,9 +269,6 @@ class Sidebar extends React.Component {
             index="system"
             childrenLinks={[
               {
-                header: 'Plans', link: '/app/main/admin/plans',
-              },
-              {
                 header: 'Providers', link: '/app/main/admin/office',
               },
               {
@@ -281,10 +278,16 @@ class Sidebar extends React.Component {
                 header: 'Invoices', link: '/app/main/admin/invoices',
               },
               {
-                header: 'Users', link: '/app/main/admin/users',
+                header: 'Commissions', link: '/app/main/admin/commissions',
               },
               {
-                header: 'Commissions', link: '/app/main/admin/commissions',
+                header: 'Coupons', link: '/app/main/admin/coupons',
+              },
+              {
+                header: 'Plans', link: '/app/main/admin/plans',
+              },
+              {
+                header: 'Users', link: '/app/main/admin/users',
               },
             ]}
           />

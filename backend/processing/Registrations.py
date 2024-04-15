@@ -220,21 +220,45 @@ class RegistrationLandingData(RegistrationsBase):
         ret = {'pricing':[]}
         params = args[1][0]
         db = Query()
-        q = """select id,trial,price,locations,duration,start_date,end_date,active,slot
+        q = """
+            select 
+                p.id, p.trial, p.price,
+                p.locations, p.duration,
+                p.start_date,p.end_date,p.active,p.slot,
+                json_array(
+                    json_object(
+                        'name',c.name,
+                        'total',c.total,
+                        'percentage',c.perc,
+                        'reduction',c.reduction
+                    )
+                ) as coupons
+                        
             from
                 pricing_data p
+                left outer join coupons c on c.pricing_data_id=p.id
             """
         p = []
         if 'type' in params and params['type'] is not None:
             q += " where office_type_id = %s " 
             p = [params['type']]
         q += """
+            group by 
+                p.id
+           """
+        q += """
             order by 
                 slot asc,
                 start_date desc
             """
+        j = []
         o = db.query(q,p)
-        ret['pricing'] = o
+        for x in o:
+            x['coupons'] = json.loads(x['coupons'])
+            if x['coupons'][0]['total'] == None:
+                x['coupons'] = []
+            j.append(x)
+        ret['pricing'] = j
         l = db.query("""
             select ot.id,otd.name,otd.description,otd.signup_description
             from 

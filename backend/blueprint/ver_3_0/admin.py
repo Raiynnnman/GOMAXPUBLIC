@@ -176,3 +176,10 @@ def reflist(*args, **kwargs):
 def commissionlist(*args, **kwargs):
     po = AdminRest.CommissionListRest()
     return po.postWrapper(*args,**kwargs)
+
+@admin.route('/admin/coupon/list', methods=['POST'])
+@token_required
+@swag_from(docs_dir + 'admin_office_list.yaml')
+def couponlist(*args, **kwargs):
+    po = AdminRest.CouponListRest()
+    return po.postWrapper(*args,**kwargs)

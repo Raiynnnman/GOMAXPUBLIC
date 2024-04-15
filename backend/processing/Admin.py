@@ -1831,7 +1831,7 @@ class ReferrerList(AdminBase):
         ret['data'] = o
         return ret
 
-class CommissionList(AdminBase):
+class CouponList(AdminBase):
     def __init__(self):
         super().__init__()
 
@@ -1852,64 +1852,19 @@ class CommissionList(AdminBase):
         db = Query()
         ENT = self.getEntitlementIDs()
         ret['config'] = {}
-        ret['config']['period'] = db.query("""
-            select count(i.id) as count,
-                i.billing_period as value,
-                date_format(i.billing_period,'%b, %Y') as label from 
-                commission_users cu, invoices i
-            where cu.invoices_id = i.id
-            order by
-                i.billing_period desc
-        """)
         q = """
             select 
-                u.id,concat(u.first_name,' ',u.last_name) as name,
-                amount,
-                cus.created,
-                i.billing_period,
-                o.id as office_id,o.name as office_name
+                c.id,c.name,c.pricing_data_id,c.total,c.perc,
+                c.reduction,c.start_date,c.end_date,c.active
             from 
-                office o,
-                invoices i,
-                users u,
-                commission_users cus
-            where 
-                i.office_id = o.id and
-                i.id = cus.invoices_id and
-                cus.user_id = u.id and
-                cus.office_id = o.id and
-                u.id = cus.user_id
+                coupons c
+                left join pricing_data p on p.id = c.pricing_data_id
         """
         p = []
-        if 'CommissionsAdmin' not in user['entitlements']:
-            q += ' and cus.user_id = %s ' % user['id']
-        if 'period' in params and params['period'] is not None:
-            q += ' and ( ' 
-            a = []
-            for x in params['period']:
-                a.append("""
-                    (
-                        month(%s) = month(i.billing_period) and
-                        year(%s) = year(i.billing_period)
-                    )
-                """)
-                p.append(x)
-                p.append(x)
-            q += " or ".join(a)
-            q += ")"
         cnt = db.query("select count(id) as cnt from (" + q + ") as t",p)
         ret['total'] = cnt[0]['cnt']
-        if 'report' not in params or params['report'] is None:
-            q +=  " limit %s offset %s " 
-            p.append(limit)
-            p.append(offset*limit)
         o = db.query(q,p)
-        if 'report' in params and params['report'] is not None:
-            ret['filename'] = 'commission_report.csv'
-            frame = pd.DataFrame.from_dict(o)
-            t = frame.to_csv()
-            ret['content'] = base64.b64encode(t.encode('utf-8')).decode('utf-8')
-        ret['commissions'] = o
+        ret['coupons'] = o
         return ret
 
 class LegalList(AdminBase):
@@ -2137,3 +2092,84 @@ class LegalSave(AdminBase):
         """,(params['id'],user['id']))
         db.commit()
         return {'success': True}
+
+class CommissionList(AdminBase):
+    def __init__(self):
+        super().__init__()
+
+    def isDeferred(self):
+        return False
+
+    @check_admin
+    def execute(self, *args, **kwargs):
+        ret = {}
+        job,user,off_id,params = self.getArgs(*args,**kwargs)
+        limit = 10000
+        OT = self.getOfficeTypes()
+        offset = 0
+        if 'limit' in params:
+            limit = int(params['limit'])
+        if 'offset' in params:
+            offset = int(params['offset'])
+        db = Query()
+        ENT = self.getEntitlementIDs()
+        ret['config'] = {}
+        ret['config']['period'] = db.query("""
+            select count(i.id) as count,
+                i.billing_period as value,
+                date_format(i.billing_period,'%b, %Y') as label from 
+                commission_users cu, invoices i
+            where cu.invoices_id = i.id
+            order by
+                i.billing_period desc
+        """)
+        q = """
+            select 
+                u.id,concat(u.first_name,' ',u.last_name) as name,
+                amount,
+                cus.created,
+                i.billing_period,
+                o.id as office_id,o.name as office_name
+            from 
+                office o,
+                invoices i,
+                users u,
+                commission_users cus
+            where 
+                i.office_id = o.id and
+                i.id = cus.invoices_id and
+                cus.user_id = u.id and
+                cus.office_id = o.id and
+                u.id = cus.user_id
+        """
+        p = []
+        if 'CommissionsAdmin' not in user['entitlements']:
+            q += ' and cus.user_id = %s ' % user['id']
+        if 'period' in params and params['period'] is not None:
+            q += ' and ( ' 
+            a = []
+            for x in params['period']:
+                a.append("""
+                    (
+                        month(%s) = month(i.billing_period) and
+                        year(%s) = year(i.billing_period)
+                    )
+                """)
+                p.append(x)
+                p.append(x)
+            q += " or ".join(a)
+            q += ")"
+        cnt = db.query("select count(id) as cnt from (" + q + ") as t",p)
+        ret['total'] = cnt[0]['cnt']
+        if 'report' not in params or params['report'] is None:
+            q +=  " limit %s offset %s " 
+            p.append(limit)
+            p.append(offset*limit)
+        o = db.query(q,p)
+        if 'report' in params and params['report'] is not None:
+            ret['filename'] = 'commission_report.csv'
+            frame = pd.DataFrame.from_dict(o)
+            t = frame.to_csv()
+            ret['content'] = base64.b64encode(t.encode('utf-8')).decode('utf-8')
+        ret['commissions'] = o
+        return ret

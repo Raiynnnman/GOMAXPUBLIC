@@ -59,7 +59,7 @@ for x in l:
             r = None
         else:
             r=r.body
-        print(r)
+        # print(r)
         print("here")
         print(json.dumps(r,indent=4))
         s_fee = 0

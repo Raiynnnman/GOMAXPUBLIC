@@ -172,6 +172,12 @@ class ReferrerListRest(RestBase):
         ret = u.process(args[0])
         return ret
 
+class CouponListRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Admin.CouponList()
+        ret = u.process(args[0])
+        return ret
 
 class CommissionListRest(RestBase):
 
