@@ -33,7 +33,7 @@ import CommissionAdminList from '../../pain/admin/CommissionAdminList';
 import PricingList from '../../pain/admin/PricingList';
 import UserAdmin from '../../pain/admin/UserAdmin';
 import Referrers from '../../pain/admin/Referrers';
-import InvoiceAdmin from '../../pain/admin/InvoiceAdmin';
+import InvoiceAdminList from '../../pain/admin/InvoiceAdminList';
 import LegalAppointment from '../../pain/legal/LegalAppointment';
 import ReferrerUpload from '../../pain/office/ReferrerUpload';
 import LegalBilling from '../../pain/legal/LegalBilling';
@@ -136,7 +136,7 @@ class Layout extends React.Component {
                     <Route path="/app/main/admin/legal" exact component={LegalAdmin} />
                     <Route path="/app/main/admin/search" exact component={SearchAdmin} />
                     <Route path="/app/main/admin/users" exact component={UserAdmin} />
-                    <Route path="/app/main/admin/invoices" exact component={InvoiceAdmin} />
+                    <Route path="/app/main/admin/invoices" exact component={InvoiceAdminList} />
                     <Route path="/app/main/legal/myday" exact component={LegalAppointment} />
                     <Route path="/app/main/legal/settings" exact component={LegalSettings} />
                     <Route path="/app/main/legal/billing" exact component={LegalBilling} />

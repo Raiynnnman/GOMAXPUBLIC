@@ -18,6 +18,7 @@ import { Badge } from 'reactstrap';
 import { Search } from 'react-bootstrap-table2-toolkit';
 import s from '../utils/default.module.scss';
 import translate from '../utils/translate';
+import { invoiceAdminUpdate } from '../../actions/invoiceAdminUpdate';
 import AppSpinner from '../utils/Spinner';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
@@ -89,6 +90,7 @@ class InvoiceAdminList extends Component {
     }
 
     componentDidMount() {
+        this.props.dispatch(getInvoiceAdmin({page:this.state.page,limit:this.state.pageSize}))
     }
 
     search(e) { 
@@ -203,33 +205,56 @@ class InvoiceAdminList extends Component {
         this.state.selected.comments[0].text=e.target.value
         this.setState(this.state);
     }
+
     saveComment(e) { 
         this.state.selected.comments[0].edit=false;
         this.state.commentAdd = false;
         this.setState(this.state);
     }
+
     cancelComment(e) { 
         this.state.selected.comments.shift();
         this.setState(this.state);
     }
+
     addComment() { 
         this.state.selected.comments.unshift({text:'',edit:true})
         this.state.commentAdd = true;
         this.setState(this.state);
     }
+
     edit(row) { 
         var r = {}
         r = row
         this.state.selected=r
         this.setState(this.state);
     } 
+
     save() { 
-        this.props.onSave(this.state.selected);
-        this.state.selected = null;
-        this.setState(this.state);
+        // this.props.onSave(this.state.selected);
+        var params = this.state.selected;
+        console.log("par",params);
+        this.props.dispatch(invoiceAdminUpdate(params,function(err,args) { 
+            console.log(err,args);
+            args.props.dispatch(getInvoiceAdmin({
+                    direction:args.state.direction,sort:args.state.sort,search:args.state.search,
+                    limit:args.state.pageSize,offset:args.state.page,status:args.state.filter
+                },function(err,args) { 
+                console.log("a",err,args);
+                toast.success('Successfully scheduled invoice.',
+                    {
+                        position:"top-right",
+                        autoClose:3000,
+                        hideProgressBar:true
+                    }
+                );
+                args.cancel();
+            },args))
+        },this));
     } 
 
     render() {
+        console.log("S",this.state);
         const pageButtonRenderer = ({
           page,
           currentPage,
