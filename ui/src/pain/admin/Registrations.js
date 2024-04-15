@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { toast } from 'react-toastify';
 import Select from 'react-select';
 import AddBoxIcon from '@mui/icons-material/AddBox';
+import AssessmentIcon from '@mui/icons-material/Assessment';
 import MaskedInput from 'react-maskedinput';
 import moment from 'moment';
 import { Badge } from 'reactstrap';
@@ -24,6 +25,7 @@ import s from '../utils/default.module.scss';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import { getRegistrations } from '../../actions/registrationsAdminList';
+import { getRegistrationReport } from '../../actions/registrationReport';
 import { getPlansList } from '../../actions/plansList';
 import { registrationAdminUpdate } from '../../actions/registrationAdminUpdate';
 import BootstrapTable from 'react-bootstrap-table-next';
@@ -62,6 +64,7 @@ class Registrations extends Component {
         this.addAddress = this.addAddress.bind(this);
         this.save = this.save.bind(this);
         this.reload = this.reload.bind(this);
+        this.providerReport = this.providerReport.bind(this);
         this.edit = this.edit.bind(this);
         this.add = this.add.bind(this);
         this.onCommissionChange = this.onCommissionChange.bind(this);
@@ -360,6 +363,17 @@ class Registrations extends Component {
     toggleTab(e) { 
         this.state.activeTab = e;
         this.setState(this.state);
+    } 
+
+    providerReport() { 
+        this.props.dispatch(getRegistrationReport(
+            {direction:this.state.direction,
+             sort:this.state.sort,
+             search:this.state.search,
+             limit:100000,offset:0,
+             report:1,
+             period:this.state.filter}
+        ));
     } 
 
     edit(r) { 
@@ -682,6 +696,9 @@ class Registrations extends Component {
             {(this.props.registrationAdminUpdate && this.props.registrationAdminUpdate.isReceiving) && (
                 <AppSpinner/>
             )}
+            {(this.props.registrationReport && this.props.registrationReport.isReceiving) && (
+                <AppSpinner/>
+            )}
             {(this.props.registrationsAdminList && this.props.registrationsAdminList.isReceiving) && (
                 <AppSpinner/>
             )}
@@ -767,8 +784,11 @@ class Registrations extends Component {
                                     </Col>
                                     <Col md={1}>
                                         <div class='pull-right'>
-                                            <Button onClick={() => this.reload()} style={{marginRight:5,height:35}} outline 
-                                                color="primary"><AutorenewIcon/></Button>
+                                            <div style={{display:'flex',justifyContent:"spread-evenly"}}>
+                                                <Button onClick={this.providerReport} outline color="primary"><AssessmentIcon/></Button>
+                                                <Button onClick={() => this.reload()} style={{marginRight:5,height:35}} outline 
+                                                    color="primary"><AutorenewIcon/></Button>
+                                            </div>
                                         </div>
                                     </Col>
                                 </Row>
@@ -1134,6 +1154,7 @@ function mapStateToProps(store) {
     return {
         currentUser: store.auth.currentUser,
         registrationsAdminList: store.registrationsAdminList,
+        registrationReport: store.registrationReport,
         registrationAdminUpdate: store.registrationAdminUpdate,
         plansList: store.plansList
     }

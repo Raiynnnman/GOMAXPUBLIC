@@ -6,17 +6,17 @@ import 'react-toastify/dist/ReactToastify.css';
 import handleError from './handleError';
 const cookies = new Cookies();
 
-export const RECEIVED_REGL_DATA_SUCCESS = 'RECEIVED_REGL_DATA_SUCCESS';
-export const RECEIVING_REGL_DATA = 'RECEIVING_REGL_DATA';
+export const RECEIVED_COMD_DATA_SUCCESS = 'RECEIVED_COMD_DATA_SUCCESS';
+export const RECEIVING_COMD_DATA = 'RECEIVING_COMD_DATA';
 
 export function receiveDataSuccess(payload) {
     return {
-        type: RECEIVED_REGL_DATA_SUCCESS,
+        type: RECEIVED_COMD_DATA_SUCCESS,
         payload
     }
 }
 
-export function getRegistrations(params,callback,args) { 
+export function getRegistrationReport(params,callback,args) { 
   return async (dispatch) => {
     dispatch(receivingData(params,callback,args));
   };
@@ -25,7 +25,7 @@ export function getRegistrations(params,callback,args) {
 export function receivingData(params,callback,args) {
   return async (dispatch) => {
     dispatch({
-        type: RECEIVING_REGL_DATA
+        type: RECEIVING_COMD_DATA
     });
     const response = await axios.create({
             baseURL: apiBaseUrl(),
@@ -50,9 +50,9 @@ export function receivingData(params,callback,args) {
             delete e.data.data.filename;
           } 
           dispatch({
-                type: RECEIVED_REGL_DATA_SUCCESS,
+                type: RECEIVED_COMD_DATA_SUCCESS,
                 payload: e.data.data
-            });
+          });
           if (callback) {
             if (!e.data.data.success) {
                 callback(e.data.data,args);

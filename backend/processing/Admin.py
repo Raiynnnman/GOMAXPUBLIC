@@ -375,7 +375,7 @@ class InvoicesUpdate(AdminBase):
         ret = {}
         job,user,off_id,params = self.getArgs(*args,**kwargs)
         db = Query()
-        if 'id' not in params:
+        if 'id' not in params or params['id'] is None:
             raise Exception('ID_REQUIRED')
         if 'comments' in params:
             for x in params['comments']:
@@ -1160,16 +1160,17 @@ class RegistrationList(AdminBase):
         PQS = self.getProviderQueueStatus()
         q = """
             select 
-                pq.id,o.name,o.id as office_id,pqs.name as status,
+                pq.id,o.name,o.email,o.id as office_id,pqs.name as status,
                 pq.provider_queue_status_id,pq.sf_id,pqls.name as lead_strength,
                 pqls.id as lead_strength_id, pq.created,pq.updated,pq.places_id,
                 pq.initial_payment,ot.id as office_type_id,
                 ot.name as office_type,op.pricing_data_id as pricing_id,
-                o.commission_user_id,
+                o.commission_user_id,oa.state,
                 concat(comu.first_name, ' ', comu.last_name) as commission_name
             from
                 provider_queue pq
-                left outer join office o on pq.office_id = o.id
+                left join office o on pq.office_id = o.id
+                left join office_addresses oa on oa.office_id = o.id 
                 left outer join provider_queue_status pqs on pqs.id=pq.provider_queue_status_id
                 left outer join provider_queue_lead_strength pqls on pq.provider_queue_lead_strength_id=pqls.id
                 left outer join office_plans op on op.office_id = o.id
@@ -1200,12 +1201,20 @@ class RegistrationList(AdminBase):
             q += ",".join(map(str,arr))
             q += ")"
         if 'search' in params:
-            q += """ and (o.email like %s  or o.name like %s ) 
-            """
-            search_par.insert(0,params['search']+'%%')
-            search_par.insert(0,params['search']+'%%')
-            count_par.insert(0,params['search']+'%%')
-            count_par.insert(0,params['search']+'%%')
+            if 'state:' in params['search'].lower():
+                q += """ and oa.state = %s """
+                y = params['search'].split(":")
+                y = y[1]
+                t = y.rstrip().lstrip()
+                search_par.insert(0,t)
+                count_par.insert(0,t)
+            else:
+                q += """ and (o.email like %s  or o.name like %s) 
+                """
+                search_par.insert(0,params['search']+'%%')
+                search_par.insert(0,params['search']+'%%')
+                count_par.insert(0,params['search']+'%%')
+                count_par.insert(0,params['search']+'%%')
         if 'type' in params and params['type'] is not None:
             q += " and office_type_id in ("
             arr = []
@@ -1339,6 +1348,11 @@ class RegistrationList(AdminBase):
         """)
         ret['config']['strength'] = db.query("select id,name from provider_queue_lead_strength")
         ret['registrations'] = k
+        if 'report' in params and params['report'] is not None:
+            ret['filename'] = 'provider_report.csv'
+            frame = pd.DataFrame.from_dict(ret['registrations'])
+            t = frame.to_csv()
+            ret['content'] = base64.b64encode(t.encode('utf-8')).decode('utf-8')
         return ret
 
 class TrafficGet(AdminBase):

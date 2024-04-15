@@ -2,6 +2,7 @@ import { combineReducers } from 'redux';
 import auth from './auth';
 import referrerDashboard from './referrerDashboard';
 import commissions from './commissions';
+import registrationReport from './registrationReport';
 import registerReferrer from './registerReferrer';
 import referrerUpload from './referrerUpload';
 import referrerAdminList from './referrerAdminList';
@@ -168,6 +169,7 @@ export default (history) =>
     searchProvider,
     searchConfig,
     commissions,
+    registrationReport,
     referrerDashboard,
     referrerAdminList,
     officeReportDownload,
