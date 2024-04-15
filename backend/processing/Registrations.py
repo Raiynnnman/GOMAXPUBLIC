@@ -503,8 +503,9 @@ class RegisterProvider(RegistrationsBase):
                 )
         if 'pq_id' in params and params['pq_id'] is not None: 
             db.update("""
-                update provider_queue set sf_lead_executed=1,
-                import_sf=1,provider_queue_status_id = %s where id = %s
+                update provider_queue set 
+                sf_lead_executed=1,
+                provider_queue_status_id = %s where id = %s
                 """,(PQ['INVITED'],pq_id)
             )
             db.update("""
@@ -513,7 +514,7 @@ class RegisterProvider(RegistrationsBase):
                 )
             """,(params['pq_id'],))
             db.update("""
-                update office set active = 1 where id = %s
+                update office set active = 1,import_sf=1 where id = %s
                 """,(off_id,)
             )
             db.update("""
