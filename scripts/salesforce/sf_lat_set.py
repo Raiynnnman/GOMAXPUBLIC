@@ -143,7 +143,7 @@ for x in SF_DATA:
     else:
         t['Latitude'] = o[0]['lat']
         t['Longitude'] = o[0]['lon']
-    print(t)
+    # print(t)
     try:
         sf.Lead.update(j['Id'],t)
     except Exception as e:

@@ -347,7 +347,7 @@ for x in PAIN:
                 traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
                 raise e
     elif update == sf_util.updatePAIN() and not SAME:
-        print("%s: Updating PAIN" % j['Id'])
+        print("%s: Updating PAIN" % SF_ROW['Id'])
         try:
             if not args.dryrun:
                 cmod = sf_util.updatePAINDB(x,SF_ROW,SFSCHEMA,PSCHEMA,db,debug=args.debug)
