@@ -61,6 +61,13 @@ class AdminDashboard extends Component {
                             num3title="Month" num3isdollar={false} num4title="Year"/>
                 </Col>
                 <Col md="3">
+                    <TrendHeroWithStats data={this.props.adminDashboard.data.commissions}
+                        title="Commissions" 
+                            num1isdollar={true} num2title="Paid" num2isdollar={true} 
+                            num3title="Sent" num3isdollar={true} num4isdollar={true} 
+                            num4title="Void"/>
+                </Col>
+                <Col md="3">
                     <TrendHeroWithStats data={this.props.adminDashboard.data.website_stats}
                         title="Platform Stats Today" num2pure={true} num3pure={true} num4pure={true}
                             num1isdollar={false} num2title="Avg" num2isdollar={false} 

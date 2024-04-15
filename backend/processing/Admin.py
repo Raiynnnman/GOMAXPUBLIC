@@ -197,38 +197,69 @@ class AdminDashboard(AdminBase):
         )
         return o[0]
 
-    def getCommissionsThisMonth(self):
+    def getCommissionsThisMonth(self,u):
         db = Query()
         PQS = self.getProviderQueueStatus()
         OT = self.getOfficeTypes()
-        o = db.query("""
-            select 
-                ifnull(t1.num1,0) as num1, /* commissions */
-                ifnull(t2.num2,0) as num2, /* Total paid */
-                ifnull(t3.num3,0) as num3, /* sent */
-                ifnull(t4.num4,0) as num4 /* Voided */
-            from 
-                (select round(sum(amount),2) as num1 from commission_users a
-                    where 
-                    a.created > 
-                    date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t1,
-                (select round(sum(total),2) as num2 from invoices a
-                    where 
-                    a.invoice_status_id = 15 
-                    and a.billing_period > 
-                    date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t2,
-                (select round(sum(total),2) as num3 from invoices a
-                    where 
-                    a.invoice_status_id = 10 
-                    and a.billing_period > 
-                    date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t3,
-                (select round(sum(total),2) as num4 from invoices a
-                    where 
-                    a.invoice_status_id = 25 
-                    and a.billing_period > 
-                    date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t4
-            """
-        )
+        o = []
+        if 'CommissionAdmin' in u['entitlements']:
+            o = db.query("""
+                select 
+                    ifnull(t1.num1,0) as num1, /* commissions */
+                    ifnull(t2.num2,0) as num2, /* Total paid */
+                    ifnull(t3.num3,0) as num3, /* sent */
+                    ifnull(t4.num4,0) as num4 /* Voided */
+                from 
+                    (select round(sum(amount),2) as num1 from commission_users a
+                        where 
+                        a.created > 
+                        date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t1,
+                    (select round(sum(total),2) as num2 from invoices a
+                        where 
+                        a.invoice_status_id = 15 
+                        and a.billing_period > 
+                        date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t2,
+                    (select round(sum(total),2) as num3 from invoices a
+                        where 
+                        a.invoice_status_id = 10 
+                        and a.billing_period > 
+                        date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t3,
+                    (select round(sum(total),2) as num4 from invoices a
+                        where 
+                        a.invoice_status_id = 25 
+                        and a.billing_period > 
+                        date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t4
+                """
+            )
+        else:
+            o = db.query("""
+                select 
+                    ifnull(t1.num1,0) as num1, /* commissions */
+                    ifnull(t2.num2,0) as num2, /* Total paid */
+                    ifnull(t3.num3,0) as num3, /* sent */
+                    ifnull(t4.num4,0) as num4 /* Voided */
+                from 
+                    (select round(sum(amount),2) as num1 from commission_users a
+                        where 
+                        a.user_id = %s and a.created > 
+                        date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t1,
+                    (select round(sum(total),2) as num2 from invoices a,commission_users com
+                        where 
+                        a.id = com.invoices_id and com.user_id = %s and a.invoice_status_id = 15 
+                        and a.billing_period > 
+                        date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t2,
+                    (select round(sum(total),2) as num3 from invoices a,commission_users com
+                        where 
+                        a.id = com.invoices_id and com.user_id = %s and a.invoice_status_id = 10 
+                        and a.billing_period > 
+                        date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t3,
+                    (select round(sum(total),2) as num4 from invoices a,commission_users com
+                        where 
+                        a.id = com.invoices_id and com.user_id = %s and a.invoice_status_id = 25 
+                        and a.billing_period > 
+                        date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t4
+                """,(u['id'],u['id'],u['id'],u['id'])
+            )
         return o[0]
 
     def getRevenueThisMonth(self):
@@ -268,8 +299,9 @@ class AdminDashboard(AdminBase):
     @check_admin
     def execute(self, *args, **kwargs):
         ret = {}
+        u = args[1][0]
         ret['visits'] = self.getVisits()
-        ret['commissions'] = self.getCommissionsThisMonth()
+        ret['commissions'] = self.getCommissionsThisMonth(u)
         ret['revenue_month'] = self.getRevenueThisMonth()
         ret['revenue_leads_month'] = self.getLeadsRevenueMonth()
         ret['lead_status'] = self.getLeadsStatus()

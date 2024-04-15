@@ -56,6 +56,7 @@ q = """
             invoice_status_id=%s
     """
 
+p = []
 p.append(INV['APPROVED'])
 if args.inv_id is not None:
     q += " and i.id = %s " % args.inv_id
