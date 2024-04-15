@@ -103,6 +103,7 @@ class RegisterProvider extends Component {
             
         } 
         if (p.landingData && p.landingData.data && p.landingData.data.pricing && this.state.selPlan === null) { 
+            console.log("m",this.state.plan);
             this.state.selPlan = p.landingData.data.pricing.filter((e) => parseInt(this.state.plan) === e.id)
             if (this.state.selPlan.length > 0) { 
                 this.state.selPlan = this.state.selPlan[0]
@@ -333,6 +334,8 @@ class RegisterProvider extends Component {
 
 
     render() {
+        console.log("s",this.state);
+        console.log("p",this.props);
         var heads = [
             {
                 dataField:'name',

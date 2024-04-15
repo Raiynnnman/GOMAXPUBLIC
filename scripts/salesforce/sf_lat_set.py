@@ -127,7 +127,8 @@ for x in SF_DATA:
             print("No addresses for %s" % j['PainID__c'])
             continue
         t['Addresses_ID__c'] = g[0]['id']
-        
+    if j['Addresses_ID__c'] is None:
+        continue
     o = db.query("""
         select lat,lon from office_addresses where id=%s
         """,(j['Addresses_ID__c'],)

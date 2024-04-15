@@ -89,6 +89,7 @@ class Registrations extends Component {
             var t = [];
             for (c = 0; c < p.registrationsAdminList.data.config.status.length; c++) { 
                 if (p.registrationsAdminList.data.config.status[c].name === 'INVITED') { continue; }
+                if (p.registrationsAdminList.data.config.status[c].name === 'DENIED') { continue; }
                 t.push(p.registrationsAdminList.data.config.status[c].id); 
             } 
             this.state.statusSelected = t;

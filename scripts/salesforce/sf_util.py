@@ -179,9 +179,9 @@ def getPAINData(prow,srow,sfschema,pschema,db,debug=False):
             print("s=%s" % s)
         if p > s:
             upd = updateSF()
-            print("Picking sf because p.updated > s.updated")
+            #print("Picking sf because p.updated > s.updated")
         if s > p:
-            print("Picking pain because s.updated > p.updated")
+            #print("Picking pain because s.updated > p.updated")
             upd = updatePAIN()
     for y in pschema:
         if not pschema[y]['include_in_update']:

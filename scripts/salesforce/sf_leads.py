@@ -347,7 +347,7 @@ for x in PAIN:
                 traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
                 raise e
     elif update == sf_util.updatePAIN() and not SAME:
-        print("Updating PAIN")
+        print("%s: Updating PAIN" % j['Id'])
         try:
             if not args.dryrun:
                 cmod = sf_util.updatePAINDB(x,SF_ROW,SFSCHEMA,PSCHEMA,db,debug=args.debug)
@@ -752,7 +752,7 @@ for x in SF_DATA:
                 )
             """,(pq_id,))
         j['Sales_Link__c'] = '%s/#/register-provider/o/%s' % (config.getKey("host_url"),pq_id)
-        j['PainURL__c'] = '%s/#/app/main/admin/office/%s' % (config.getKey("host_url"),pq_id)
+        j['PainURL__c'] = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),pq_id)
         t = {}
         fie = FIELDS.split(",")
         nd2 = {}
