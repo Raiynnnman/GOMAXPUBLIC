@@ -23,6 +23,8 @@ key = config.getKey("square_api_key")
 loc = config.getKey("square_loc_key")
 parser = argparse.ArgumentParser()
 parser.add_argument('--dryrun', dest="dryrun", action="store_true")
+parser.add_argument('--id', dest="inv_id", action="store")
+parser.add_argument('--period', dest="period", action="store")
 args = parser.parse_args()
 
 client = None
@@ -36,11 +38,11 @@ INV = getIDs.getInvoiceIDs()
 BS=getIDs.getBillingSystem()
 db = Query()
 
-inv = db.query("""
+q = """
         select 
             i.id,o.stripe_cust_id,i.office_id as office_id,
             sum(ii.price * ii.quantity) as total,count(i.id) as minv,
-            i.version
+            i.version,i.billing_period
         from 
             invoices i
             left join office o on i.office_id = o.id 
@@ -52,10 +54,17 @@ inv = db.query("""
             o.stripe_cust_id is not null and
             i.billing_period <= now() and 
             invoice_status_id=%s
+    """
+
+p.append(INV['APPROVED'])
+if args.inv_id is not None:
+    q += " and i.id = %s " % args.inv_id
+
+q += """
         group by
             i.id
-    """,(INV['APPROVED'],)
-    )
+    """
+inv = db.query(q,p)
 
 minv = db.query("""
     select count(id) as a from invoices
@@ -69,6 +78,12 @@ for x in inv:
     if x['id'] is None:
         print("No invoices to process")
         continue
+    if args.inv_id is not None:
+        db.update("""
+            insert into invoice_history (invoices_id,user_id,text) values 
+                (%s,%s,%s)
+            """,(x['id'],1,'Forcing update to invoice' )
+        )
     print("processing invoice %s" % x['id'])
     if x['total'] == 0:
         db.update("""
@@ -104,7 +119,7 @@ for x in inv:
         card_id = None
         order = {
             'location_id': loc,
-            'reference_id': 'order-%s-%s' % (x['id'],x['office_id']),
+            'reference_id': 'order-%s-%s-%s' % (x['id'],x['office_id'],x['billing_period']),
             'customer_id': x['stripe_cust_id'],
             'line_items':[]
         }
