@@ -332,7 +332,7 @@ for x in PAIN:
                         raise Exception("ERROR: Creating new record but phone found: %s (%s)" % (newdata['Phone'],o[0]['t1']))
                 if not args.dryrun and not args.no_new:
                     r = sf.Lead.create(newdata)
-                    print("set3: %s" % j['Id'])
+                    # print("set3: %s" % j['Id'])
                     db.update("""
                         update provider_queue set sf_id = %s,sf_updated=now() where id = %s
                         """,(r['id'],x['pq_id'])
@@ -569,7 +569,7 @@ for x in SF_DATA:
                 except Exception as e:
                     print(json.dumps(j))
                     print("%s: ERROR: %s" % (j['Id'],str(e)))
-            print("set2: %s" % j['Id'])
+            # print("set2: %s" % j['Id'])
             db.update("""
                 update provider_queue set sf_id = %s where id = %s
                 """,(j['Id'],int(pq_id))
@@ -598,7 +598,7 @@ for x in SF_DATA:
         else:
             off_id = off_id[0]['office_id']
         # Looks silly, but its great for testing
-        print("set1: %s" % j['Id'])
+        # print("set1: %s" % j['Id'])
         db.update("""
             update provider_queue set sf_id = %s where id = %s
             """,(j['Id'],int(pq_id))
@@ -817,9 +817,9 @@ for x in SF_DATA:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
                 traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
     else:
-        print("SF Leads Subscription unnecessary")
+        # print("SF Leads Subscription unnecessary")
         # Looks silly, but when we change environments this really helps
-        print("set4: %s" % j['Id'])
+        # print("set4: %s" % j['Id'])
         db.update("""
             update provider_queue set sf_id = %s where id = %s
             """,(j['Id'],int(pq_id))
