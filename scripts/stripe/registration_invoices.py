@@ -56,9 +56,10 @@ l = db.query("""
             pq.provider_queue_status_id = %s or pq.provider_queue_status_id = %s or
             pq.provider_queue_status_id = %s
         )
+        and pq.provider_queue_status_id <> %s
     group by
         op.id
-    """,(PQS['APPROVED'],PQS['QUEUED'],PQS['INVITED'])
+    """,(PQS['APPROVED'],PQS['QUEUED'],PQS['INVITED'],PQS['DENIED'])
 )
 CNT = 0
 for x in l:
