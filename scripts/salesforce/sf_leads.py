@@ -388,8 +388,6 @@ print("Processing SF Records")
 CNTR = 0
 for x in SF_DATA:
     j = SF_DATA[x]
-    if j['Status'] == 'Converted':
-        continue
     FIELDS = 'PainID__c,PainURL__c,Sales_Link__c,Invoice_Paid__c,Addresses_ID__c'
     if j['Email'] is None:
         j['Email'] = "unknown-%s@poundpain.com" % encryption.getSHA256()[:6]
@@ -811,6 +809,8 @@ for x in SF_DATA:
         if debug:
             print("---- UPDATE SUBS")
             print(json.dumps(t,indent=4))
+        if j['Status'] == 'Converted':
+            continue
         if not args.dryrun:
             try:
                 sf.Lead.update(x,t)
