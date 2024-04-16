@@ -80,7 +80,7 @@ for x in l:
         if r['given_name'] != first:
             newdata['given_name'] = first
         if 'family_name' not in r or r['family_name'] != x['last_name']:
-            newdata['family_name'] = first
+            newdata['family_name'] = x['last_name']
         if 'email' not in r or r['email'] != x['email']:
             newdata['email_address'] = x['email']
         if 'company' not in r or r['company'] != x['office_name']:
