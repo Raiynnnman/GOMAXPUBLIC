@@ -691,10 +691,10 @@ for x in SF_DATA:
                 u = oc[0]
                 if u['description'] == j['Subscription_Plan__c'] and u['initial_payment'] == j['Payment_Amount__c']:
                     UPDATE = False
-                    print("Not updating plan as it hasnt changed")
+                    print("%s: Not updating plan as it hasnt changed" % j['Id'])
                 if u['invoices_id'] is not None:
                     UPDATE = False
-                    print("Not updating plan as its already submitted")
+                    print("%s: Not updating plan as its already submitted" % j['Id'])
             if UPDATE:
                 print("Replacing office plan")
                 db.update("""
@@ -778,41 +778,46 @@ for x in SF_DATA:
         if pq_id == 0:
             raise Exception("PQ_ID = 0")
         if j['Ready_To_Buy__c']:
-            print("Customer ready to buy, updating")
-            db.update("""
-                update provider_queue set 
-                    sf_lead_executed=1, sf_id = %s,
-                    provider_queue_lead_strength_id = %s,
-                    provider_queue_status_id = %s
-                where id = %s
-                """,(j['Id'],ST['Preferred Provider'],PQ['INVITED'],int(pq_id))
+            b = db.query("""
+                select sf_lead_executed from provider_queue where id=%s
+                """,(int(pq_id),)
             )
-            db.update("""
-                insert into provider_queue_history(provider_queue_id,user_id,text) values (
-                    %s,1,'Sending to invoicing (SF Lead)'
+            if not b[0]['sf_lead_executed']:
+                print("%s: Customer ready to buy, updating" % j['Id'])
+                db.update("""
+                    update provider_queue set 
+                        sf_lead_executed=1, sf_id = %s,
+                        provider_queue_lead_strength_id = %s,
+                        provider_queue_status_id = %s
+                    where id = %s
+                    """,(j['Id'],ST['Preferred Provider'],PQ['INVITED'],int(pq_id))
                 )
-            """,(pq_id,))
-            db.update("""
-                insert into provider_queue_history(provider_queue_id,user_id,text) values (
-                    %s,1,'Set to Preferred Provider (SF Lead)'
+                db.update("""
+                    insert into provider_queue_history(provider_queue_id,user_id,text) values (
+                        %s,1,'Sending to invoicing (SF Lead)'
+                    )
+                """,(pq_id,))
+                db.update("""
+                    insert into provider_queue_history(provider_queue_id,user_id,text) values (
+                        %s,1,'Set to Preferred Provider (SF Lead)'
+                    )
+                """,(pq_id,))
+                db.update("""
+                    insert into provider_queue_history(provider_queue_id,user_id,text) values (
+                        %s,1,'Set to INVITED (SF Lead)'
+                    )
+                """,(pq_id,))
+                db.update("""
+                    update office set 
+                        active=1
+                    where id = %s
+                    """,(off_id,)
                 )
-            """,(pq_id,))
-            db.update("""
-                insert into provider_queue_history(provider_queue_id,user_id,text) values (
-                    %s,1,'Set to INVITED (SF Lead)'
-                )
-            """,(pq_id,))
-            db.update("""
-                update office set 
-                    active=1
-                where id = %s
-                """,(off_id,)
-            )
-            db.update("""
-                insert into office_history(office_id,user_id,text) values (
-                    %s,1,'Set to ACTIVE (SF LEAD)'
-                )
-            """,(off_id,))
+                db.update("""
+                    insert into office_history(office_id,user_id,text) values (
+                        %s,1,'Set to ACTIVE (SF LEAD)'
+                    )
+                """,(off_id,))
         else:
             db.update("""
                 insert into provider_queue_history(provider_queue_id,user_id,text) values (
