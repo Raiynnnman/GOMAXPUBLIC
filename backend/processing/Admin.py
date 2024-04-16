@@ -1210,6 +1210,21 @@ class RegistrationList(AdminBase):
                 t = y.rstrip().lstrip()
                 search_par.insert(0,t)
                 count_par.insert(0,t)
+            elif 'created:' in params['search'].lower():
+                y = params['search'].split(":")
+                y = y[1]
+                t = y.rstrip().lstrip()
+                if len(t) == 10:
+                    q += """ and pq.created = %s """
+                    search_par.insert(0,t)
+                    count_par.insert(0,t)
+            elif 'id:' in params['search'].lower():
+                q += """ and pq.id = %s """
+                y = params['search'].split(":")
+                y = y[1]
+                t = y.rstrip().lstrip()
+                search_par.insert(0,t)
+                count_par.insert(0,t)
             else:
                 q += """ and (o.email like %s  or o.name like %s) 
                 """
