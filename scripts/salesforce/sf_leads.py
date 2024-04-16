@@ -566,6 +566,7 @@ for x in SF_DATA:
                 continue
             j['PainID__c'] = t
             j['PainURL__c'] = u
+            j['Sales_Link__c'] = '%s/#/register-provider/o/%s' % (config.getKey("host_url"),pq_id)
             o = db.query("""
                 select id from provider_queue where office_id = %s
                 """,(off_id,)
@@ -616,6 +617,21 @@ for x in SF_DATA:
             update provider_queue set sf_id = %s where id = %s
             """,(j['Id'],int(pq_id))
         )
+        if j['Sales_Link__c'] is None:
+            u = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),pq_id)
+            j['Sales_Link__c'] = '%s/#/register-provider/o/%s' % (config.getKey("host_url"),pq_id)
+            j['PainID__c'] = t
+            j['PainURL__c'] = u
+            if not args.dryrun:
+                try:
+                    sf.Lead.update(j['Id'],{
+                        'PainID__c': pq_id,
+                        'PainURL__c':j['PainURL__c'],
+                        'Sales_Link__c': j['Sales_Link__c']
+                    })
+                except Exception as e:
+                    print(json.dumps(j))
+                    print("%s: ERROR: %s" % (j['Id'],str(e)))
     if debug:
         print("off_id=%s" % off_id)
     if 'Subscription_Plan__c' in j and j['Subscription_Plan__c'] is not None:
