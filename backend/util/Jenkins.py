@@ -6,6 +6,7 @@ from common import settings, version
 from processing.run import app
 from util.Logging import Logging
 from util.DBOps import Query
+import jenkins
 
 config = settings.config()
 config.read("settings.cfg")
@@ -24,7 +25,6 @@ class Jenkins:
         cls = args[1][0]
         print(cls)
         db = Query()
-        ret = {}
         
         o = db.query("select job from jenkins_jobs where class=%s",(cls,))
         if len(o) < 1:
@@ -34,7 +34,7 @@ class Jenkins:
         url =  config.getKey("jenkins_url")
         user = config.getKey("jenkins_user")
         pasw = config.getKey("jenkins_pass")
-        print(env,url,user,pasw)
+        # print(env,url,user,pasw)
         if env is None or url is None or user is None or pasw is None:
             print("Values missing to run jenkins")
             return
@@ -42,11 +42,18 @@ class Jenkins:
         try:
             jenk = jenkins.Jenkins(url,username=user,password=pasw)
         except Exception as e:
-            print(str(e))
+            print("CONNECT: Connecting job: %s" % str(e))
         if not jenk:
             return
         for x in o:
-            print(x['job'])
+            job = "%s-backend-processing/%s-%s" % (env,env,x['job'])
+            print(job)
+            try:
+                # jobs = jenk.get_jobs()
+                # print(jobs)
+                jenk.build_job(job)
+            except Exception as e:
+                print("RUN: Running job (%s): %s" % (job,str(e)))
 
 
 

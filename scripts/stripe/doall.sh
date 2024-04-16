@@ -7,6 +7,7 @@ fi
 
 T="
     square/square_customers \
+	square/square_customers_update \
     square/square_cards \
     stripe/registration_invoices \
     square/square_progress_leads \
