@@ -643,7 +643,7 @@ class RegisterProvider extends Component {
                     </div>
                     </>
                     )}
-                    {(this.state.page === 2) && (
+                    {(this.state.page === 2 && this.state.selPlan.trial === 0) && (
                         <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                         <div style={{border:"1px solid black"}}></div>
                         <Button type="submit" onClick={this.nextPage} color="primary" className="auth-btn mb-3" disabled={
