@@ -269,14 +269,14 @@ for x in PAIN:
 
     if 'Invoice_Paid__c' in newdata:
         if newdata['Invoice_Paid__c'] == None:
-            newdata['Invoice_Paid__c'] = false
+            newdata['Invoice_Paid__c'] = False
 
     if 'Addresses_ID__c' not in newdata:
             newdata['Addresses_ID__c'] = oa_id
 
     if "Ready_To_Buy__c" in newdata:
         if newdata['Ready_To_Buy__c'] == None:
-            newdata['Ready_To_Buy__c'] = false
+            newdata['Ready_To_Buy__c'] = False
 
     if 'Sales_Link__c' in newdata and 'Subscription_Plan__c' in newdata and newdata['Subscription_Plan__c'] is not None:
         newdata['Sales_Link__c'] = '%s/#/register-provider/%s' % (config.getKey("host_url"),x['pq_id'])

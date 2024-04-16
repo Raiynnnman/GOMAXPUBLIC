@@ -30,8 +30,8 @@ class Jenkins:
         if len(o) < 1:
             print("Jenkins: Nothing to do")
             return
-        env = config.getKey("environment")
-        url = config.getKey("jenkins_url")
+        env =  config.getKey("environment")
+        url =  config.getKey("jenkins_url")
         user = config.getKey("jenkins_user")
         pasw = config.getKey("jenkins_pass")
         print(env,url,user,pasw)
