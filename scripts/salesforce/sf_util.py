@@ -160,6 +160,7 @@ def updatePAINDB(prow,srow,sfschema,pschema,db,debug=False):
             continue
         db.update(q,(newval,))
         cols_mod.append(field)
+        db.commit()
     return cols_mod
 
 def getPAINData(prow,srow,sfschema,pschema,db,debug=False):
