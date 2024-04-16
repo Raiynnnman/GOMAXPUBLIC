@@ -138,21 +138,30 @@ for x in inv:
             'location_id': loc,
             'reference_id': 'order-%s-%s-%s' % (x['id'],x['office_id'],x['billing_period']),
             'customer_id': x['stripe_cust_id'],
+            'discounts': [],
             'line_items':[]
         }
         for g in items:
-            order['line_items'].append({
-                'name':g['description'],
-                'quantity': str(g['quantity']),
-                'base_price_money':{'amount':g['price'] * 100,'currency':'USD'}
-            })
+            if g['price'] < 0:
+                order['discounts'].append({
+                    'uid': g['description'].replace("#","").replace(" ",""),
+                    'name':g['description'],
+                    'scope': 'ORDER',
+                    'amount_money':{'amount':-int(g['price']) * 100,'currency':'USD'}
+                })
+            else:
+                order['line_items'].append({
+                    'name':g['description'],
+                    'quantity': str(g['quantity']),
+                    'base_price_money':{'amount':int(g['price']) * 100,'currency':'USD'}
+                })
 
-        # print(json.dumps(order,indent=4))
+        print(json.dumps(order,indent=4))
         # print("++++")
         try:
             r = client.orders.create_order(body={'order': order});
             if r.is_error():
-                raise Exception(json.dumps(s.errors))
+                raise Exception(json.dumps(r.errors))
             r = r.body
             # print(json.dumps(r,indent=4))
             order_id = r['order']['id']

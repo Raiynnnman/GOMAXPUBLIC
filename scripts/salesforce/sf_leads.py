@@ -242,7 +242,11 @@ for x in PAIN:
         """,(x['pq_id'],str(e)))
         continue
 
-    PAINHASH[SF_ID]['nd'] = newdata
+    if SF_ID is not None:
+        if SF_ID not in PAINHASH:
+            PAINHASH[SF_ID] = {}
+        PAINHASH[SF_ID]['nd'] = newdata
+
     if debug:
         print("---- NEWDATA")
         print(json.dumps(newdata,indent=4))
@@ -263,10 +267,19 @@ for x in PAIN:
     if 'PainURL__c' in newdata:
         newdata['PainURL__c'] = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),newdata['PainURL__c'])
 
+    if 'Invoice_Paid__c' in newdata:
+        if newdata['Invoice_Paid__c'] == None:
+            newdata['Invoice_Paid__c'] = false
+
+    if 'Addresses_ID__c' not in newdata:
+            newdata['Addresses_ID__c'] = oa_id
+
+    if "Ready_To_Buy__c" in newdata:
+        if newdata['Ready_To_Buy__c'] == None:
+            newdata['Ready_To_Buy__c'] = false
+
     if 'Sales_Link__c' in newdata and 'Subscription_Plan__c' in newdata and newdata['Subscription_Plan__c'] is not None:
         newdata['Sales_Link__c'] = '%s/#/register-provider/%s' % (config.getKey("host_url"),x['pq_id'])
-        # On hold
-        del newdata['Sales_Link__c']
 
     if 'LastName' not in newdata or newdata['LastName'] is None or len(newdata['LastName']) < 2 or newdata['LastName'] == 'Unknown':
         if 'Dr' in newdata['Company'] or 'd.c.' in newdata['Company'].lower() or 'dc' in newdata['Company'].lower():
@@ -347,11 +360,11 @@ for x in PAIN:
                 traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
                 raise e
     elif update == sf_util.updatePAIN() and not SAME:
-        print("%s: Updating PAIN" % SF_ROW['Id'])
         try:
             if not args.dryrun:
                 cmod = sf_util.updatePAINDB(x,SF_ROW,SFSCHEMA,PSCHEMA,db,debug=args.debug)
                 if len(cmod) > 0:
+                    print("%s: Updating PAIN" % SF_ROW['Id'])
                     for tt in cmod:
                         db.update("""
                             insert into provider_queue_history(provider_queue_id,user_id,text) values (

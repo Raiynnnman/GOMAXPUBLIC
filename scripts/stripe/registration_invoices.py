@@ -40,7 +40,7 @@ l = db.query("""
             )
         ) as items,ifnull(pq.initial_payment,0) as initial_payment,pd.duration,
         pq.sf_lead_executed, pd.upfront_cost,pd.price,o.commission_user_id,
-        cs.id as commission_structure_id,
+        cs.id as commission_structure_id,coupons_id,
         cs.commission,concat(u.first_name,' ',u.last_name) as comm_user
     from 
         office_plans op
@@ -79,9 +79,17 @@ for x in l:
     insid = insid[0]['LAST_INSERT_ID()']
     sum = 0
     for y in x['items']:
+        print(y)
         # All plans are paid upfront, and since this is first invoice
-        sum += x['upfront_cost'] * y['quantity'] * x['duration']
+        price = 0
+        if y['price'] < 1: # Coupon
+            sum += y['price']
+            price = y['price']
+        else:
+            price = x['upfront_cost'] * y['quantity'] * x['duration']
+            sum += price 
         if x['initial_payment'] > 0:
+            price = x['initial_payment']
             sum = x['initial_payment']
         db.update("""
             insert into invoice_items 
@@ -89,7 +97,7 @@ for x in l:
             values 
                 (%s,%s,%s,%s)
             """,
-            (insid,y['description'],sum,y['quantity'])
+            (insid,y['description'],price,y['quantity'])
         )
     if x['commission'] is None:
         x['commission'] = 0

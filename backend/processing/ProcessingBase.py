@@ -1,5 +1,6 @@
 # coding=utf-8
 from util.DBOps import Query
+from util import Jenkins
 
 class ProcessingBase:
 
@@ -131,3 +132,6 @@ class ProcessingBase:
             i = x['id']
             ret[n] = i
         return ret 
+
+    def __del__(self):
+        Jenkins.spawnJob.delay(self.__class__.__name__)

@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 import auth from './auth';
+import couponSave from './couponSave';
 import coupons from './coupons';
 import referrerDashboard from './referrerDashboard';
 import commissions from './commissions';
@@ -177,6 +178,7 @@ export default (history) =>
     officeClients,
     mydayReceiptSave,
     coupons,
+    couponSave,
     registerReferrer,
     userDocumentsUpdate,
     chat,

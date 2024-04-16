@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import MaskedInput from 'react-maskedinput';
+import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
 import Select from 'react-select';
 import { Input } from 'reactstrap';
 import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
@@ -50,6 +51,11 @@ class RegisterProvider extends Component {
             phone:'',
             email:'',
             pq_id:null,
+            coupon:null,
+            calculatedPrice:0,
+            coupon_id:null,
+            couponRed:0,
+            couponRedValue:0,
             addresses:[],
             showAddresses:[],
             intentid:'',
@@ -62,7 +68,9 @@ class RegisterProvider extends Component {
         }
         this.nameChange = this.nameChange.bind(this);
         this.nextPage = this.nextPage.bind(this);
+        this.couponChange = this.couponChange.bind(this);
         this.updateVerified = this.updateVerified.bind(this);
+        this.getCoupon = this.getCoupon.bind(this);
         this.firstChange = this.firstChange.bind(this);
         this.phoneChange = this.phoneChange.bind(this);
         this.lastChange = this.lastChange.bind(this);
@@ -82,6 +90,7 @@ class RegisterProvider extends Component {
         this.checkValid = this.checkValid.bind(this);
         this.register = this.register.bind(this);
         this.saveCard= this.saveCard.bind(this);
+        this.calculatePrice = this.calculatePrice.bind(this);
         this.cancel= this.cancel.bind(this);
         this.cardChange = this.cardChange.bind(this);
     } 
@@ -140,6 +149,61 @@ class RegisterProvider extends Component {
         /* Implement checks */
         this.state.isValid = true;
         this.setState(this.state);
+    } 
+
+    calculatePrice() { 
+        console.log("calc")
+        if (this.state.selPlan && this.state.selPlan.upfront_cost && this.state.couponRed.replace) { 
+            var t = this.state.selPlan.upfront_cost * this.state.selPlan.duration
+            t = parseFloat(t + parseFloat(this.state.couponRedValue))
+            console.log("t",t);
+            return "$" + t.toFixed(2);
+        } 
+        else if (this.state.selPlan && this.state.selPlan.upfront_cost) { 
+            var t = this.state.selPlan.upfront_cost * this.state.selPlan.duration
+            return "$" + (t).toFixed(2);
+        }
+        else { 
+            return "$" + "0.00"
+        } 
+    } 
+
+    couponChange(e) { 
+        this.state.coupon = e.target.value;
+        this.setState(this.state);
+        this.getCoupon();
+        this.calculatePrice();
+    } 
+    getCoupon() { 
+        var t = this.state.selPlan.coupons.filter((e) => this.state.coupon === e.name)
+        if (t.length > 0) { 
+            t = t[0]
+            console.log("coup",t)
+            this.state.coupon_id = t.id
+            if (t.perc) { 
+                var v = this.state.selPlan.upfront_cost * this.state.selPlan.duration
+                v = v*t.perc;
+                this.state.couponRed = "($" + v.toFixed(2) + ")";
+                this.state.couponRedValue = -v.toFixed(2);
+                this.setState(this.state)
+            } 
+            else if (t.total) { 
+                var v = this.state.selPlan.upfront_cost * this.state.selPlan.duration
+                v = v - t.total;
+                this.state.couponRed = "($" + v.toFixed(2) + ")";
+                this.state.couponRedValue = -v.toFixed(2);
+                this.setState(this.state)
+            } 
+            else if (t.reduction) { 
+                var v = this.state.selPlan.upfront_cost * this.state.selPlan.duration
+                this.state.couponRed = "($" + v.toFixed(2) + ")";
+                this.state.couponRedValue = -v.toFixed(2);
+                this.setState(this.state)
+            } 
+        } 
+        else {
+            this.state.couponRed = 0.00;
+        }
     } 
 
     updateAddress(e,t,v) { 
@@ -246,10 +310,14 @@ class RegisterProvider extends Component {
             last: this.state.last,
             addresses: a 
         } 
+        if (this.state.coupon_id) { 
+            tosend.coupon_id = this.state.coupon_id
+        } 
         if (this.state.pq_id !== null) {
             tosend.pq_id = this.state.pq_id
             delete tosend.plan
         } 
+        console.log("ts",tosend);
         this.props.dispatch(registerProvider(tosend,function(err,args) { 
             window.location = "/#/welcome";
         },this));
@@ -359,6 +427,7 @@ class RegisterProvider extends Component {
             },
         ]
         var value = '';
+        console.log("s",this.state);
         return (
         <>
             {(this.props.registerProvider && this.props.registerProvider.isReceiving) && (
@@ -491,6 +560,71 @@ class RegisterProvider extends Component {
                     {(this.state.selPlan && this.state.selPlan.trial === 0 && this.state.page === 2) && (
                     <>
                     <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                        <Row md="12">
+                            <Col md="12">
+                            <Card style={{
+                                margin:20,width:450,height:200,
+                                borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}} className="mb-xlg border-1">
+                                <CardBody>
+                                    <Row md="12" style={{marginBottom:10}}>
+                                        <Col md="8">
+                                        <font style={{alignText:'left'}}>Description</font>
+                                        </Col>
+                                        <Col md="4">
+                                        <font class="pull-right" style={{marginRight:40,alignText:'right'}}>Price</font>
+                                        </Col>
+                                    </Row>
+                                    <hr/>
+                                    <Row md="12">
+                                        <Col md="8">
+                                        <font style={{alignText:'left'}}>{this.state.selPlan.description}</font>
+                                        </Col>
+                                        <Col md="4">
+                                        <font class='pull-right' style={{marginRight:20,alignText:'right'}}>${parseFloat(this.state.selPlan.upfront_cost * this.state.selPlan.duration).toFixed(2)}</font>
+                                        </Col>
+                                    </Row>
+                                    {(this.state.selPlan.coupons.length > 0) && (<Row md="12">
+                                        <Col md="8">
+                                            <input className="form-control no-border" 
+                                                style={{backgroundColor:'white'}} 
+                                                value={this.state.coupon} 
+                                                onInput={this.couponChange} 
+                                                onChange={this.couponChange} placeholder="Enter Coupon Code" />
+                                        </Col>
+                                        <Col md="4">
+                                            <font class='pull-right' style={{marginRight:20,alignText:'right'}}>{this.state.couponRed}</font>
+                                        </Col>
+                                    </Row>
+                                    )}
+                                    <hr/>
+                                    <Row md="12">
+                                        <Col md="8">
+                                        {(this.state.coupon_id !== null) && (     
+                                            <font class='pull-right' style={{alignText:'left'}}>Total:</font>
+                                        )}
+                                        {(this.state.coupon_id === null) && (     
+                                            <font class='pull-right' style={{marginRight:20,alignText:'left'}}>Total:</font>
+                                        )}
+                                        </Col>
+                                        <Col md="4">
+                                            {(this.state.coupon_id !== null) && (     
+                                                <font class='pull-right' style={{marginRight:20,alignText:'left'}}>{this.calculatePrice()}</font>
+                                            )}
+                                            {(this.state.coupon_id === null) && (     
+                                                <font class='pull-right' style={{marginRight:20,alignText:'left'}}>{this.calculatePrice()}</font>
+                                            )}
+                                        </Col>
+                                    </Row>
+                                </CardBody>
+                            </Card>
+                        </Col>
+                        </Row> 
+                    </div>
+                    </>
+                    )}
+                    {(this.state.selPlan && this.state.selPlan.trial === 0 && this.state.page === 3) && (
+                    <>
+                    <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                         Enter your credit card information. 
                     </div>
                     <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
@@ -508,6 +642,13 @@ class RegisterProvider extends Component {
                         </div>
                     </div>
                     </>
+                    )}
+                    {(this.state.page === 2) && (
+                        <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                        <div style={{border:"1px solid black"}}></div>
+                        <Button type="submit" onClick={this.nextPage} color="primary" className="auth-btn mb-3" disabled={
+                              !this.state.isValid} size="lg">Next</Button>
+                        </div>
                     )}
                     {(this.state.page === 0) && (
                         <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
@@ -536,7 +677,7 @@ class RegisterProvider extends Component {
                         </div>
                         </>
                     )}
-                    {(this.state.selPlan && this.state.selPlan.trial === 0 && this.state.page === 3 && this.state.card !== null) && (
+                    {(this.state.selPlan && this.state.selPlan.trial === 0 && this.state.page === 4 && this.state.card !== null) && (
                         <>
                         <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                         <font>Thank you! Click register below to finish the registration process</font>

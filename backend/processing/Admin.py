@@ -641,11 +641,12 @@ class PlansList(AdminBase):
             """
             select 
                 id,price,locations,duration,slot,description,
+                upfront_cost,
                 start_date,end_date,active,created,updated
             from
                 pricing_data 
             order by
-                start_date desc
+                description asc
             """
         )
         ret = o
@@ -783,7 +784,7 @@ class OfficeList(AdminBase):
                 x['service_start_date'] = j['billing_period']
             t = db.query("""
                 select 
-                    op.id,start_date,end_date,
+                    op.id,start_date,end_date,coupons_id,
                     JSON_ARRAYAGG(
                         JSON_OBJECT(
                             'id',opi.id,'price',opi.price,'description',
@@ -810,6 +811,7 @@ class OfficeList(AdminBase):
             select id,concat(first_name,' ',last_name) as name from users 
                 where id in (select user_id from user_entitlements where entitlements_id=10)
         """)
+        ret['config']['coupons'] = db.query("select id,name,total,percentage,reduction from coupons")
         ret['config']['provider_status'] = db.query("select id,name from provider_queue_status")
         ret['config']['invoice_status'] = db.query("select id,name from invoice_status")
         return ret
@@ -1829,42 +1831,6 @@ class ReferrerList(AdminBase):
         q += " limit %s offset %s " 
         o = db.query(q,p)
         ret['data'] = o
-        return ret
-
-class CouponList(AdminBase):
-    def __init__(self):
-        super().__init__()
-
-    def isDeferred(self):
-        return False
-
-    @check_admin
-    def execute(self, *args, **kwargs):
-        ret = {}
-        job,user,off_id,params = self.getArgs(*args,**kwargs)
-        limit = 10000
-        OT = self.getOfficeTypes()
-        offset = 0
-        if 'limit' in params:
-            limit = int(params['limit'])
-        if 'offset' in params:
-            offset = int(params['offset'])
-        db = Query()
-        ENT = self.getEntitlementIDs()
-        ret['config'] = {}
-        q = """
-            select 
-                c.id,c.name,c.pricing_data_id,c.total,c.perc,
-                c.reduction,c.start_date,c.end_date,c.active
-            from 
-                coupons c
-                left join pricing_data p on p.id = c.pricing_data_id
-        """
-        p = []
-        cnt = db.query("select count(id) as cnt from (" + q + ") as t",p)
-        ret['total'] = cnt[0]['cnt']
-        o = db.query(q,p)
-        ret['coupons'] = o
         return ret
 
 class LegalList(AdminBase):

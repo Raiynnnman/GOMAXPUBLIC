@@ -223,29 +223,17 @@ class RegistrationLandingData(RegistrationsBase):
         q = """
             select 
                 p.id, p.trial, p.price,
-                p.locations, p.duration,
-                p.start_date,p.end_date,p.active,p.slot,
-                json_array(
-                    json_object(
-                        'name',c.name,
-                        'total',c.total,
-                        'percentage',c.perc,
-                        'reduction',c.reduction
-                    )
-                ) as coupons
+                p.locations, p.duration,p.upfront_cost,
+                p.description,
+                p.start_date,p.end_date,p.active,p.slot
                         
             from
                 pricing_data p
-                left outer join coupons c on c.pricing_data_id=p.id
             """
         p = []
         if 'type' in params and params['type'] is not None:
             q += " where office_type_id = %s " 
             p = [params['type']]
-        q += """
-            group by 
-                p.id
-           """
         q += """
             order by 
                 slot asc,
@@ -253,12 +241,20 @@ class RegistrationLandingData(RegistrationsBase):
             """
         j = []
         o = db.query(q,p)
+        ret['pricing'] = []
         for x in o:
-            x['coupons'] = json.loads(x['coupons'])
-            if x['coupons'][0]['total'] == None:
-                x['coupons'] = []
-            j.append(x)
-        ret['pricing'] = j
+            x['coupons'] = db.query("""
+                select 
+                        c.id,
+                        c.name,
+                        c.total,
+                        c.perc,
+                        c.reduction
+                from coupons c
+                    where pricing_data_id=%s
+                """,(x['id'],)
+            )
+            ret['pricing'].append(x)
         l = db.query("""
             select ot.id,otd.name,otd.description,otd.signup_description
             from 
@@ -471,6 +467,35 @@ class RegisterProvider(RegistrationsBase):
                     """,(planid,PL[selplan]['price'],1,PL[selplan]['description'])
                         
                 )
+                if 'coupon_id' in params and params['coupon_id'] is not None:
+                    db.update("""update office_plans set coupons_id = %s
+                        where id = %s
+                        """,(planid,params['coupon_id'])
+                    )
+                    coup = db.query("""
+                        select total,perc,reduction,name from coupons where id = %s
+                        """,(params['coupon_id'],)
+                    )
+                    if len(coup) > 0:
+                        coup = coup[0]
+                        val = 0
+                        if coup['total'] is not None:
+                            val = PL[selplan]['price'] * PL[selplan]['duration']
+                            val = val - coup['total']
+                        if coup['perc'] is not None:
+                            val = PL[selplan]['price'] * PL[selplan]['duration']
+                            val = val * coup['perc']
+                        if coup['reduction'] is not None:
+                            val = PL[selplan]['price'] * PL[selplan]['duration']
+                            val = val - coup['reduction']
+                        db.update("""
+                            insert into office_plan_items (
+                                office_plans_id,price,quantity,description) 
+                            values 
+                                (%s,%s,%s,%s)
+                            """,(planid,-val,1,coup['name'])
+                                
+                        )
                 db.update("""
                     insert into office_history(office_id,user_id,text) values (
                         %s,1,'Created Plan'

@@ -183,3 +183,10 @@ def commissionlist(*args, **kwargs):
 def couponlist(*args, **kwargs):
     po = AdminRest.CouponListRest()
     return po.postWrapper(*args,**kwargs)
+
+@admin.route('/admin/coupon/update', methods=['POST'])
+@token_required
+@swag_from(docs_dir + 'admin_office_list.yaml')
+def couponupdate(*args, **kwargs):
+    po = AdminRest.CouponUpdateRest()
+    return po.postWrapper(*args,**kwargs)

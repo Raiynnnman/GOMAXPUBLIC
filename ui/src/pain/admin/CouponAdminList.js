@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
+import AddBoxIcon from '@mui/icons-material/AddBox';
+import MaskedInput from 'react-maskedinput';
 import { connect } from 'react-redux';
+import { getPlansList } from '../../actions/plansList';
 import { Col, Row } from 'reactstrap';
 import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
 import { FormGroup, Label, Input } from 'reactstrap';
@@ -21,6 +24,7 @@ import s from '../office/default.module.scss';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import { getCouponAdmin } from '../../actions/coupons';
+import { couponSave } from '../../actions/couponSave';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import cellEditFactory from 'react-bootstrap-table2-editor';
@@ -38,29 +42,22 @@ class CouponAdminList extends Component {
         super(props);
         this.state = {
             selected: null,
-            assignPhysician: null,
             page: 0,
             pageSize: 10,
-            filter: null,
-            periodSelected: null,
-            commentAdd:false
+            filter: null
         } 
         this.edit = this.edit.bind(this);
         this.cancel = this.cancel.bind(this);
         this.save = this.save.bind(this);
         this.pageChange = this.pageChange.bind(this);
-        this.renderTotalLabel = this.renderTotalLabel.bind(this);
-        this.emailChange = this.emailChange.bind(this);
-        this.zipcodeChange = this.zipcodeChange.bind(this);
-        this.firstChange = this.firstChange.bind(this);
-        this.lastChange = this.lastChange.bind(this);
-        this.addr1Change = this.addr1Change.bind(this);
-        this.addr2Change = this.addr2Change.bind(this);
-        this.commissionReport = this.commissionReport.bind(this);
-        this.cityChange = this.cityChange.bind(this);
-        this.onPeriodFilter = this.onPeriodFilter.bind(this);
-        this.stateChange = this.stateChange.bind(this);
-        this.phoneChange = this.phoneChange.bind(this);
+        this.planChange = this.planChange.bind(this);
+        this.reductionChange = this.reductionChange.bind(this);
+        this.totalChange = this.totalChange.bind(this);
+        this.activeChange = this.activeChange.bind(this);
+        this.startChange = this.startChange.bind(this);
+        this.endChange = this.endChange.bind(this);
+        this.nameChange = this.nameChange.bind(this);
+        this.percChange = this.percChange.bind(this);
         this.pageChange = this.pageChange.bind(this);
         this.pageRowsChange = this.pageRowsChange.bind(this);
     } 
@@ -85,6 +82,7 @@ class CouponAdminList extends Component {
 
     componentDidMount() {
         this.props.dispatch(getCouponAdmin({page:this.state.page,limit:this.state.pageSize}))
+        this.props.dispatch(getPlansList({}));
     }
 
     commissionReport() { 
@@ -129,20 +127,30 @@ class CouponAdminList extends Component {
         this.setState(this.state);
     } 
 
-    addr1Change(e) {
-        this.state.selected.addr1 = e.target.value;
+    nameChange(e) {
+        this.state.selected.name = e.target.value;
         this.setState(this.state);
     }
-    addr2Change(e) {
-        this.state.selected.addr2 = e.target.value;
+    endChange(e) {
+        this.state.selected.end_date = e.target.value;
         this.setState(this.state);
     }
-    cityChange(e) {
-        this.state.selected.city = e.target.value;
+    startChange(e) {
+        this.state.selected.start_date = e.target.value;
         this.setState(this.state);
     }
-    stateChange(e) {
-        this.state.selected.state = e.target.value;
+    reductionChange(e) {
+        this.state.selected.reduction = e.target.value;
+        if (this.state.selected.reduction.length < 1) { 
+            this.state.selected.reduction = null;
+        } 
+        this.setState(this.state);
+    }
+    percChange(e) {
+        this.state.selected.perc = e.target.value;
+        if (this.state.selected.perc.length < 1) { 
+            this.state.selected.perc = null;
+        } 
         this.setState(this.state);
     }
 
@@ -150,12 +158,16 @@ class CouponAdminList extends Component {
         this.state.selected = null;
         this.setState(this.state);
     } 
-    zipcodeChange(e) { 
-        this.state.selected['zipcode'] = e.target.value;
+    totalChange(e) { 
+        this.state.selected.total = e.target.value;
+        if (this.state.selected.total.length < 1) { 
+            this.state.selected.total = null;
+        } 
         this.setState(this.state);
     } 
-    emailChange(e) { 
-        this.state.selected['email'] = e.target.value;
+    planChange(e) { 
+        console.log(e)
+        this.state.selected.pricing_data_id = e.value;
         this.setState(this.state);
     } 
     pageChange(e,t) { 
@@ -170,10 +182,6 @@ class CouponAdminList extends Component {
         this.setState(this.state);
     } 
 
-    renderTotalLabel(f,t,s) { 
-        var numpage = s/t;
-        return "Showing page " + (this.state.page+1) + " of " + numpage.toFixed(0);
-    } 
     firstChange(e) { 
         this.state.selected['first_name'] = e.target.value;
         this.setState(this.state);
@@ -191,15 +199,13 @@ class CouponAdminList extends Component {
         var r = {}
         if (row.id === 'new') { 
             r = { 
-                email:'',
-                phone:'',
-                addr1:'',
-                addr2:'',
-                city:'',
-                state:'',
-                zipcode:'',
-                first_name:'',
-                last_name:''
+                name:'',
+                active:true,
+                start_date:'',
+                end_date:'',
+                total:null,
+                perc:null,
+                reduction:null,
             }
         } else { 
             r = row
@@ -207,60 +213,42 @@ class CouponAdminList extends Component {
         this.state.selected=r
         this.setState(this.state);
     } 
-    save() { 
-        this.props.onSave(this.state.selected);
-        this.state.selected = null;
+    activeChange(e,t) { 
+        this.state.selected.active = this.state.selected.active ? 0 : 1; 
         this.setState(this.state);
+    }
+    save() { 
+        var tosend = this.state.selected
+        if (tosend.total) { 
+            tosend.total = parseFloat(tosend.total.replace("$",""));
+        }
+        if (tosend.perc) { 
+            tosend.perc = parseFloat(tosend.perc.replace("%",""));
+            if (tosend.perc > 0) { tosend.perc = tosend.perc / 100 }
+        }
+        if (tosend.reduction) { 
+            tosend.reduction = parseFloat(tosend.reduction.replace("$",""));
+        } 
+        console.log("ts",tosend);
+        this.props.dispatch(couponSave(tosend,function(err,args) { 
+            args.props.dispatch(
+                getCouponAdmin(
+                    {limit:args.state.pageSize,offset:args.state.page,status:args.state.filter},function(err,args) { 
+              toast.success('Successfully saved coupon.',
+                {
+                    position:"top-right",
+                    autoClose:3000,
+                    hideProgressBar:true
+                }
+              );
+              args.cancel()
+            },args))
+        },this));
     } 
 
     render() {
-        const pageButtonRenderer = ({
-          page,
-          currentPage,
-          disabled,
-          title,
-          onPageChange
-        }) => {
-          const handleClick = (e) => {
-             e.preventDefault();
-             this.pageChange(page, currentPage);// api call 
-           };    
-          return (
-            <div>
-              {
-               <li className="page-item">
-                 <a href="#"  onClick={ handleClick } className="page-link">{ page }</a>
-               </li>
-              }
-            </div>
-          );
-        };
-        const options = {
-          pageButtonRenderer,
-          showTotal:true,
-          withFirstAndLast: false,
-          alwaysShowAllBtns: false,
-          nextPageText:'>',
-          sizePerPage:10,
-          paginationTotalRenderer: (f,t,z) => this.renderTotalLabel(f,t,z),
-          totalSize: (this.props.coupons && 
-                      this.props.coupons.data &&
-                      this.props.coupons.data.total) ? this.props.coupons.data.total : 10,
-          hideSizePerPage:true,
-          //onPageChange:(page,sizePerPage) => this.pageChange(page,sizePerPage)
-        };
-        const responsive = {
-            0: { 
-                items: 1
-            },
-            568: { 
-                items: 1
-            },
-            1024: {
-                items: 1, 
-                itemsFit: 'contain'
-            },
-        };
+        console.log("p",this.props);
+        console.log("s",this.state);
         var heads = [
             {
                 dataField:'id',
@@ -290,7 +278,6 @@ class CouponAdminList extends Component {
                 text:'Total',
                 formatter:(cellContent,row) => (
                     <div>
-                        {console.log("r",row)}
                         {row.total ? row.total.toFixed ? '$' + row.total.toFixed(2) : "$" + row.total : 'N/A'}
                     </div>
                 )
@@ -351,46 +338,10 @@ class CouponAdminList extends Component {
             <>
             <Row md="12">
                 <Col md="2" style={{marginBottom:10}}>
-                    {/*<Button onClick={() => this.edit({id:"new"})} 
-                        style={{marginRight:5,height:35,width:90}} color="primary">Add</Button>
-                    */}
-                </Col>
-            </Row>
-            <Row md="12">
-                <Col md="5" style={{marginBottom:10}}>
-                  {(this.props.coupons && this.props.coupons.data && 
-                    this.props.coupons.data.config &&
-                    this.props.coupons.data.config.period && this.state.periodSelected !== null) && (
-                      <Select
-                          closeMenuOnSelect={true}
-                          isSearchable={false}
-                          isMulti
-                          onChange={this.onPeriodFilter}
-                          value={this.state.periodSelected.map((g) => { 
-                            return (
-                                {
-                                label:this.props.coupons.data.config.period.filter((f) => f.billing_period === g.billing_period)[0].label,
-                                value:this.props.coupons.data.config.period.filter((f) => f.billing_period === g.billing_period)[0].value
-                                }
-                            )
-                          })}
-                          options={this.props.coupons.data.config.period.map((e) => { 
-                            return (
-                                { 
-                                label: e.label,
-                                value: e.value
-                                }
-                            )
-                          })}
-                        />
-                    )}
-                </Col>
-                <Col md="7">
-                    <div class="pull-right">
-                        <div style={{justifyContent:'spread-evenly'}}>
-                            <Button onClick={this.commissionReport} outline color="primary"><AssessmentIcon/></Button>
-                        </div>
-                    </div>
+                    <Col md="1">
+                        <Button onClick={() => this.edit({id:"new"})} style={{width:50}}
+                            color="primary"><AddBoxIcon/></Button>
+                    </Col>
                 </Col>
             </Row>
             <Row md="12">
@@ -410,6 +361,154 @@ class CouponAdminList extends Component {
             </Row>
             </>
             )}
+            {(this.props && this.props.coupons && this.props.coupons.data && 
+              this.props.coupons.data.coupons && this.state.selected !== null) && ( 
+              <>
+                <Row md="12" style={{marginTop:10}}>
+                    <Col md="12">
+                          {this.state.selected.id && (<FormGroup row>
+                            <Label for="normal-field" md={1} className="text-md-right">
+                              ID 
+                            </Label>
+                            <Col md={5}>
+                                <Input type="text" id="normal-field" readOnly 
+                                placeholder="ID" value={this.state.selected.id}/>
+                            </Col>
+                          </FormGroup>
+                          )}
+                          <FormGroup row>
+                              <Label for="normal-field" md={1} className="text-md-right">
+                                Active
+                              </Label>
+                              <Col md={8}>
+                              <Input type="checkbox" id="normal-field"
+                                      onChange={this.activeChange} placeholder="Email" checked={this.state.selected.active}/>
+                              </Col>
+                          </FormGroup>
+                          <FormGroup row>
+                            <Label for="normal-field" md={1} className="text-md-right">
+                              Name 
+                            </Label>
+                            <Col md={5}>
+                                <Input type="text" id="normal-field" onChange={this.nameChange}
+                                placeholder="Name" value={this.state.selected.name}/>
+                            </Col>
+                          </FormGroup>
+                          <FormGroup row>
+                            <Label for="normal-field" md={1} className="text-md-right">
+                                Plan
+                            </Label>
+                            <Col md="5" style={{zIndex:9995}}>
+                              {(this.props.plansList && this.props.plansList.data && 
+                                this.props.plansList.data) && (
+                                  <Select
+                                      closeMenuOnSelect={true}
+                                      isSearchable={false}
+                                      onChange={this.planChange}
+                                      value={{
+                                        label:
+                                            this.props.plansList.data.filter((e) => this.state.selected.pricing_data_id === e.id).length > 0 ? 
+                                                this.props.plansList.data.filter((e) => this.state.selected.pricing_data_id === e.id)[0].description + 
+                                                " ($" + this.props.plansList.data.filter((e) => this.state.selected.pricing_data_id === e.id)[0].upfront_cost + ")"
+                                                : ''
+                                        }}
+                                      options={this.props.plansList.data.map((e) => { 
+                                        return (
+                                            { 
+                                            label: e.description + " ($" + e.upfront_cost + ")",
+                                            value: e.id
+                                            }
+                                        )
+                                      })}
+                                    />
+                                )}
+                            </Col>                
+                          </FormGroup>
+                          <FormGroup row>
+                            <Label for="normal-field" md={1} className="text-md-right">
+                              Total
+                            </Label>
+                            <Col md={5}>
+                                <MaskedInput
+                                  className="form-control" id="mask-phone" mask="$1111"
+                                  disabled={this.state.selected.perc !== null || this.state.selected.reduction !== null}
+                                  placeholderChar=' '
+                                  onChange={this.totalChange} value={this.state.selected.total ? "" + this.state.selected.total : ""}
+                                  size="10"
+                                />
+                            </Col>
+                          </FormGroup>
+                          <FormGroup row>
+                            <Label for="normal-field" md={1} className="text-md-right">
+                              Percentage
+                            </Label>
+                            <Col md={5}>
+                                <MaskedInput
+                                  className="form-control" id="mask-perc" mask="11%"
+                                  disabled={this.state.selected.total !== null || this.state.selected.reduction !== null}
+                                  placeholderChar=' '
+                                  onChange={this.percChange} value={
+                                    this.state.selected.perc ? "" + this.state.selected.perc * 100 : ""}
+                                  size="10"
+                                />
+                            </Col>
+                          </FormGroup>
+                          <FormGroup row>
+                            <Label for="normal-field" md={1} className="text-md-right">
+                              Reduction
+                            </Label>
+                            <Col md={5}>
+                                <MaskedInput
+                                  className="form-control" id="mask-reduction" mask="$1111"
+                                  disabled={this.state.selected.perc !== null || this.state.selected.total !== null}
+                                  placeholderChar=' '
+                                  onChange={this.reductionChange} value={
+                                    this.state.selected.reduction ? "" + this.state.selected.reduction : "" 
+                                    }
+                                  size="10"
+                                />
+                            </Col>
+                          </FormGroup>
+                          <FormGroup row>
+                            <Label for="normal-field" md={1} className="text-md-right">
+                              Start Date
+                            </Label>
+                            <Col md={5}>
+                                <MaskedInput
+                                  className="form-control" id="mask-phone" mask="1111-11-11"
+                                  placeholderChar=' '
+                                  onChange={this.startChange} value={this.state.selected.start_date}
+                                  size="10"
+                                />
+                            </Col>
+                          </FormGroup>
+                          <FormGroup row>
+                            <Label for="normal-field" md={1} className="text-md-right">
+                              End Date
+                            </Label>
+                            <Col md={5}>
+                                <MaskedInput
+                                  placeholderChar=' '
+                                  className="form-control" id="mask-phone" mask="1111-11-11"
+                                  onChange={this.endChange} value={this.state.selected.end_date}
+                                  size="10"
+                                />
+                            </Col>
+                          </FormGroup>
+                    </Col>
+                </Row>
+                <hr/>
+                <Row md="12">
+                    <Col md="12">
+                        <Col md="6">
+                            <Button onClick={this.save} color="primary">Save</Button>
+                            <Button outline style={{marginLeft:10}} onClick={this.cancel} 
+                                color="secondary">Close</Button>
+                        </Col>
+                    </Col>
+                </Row>
+                </>
+            )}
         </>
         )
     }
@@ -418,7 +517,8 @@ class CouponAdminList extends Component {
 function mapStateToProps(store) {
     return {
         currentUser: store.auth.currentUser,
-        coupons: store.coupons
+        coupons: store.coupons,
+        plansList: store.plansList
     }
 }
 

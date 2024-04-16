@@ -6,7 +6,7 @@ import unittest
 from flask import request, jsonify
 
 from rest.RestBase import RestBase
-from processing import Admin
+from processing import Admin,Coupons
 from processing.Context import GetContext,DelContext
 
 class OfficeListRest(RestBase):
@@ -172,10 +172,17 @@ class ReferrerListRest(RestBase):
         ret = u.process(args[0])
         return ret
 
+class CouponUpdateRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Coupons.CouponSave()
+        ret = u.process(args[0])
+        return ret
+
 class CouponListRest(RestBase):
 
     def post(self, *args, **kwargs):
-        u = Admin.CouponList()
+        u = Coupons.CouponList()
         ret = u.process(args[0])
         return ret
 
