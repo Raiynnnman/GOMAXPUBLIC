@@ -109,7 +109,6 @@ def updatePAINDB(prow,srow,sfschema,pschema,db,debug=False):
             if debug:
                 print("Field %s (%s/%s) identical, skip" % (x,newval,oldval))
             continue
-        cols_mod.append(field)
         if debug:
             print('comp: %s=%s' % (oldval,newval))
             print(x)
@@ -148,13 +147,19 @@ def updatePAINDB(prow,srow,sfschema,pschema,db,debug=False):
             ftable = 'office'
         if join == 'oa_id':
             join = 'id'
+        # Dont update values of 0, it means its missing
         q = """
              update %s set %s=** where %s.%s = %s 
         """ % (ftable,field,ftable,join,val)
         q = q.replace("**","%s")
         if debug:
             print(q,newval)
+        if val == 0:
+            if debug:
+                print("Not modifying with pk = 0")
+            continue
         db.update(q,(newval,))
+        cols_mod.append(field)
     return cols_mod
 
 def getPAINData(prow,srow,sfschema,pschema,db,debug=False):

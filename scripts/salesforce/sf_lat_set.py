@@ -81,7 +81,7 @@ for x in o:
 
 ARR.append('Addresses_ID__c')
 SFQUERY += ','.join(ARR)
-SFQUERY += " from Lead "
+SFQUERY += " from Lead where IsConverted = False"
 
 SF_DATA = {}
 res = []
