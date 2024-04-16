@@ -73,6 +73,15 @@ minv = db.query("""
     """)
 t = str(minv)
 minv = minv[0]['a']
+while True:
+    j = db.query("""
+        select id from stripe_invoice_status
+            where stripe_invoice_number = %s
+        """,(str(minv).zfill(7),)
+        )
+    if len(j) > 0:
+        minv += 1
+    break
 
 while True:
     b = db.query("""
