@@ -285,11 +285,17 @@ class Registrations extends Component {
         this.setState(this.state);
     } 
     reload() { 
-        this.props.dispatch(getRegistrations(
-            {type:this.state.filterType,sort:this.state.sort,direction:this.state.direction,
-             search:this.state.search,limit:this.state.pageSize,
-            offset:this.state.page,status:this.state.filter}
-        ));
+        if (this.state.pq_id) { 
+            this.props.dispatch(getRegistrations(
+                {pq_id:this.state.pq_id,limit:this.state.pageSize,offset:this.state.page}
+            ));
+        } else { 
+            this.props.dispatch(getRegistrations(
+                {type:this.state.filterType,sort:this.state.sort,direction:this.state.direction,
+                 search:this.state.search,limit:this.state.pageSize,
+                offset:this.state.page,status:this.state.filter}
+            ));
+        } 
     }
     save() { 
         var tosend = { 
@@ -316,7 +322,7 @@ class Registrations extends Component {
         }
         this.props.dispatch(registrationAdminUpdate(tosend,function(err,args) { 
             args.props.dispatch(getRegistrations(
-                {type:args.state.filterType,sort:args.state.sort,direction:args.state.direction,search:args.state.search,limit:args.state.pageSize,offset:args.state.page,status:args.state.filter},function(err,args) { 
+                {pq_id:args.state.pq_id,type:args.state.filterType,sort:args.state.sort,direction:args.state.direction,search:args.state.search,limit:args.state.pageSize,offset:args.state.page,status:args.state.filter},function(err,args) { 
               toast.success('Successfully saved registration.',
                 {
                     position:"top-right",

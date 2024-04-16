@@ -68,20 +68,12 @@ q += """
 inv = db.query(q,p)
 
 minv = db.query("""
-    select count(id) as a from invoices
-    where invoice_status_id>=5
+    select max(stripe_invoice_number)+1 as a from 
+        invoices i,stripe_invoice_status sis
+    where 
+        i.id=sis.invoices_id and billing_system_id=2
     """)
-t = str(minv)
-minv = minv[0]['a']
-while True:
-    j = db.query("""
-        select id from stripe_invoice_status
-            where stripe_invoice_number = %s
-        """,(str(minv).zfill(7),)
-        )
-    if len(j) > 0:
-        minv += 1
-    break
+minv = int(minv[0]['a'])
 
 while True:
     b = db.query("""
@@ -93,8 +85,6 @@ while True:
         minv = int(minv)
         break
     minv = int(minv) + 1
-
-print("minv=%s" % minv)
 
 if config.getKey("environment") != "prod":
     minv += 10000
@@ -190,6 +180,7 @@ for x in inv:
             s = {}
             print("mode=%s,card=%s" % (mode,card_id))
             print(x)
+            print("minv=%s",str(minv).zfill(7))
             
             if mode == 'send_invoice':
                 s = client.invoices.create_invoice(
