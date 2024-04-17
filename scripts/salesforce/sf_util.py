@@ -249,7 +249,7 @@ def getPAINData(prow,srow,sfschema,pschema,db,debug=False):
             print("q=%s" % q)
         o = db.query(q)
         if len(o) > 1:
-            print(o,q)
+            print(o,q,val)
             raise Exception("query returned more than one result")
         v = None
         if len(o) > 0:
