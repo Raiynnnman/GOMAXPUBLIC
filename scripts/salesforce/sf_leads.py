@@ -169,14 +169,30 @@ SF_DATA = {}
 #print(res)
 #print(type(res))
 CNTR = 0
+IDS = {}
 for x in res['records']:
     if args.debug:
         print(json.dumps(x,indent=4))
     SF_ID = x['Id']
     SF_DATA[SF_ID] = x
-    p = x['Phone']
+    # p = x['Phone']
+    # p = p.replace(")",'').replace("(",'').replace("-",'').replace(" ",'').replace('.','')
+    #if p.startswith("+1"):
+    #    p = p.replace("+1","")
+    #if p.startswith("1") and len(p) == 11:
+    #    p = p[1:]
     if 'attributes' in x:
         del x['attributes']
+    v = None
+    if x['PainID__c'] in x and x['PainID__c'] is not None:
+        v = x['PainID__c']
+        IDS[v] = []
+    if v is not None:
+        IDS[v].append(x['Id'])
+
+for x in IDS:
+    if len(IDS[x]) > 1:
+        print("%s: WARNING: Detected duplicated PAINIDS: %s" % (x,IDS[x]))
     
 random.shuffle(PAIN)
 for x in PAIN:
@@ -635,6 +651,16 @@ for x in SF_DATA:
     if debug:
         print("off_id=%s" % off_id)
     if 'Subscription_Plan__c' in j and j['Subscription_Plan__c'] is not None:
+        p1 = j['PainID__c']
+        if p1 in IDS and len(IDS[p1]) > 1:
+            print("%s: Not continuing: duplicates found in leads for PainID" % j['Id'])
+            db.update("""
+                insert into provider_queue_history(provider_queue_id,user_id,text) values (
+                    %s,1,%s
+                )
+            """,(pq_id,'Not progressing because multiple SF accounts were found with this ID: %s' % IDS[p1])
+            )
+            continue
         if j['Status'] == 'New':
             print("%s: Not progressing with status New" % j['Id'])
             db.update("""

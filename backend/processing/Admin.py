@@ -768,6 +768,8 @@ class OfficeList(AdminBase):
                     i.invoice_status_id = isi.id and
                     sis.invoices_id = i.id and
                     ii.invoices_id = i.id and
+                    month(billing_period) <= month(now()) and
+                    year(billing_period) <= month(now()) and
                     i.office_id = %s
                 group by
                     i.id
