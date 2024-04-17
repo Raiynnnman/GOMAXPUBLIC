@@ -620,7 +620,7 @@ for x in SF_DATA:
         if j['Sales_Link__c'] is None:
             u = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),pq_id)
             j['Sales_Link__c'] = '%s/#/register-provider/o/%s' % (config.getKey("host_url"),pq_id)
-            j['PainID__c'] = t
+            j['PainID__c'] = pq_id
             j['PainURL__c'] = u
             if not args.dryrun:
                 try:
