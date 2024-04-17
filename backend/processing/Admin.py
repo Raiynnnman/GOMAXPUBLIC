@@ -811,7 +811,7 @@ class OfficeList(AdminBase):
             select id,concat(first_name,' ',last_name) as name from users 
                 where id in (select user_id from user_entitlements where entitlements_id=10)
         """)
-        ret['config']['coupons'] = db.query("select id,name,total,percentage,reduction from coupons")
+        ret['config']['coupons'] = db.query("select id,name,total,perc,reduction from coupons")
         ret['config']['provider_status'] = db.query("select id,name from provider_queue_status")
         ret['config']['invoice_status'] = db.query("select id,name from invoice_status")
         return ret
