@@ -219,7 +219,7 @@ class UserRegistration extends Component {
                                   !this.state.isValid ||
                                   !this.state.register.first_name || 
                                   !this.state.register.last_name ||
-                                  this.state.register.phone.length != 14}>{translate('Book')}</Button>
+                                  this.state.register.phone.length != 14}>{translate('Contact')}</Button>
                                 <Button outline onClick={this.cancel} color="primary">{translate('Cancel')}</Button>
                             </Col>
                         </Row>

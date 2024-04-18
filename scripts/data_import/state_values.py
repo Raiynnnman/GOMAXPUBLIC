@@ -53,4 +53,9 @@ for x in l:
         """,(z,x['id'])
     )
 
+db.update("""
+    update office_addresses set state=upper(state) where upper(state) <> state
+    """
+)
+
 db.commit()

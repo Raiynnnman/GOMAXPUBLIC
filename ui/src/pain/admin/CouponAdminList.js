@@ -166,7 +166,6 @@ class CouponAdminList extends Component {
         this.setState(this.state);
     } 
     planChange(e) { 
-        console.log(e)
         this.state.selected.pricing_data_id = e.value;
         this.setState(this.state);
     } 
@@ -229,7 +228,6 @@ class CouponAdminList extends Component {
         if (tosend.reduction) { 
             tosend.reduction = parseFloat(tosend.reduction.replace("$",""));
         } 
-        console.log("ts",tosend);
         this.props.dispatch(couponSave(tosend,function(err,args) { 
             args.props.dispatch(
                 getCouponAdmin(
@@ -247,8 +245,6 @@ class CouponAdminList extends Component {
     } 
 
     render() {
-        console.log("p",this.props);
-        console.log("s",this.state);
         var heads = [
             {
                 dataField:'id',

@@ -455,7 +455,7 @@ class SearchRegister(SearchBase):
             params['email'].lower(),params['first_name'],
             params['last_name'],params['phone'], params['zipcode'])
         db.update("""
-            insert into client_intake (user_id) values (%s)
+            insert into client_intake (user_id,client_intake_status_id) values (%s,1)
             """,(user_id,)
         )
         ci_id = db.query("select LAST_INSERT_ID()");

@@ -96,7 +96,7 @@ class Customers extends Component {
                                     <Row md="12">
                                         <Col md="8">
                                             <font style={{fontSize:"14pt",fontWeight:"bold"}}>
-                                            {e.client_first + " " + e.client_last}
+                                            {e.phy_first + " " + e.phy_last}
                                             </font>
                                             <br/>
                                         </Col>
@@ -108,9 +108,27 @@ class Customers extends Component {
                                     <Row md="12">
                                         <Col md="8">
                                             <font style={{fontSize:"14pt",fontWeight:"bold"}}>
-                                            {e.phy_first + " " + e.phy_last}
+                                            {e.client_first + " " + e.client_last}
                                             </font>
                                             <br/>
+                                        </Col>
+                                        <Col md="4" class="pull-right">
+                                        </Col>
+                                    </Row>
+                                    <Row md="12">
+                                        <Col md="8">
+                                            <font style={{fontSize:"14pt",fontWeight:"bold"}}>
+                                            {e.email}
+                                            </font>
+                                        </Col>
+                                        <Col md="4" class="pull-right">
+                                        </Col>
+                                    </Row>
+                                    <Row md="12">
+                                        <Col md="8">
+                                            <font style={{fontSize:"14pt",fontWeight:"bold"}}>
+                                            {e.phone}
+                                            </font>
                                         </Col>
                                         <Col md="4" class="pull-right">
                                         </Col>

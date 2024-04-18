@@ -51,6 +51,7 @@ l = db.query("""
         left outer join users u on commission_user_id = u.id 
         left join provider_queue pq on pq.office_id = op.office_id 
     where 
+        and o.active = 1 and
         op.office_id not in (select office_id from invoices) and
         (
             pq.provider_queue_status_id = %s or pq.provider_queue_status_id = %s or
@@ -77,7 +78,7 @@ for x in l:
     )
     cnt = cnt[0]['cnt']
     if cnt < 1:
-        print("%s: Has delay, no customers yet",x['office_id'])
+        print("%s: Has delay, no customers yet"%x['office_id'])
         continue
     delay = db.query("""
         select date_diff(now(),min(created)) as delay from client_intake_offices
