@@ -39,6 +39,7 @@ class InvoiceAdminList extends Component {
             assignPhysician: null,
             filter: [],
             page: 0,
+            comments:{},
             pageSize: 10,
             statusSelected:null,
             commentAdd:false
@@ -53,6 +54,8 @@ class InvoiceAdminList extends Component {
         this.sortChange = this.sortChange.bind(this);
         this.pageRowsChange = this.pageRowsChange.bind(this);
         this.sortChange = this.sortChange.bind(this);
+        this.showMore = this.showMore.bind(this);
+        this.showLess = this.showLess.bind(this);
         this.cancelComment = this.cancelComment.bind(this);
         this.saveComment = this.saveComment.bind(this);
         this.cancel = this.cancel.bind(this);
@@ -92,6 +95,16 @@ class InvoiceAdminList extends Component {
     componentDidMount() {
         this.props.dispatch(getInvoiceAdmin({page:this.state.page,limit:this.state.pageSize}))
     }
+
+    showMore(r) { 
+        this.state.comments.id = 1;
+        this.setState(this.state);
+    } 
+
+    showLess(r) { 
+        delete this.state.comments.id;
+        this.setState(this.state);
+    } 
 
     search(e) { 
         this.state.search = e.target.value;
@@ -233,14 +246,11 @@ class InvoiceAdminList extends Component {
     save() { 
         // this.props.onSave(this.state.selected);
         var params = this.state.selected;
-        console.log("par",params);
         this.props.dispatch(invoiceAdminUpdate(params,function(err,args) { 
-            console.log(err,args);
             args.props.dispatch(getInvoiceAdmin({
                     direction:args.state.direction,sort:args.state.sort,search:args.state.search,
                     limit:args.state.pageSize,offset:args.state.page,status:args.state.filter
                 },function(err,args) { 
-                console.log("a",err,args);
                 toast.success('Successfully scheduled invoice.',
                     {
                         position:"top-right",
@@ -254,7 +264,6 @@ class InvoiceAdminList extends Component {
     } 
 
     render() {
-        console.log("S",this.state);
         const pageButtonRenderer = ({
           page,
           currentPage,
@@ -377,6 +386,32 @@ class InvoiceAdminList extends Component {
                 editable: false,
                 align:'center',
                 text:'Invoice ID',
+            },
+            {
+                dataField:'last_comment',
+                editable: false,
+                align:'left',
+                width:"20%",
+                text:'Last Comment',
+                formatter:(cellContent,row) => (
+                    <div>
+                        {(row.last_comment.length > 30 && this.state.comments.id !== undefined) && (
+                                <div>
+                                    {row.last_comment}
+                                    <a class="pull-right" color="primary" outline onClick={() => this.showLess(row)}>Show Less</a> 
+                                </div>
+                        )}
+                        {(row.last_comment.length > 30 && this.state.comments.id === undefined) && (
+                                <div>
+                                    {row.last_comment.substr(0,30) + "..."}
+                                    <a class="pull-right" color="primary" onClick={() => this.showMore(row)}>Show More</a> 
+                                </div>
+                        )}
+                        {(row.last_comment.length < 30) && (
+                                <div>{row.last_comment}</div>
+                        )}
+                    </div>
+                )
             },
             {
                 dataField:'invoice_status',

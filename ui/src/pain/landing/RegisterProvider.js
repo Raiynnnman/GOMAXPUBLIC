@@ -151,6 +151,7 @@ class RegisterProvider extends Component {
     } 
 
     calculatePrice() { 
+        console.log("s",this.state)
         if (this.state.selPlan && this.state.selPlan.upfront_cost && this.state.couponRed.replace) { 
             var t = this.state.selPlan.upfront_cost * this.state.selPlan.duration
             t = parseFloat(t + parseFloat(this.state.couponRedValue))

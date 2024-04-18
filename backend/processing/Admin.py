@@ -557,6 +557,7 @@ class InvoicesList(AdminBase):
                 order by created desc
                 """,(x['id'],)
             )
+            x['last_comment'] = ''
             for cc in comms: 
                 # This happens when we switch environments, just skip
                 try:
@@ -566,6 +567,7 @@ class InvoicesList(AdminBase):
                         )
                     cc['text'] = bb2
                     x['comments'].append(cc)
+                    x['last_comment'] = bb2
                 except:
                     pass
             x['history'] = db.query("""

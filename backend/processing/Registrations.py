@@ -65,6 +65,12 @@ class RegistrationUpdate(RegistrationsBase):
             log.info("USER_ALREADY_EXISTS")
             return {'success': False,message:'USER_ALREADY_EXISTS'}
         db.update("""
+            delete from registrations_tokens where 
+                registrations_id in (select id from registrations 
+                where lower(email) = %s)
+            """,(params['email'],)
+        )
+        db.update("""
             delete from registrations where lower(email) = %s
             """,(params['email'],)
         )
@@ -81,6 +87,7 @@ class RegistrationUpdate(RegistrationsBase):
                 params['phone'],t,params['zipcode']
             )
         )
+        email = params['email']
         insid = db.query("select LAST_INSERT_ID()");
         insid = insid[0]['LAST_INSERT_ID()']
         val = encryption.encrypt(
@@ -138,6 +145,7 @@ class RegistrationVerify(RegistrationsBase):
             myjson = json.loads(myjson)
             inis = myjson['i']
             myid = inis
+            userid = 0
             inem = myjson['e']
             HAVE = False
             l = db.query("""
@@ -146,57 +154,58 @@ class RegistrationVerify(RegistrationsBase):
             )
             for t in l:
                 HAVE=True
-            if HAVE:
-                return {'success':False,'message':'USER_ALREADY_REGISTERED'}
-            l = db.query("""
-                select 
-                    email,first_name,last_name,phone,zipcode
-                from 
-                    registrations r
-                where
-                    email = %s and verified = 0
-                """,(inem,))
-            u = l[0]
-            db.update("""
-                insert into users (email, first_name, last_name, phone, zipcode) values (%s,%s,%s,%s,%s)
-                """,(u['email'],u['first_name'],u['last_name'],u['phone'],u['zipcode'])
-            )
-            insid = db.query("select LAST_INSERT_ID()");
-            insid = insid[0]['LAST_INSERT_ID()']
+                userid = t['id']
+            if not HAVE:
+                l = db.query("""
+                    select 
+                        email,first_name,last_name,phone,zipcode
+                    from 
+                        registrations r
+                    where
+                        email = %s and verified = 0
+                    """,(inem,))
+                u = l[0]
+                db.update("""
+                    insert into users (email, first_name, last_name, phone, zipcode) values (%s,%s,%s,%s,%s)
+                    """,(u['email'],u['first_name'],u['last_name'],u['phone'],u['zipcode'])
+                )
+                insid = db.query("select LAST_INSERT_ID()");
+                insid = insid[0]['LAST_INSERT_ID()']
+                userid = insid
+                offname = "user-%s" % encryption.getSHA256(u['email'])[:10]
+                db.update("insert into office (name,office_type_id) values (%s,%s)",
+                    (
+                        offname,
+                        OT['Customer']
+                    )
+                )
+                offid = db.query("select LAST_INSERT_ID()");
+                offid = offid[0]['LAST_INSERT_ID()']
+                db.update("""
+                    insert into office_history(office_id,user_id,text) values (
+                        %s,1,'Created (Customer Registration)'
+                    )
+                """,(offid,))
+                db.update("insert into office_addresses (office_id,zipcode) values (%s,%s)",
+                    (offid,u['zipcode'])
+                )
+                db.update("insert into office_user (office_id,user_id) values (%s,%s)",
+                    (offid,insid)
+                )
+                db.update("insert into user_entitlements(user_id,entitlements_id) values (%s,%s)",
+                    (insid,ENT['Customer'])
+                )
+                db.update("insert into user_permissions(user_id,permissions_id) values (%s,%s)",
+                    (insid,PERM['Write'])
+                )
             db.update("""
                 update registrations set user_id = %s where id = %s
-                """,(insid,inis)
+                """,(userid,inis)
             )
             db.update("""
                 insert into user_login_tokens (user_id,token,expires) values
                     (%s,%s,date_add(now(),INTERVAL 24 HOUR))
-                """,(insid,params['token'])
-            )
-            offname = "user-%s" % encryption.getSHA256(u['email'])[:10]
-            db.update("insert into office (name,office_type_id) values (%s,%s)",
-                (
-                    offname,
-                    OT['Customer']
-                )
-            )
-            offid = db.query("select LAST_INSERT_ID()");
-            offid = offid[0]['LAST_INSERT_ID()']
-            db.update("""
-                insert into office_history(office_id,user_id,text) values (
-                    %s,1,'Created (Customer Registration)'
-                )
-            """,(offid,))
-            db.update("insert into office_addresses (office_id,zipcode) values (%s,%s)",
-                (offid,u['zipcode'])
-            )
-            db.update("insert into office_user (office_id,user_id) values (%s,%s)",
-                (offid,insid)
-            )
-            db.update("insert into user_entitlements(user_id,entitlements_id) values (%s,%s)",
-                (insid,ENT['Customer'])
-            )
-            db.update("insert into user_permissions(user_id,permissions_id) values (%s,%s)",
-                (insid,PERM['Write'])
+                """,(userid,params['token'])
             )
             db.update("""
                 update registrations set verified = 1 where id=%s
@@ -310,6 +319,7 @@ class RegisterProvider(RegistrationsBase):
         ret['success'] = True
         params = args[1][0]
         db = Query()
+        RT = self.getRegistrationTypes()
         OT = self.getOfficeTypes()
         ST = self.getLeadStrength()
         ENT = self.getEntitlementIDs()
@@ -433,7 +443,7 @@ class RegisterProvider(RegistrationsBase):
                 insert into user_permissions (user_id,permissions_id) values (%s,%s)
                 """,(uid,PERM['Admin'])
             )
-        print("par",params)
+            userid = uid
         if 'plan' in params and params['plan'] is not None:
             if 'pq' not in params or params['pq'] is None:
                 selplan = int(params['plan'])
@@ -572,6 +582,48 @@ class RegisterProvider(RegistrationsBase):
                 )
             """,(off_id,))
         ### TODO: Send invite link
+        db.update("""
+            delete from registrations_tokens where 
+                registrations_id in (select id from registrations 
+                where lower(email) = %s)
+            """,(params['email'],)
+        )
+        db.update("""
+            delete from registrations where lower(email) = %s
+            """,(params['email'],)
+        )
+        db.update("""
+            insert into registrations (
+                email,first_name,last_name,phone,registration_types_id
+            ) values
+                (
+                lower(%s),%s,%s,%s,%s
+            )
+            """,(
+                params['email'],params['first'],params['last'],
+                params['phone'],RT['Provider']
+            )
+        )
+        email = params['email']
+        insid = db.query("select LAST_INSERT_ID()");
+        insid = insid[0]['LAST_INSERT_ID()']
+        val = encryption.encrypt(
+            json.dumps({'i':insid,'e':email}),
+            config.getKey("encryption_key")
+        )
+        val = base64.b64encode(val.encode('utf-8'))
+        db.update("""
+            insert into registrations_tokens(registrations_id,token) values 
+                (%s,%s)
+            """,(insid,val.decode('utf-8'))
+        )
+        url = config.getKey("host_url")
+        data = { 
+            '__LINK__':"%s/#/verify/%s" % (url,val.decode('utf-8')),
+            '__BASE__':url
+        } 
+        m = Mail()
+        m.defer(email,"Registration with #PAIN","templates/mail/registration-verification.html",data)
         db.commit()
         return ret
 
@@ -675,6 +727,7 @@ class RegisterReferrer(RegistrationsBase):
         params = args[1][0]
         db = Query()
         insid = 0
+        RT = self.getRegistrationTypes()
         OT = self.getOfficeTypes()
         ST = self.getLeadStrength()
         ENT = self.getEntitlementIDs()
@@ -759,6 +812,47 @@ class RegisterReferrer(RegistrationsBase):
                 insert into user_permissions (user_id,permissions_id) values (%s,%s)
                 """,(uid,PERM['Admin'])
             )
-        ### TODO: Send invite link
+        db.update("""
+            delete from registrations_tokens where 
+                registrations_id in (select id from registrations 
+                where lower(email) = %s)
+            """,(params['email'],)
+        )
+        db.update("""
+            delete from registrations where lower(email) = %s
+            """,(params['email'],)
+        )
+        db.update("""
+            insert into registrations (
+                email,first_name,last_name,phone,registration_types_id
+            ) values
+                (
+                lower(%s),%s,%s,%s,%s
+            )
+            """,(
+                params['email'],params['first'],params['last'],
+                params['phone'],RT['Provider']
+            )
+        )
+        email = params['email']
+        insid = db.query("select LAST_INSERT_ID()");
+        insid = insid[0]['LAST_INSERT_ID()']
+        val = encryption.encrypt(
+            json.dumps({'i':insid,'e':email}),
+            config.getKey("encryption_key")
+        )
+        val = base64.b64encode(val.encode('utf-8'))
+        db.update("""
+            insert into registrations_tokens(registrations_id,token) values 
+                (%s,%s)
+            """,(insid,val.decode('utf-8'))
+        )
+        url = config.getKey("host_url")
+        data = { 
+            '__LINK__':"%s/#/verify/%s" % (url,val.decode('utf-8')),
+            '__BASE__':url
+        } 
+        m = Mail()
+        m.defer(email,"Registration with #PAIN","templates/mail/registration-verification.html",data)
         db.commit()
         return ret
