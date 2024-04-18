@@ -333,12 +333,33 @@ class RegisterProvider(RegistrationsBase):
         pq_id = 0
         if 'cust_id' not in params:
             params['cust_id'] = "cust-%s" % (encryption.getSHA256(params['email']))
+        if 'phone' in params and params['phone'] is not None:
+            p = params['phone'].replace(")",'').replace("(",'').replace("-",'').replace(" ",'').replace('.','')
+            if p.startswith("+1"):
+                p = p.replace("+1","")
+            if p.startswith("1") and len(p) == 11:
+                p = p[1:]
+            params['phone'] = p
+
         l = db.query("""
-            select id from users where email=%s
-            """,(params['email'],)
+            select id as a from users where email=lower(%s)
+            UNION ALL
+            select ou.user_id as a from 
+                office o,office_addresses oa,office_user ou
+             where 
+                o.id=oa.office_id and o.id = ou.office_id
+                and o.email=lower(%s)
+            UNION ALL
+            select ou.user_id as a from 
+                office o,office_addresses oa,office_user ou
+             where 
+                o.id=oa.office_id and o.id = ou.office_id
+                and oa.phone=%s
+            """,(params['email'],params['email'],params['phone'])
         )
         for t in l:
-            userid = t['id']
+            HAVE=True
+            userid = t['a']
         if 'pq_id' in params and params['pq_id'] is not None:
             HAVE = True
             pq_id = int(params['pq_id'])
@@ -363,7 +384,7 @@ class RegisterProvider(RegistrationsBase):
             provtype = params['provtype']
         if off_id == 0:
             db.update("insert into office (name,office_type_id,email,cust_id,active,billing_system_id) values (%s,%s,%s,%s,0,%s)",
-                (params['name'],provtype,params['email'],params['cust_id'],BS)
+                (params['name'],provtype,params['email'].lower(),params['cust_id'],BS)
             )
             off_id = db.query("select LAST_INSERT_ID()");
             off_id = off_id[0]['LAST_INSERT_ID()']
@@ -406,7 +427,7 @@ class RegisterProvider(RegistrationsBase):
                 )
             """,(pq_id,))
             l = db.query("""
-                select id from users where email = %s
+                select id from users where email = lower(%s)
                 """,(params['email'],)
             )
             uid = 0
@@ -419,7 +440,7 @@ class RegisterProvider(RegistrationsBase):
                 db.update(
                     """
                     insert into users (first_name,last_name,email,phone) values (%s,%s,%s,%s)
-                    """,(params['first'],params['last'],params['email'],params['phone'])
+                    """,(params['first'],params['last'],params['email'].lower(),params['phone'])
                 )
                 uid = db.query("select LAST_INSERT_ID()");
                 uid = uid[0]['LAST_INSERT_ID()']
@@ -451,7 +472,11 @@ class RegisterProvider(RegistrationsBase):
                     select id from office_plans where office_id = %s
                     """,(off_id,)
                 )
-                if len(o) > 0:
+                i = db.query("""
+                    select id from invoices where office_id = %s
+                    """,(off_id,)
+                )
+                if len(o) > 0 and len(i) < 1:
                     db.update("""
                         delete from office_plan_items opi
                             where opi.office_plans_id = %s
@@ -600,7 +625,7 @@ class RegisterProvider(RegistrationsBase):
                 lower(%s),%s,%s,%s,%s
             )
             """,(
-                params['email'],params['first'],params['last'],
+                params['email'].lower(),params['first'],params['last'],
                 params['phone'],RT['Provider']
             )
         )
@@ -737,7 +762,7 @@ class RegisterReferrer(RegistrationsBase):
         HAVE = False
         userid = 0
         l = db.query("""
-            select id from users where email=%s
+            select id from users where email=lower(%s)
             """,(params['email'],)
         )
         if len(l) > 0:
@@ -756,7 +781,7 @@ class RegisterReferrer(RegistrationsBase):
         params['phone'] = params['phone'].replace(')','').replace('(','').replace('-','').replace(' ','')
         if insid == 0:
             db.update("insert into office (name,office_type_id,email,active) values (%s,%s,%s,0)",
-                (params['name'],OT['Referrer'],params['email'])
+                (params['name'],OT['Referrer'],params['email'].lower())
             )
             insid = db.query("select LAST_INSERT_ID()");
             insid = insid[0]['LAST_INSERT_ID()']
@@ -779,7 +804,7 @@ class RegisterReferrer(RegistrationsBase):
             )
             l = db.query("""
                 select id from users where email = %s
-                """,(params['email'],)
+                """,(params['email'].lower(),)
             )
             uid = 0
             for o in l:
@@ -788,7 +813,7 @@ class RegisterReferrer(RegistrationsBase):
                 db.update(
                     """
                     insert into users (first_name,last_name,email,phone) values (%s,%s,%s,%s)
-                    """,(params['first'],params['last'],params['email'],params['phone'])
+                    """,(params['first'],params['last'],params['email'].lower(),params['phone'])
                 )
                 uid = db.query("select LAST_INSERT_ID()");
                 uid = uid[0]['LAST_INSERT_ID()']
