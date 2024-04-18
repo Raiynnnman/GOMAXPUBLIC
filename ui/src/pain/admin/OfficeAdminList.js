@@ -330,6 +330,41 @@ class OfficeList extends Component {
           hideSizePerPage:true,
           //onPageChange:(page,sizePerPage) => this.pageChange(page,sizePerPage)
         };
+        var cardheads = [
+            {
+                dataField:'id',
+                text:'ID'
+            },
+            {
+                dataField:'brand',
+                text:'Brand'
+            },
+            {
+                dataField:'last4',
+                text:'last4'
+            },
+            {
+                dataField:'exp_year',
+                align:'left',
+                text:'Expires',
+                formatter:(cellContent,row) => (
+                    <div>
+                        {row['exp_month'] + "/" + row['exp_year']}
+                    </div>
+                )
+            },
+            {
+                dataField:'created',
+                align:'center',
+                text:'Created',
+                formatter:(cellContent,row) => (
+                    <div>
+                        {moment(row['created']).format('LLL')} 
+                    </div>
+                )
+            },
+            
+        ]
         var historyheads = [
             {
                 dataField:'id',
@@ -830,8 +865,21 @@ class OfficeList extends Component {
                                     <span>{translate('History')}</span>
                                 </NavLink>
                             </NavItem>
+                            <NavItem>
+                                <NavLink className={classnames({ active: this.state.subTab === 'cards' })}
+                                    onClick={() => { this.toggleSubTab('cards') }}>
+                                    <span>{translate('Cards')}</span>
+                                </NavLink>
+                            </NavItem>
                         </Nav>
                         <TabContent className='mb-lg' activeTab={this.state.subTab}>
+                            <TabPane tabId="cards">
+                              <BootstrapTable 
+                                  keyField="id"
+                                  data={this.state.selected.cards} 
+                                  columns={ cardheads }>
+                              </BootstrapTable>
+                            </TabPane>
                             <TabPane tabId="history">
                               <BootstrapTable 
                                   keyField="id"

@@ -57,7 +57,7 @@ l = db.query("""
             pq.provider_queue_status_id = %s
         )
         and pq.provider_queue_status_id <> %s
-        and offset_days < 1
+        and offset_days > 0
     group by
         op.id
     """,(PQS['APPROVED'],PQS['QUEUED'],PQS['INVITED'],PQS['DENIED'])
@@ -70,6 +70,24 @@ for x in l:
     if x['initial_payment'] is None:
         x['initial_payment'] = 0
     # All new customers go to new system
+    cnt = db.query("""
+        select count(id) cnt from client_intake_offices
+            where office_id = %s
+        """,(x['office_id'],)
+    )
+    cnt = cnt[0]['cnt']
+    if cnt < 1:
+        print("%s: Has delay, no customers yet",x['office_id'])
+        continue
+    delay = db.query("""
+        select date_diff(now(),min(created)) as delay from client_intake_offices
+            where office_id = %s
+        """,(x['office_id'],)
+    )
+    delay = delay[0]['delay']
+    if delay < 7:
+        print("%s: Has delay, days since first: ",(x['office_id'],delay))
+        continue
     db.update("""
         insert into invoices (office_id,invoice_status_id,
             office_plans_id,billing_period,stripe_tax_id,billing_system_id) 

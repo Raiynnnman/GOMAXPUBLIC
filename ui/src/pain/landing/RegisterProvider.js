@@ -28,7 +28,7 @@ import { setupIntent } from '../../actions/setupIntent';
 import {stripeKey} from '../../stripeConfig.js';
 import BillingCreditCardForm from './BillingCreditCardForm';
 import { squareAppKey, squareLocationKey } from '../../squareConfig.js';
-import { PaymentForm,CreditCard } from 'react-square-web-payments-sdk';
+import { PaymentForm,CreditCard,ApplePay,GooglePay } from 'react-square-web-payments-sdk';
 import {searchProvider} from '../../actions/searchProvider';
 import { getLandingData } from '../../actions/landingData';
 import googleKey from '../../googleConfig';
@@ -52,6 +52,7 @@ class RegisterProvider extends Component {
             email:'',
             pq_id:null,
             coupon:null,
+            setPrice:0,
             calculatedPrice:0,
             coupon_id:null,
             couponRed:"$" + 0.00,
@@ -155,10 +156,12 @@ class RegisterProvider extends Component {
         if (this.state.selPlan && this.state.selPlan.upfront_cost && this.state.couponRed.replace) { 
             var t = this.state.selPlan.upfront_cost * this.state.selPlan.duration
             t = parseFloat(t + parseFloat(this.state.couponRedValue))
+            this.state.setPrice = t.toFixed(2);
             return "$" + t.toFixed(2);
         } 
         else if (this.state.selPlan && this.state.selPlan.upfront_cost) { 
             var t = this.state.selPlan.upfront_cost * this.state.selPlan.duration
+            this.state.setPrice = t.toFixed(2);
             return "$" + (t).toFixed(2);
         }
         else { 
@@ -193,6 +196,7 @@ class RegisterProvider extends Component {
             } 
             else if (t.reduction) { 
                 var v = this.state.selPlan.upfront_cost * this.state.selPlan.duration
+                v = t.reduction;
                 this.state.couponRed = "($" + v.toFixed(2) + ")";
                 this.state.couponRedValue = -v.toFixed(2);
                 this.setState(this.state)
@@ -422,6 +426,7 @@ class RegisterProvider extends Component {
             },
         ]
         var value = '';
+        console.log("s",this.state);
         return (
         <>
             {(this.props.registerProvider && this.props.registerProvider.isReceiving) && (
@@ -616,7 +621,7 @@ class RegisterProvider extends Component {
                     </div>
                     </>
                     )}
-                    {(this.state.selPlan && this.state.selPlan.trial === 0 && this.state.page === 3) && (
+                    {(this.state.selPlan && this.state.selPlan.trial === 0 && this.state.page === 3 && this.state.selPlan.price===0) && (
                     <>
                     <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                         Enter your credit card information. 
@@ -630,6 +635,53 @@ class RegisterProvider extends Component {
                                             this.saveCard({token:token});
                                     }}>
                                     <>
+                                        <CreditCard>Save</CreditCard>
+                                    </>
+                                </PaymentForm>
+                        </div>
+                    </div>
+                    </>
+                    )}
+                    {(this.state.selPlan && this.state.selPlan.trial === 0 && this.state.page === 3 && this.state.selPlan.price>0) && (
+                    <>
+                    <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                        Enter your credit card information. 
+                    </div>
+                    <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                        <div style={{width:400}}>
+                                <PaymentForm style={{display:'grid',justifyContent:'center',alignContent:'center'}}
+                                    applicationId={squareAppKey()}
+                                    locationId={squareLocationKey()}
+                                    createPaymentRequest={() => ({
+                                            countryCode: "US",
+                                            currencyCode: "USD",
+                                            lineItems: [
+                                              {
+                                                amount: this.state.setPrice,
+                                                label: this.state.selPlan.description,
+                                                pending: true,
+                                              }
+                                            ],
+                                            discounts: this.state.coupon_id ? [
+                                              {
+                                                label: this.state.coupon,
+                                                amount: this.state.couponRedValue * -1,
+                                                pending: true
+                                              }
+                                            ] : [],
+                                            requestBillingContact: false,
+                                            requestShippingContact: false,
+                                            total: {
+                                              amount: this.state.setPrice,
+                                              label: "Total",
+                                            },
+                                          })}
+                                    cardTokenizeResponseReceived={(token,verifiedBuyer) => { 
+                                            this.saveCard({token:token});
+                                    }}>
+                                    <>
+                                        <ApplePay/>
+                                        <GooglePay/>
                                         <CreditCard>Save</CreditCard>
                                     </>
                                 </PaymentForm>

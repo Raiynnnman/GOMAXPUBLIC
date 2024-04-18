@@ -56,6 +56,7 @@ q = """
         o.active = 1 and
         o.stripe_cust_id is not null and
         date(op.end_date) > now() and
+        pd.offset_days < 1 and
         opi.office_plans_id = op.id and
         o.billing_system_id = %s and
         o.office_type_id = %s 

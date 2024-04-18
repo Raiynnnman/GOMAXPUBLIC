@@ -722,6 +722,11 @@ class OfficeList(AdminBase):
         o = db.query(q,search_par)
         ret['offices'] = []
         for x in o:
+            x['cards'] = db.query("""
+                select id,card_id,last4,exp_month,exp_year,is_default,brand
+                from office_cards where office_id=%s
+                """,(x['id'],)
+            )
             x['history'] = db.query("""
                 select ph.id,user_id,text,concat(u.first_name, ' ', u.last_name) as user,ph.created
                     from office_history ph,users u
@@ -1195,7 +1200,7 @@ class RegistrationList(AdminBase):
             {'id':2,'col':'name','active':False,'direction':'asc'}
         ]
         count_par = []
-        if 'pq_id' in params and params['pq_id'] is not None:
+        if 'pq_id' in params and params['pq_id'] is not None and params['pq_id'] > 0:
             q += " and pq.id = %s "
             search_par.insert(0,int(params['pq_id']))
             count_par.append(int(params['pq_id']))

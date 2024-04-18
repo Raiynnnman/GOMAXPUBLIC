@@ -10,6 +10,7 @@ T="
 	square/square_customers_update \
     square/square_cards \
     stripe/registration_invoices \
+    stripe/registration_delay \
     square/square_progress_leads \
     stripe/generate_invoices \
     square/invoice_submit \

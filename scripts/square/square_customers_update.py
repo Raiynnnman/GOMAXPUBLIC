@@ -73,27 +73,28 @@ for x in l:
         r = client.customers.retrieve_customer(customer_id=x['stripe_cust_id'])
         r = r.body
         # print(json.dumps(r,indent=4))
-        r = r['customer']
-        first = x['first_name']
-        if x['title'] is not None:
-            first = "%s %s" % (x['title'],first)
-        if r['given_name'] != first:
-            newdata['given_name'] = first
-        if 'family_name' not in r or r['family_name'] != x['last_name']:
-            newdata['family_name'] = x['last_name']
-        if 'email' not in r or r['email'] != x['email']:
-            newdata['email_address'] = x['email']
-        if 'company' not in r or r['company'] != x['office_name']:
-            newdata['company_name'] = x['office_name']
-        r = client.customers.update_customer(x['stripe_cust_id'],body=newdata)
-        if r.is_error():
-            print(r.errors)
-            raise Exception("ERROR updating user")
-        db.update("""
-            insert into office_history(office_id,user_id,text) values (
-                %s,1,'Updated square information for customer'
-            )
-        """,(x['id'],))
+        if 'customer' in r:
+            r = r['customer']
+            first = x['first_name']
+            if x['title'] is not None:
+                first = "%s %s" % (x['title'],first)
+            if r['given_name'] != first:
+                newdata['given_name'] = first
+            if 'family_name' not in r or r['family_name'] != x['last_name']:
+                newdata['family_name'] = x['last_name']
+            if 'email' not in r or r['email'] != x['email']:
+                newdata['email_address'] = x['email']
+            if 'company' not in r or r['company'] != x['office_name']:
+                newdata['company_name'] = x['office_name']
+            r = client.customers.update_customer(x['stripe_cust_id'],body=newdata)
+            if r.is_error():
+                print(r.errors)
+                raise Exception("ERROR updating user")
+            db.update("""
+                insert into office_history(office_id,user_id,text) values (
+                    %s,1,'Updated square information for customer'
+                )
+            """,(x['id'],))
         db.commit()
     except Exception as e:
         print("ERROR: %s has an issue: %s" % (x['email'],str(e)))
