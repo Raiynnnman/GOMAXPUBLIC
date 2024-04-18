@@ -727,6 +727,17 @@ class OfficeList(AdminBase):
                 from office_cards where office_id=%s
                 """,(x['id'],)
             )
+            x['clients'] = db.query("""
+                select
+                    u.first_name,u.last_name,u.phone,u.email,ci.created 
+                from
+                    client_intake ci, client_intake_offices cio,users u
+                where 
+                    ci.user_id = u.id and
+                    ci.id = cio.client_intake_id and
+                    cio.office_id = %s
+                """,(x['id'],)
+            )
             x['history'] = db.query("""
                 select ph.id,user_id,text,concat(u.first_name, ' ', u.last_name) as user,ph.created
                     from office_history ph,users u

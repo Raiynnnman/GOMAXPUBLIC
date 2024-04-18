@@ -330,6 +330,45 @@ class OfficeList extends Component {
           hideSizePerPage:true,
           //onPageChange:(page,sizePerPage) => this.pageChange(page,sizePerPage)
         };
+        var clientheads = [
+            {
+                dataField:'id',
+                text:'ID'
+            },
+            {
+                dataField:'email',
+                text:'Email'
+            },
+            {
+                dataField:'first_name',
+                text:'Name',
+                formatter:(cellContent,row) => (
+                    <div>
+                        {row['first_name'] + " " + row['last_name']}
+                    </div>
+                )
+            },
+            {
+                dataField:'phone',
+                text:'Phone',
+                formatter:(cellContent,row) => (
+                    <div>
+                        {formatPhoneNumber(row['phone'])}
+                    </div>
+                )
+            },
+            {
+                dataField:'created',
+                align:'center',
+                text:'Created',
+                formatter:(cellContent,row) => (
+                    <div>
+                        {moment(row['created']).format('LLL')} 
+                    </div>
+                )
+            },
+            
+        ]
         var cardheads = [
             {
                 dataField:'id',
@@ -871,8 +910,21 @@ class OfficeList extends Component {
                                     <span>{translate('Cards')}</span>
                                 </NavLink>
                             </NavItem>
+                            <NavItem>
+                                <NavLink className={classnames({ active: this.state.subTab === 'clients' })}
+                                    onClick={() => { this.toggleSubTab('clients') }}>
+                                    <span>{translate('Clients')}</span>
+                                </NavLink>
+                            </NavItem>
                         </Nav>
                         <TabContent className='mb-lg' activeTab={this.state.subTab}>
+                            <TabPane tabId="clients">
+                              <BootstrapTable 
+                                  keyField="id"
+                                  data={this.state.selected.clients} 
+                                  columns={ clientheads }>
+                              </BootstrapTable>
+                            </TabPane>
                             <TabPane tabId="cards">
                               <BootstrapTable 
                                   keyField="id"
