@@ -81,7 +81,7 @@ for x in l:
         print("%s: Has delay, no customers yet"%x['office_id'])
         continue
     delay = db.query("""
-        select date_diff(now(),min(created)) as delay from client_intake_offices
+        select datediff(now(),min(created)) as delay from client_intake_offices
             where office_id = %s
         """,(x['office_id'],)
     )
