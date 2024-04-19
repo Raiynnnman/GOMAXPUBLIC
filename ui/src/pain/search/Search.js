@@ -268,6 +268,15 @@ class SearchAdmin extends Component {
                             Find the best price for the highest quality providers. Contact a provider in seconds.
                         </font>
                     </div>
+                    <div style={{height:50,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                        {(!Login.isAuthenticated() && this.state.selectedProvider !== null && this.state.geo === false) && ( 
+                            <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                                <div className="form-group mb-0">
+                                    <input className="form-control no-border" value={this.state.zipcode} onChange={this.changeZip} required name="zip" placeholder="Zip" />
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </Col>
             </Row>
             )}

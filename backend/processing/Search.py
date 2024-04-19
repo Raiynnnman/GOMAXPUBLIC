@@ -128,6 +128,7 @@ class SearchGet(SearchBase):
         #        st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192 < 50 
         #    """,(lon,lat,lon,lat))
         #log.debug("dist=%s" % o)
+        print(params,lat,lon)
         o = db.query("""
             select
                 o.id as office_id,o.name,
@@ -144,6 +145,7 @@ class SearchGet(SearchBase):
             where
                 st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192 < 10 and
                 o.active = 1 and 
+                oa.lat <> 0 and
                 o.office_type_id = %s
             group by 
                 u.id
@@ -153,6 +155,7 @@ class SearchGet(SearchBase):
             limit 5
             """,(lon,lat,lon,lat,provtype,lon,lat)
         )
+        print(o)
         for x in o:
             q = db.query("""
                 select 
