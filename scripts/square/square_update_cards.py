@@ -36,18 +36,20 @@ db = Query()
 
 q = """
     select 
-        o.name,o.id,o.email,o.stripe_cust_id
+        o.id as office_id,o.stripe_cust_id,oc.card_id,oc.brand,
+        oc.last4,oc.exp_month,oc.exp_year,
+        oc.id as office_cards_id
     from 
-        office o
+        office o, office_cards oc, provider_queue pq
     where 
-        o.active = 1 and
+        pq.office_id = o.id and 
+        oc.office_id = o.id and
+        (o.active = 1 or sf_lead_executed = 1) and
         o.office_type_id = %s and
+        oc.sync_provider = 0 and
         o.billing_system_id = 2 and
         o.stripe_cust_id is not null
     """
-
-if not args.force and args.id is None and args.square_id is None:
-    q += " and (o.stripe_next_check is null or o.stripe_next_check < now()) "
 
 if args.id is not None:
     q += " and o.id = %s " % args.id
@@ -63,66 +65,42 @@ BS=getIDs.getBillingSystem()
 
 CNT = 0
 for x in l:
+    print(x)
     CNT += 1
     try:
         r = {}
-        r = client.cards.list_cards(customer_id=x['stripe_cust_id'])
+        r = client.cards.create_card(body = {
+                'source_id':x['card_id'],
+                'idempotency_key': encryption.getSHA256()[:45],
+                'card': { 
+                    'customer_id': x['stripe_cust_id'],
+                    'card_brand': x['brand'],
+                    'last_4':x['last4'],
+                    'exp_month':x['exp_month'],
+                    'exp_year':x['exp_year']
+                } 
+            }
+        )
         if r.is_error():
             print(r.errors)
             raise Exception("ERROR retrieving cards")
         r = r.body
         print(json.dumps(r,indent=4))
-        if 'cards' not in r:
-            raise Exception("NO_CARD_DATA")
         db.update("""
             insert into office_history(office_id,user_id,text) values (
                 %s,1,'Added card to Square'
             )
-        """,(x['id'],))
-        for g in r['cards']:
-            print(g)
-            if not g['enabled']:
-                db.update("""
-                    delete from office_cards where id=%s
-                    """,(g['id'],)
-                )
-                continue
-            card_id = g['id']
-            t = db.query("""
-                select id from office_cards where office_id=%s
-                    and card_id=%s
-                """,(x['id'],card_id)
-            )
-            if len(t) > 0:
-                continue
-            print("Adding card %s" % card_id)
-            db.update("""
-                insert into office_cards(
-                    office_id,card_id,payment_id,
-                    exp_month, exp_year, is_default,
-                    brand,sync_provider)
-                values (
-                    %s,%s,%s,
-                    %s,%s,1,
-                    %s,1
-                )
-                """,(x['id'],g['id'],g['id'],
-                     g['exp_month'],g['exp_year'],
-                     g['card_brand']
-                    )
-            )
+        """,(x['office_id'],))
+        db.update("""
+            update office_cards set sync_provider=1 where id=%s
+            """,(x['office_cards_id'],)
+        )
         db.commit()
     except Exception as e:
         if str(e) != 'NO_CARD_DATA':
-            print("ERROR: %s has an issue: %s" % (x['email'],str(e)))
+            print("ERROR: %s has an issue: %s" % (x['office_id'],str(e)))
             exc_type, exc_value, exc_traceback = sys.exc_info()
             traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
-    db.update("""
-        update office set 
-            stripe_next_check=date_add(now(),INTERVAL 1 day)
-        where id=%s
-        """,(x['id'],)
-    )
     db.commit()
 
 print("Processed %s records" % CNT)

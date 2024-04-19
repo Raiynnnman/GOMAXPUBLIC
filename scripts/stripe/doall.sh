@@ -8,6 +8,7 @@ fi
 T="
     square/square_customers \
 	square/square_customers_update \
+    square/square_update_cards \
     square/square_cards \
     stripe/registration_invoices \
     stripe/registration_delay \
