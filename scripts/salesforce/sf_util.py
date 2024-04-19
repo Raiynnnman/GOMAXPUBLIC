@@ -70,12 +70,15 @@ def updateSF():
 def updatePAINDB(prow,srow,sfschema,pschema,db,debug=False):
     com_user = {}
     cols_mod = []
+    # If we force update pain, it can be none.
+    if srow is None:
+        return
     o = db.query("select id,sf_id from users where sf_id is not null")
     for g in o:
         com_user[g['sf_id']] = g['id']
     oldvalues = getPAINData(prow,srow,sfschema,pschema,db)
     oldvalues = oldvalues[1]
-    if 'attributes' in srow:
+    if srow is not None and 'attributes' in srow:
         del srow['attributes']
     if debug:
         print("p=%s" % json.dumps(prow,sort_keys=True))
