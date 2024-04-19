@@ -36,6 +36,13 @@ def delcontext(*args, **kwargs):
     po = AdminRest.DelContextRest()
     return po.postWrapper(*args,**kwargs)
 
+@admin.route('/bdr/dashboard', methods=['GET'])
+@token_required
+@swag_from(docs_dir + 'admin_dashboard.yaml')
+def bdrdash(*args, **kwargs):
+    po = AdminRest.BDRDashboardRest()
+    return po.getWrapper(*args,**kwargs)
+
 @admin.route('/admin/dashboard', methods=['GET'])
 @token_required
 @swag_from(docs_dir + 'admin_dashboard.yaml')
@@ -168,6 +175,13 @@ def searchreg(*args, **kwargs):
 @swag_from(docs_dir + 'registrationlist.yaml')
 def reflist(*args, **kwargs):
     po = AdminRest.ReferrerListRest()
+    return po.postWrapper(*args,**kwargs)
+
+@admin.route('/admin/commission/user/list', methods=['POST'])
+@token_required
+@swag_from(docs_dir + 'admin_office_list.yaml')
+def commissionuserlist(*args, **kwargs):
+    po = AdminRest.CommissionUserListRest()
     return po.postWrapper(*args,**kwargs)
 
 @admin.route('/admin/commission/list', methods=['POST'])

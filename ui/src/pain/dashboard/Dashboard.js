@@ -14,6 +14,7 @@ import AdminDashboard from './AdminDashboard';
 import LegalDashboard from './LegalDashboard';
 import PhysicianDashboard from './PhysicianDashboard';
 import ReferrerDashboard from './ReferrerDashboard';
+import BDRDashboard from './BDRDashboard';
 
 class Dashboard extends Component {
     constructor(props) { 
@@ -43,6 +44,14 @@ class Dashboard extends Component {
                 {(this.props.currentUser && this.props.currentUser.entitlements && this.props.currentUser.entitlements.includes('Admin') &&
                   !this.props.currentUser.context) && (
                     <AdminDashboard/>
+                )}
+                {(this.props.currentUser && this.props.currentUser.entitlements && this.props.currentUser.entitlements.includes('BusinessDevelopmentRepresentative') &&
+                  !this.props.currentUser.context) && (
+                    <BDRDashboard/>
+                )}
+                {(this.props.currentUser && this.props.currentUser.entitlements && this.props.currentUser.entitlements.includes('AccountExecutive') &&
+                  !this.props.currentUser.context) && (
+                    <BDRDashboard/>
                 )}
                 {(this.props.currentUser && this.props.currentUser.entitlements && this.props.currentUser.entitlements.includes('Legal')) && (
                     <LegalDashboard/>

@@ -49,6 +49,8 @@ class Profile(SubmitDataRequest):
                 where u.id=%s
             """,(user_id,)
         )
+        if len(u) < 1:
+            raise InvalidCredentials("USER_DOESNT_EXIST")
         e = db.query(
             """ select 
                    name 

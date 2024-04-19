@@ -1,9 +1,11 @@
 import { combineReducers } from 'redux';
 import auth from './auth';
 import couponSave from './couponSave';
+import bdrDashboard from './bdrDashboard';
 import coupons from './coupons';
 import referrerDashboard from './referrerDashboard';
 import commissions from './commissions';
+import commissionsUser from './commissionsUser';
 import registrationReport from './registrationReport';
 import registerReferrer from './registerReferrer';
 import referrerUpload from './referrerUpload';
@@ -178,6 +180,8 @@ export default (history) =>
     officeClients,
     mydayReceiptSave,
     coupons,
+    bdrDashboard,
+    commissionsUser,
     couponSave,
     registerReferrer,
     userDocumentsUpdate,

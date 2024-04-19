@@ -20,8 +20,8 @@ import { Search } from 'react-bootstrap-table2-toolkit';
 import s from '../office/default.module.scss';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
-import { getContext } from '../../actions/context';
 import { getCommissionAdmin } from '../../actions/commissions';
+import { getCommissionUserAdmin } from '../../actions/commissionsUser';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import cellEditFactory from 'react-bootstrap-table2-editor';
@@ -67,6 +67,21 @@ class CommissionAdminList extends Component {
     } 
 
     componentWillReceiveProps(p) { 
+        if (p.commissionsUser.data && p.commissionsUser.data.config && 
+            p.commissionsUser.data.config.period && this.state.periodSelected === null) { 
+            var c = 0;
+            var t = [];
+            this.state.periodSelected = []
+            this.state.periodSelected.push({
+                label:p.commissionsUser.data.config.period[0].label,
+                value:p.commissionsUser.data.config.period[0].value
+            })
+            this.state.filter = [p.commissionsUser.data.config.period[0].value]
+            this.setState(this.state);
+            this.props.dispatch(getCommissionUserAdmin(
+                {period:this.state.filter,limit:this.state.pageSize,offset:this.state.page}
+            ));
+        }
         if (p.commissions.data && p.commissions.data.config && 
             p.commissions.data.config.period && this.state.periodSelected === null) { 
             var c = 0;
@@ -85,18 +100,48 @@ class CommissionAdminList extends Component {
     }
 
     componentDidMount() {
-        this.props.dispatch(getCommissionAdmin({page:this.state.page,limit:this.state.pageSize}))
+        if (this.props.currentUser.entitlements && 
+            this.props.currentUser.entitlements.includes('BusinessDevelopmentRepresentative')) { 
+            this.props.dispatch(getCommissionUserAdmin({page:this.state.page,limit:this.state.pageSize}))
+        } else if (this.props.currentUser.entitlements && 
+            this.props.currentUser.entitlements.includes('AccountExecutive')) { 
+            this.props.dispatch(getCommissionUserAdmin({page:this.state.page,limit:this.state.pageSize}))
+        } else {  
+            this.props.dispatch(getCommissionAdmin({page:this.state.page,limit:this.state.pageSize}))
+       }
     }
 
     commissionReport() { 
-        this.props.dispatch(getCommissionAdmin(
-            {direction:this.state.direction,
-             sort:this.state.sort,
-             search:this.state.search,
-             limit:this.state.pageSize,offset:this.state.page,
-             report:1,
-             period:this.state.filter}
-        ));
+        if (this.props.currentUser.entitlements && 
+            this.props.currentUser.entitlements.includes('BusinessDevelopmentRepresentative')) { 
+            this.props.dispatch(getCommissionUserAdmin(
+                {direction:this.state.direction,
+                 sort:this.state.sort,
+                 search:this.state.search,
+                 limit:this.state.pageSize,offset:this.state.page,
+                 report:1,
+                 period:this.state.filter}
+            ));
+        } else if (this.props.currentUser.entitlements && 
+            this.props.currentUser.entitlements.includes('AccountExecutive')) { 
+            this.props.dispatch(getCommissionUserAdmin(
+                {direction:this.state.direction,
+                 sort:this.state.sort,
+                 search:this.state.search,
+                 limit:this.state.pageSize,offset:this.state.page,
+                 report:1,
+                 period:this.state.filter}
+            ));
+        } else {
+            this.props.dispatch(getCommissionAdmin(
+                {direction:this.state.direction,
+                 sort:this.state.sort,
+                 search:this.state.search,
+                 limit:this.state.pageSize,offset:this.state.page,
+                 report:1,
+                 period:this.state.filter}
+            ));
+        }
     } 
 
     onPeriodFilter(e,t) { 
@@ -108,25 +153,61 @@ class CommissionAdminList extends Component {
         } 
         this.state.statusSelected = t;
         this.state.filter = t;
-        this.props.dispatch(getRegistrations(
-            {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,period:this.state.filter}
-        ));
+        if (this.props.currentUser.entitlements && 
+            this.props.currentUser.entitlements.includes('BusinessDevelopmentRepresentative')) { 
+            this.props.dispatch(getCommissionUserAdmin(
+                {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,period:this.state.filter}
+            ));
+        } else if (this.props.currentUser.entitlements && 
+            this.props.currentUser.entitlements.includes('AccountExecutive')) { 
+            this.props.dispatch(getCommissionUserAdmin(
+                {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,period:this.state.filter}
+            ));
+        } else { 
+            this.props.dispatch(getCommissionAdmin(
+                {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,period:this.state.filter}
+            ));
+        } 
         this.setState(this.state)
     } 
 
     pageRowsChange(t) { 
         this.state.pageSize = t
         this.state.page = 0
-        this.props.dispatch(getCommissionAdmin(
-            {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,period:this.state.filter}
-        ));
+        if (this.props.currentUser.entitlements && 
+            this.props.currentUser.entitlements.includes('BusinessDevelopmentRepresentative')) { 
+            this.props.dispatch(getCommissionUserAdmin(
+                {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,period:this.state.filter}
+            ));
+        } else if (this.props.currentUser.entitlements && 
+            this.props.currentUser.entitlements.includes('AccountExecutive')) { 
+            this.props.dispatch(getCommissionUserAdmin(
+                {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,period:this.state.filter}
+            ));
+        } else { 
+            this.props.dispatch(getCommissionAdmin(
+                {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,period:this.state.filter}
+            ));
+        }
         this.setState(this.state);
     } 
     pageChange(e) { 
         this.state.page = e
-        this.props.dispatch(getCommissionAdmin(
-            {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,period:this.state.filter}
-        ));
+        if (this.props.currentUser.entitlements && 
+            this.props.currentUser.entitlements.includes('BusinessDevelopmentRepresentative')) { 
+            this.props.dispatch(getCommissionUserAdmin(
+                {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,period:this.state.filter}
+            ));
+        } else if (this.props.currentUser.entitlements && 
+            this.props.currentUser.entitlements.includes('AccountExecutive')) { 
+            this.props.dispatch(getCommissionUserAdmin(
+                {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,period:this.state.filter}
+            ));
+        } else { 
+            this.props.dispatch(getCommissionAdmin(
+                {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,period:this.state.filter}
+            ));
+        }
         this.setState(this.state);
     } 
 
@@ -157,17 +238,6 @@ class CommissionAdminList extends Component {
     } 
     emailChange(e) { 
         this.state.selected['email'] = e.target.value;
-        this.setState(this.state);
-    } 
-    pageChange(e,t) { 
-        if (e === '>') { 
-            this.state.page = this.state.page + 1;
-        } else { 
-            this.state.page = e - 1;
-        }
-        this.props.dispatch(getCommissionAdmin(
-            {limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
-        ));
         this.setState(this.state);
     } 
 
@@ -303,10 +373,78 @@ class CommissionAdminList extends Component {
                 )
             },
         ];
+        console.log("p",this.props);
         return (
         <>
             {(this.props.commissions && this.props.commissions.isReceiving) && (
                 <AppSpinner/>
+            )}
+            {(this.props.commissionsUser && this.props.commissionsUser.isReceiving) && (
+                <AppSpinner/>
+            )}
+            {(this.props && this.props.commissionsUser && this.props.commissionsUser.data && 
+              this.props.commissionsUser.data.commissions && this.state.selected === null) && ( 
+            <>
+            <Row md="12">
+                <Col md="2" style={{marginBottom:10}}>
+                    {/*<Button onClick={() => this.edit({id:"new"})} 
+                        style={{marginRight:5,height:35,width:90}} color="primary">Add</Button>
+                    */}
+                </Col>
+            </Row>
+            <Row md="12">
+                <Col md="5" style={{marginBottom:10}}>
+                  {(this.props.commissionsUser && this.props.commissionsUser.data && 
+                    this.props.commissionsUser.data.config &&
+                    this.props.commissionsUser.data.config.period && this.state.periodSelected !== null) && (
+                      <Select
+                          closeMenuOnSelect={true}
+                          isSearchable={false}
+                          isMulti
+                          onChange={this.onPeriodFilter}
+                          value={this.state.periodSelected.map((g) => { 
+                            return (
+                                {
+                                label:this.props.commissionsUser.data.config.period.filter((f) => f.billing_period === g.billing_period)[0].label,
+                                value:this.props.commissionsUser.data.config.period.filter((f) => f.billing_period === g.billing_period)[0].value
+                                }
+                            )
+                          })}
+                          options={this.props.commissionsUser.data.config.period.map((e) => { 
+                            return (
+                                { 
+                                label: e.label,
+                                value: e.value
+                                }
+                            )
+                          })}
+                        />
+                    )}
+                </Col>
+                <Col md="7">
+                    <div class="pull-right">
+                        <div style={{justifyContent:'spread-evenly'}}>
+                            <Button onClick={this.commissionReport} outline color="primary"><AssessmentIcon/></Button>
+                        </div>
+                    </div>
+                </Col>
+            </Row>
+            <Row md="12">
+                <Col md="12">
+                    <PainTable
+                        keyField='id' 
+                        data={this.props.commissionsUser.data.commissions} 
+                        total={this.props.commissionsUser.data.total}
+                        page={this.state.page}
+                        pageSize={this.state.pageSize}
+                        onPageChange={this.pageChange}
+                        onSort={this.sortChange}
+                        onPageRowsPerPageChange={this.pageRowsChange}
+                        columns={heads}>
+                    </PainTable> 
+                </Col>                
+            </Row>
+            </>
             )}
             {(this.props && this.props.commissions && this.props.commissions.data && 
               this.props.commissions.data.commissions && this.state.selected === null) && ( 
@@ -380,6 +518,7 @@ class CommissionAdminList extends Component {
 function mapStateToProps(store) {
     return {
         currentUser: store.auth.currentUser,
+        commissionsUser: store.commissionsUser,
         commissions: store.commissions
     }
 }

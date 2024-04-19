@@ -30,8 +30,13 @@ async function findMe() {
               Accept: "application/json",
               "Content-Type": "application/json",
             },
-        }).get('/profile');
-    return response.data.data;
+        }).get('/profile').catch((e) => { 
+            if (e.response.status === 401) { 
+                logoutUser();
+                return;
+            } 
+        });
+        return response.data.data;
   } 
   
 }
@@ -79,17 +84,18 @@ export function doInit() {
 }
 
 export function logoutUser() {
+    window.location.href='/#/login';
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    axios.defaults.headers.common['Authorization'] = "";
     return (dispatch) => {
         dispatch({
           type: LOGOUT_REQUEST,
         });
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        axios.defaults.headers.common['Authorization'] = "";
         dispatch({
           type: LOGOUT_SUCCESS,
         });
-      dispatch(push('/login'));
+      // dispatch(push('/login'));
     };
 }
 

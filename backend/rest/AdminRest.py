@@ -37,6 +37,13 @@ class DelContextRest(RestBase):
         ret = u.process(args[0])
         return ret
 
+class BDRDashboardRest(RestBase):
+
+    def get(self, *args, **kwargs):
+        u = Admin.BDRDashboard()
+        ret = u.process(args)
+        return ret
+
 class AdminDashboard(RestBase):
 
     def get(self, *args, **kwargs):
@@ -190,5 +197,12 @@ class CommissionListRest(RestBase):
 
     def post(self, *args, **kwargs):
         u = Admin.CommissionList()
+        ret = u.process(args[0])
+        return ret
+
+class CommissionUserListRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Admin.CommissionUserList()
         ret = u.process(args[0])
         return ret

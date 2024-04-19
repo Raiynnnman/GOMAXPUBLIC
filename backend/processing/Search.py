@@ -155,7 +155,6 @@ class SearchGet(SearchBase):
             limit 5
             """,(lon,lat,lon,lat,provtype,lon,lat)
         )
-        print(o)
         for x in o:
             q = db.query("""
                 select 

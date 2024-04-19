@@ -1,6 +1,7 @@
 import React from 'react';
 import DynamicFeedIcon from '@mui/icons-material/DynamicFeed';
 import UploadIcon from '@mui/icons-material/Upload';
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import PropTypes from 'prop-types';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import ConnectWithoutContactIcon from '@mui/icons-material/ConnectWithoutContact';
@@ -135,6 +136,50 @@ class Sidebar extends React.Component {
             link="/app/main/legal/settings"
             isHeader
             iconElement={<SettingsIcon/>}
+            iconName="flaticon-users"
+            labelColor="info"
+          />
+          )}
+          {(this.props.currentUser && this.props.currentUser.entitlements && 
+            this.props.currentUser.entitlements.includes("AccountExecutive") && !this.props.currentUser.context) && (
+          <LinksGroup
+            header="Search"
+            link="/app/main/admin/search"
+            isHeader
+            iconElement={<Location/>}
+            iconName="flaticon-users"
+            labelColor="info"
+          />
+          )}
+          {(this.props.currentUser && this.props.currentUser.entitlements && 
+            this.props.currentUser.entitlements.includes("AccountExecutive") && !this.props.currentUser.context) && (
+          <LinksGroup
+            header="Commissions"
+            link="/app/main/admin/commissions"
+            isHeader
+            iconElement={<MonetizationOnIcon/>}
+            iconName="flaticon-users"
+            labelColor="info"
+          />
+          )}
+          {(this.props.currentUser && this.props.currentUser.entitlements && 
+            this.props.currentUser.entitlements.includes("BusinessDevelopmentRepresentative") && !this.props.currentUser.context) && (
+          <LinksGroup
+            header="Search"
+            link="/app/main/admin/search"
+            isHeader
+            iconElement={<Location/>}
+            iconName="flaticon-users"
+            labelColor="info"
+          />
+          )}
+          {(this.props.currentUser && this.props.currentUser.entitlements && 
+            this.props.currentUser.entitlements.includes("BusinessDevelopmentRepresentative") && !this.props.currentUser.context) && (
+          <LinksGroup
+            header="Commissions"
+            link="/app/main/admin/commissions"
+            isHeader
+            iconElement={<MonetizationOnIcon/>}
             iconName="flaticon-users"
             labelColor="info"
           />
