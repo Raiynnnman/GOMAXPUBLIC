@@ -216,6 +216,7 @@ for x in inv:
                 if g.is_error():
                     print(g.errors)
                     raise Exception("ERROR retrieving cards")
+                g = g.body
                 print("CARDS:")
                 print(json.dumps(g,indent=4,sort_keys=True))
                 s = client.invoices.create_invoice(
