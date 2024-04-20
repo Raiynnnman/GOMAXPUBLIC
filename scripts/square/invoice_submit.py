@@ -238,11 +238,11 @@ for x in inv:
                     }
                 )
                 if s.is_error():
-                    for g in s.errors:
-                        if g['code'] == 'INVALID_CARD':
-                            db.update("update office_cards set is_error=1 where id=%s",(card['id'],))
-                            db.commit()
-                            continue
+                    db.update("""
+                        update office_cards set is_error=1,error_description=%s
+                        where id=%s""",(card['id'],json.dumps(s.errors))
+                    )
+                    db.commit()
                     raise Exception(json.dumps(s.errors))
                 s = s.body
             # print(json.dumps(s.body,indent=4))
