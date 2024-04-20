@@ -85,11 +85,6 @@ for x in l:
         print("ERROR: %s has an issue: %s" % (x['email'],str(e)))
         exc_type, exc_value, exc_traceback = sys.exc_info()
         traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
-    db.update("""
-        update office set stripe_next_check = date_add(now(),INTERVAL 1 day)
-            where id = %s
-        """,(x['id'],)
-    )
     db.commit()
 
 print("Processed %s records" % CNT)

@@ -95,6 +95,18 @@ for x in l:
             )
             if len(t) > 0:
                 continue
+            t = db.query("""
+                select id from office_cards where office_id=%s
+                    and card_id<>%s
+                """,(x['id'],card_id)
+            )
+            for z in t:
+                print("deleting old card %s" % z['id'])
+                db.update("""
+                    delete from office_cards where id=%s
+                    """,(z['id'],)
+                )
+                continue
             print("Adding card %s" % card_id)
             db.update("""
                 insert into office_cards(
