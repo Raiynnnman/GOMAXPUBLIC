@@ -546,6 +546,7 @@ for x in SF_DATA:
             )
             j['PainID__c'] = pq_id
             j['PainURL__c'] = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),pq_id)
+            j['Sales_Link__c'] = '%s/#/register-provider/%s' % (config.getKey("host_url"),x['pq_id'])
             if not args.dryrun:
                 try:
                     sf.Lead.update(j['Id'],{
