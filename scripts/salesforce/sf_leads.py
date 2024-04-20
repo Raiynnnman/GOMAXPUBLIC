@@ -109,6 +109,7 @@ for x in PAIN:
 
 PSCHEMA = sf_util.getPainSchema(TYPE)
 
+ALL_FIELDS = []
 SCHEMA = {}
 schema_f = 'sf_leads_schema.json'
 data_f = 'sf_leads_data.json'
@@ -117,6 +118,7 @@ SFSCHEMA = {}
 for x in res['fields']:
     # print(x['name'])
     lab = x['label']
+    ALL_FIELDS.append(x['name'])
     SFSCHEMA[lab] = x
     # print(json.dumps(x,indent=4))
     # print("----")
@@ -162,6 +164,13 @@ else:
     H.write(json.dumps(res,indent=4))
     H.close()
 
+SF_ALL_QUERY = "select"
+SF_ALL_QUERY += ','.join(ARR)
+SF_ALL_QUERY += " from Lead "
+res = sf.query_all(SFQUERY)
+H=open('lead_backup.json',"w")
+H.write(json.dumps(res,indent=4))
+H.close()
 
 #---- MAIN
 
