@@ -84,7 +84,7 @@ while True:
     if len(b) < 1:
         minv = int(minv)
         break
-    minv = int(minv) + 1
+    minv = int(minv) 
 
 if config.getKey("environment") != "prod":
     minv += 10000

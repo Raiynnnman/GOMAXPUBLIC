@@ -42,9 +42,10 @@ l = db.query("""
 
 for x in l:
     if x['total'] != x['calc']:
+        print(x)
         CNT += 1
         db.update("""
-            update invoices set total = %s where id = %s
+            update invoices set total = round(%s,2) where id = %s
             """,(x['calc'],x['invoices_id'])
         )
 
