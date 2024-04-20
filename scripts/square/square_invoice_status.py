@@ -37,7 +37,7 @@ q = """
     select 
         i.id as invoice_id,i.office_id,sis.invoices_id,i.stripe_invoice_id,
         ic.nextcheck,i.id,isi.name as invoice_status,
-        sis.invoice_status as stripe_invoice_status,i.version
+        sis.status as stripe_invoice_status,i.version
     from 
         invoices i
         left join invoice_status isi on i.invoice_status_id=isi.id
