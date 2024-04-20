@@ -169,11 +169,18 @@ for x in inv:
                 """,(r['order']['id'],x['id'])
             )
             card = {}
-            for g in cards:
-                if g['id'] is None:
-                    continue
-                if g['is_default'] == 1:
-                    card_id = g['card_id']
+            cards = client.cards.list_cards(customer_id=x['stripe_cust_id'])
+            if cards.is_error():
+                print(g.errors)
+                raise Exception("ERROR retrieving cards")
+            cards = cards.body
+            print("CARDS:")
+            print(json.dumps(cards,indent=4,sort_keys=True))
+            if 'cards' in cards:
+                for g in cards['cards']:
+                    if not g['enabled']:
+                        continue
+                    card_id = g['id']
                     card = g
             mode = "charge_automatically"
             if card_id is None:
@@ -211,14 +218,6 @@ for x in inv:
                     raise Exception(json.dumps(s.errors))
                 s = s.body
             elif mode == 'charge_automatically':
-                print("card=%s" % card)
-                g = client.cards.list_cards(customer_id=x['stripe_cust_id'])
-                if g.is_error():
-                    print(g.errors)
-                    raise Exception("ERROR retrieving cards")
-                g = g.body
-                print("CARDS:")
-                print(json.dumps(g,indent=4,sort_keys=True))
                 s = client.invoices.create_invoice(
                     body = {
                         'invoice': {
