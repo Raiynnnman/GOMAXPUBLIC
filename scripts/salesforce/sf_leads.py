@@ -546,11 +546,12 @@ for x in SF_DATA:
             )
             j['PainID__c'] = pq_id
             j['PainURL__c'] = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),pq_id)
-            j['Sales_Link__c'] = '%s/#/register-provider/%s' % (config.getKey("host_url"),x['pq_id'])
+            j['Sales_Link__c'] = '%s/#/register-provider/%s' % (config.getKey("host_url"),pq_id)
             if not args.dryrun:
                 try:
                     sf.Lead.update(j['Id'],{
                         'PainID__c': pq_id,
+                        'Sales_Link__c':j['Sales_Link__c'],
                         'PainURL__c':j['PainURL__c']
                     })
                 except Exception as e:
