@@ -87,7 +87,6 @@ class RegistrationUpdate(RegistrationsBase):
                 params['phone'],t,params['zipcode']
             )
         )
-        email = params['email']
         insid = db.query("select LAST_INSERT_ID()");
         insid = insid[0]['LAST_INSERT_ID()']
         val = encryption.encrypt(
@@ -148,7 +147,7 @@ class RegistrationVerify(RegistrationsBase):
             inis = myjson['i']
             myid = inis
             userid = 0
-            inem = myjson['e']
+            inem = myjson['e'].lower()
             HAVE = False
             l = db.query("""
                 select id from users where email = %s
@@ -429,7 +428,7 @@ class RegisterProvider(RegistrationsBase):
                 )
             """,(pq_id,))
             l = db.query("""
-                select id from users where email = lower(%s)
+                select id from users where lower(email) = lower(%s)
                 """,(params['email'],)
             )
             uid = 0
@@ -631,7 +630,7 @@ class RegisterProvider(RegistrationsBase):
                 params['phone'],RT['Provider']
             )
         )
-        email = params['email']
+        email = params['email'].lower()
         insid = db.query("select LAST_INSERT_ID()");
         insid = insid[0]['LAST_INSERT_ID()']
         val = encryption.encrypt(
@@ -863,7 +862,7 @@ class RegisterReferrer(RegistrationsBase):
                 params['phone'],RT['Provider']
             )
         )
-        email = params['email']
+        email = params['email'].lower()
         insid = db.query("select LAST_INSERT_ID()");
         insid = insid[0]['LAST_INSERT_ID()']
         val = encryption.encrypt(
