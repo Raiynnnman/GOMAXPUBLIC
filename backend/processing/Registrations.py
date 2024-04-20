@@ -105,6 +105,8 @@ class RegistrationUpdate(RegistrationsBase):
             '__LINK__':"%s/#/verify/%s" % (url,val.decode('utf-8')),
             '__BASE__':url
         } 
+        if config.getKey("appt_email_override") is not None:
+            email = config.getKey("appt_email_override")
         m = Mail()
         m.defer(email,"Registration with #PAIN","templates/mail/registration-verification.html",data)
         db.commit()
@@ -647,6 +649,8 @@ class RegisterProvider(RegistrationsBase):
             '__LINK__':"%s/#/verify/%s" % (url,val.decode('utf-8')),
             '__BASE__':url
         } 
+        if config.getKey("appt_email_override") is not None:
+            email = config.getKey("appt_email_override")
         m = Mail()
         m.defer(email,"Registration with #PAIN","templates/mail/registration-verification.html",data)
         db.commit()
@@ -877,6 +881,8 @@ class RegisterReferrer(RegistrationsBase):
             '__LINK__':"%s/#/verify/%s" % (url,val.decode('utf-8')),
             '__BASE__':url
         } 
+        if config.getKey("appt_email_override") is not None:
+            email = config.getKey("appt_email_override")
         m = Mail()
         m.defer(email,"Registration with #PAIN","templates/mail/registration-verification.html",data)
         db.commit()
