@@ -35,10 +35,13 @@ else:
 
 q = """
     select 
-        i.office_id,sis.invoices_id,i.stripe_invoice_id,
-        ic.nextcheck,i.id
+        i.id as invoice_id,i.office_id,sis.invoices_id,i.stripe_invoice_id,
+        ic.nextcheck,i.id,isi.name as invoice_status,
+        sis.invoice_status as stripe_invoice_status,i.version
     from 
         invoices i
+        left join stripe_invoice_status sis on sis.invoices_id=i.id
+        left join invoice_status isi on i.invoice_status_id=isi.id
         left join stripe_invoice_status sis on i.id = sis.invoices_id 
         left outer join invoice_check ic on i.id = ic.invoices_id
     where 
@@ -57,6 +60,18 @@ for x in l:
     try:
         if x['stripe_invoice_id'] is None:
             continue
+
+        if x['invoice_status'] == 'VOID' and x['stripe_invoice_status'] != 'CANCELED':
+            r = client.invoices.cancel_invoice(invoice_id = x['stripe_invoice_id'],body={'version':x['version']})
+            if r.is_error():
+                print(r.errors)
+                raise Exception("ERROR canceling invoice")
+            db.update("""
+                insert into invoice_history (invoices_id,user_id,text) values 
+                    (%s,%s,%s)
+                """,(x['invoice_id'],1,'Set invoice to CANCELED' )
+            )
+
         r = client.invoices.get_invoice(invoice_id = x['stripe_invoice_id'])
         if r.is_error():
             r = None
