@@ -75,6 +75,8 @@ for x in l:
         # print(json.dumps(r,indent=4))
         if 'customer' in r:
             r = r['customer']
+            if config.getKey('email_to_override') is not None:
+                r['email'] = config.getKey('email_to_override')
             first = x['first_name']
             if x['title'] is not None:
                 first = "%s %s" % (x['title'],first)
@@ -86,10 +88,11 @@ for x in l:
                 newdata['email_address'] = x['email']
             if 'company' not in r or r['company'] != x['office_name']:
                 newdata['company_name'] = x['office_name']
-            r = client.customers.update_customer(x['stripe_cust_id'],body=newdata)
-            if r.is_error():
-                print(r.errors)
-                raise Exception("ERROR updating user")
+            if len(newdata) > 0:
+                r = client.customers.update_customer(x['stripe_cust_id'],body=newdata)
+                if r.is_error():
+                    print(r.errors)
+                    raise Exception("ERROR updating user")
             db.update("""
                 insert into office_history(office_id,user_id,text) values (
                     %s,1,'Updated square information for customer'
