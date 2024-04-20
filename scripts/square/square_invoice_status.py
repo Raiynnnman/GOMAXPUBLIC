@@ -40,7 +40,6 @@ q = """
         sis.invoice_status as stripe_invoice_status,i.version
     from 
         invoices i
-        left join stripe_invoice_status sis on sis.invoices_id=i.id
         left join invoice_status isi on i.invoice_status_id=isi.id
         left join stripe_invoice_status sis on i.id = sis.invoices_id 
         left outer join invoice_check ic on i.id = ic.invoices_id

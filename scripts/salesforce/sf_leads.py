@@ -641,16 +641,11 @@ for x in SF_DATA:
             """,(pq_id,)
         )
         if len(off_id) < 1 and len(off_id2) < 1:
-            if not args.excp_pass:
-                raise Exception("PQ given, office not found: %s" % pq_id)
-            else:
-                print("PQ given, office not found: %s" % pq_id)
-                continue
+            print("%s: PQ given, office not found: %s" % (j['Id'],pq_id))
+            continue
         elif len(off_id) < 1 and len(off_id2) > 0:
-            if not args.excp_pass:
-                raise Exception("PQ given, office not found: %s" % pq_id)
-            else:
-                raise Exception("PQ given, office found instead: %s" % pq_id)
+            print("%s: PQ given, office not found: %s" % (j['Id'],pq_id))
+            continue
         else:
             off_id = off_id[0]['office_id']
         # Looks silly, but its great for testing
