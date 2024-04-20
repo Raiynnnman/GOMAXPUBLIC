@@ -230,7 +230,7 @@ for x in inv:
                             'payment_requests': [{
                                 'request_type':'BALANCE',
                                 'automatic_payment_source':'CARD_ON_FILE',
-                                # 'card_id': card_id,
+                                'card_id': card_id,
                                 'due_date': calcdate.getTimeIntervalAddMonths(None,1).strftime('%Y-%m-%d'),
                                 'tipping_enabled':False,
                             }]
