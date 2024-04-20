@@ -572,7 +572,8 @@ for x in SF_DATA:
                 """,(pq_id,)
             )
             if len(off_id) < 1:
-                raise Exception("PQ given, office not found")
+                print("%s: PQ given (%s), office not found" % (pq_id,j['Id']))
+                continue
             off_id = off_id[0]['office_id']
             j['PainID__c'] = pq_id
             j['PainURL__c'] = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),pq_id)
