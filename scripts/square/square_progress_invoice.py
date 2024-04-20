@@ -29,6 +29,8 @@ else:
 parser = argparse.ArgumentParser()
 parser.add_argument('--dryrun', dest="dryrun", action="store_true")
 parser.add_argument('--force', dest="force", action="store_true")
+parser.add_argument('--id', dest="inv_id", action="store")
+parser.add_argument('--debug', dest="debub", action="store_true")
 args = parser.parse_args()
 db = Query()
 
@@ -63,7 +65,8 @@ INV = getIDs.getInvoiceIDs()
 
 for x in l:
     try:
-        # print(x)
+        if args.debug:
+            print(x)
         if x['invoice_status'] == 'CANCELED' and x['status'] != 'VOID': 
             print("changing status to ERROR: %s " % x['id'])
             db.update("""

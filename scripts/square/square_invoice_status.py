@@ -24,6 +24,7 @@ loc = config.getKey("square_loc_key")
 parser = argparse.ArgumentParser()
 parser.add_argument('--dryrun', dest="dryrun", action="store_true")
 parser.add_argument('--force', dest="force", action="store_true")
+parser.add_argument('--debug', dest="debug", action="store_true")
 args = parser.parse_args()
 db = Query()
 client = None
@@ -51,6 +52,8 @@ if not args.force:
 l = db.query(q)
 
 for x in l:
+    if args.debug:
+        print(x)
     try:
         if x['stripe_invoice_id'] is None:
             continue
@@ -66,6 +69,8 @@ for x in l:
         #    p = stripe.PaymentIntent.retrieve(payment_intent,expand=['latest_charge.balance_transaction'])
         #    s_fee = p['latest_charge']['balance_transaction']['fee']/100
         if r is not None:
+            if args.debug:
+                print(json.dumps(r,indent=4))
             db.update("""
                 update stripe_invoice_status
                     set status=%s
@@ -111,7 +116,7 @@ for x in l:
                 (%s,date_add(date_add(now(),interval %s hour),INTERVAL %s minute))
             """,(x['invoices_id'],hours,random()*100)
         )
-        print("updated status for %s" % x['invoices_id'])
+        print("updated status %s for %s" % (r['invoice']['status'],x['invoices_id']))
         db.commit()
     except Exception as e:
         print(str(e))
