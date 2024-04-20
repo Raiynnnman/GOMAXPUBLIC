@@ -189,6 +189,11 @@ for x in SF_DATA:
                     update provider_queue set sf_id = %s where id = %s
                     """,(j['Id'],o[0]['id'])
                 )
+                db.update("""
+                    insert into provider_queue_history(provider_queue_id,user_id,text) values (
+                        %s,1,'Updated SFID'
+                    )
+                """,(o[0]['id'],))
         except Exception as e:
             print("ERROR: %s: %s" % (j['Id'],str(e)))
             # raise e

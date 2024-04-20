@@ -330,6 +330,11 @@ for x in PAIN:
                 update provider_queue set sf_updated=now() where id = %s
                 """,(x['pq_id'],)
             )
+            db.update("""
+                insert into provider_queue_history(provider_queue_id,user_id,text) values (
+                    %s,1,'Updated SF Date Stamp'
+                )
+            """,(x['pq_id'],))
             sfid = newdata['Id']
             del newdata['Id']
             if args.only_fields is not None:
@@ -366,6 +371,11 @@ for x in PAIN:
                         update provider_queue set sf_id = %s,sf_updated=now() where id = %s
                         """,(r['id'],x['pq_id'])
                     )
+                    db.update("""
+                        insert into provider_queue_history(provider_queue_id,user_id,text) values (
+                            %s,1,'Created SF Lead'
+                        )
+                    """,(x['pq_id'],))
                 if r['Id'] not in PAINHASH:
                     PAINHASH[r['Id']] = {}
                 PAINHASH[r['Id']]['newdata'] = newdata
@@ -405,6 +415,11 @@ for x in PAIN:
                     update provider_queue set sf_updated=%s where id = %s
                     """,(LAST_MOD,x['pq_id'],)
                 )
+                db.update("""
+                    insert into provider_queue_history(provider_queue_id,user_id,text) values (
+                        %s,1,'Updated SF Datestamp'
+                    )
+                """,(x['pq_id'],))
     if not args.dryrun:
         db.commit()
 

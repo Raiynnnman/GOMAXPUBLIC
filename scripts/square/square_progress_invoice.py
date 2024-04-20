@@ -30,7 +30,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--dryrun', dest="dryrun", action="store_true")
 parser.add_argument('--force', dest="force", action="store_true")
 parser.add_argument('--id', dest="inv_id", action="store")
-parser.add_argument('--debug', dest="debub", action="store_true")
+parser.add_argument('--debug', dest="debug", action="store_true")
 args = parser.parse_args()
 db = Query()
 
