@@ -239,7 +239,7 @@ for x in inv:
                 )
                 if s.is_error():
                     db.update("""
-                        update office_cards set is_error=1,error_description=%s
+                        update office_cards set iserror=1,error_description=%s
                         where id=%s""",(card['id'],json.dumps(s.errors))
                     )
                     db.commit()
