@@ -129,7 +129,7 @@ for x in inv:
         cards = db.query("""
             select
                 uc.id,uc.card_id,uc.is_default,uc.payment_id
-            from office_cards uc where office_id=%s
+            from office_cards uc where iserror = 0 and office_id=%s
             """,(x['office_id'],)
         )
         card_id = None
@@ -168,12 +168,13 @@ for x in inv:
                 update invoices set order_id = %s where id = %s
                 """,(r['order']['id'],x['id'])
             )
-            
+            card = {}
             for g in cards:
                 if g['id'] is None:
                     continue
                 if g['is_default'] == 1:
-                    card_id = g['payment_id']
+                    card_id = g['card_id']
+                    card = g
             mode = "charge_automatically"
             if card_id is None:
                 mode = 'send_invoice'
@@ -210,6 +211,7 @@ for x in inv:
                     raise Exception(json.dumps(s.errors))
                 s = s.body
             elif mode == 'charge_automatically':
+                print("card=%s" % card)
                 s = client.invoices.create_invoice(
                     body = {
                         'invoice': {
@@ -238,7 +240,7 @@ for x in inv:
                 if s.is_error():
                     for g in s.errors:
                         if g['code'] == 'INVALID_CARD':
-                            db.update("delete from office_cards where office_id=%s",(x['office_id'],))
+                            db.update("update office_cards set is_error=1 where id=%s",(card['id'],))
                             db.commit()
                             continue
                     raise Exception(json.dumps(s.errors))
