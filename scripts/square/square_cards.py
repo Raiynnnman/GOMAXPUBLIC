@@ -76,7 +76,7 @@ for x in l:
             raise Exception("NO_CARD_DATA")
         db.update("""
             insert into office_history(office_id,user_id,text) values (
-                %s,1,'Added card to Square'
+                %s,1,'Pulled card from Square'
             )
         """,(x['id'],))
         for g in r['cards']:

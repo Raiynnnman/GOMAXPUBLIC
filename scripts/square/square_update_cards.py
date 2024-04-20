@@ -44,6 +44,7 @@ q = """
     where 
         pq.office_id = o.id and 
         oc.office_id = o.id and
+        oc.sync_retries < 5 and
         (o.active = 1 or sf_lead_executed = 1) and
         o.office_type_id = %s and
         oc.sync_provider = 0 and
@@ -101,6 +102,10 @@ for x in l:
             print("ERROR: %s has an issue: %s" % (x['office_id'],str(e)))
             exc_type, exc_value, exc_traceback = sys.exc_info()
             traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
+    db.update("""
+        update office_cards set sync_retries=sync_retries + 1 where id=%s
+        """,(x['office_cards_id'],)
+    )
     db.commit()
 
 print("Processed %s records" % CNT)
