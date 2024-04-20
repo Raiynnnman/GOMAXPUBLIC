@@ -1154,6 +1154,7 @@ class RegistrationUpdate(AdminBase):
             """,(PQS['INVITED'],offid)
             )
             # TODO: Send welcome mail here
+        self.setJenkinsID(offid)
         db.commit()
         return ret
 

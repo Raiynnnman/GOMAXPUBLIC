@@ -23,13 +23,16 @@ class Jenkins:
 
     def process(*args,**kwargs):
         cls = args[1][0]
-        print(cls)
+        myid = ''
+        if len(args[1]) > 1:
+            myid = args[1][1]
         db = Query()
         
         o = db.query("select job from jenkins_jobs where class=%s",(cls,))
         if len(o) < 1:
-            print("Jenkins: Nothing to do")
+            # print("Jenkins: Nothing to do")
             return
+        print("vals=%s,%s" % (cls,myid))
         env =  config.getKey("environment")
         url =  config.getKey("jenkins_url")
         user = config.getKey("jenkins_user")
@@ -51,7 +54,7 @@ class Jenkins:
             try:
                 # jobs = jenk.get_jobs()
                 # print(jobs)
-                jenk.build_job(job)
+                jenk.build_job(job,{'ID':myid})
             except Exception as e:
                 print("RUN: Running job (%s): %s" % (job,str(e)))
 

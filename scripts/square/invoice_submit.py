@@ -212,6 +212,12 @@ for x in inv:
                 s = s.body
             elif mode == 'charge_automatically':
                 print("card=%s" % card)
+                g = client.cards.list_cards(customer_id=x['stripe_cust_id'])
+                if g.is_error():
+                    print(g.errors)
+                    raise Exception("ERROR retrieving cards")
+                print("CARDS:")
+                print(json.dumps(g,indent=4,sort_keys=True))
                 s = client.invoices.create_invoice(
                     body = {
                         'invoice': {

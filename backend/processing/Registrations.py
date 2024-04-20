@@ -608,7 +608,7 @@ class RegisterProvider(RegistrationsBase):
                     %s,1,'Set to active (SF Lead Registration)'
                 )
             """,(off_id,))
-        ### TODO: Send invite link
+        self.setJenkinsID(off_id)
         db.update("""
             delete from registrations_tokens where 
                 registrations_id in (select id from registrations 

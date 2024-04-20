@@ -4,6 +4,8 @@ from util import Jenkins
 
 class ProcessingBase:
 
+    __id__ = None
+
     def __init__(self):
         pass
 
@@ -123,6 +125,9 @@ class ProcessingBase:
             ret[n] = i
         return ret 
 
+    def setJenkinsID(self,i):
+        self.__id__ = i
+
     def getInvoiceIDs(self):
         db = Query()
         ret = {}
@@ -134,4 +139,4 @@ class ProcessingBase:
         return ret 
 
     def __del__(self):
-        Jenkins.spawnJob.delay(self.__class__.__name__)
+        Jenkins.spawnJob.delay(self.__class__.__name__,self.__id__)
