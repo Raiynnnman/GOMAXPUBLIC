@@ -678,8 +678,8 @@ class RegisterProvider extends Component {
                                             this.saveCard({token:token});
                                     }}>
                                     <>
-                                        <ApplePay/>
-                                        <GooglePay/>
+                                        {/*<ApplePay/>
+                                        <GooglePay/>*/}
                                         <CreditCard>Save</CreditCard>
                                     </>
                                 </PaymentForm>
