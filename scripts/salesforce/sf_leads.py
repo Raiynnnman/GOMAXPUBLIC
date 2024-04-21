@@ -78,7 +78,7 @@ q = """
     from 
         provider_queue pq
         left outer join office o on pq.office_id = o.id
-        left outer join provider_queue_sf_modified pqsm on pq.id=pqsm.provider_queue_id
+        left outer join provider_queue_sf_updated pqsm on pq.id=pqsm.provider_queue_id
         left outer join office_plans op on  op.office_id = o.id
         left outer join pricing_data pd on pd.id = op.pricing_data_id
         left outer join users u on u.id = o.user_id
@@ -337,7 +337,7 @@ for x in PAIN:
             PAINHASH[newdata['Id']]['newdata'] = newdata
             print("updating SF record: %s" % newdata['Id'])
             db.update("""
-                replace into provider_queue_sf_sync(id,modified) 
+                replace into provider_queue_sf_updated(id,modified) 
                     values (%s,now())
                 """,(x['pq_id'],)
             )
@@ -423,7 +423,7 @@ for x in PAIN:
         if x['updated03'] is None:
             if not args.dryrun:
                 db.update("""
-                replace into provider_queue_sf_sync(id,modified) 
+                replace into provider_queue_sf_updated(id,modified) 
                     values (%s,now())
                     """,(LAST_MOD,x['pq_id'],)
                 )

@@ -1042,6 +1042,16 @@ class RegistrationUpdate(AdminBase):
             """,(pqid,user['id']))
             
         db.update("""
+            update office set 
+                email = %s
+            where
+            id = %s
+            """,(
+                params['email'].lower(),
+                offid
+                )
+        )
+        db.update("""
             update users set 
                 email = %s,first_name=%s,last_name=%s,phone=%s
             where
