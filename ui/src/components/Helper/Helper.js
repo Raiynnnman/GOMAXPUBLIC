@@ -115,7 +115,7 @@ class Helper extends Component {
     return (
       <div className={cx(s.themeHelper, { [s.themeHelperOpened]: isOpened })}>
 
-        <Joyride
+        {/*<Joyride
           callback={this.handleJoyrideCallback}
           continuous={true}
           run={this.state.run}
@@ -169,7 +169,7 @@ class Helper extends Component {
               fontSize: 13,
             },
           }}
-        />
+        />*/}
 
           <div className={`${s.themeHelperBtn} bg-primary helper-button`} onClick={this.toggle}>
             <div className={cx(s.themeHelperSpinner, 'text-white')}>
