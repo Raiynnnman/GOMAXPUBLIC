@@ -162,8 +162,8 @@ for x in l:
         traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
         db.update("""
             insert into invoice_history (invoices_id,user_id,text) values 
-                (%s,%s,'Error: %s)
-            """,(x['id'],1,str(e))
+                (%s,%s,%s)
+            """,(x['id'],1,'Error: %s' % str(e))
         )
 
 db.commit()
