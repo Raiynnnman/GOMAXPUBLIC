@@ -962,9 +962,9 @@ class Registrations extends Component {
                                                   value={{
                                                     label:
                                                         this.props.registrationsAdminList.data.config.type.filter((g) =>
-                                                            this.state.selected.office_type_id == g.id).length > 0 ? 
+                                                            this.state.selected.office_type_id === g.id).length > 0 ? 
                                                         this.props.registrationsAdminList.data.config.type.filter((g) => 
-                                                            this.state.selected.office_type_id == g.id
+                                                            this.state.selected.office_type_id === g.id
                                                     )[0].name : ''
                                                   }}
                                                   options={this.props.registrationsAdminList.data.config.type.map((g) => { 
@@ -994,9 +994,9 @@ class Registrations extends Component {
                                                   value={{
                                                     label:
                                                         this.props.registrationsAdminList.data.config.status.filter((g) => 
-                                                            this.state.selected.provider_queue_status_id == g.id).length > 0 ? 
+                                                            this.state.selected.provider_queue_status_id === g.id).length > 0 ? 
                                                         this.props.registrationsAdminList.data.config.status.filter((g) => 
-                                                            this.state.selected.provider_queue_status_id == g.id
+                                                            this.state.selected.provider_queue_status_id === g.id
                                                     )[0].name : ''
                                                   }}
                                                   options={this.props.registrationsAdminList.data.config.status.map((g) => { 
@@ -1023,7 +1023,7 @@ class Registrations extends Component {
                                                   value={{
                                                     label:
                                                         (this.state.selected.lead_strength_id) ?  this.props.registrationsAdminList.data.config.strength.filter((g) => 
-                                                            this.state.selected.lead_strength_id == g.id
+                                                            this.state.selected.lead_strength_id === g.id
                                                     )[0].name : ''
                                                   }}
                                                   options={this.props.registrationsAdminList.data.config.strength.map((g) => { 

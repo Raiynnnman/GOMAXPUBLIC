@@ -30,7 +30,6 @@ class ReferrerUpload extends Component {
                 'description':'',
                 'email':'',
                 'phone':'',
-                'zipcode':''
             },
             uploadFile:null
         }
@@ -49,7 +48,6 @@ class ReferrerUpload extends Component {
         this.state.clients.push(this.state.current);
         this.state.current={
                 'name':'',
-                'zipcode':'',
                 'description':'',
                 'email':'',
                 'phone':'',

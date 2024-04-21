@@ -79,7 +79,7 @@ class Customers extends Component {
             )}
             {(this.props.officeClients && this.props.officeClients.data &&
               this.props.officeClients.data.clients && this.state.selectedAppt === null &&
-              this.props.officeClients.data.clients.length == 0) && (
+              this.props.officeClients.data.clients.length === 0) && (
                 <h4>Waiting for first client</h4>
             )}
             {(this.props.officeClients && this.props.officeClients.data &&

@@ -26,6 +26,8 @@ import RegisterLegal from '../pain/landing/RegisterLegal';
 import RegisterReferrer from '../pain/landing/RegisterReferrer';
 
 const CloseButton = ({closeToast}) => <i onClick={closeToast} className="la la-close notifications-close"/>
+require('dotenv').config()
+console.log("myenv",process.env)
 
 class App extends React.PureComponent {
   
