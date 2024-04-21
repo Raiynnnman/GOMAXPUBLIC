@@ -16,6 +16,7 @@ build: version
 install: build
 	mkdir -p targets/package
 	touch build/.front-ui
+	cp env.prod build/.env
 	(cd build && tar cfz ../targets/package/install.tar.gz .)
 	echo '#!/bin/bash' > targets/package/install.sh
 	cat ../version >> targets/package/install.sh
