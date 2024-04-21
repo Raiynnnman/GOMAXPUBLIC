@@ -165,7 +165,7 @@ else:
     H.write(json.dumps(res,indent=4))
     H.close()
 
-SF_ALL_QUERY = "select"
+SF_ALL_QUERY = "select "
 SF_ALL_QUERY += ','.join(ARR)
 SF_ALL_QUERY += " from Lead "
 res = sf.query_all(SF_ALL_QUERY)
