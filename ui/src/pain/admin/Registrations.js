@@ -390,8 +390,6 @@ class Registrations extends Component {
     } 
 
     render() {
-        console.log("omg1",squareLocationKey());
-        console.log("omg2",salesforceURL());
         const pageButtonRenderer = ({
           page,
           currentPage,
