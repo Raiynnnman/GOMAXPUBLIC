@@ -73,11 +73,12 @@ q = """
         o.updated as office_updated,u.updated as users_updated,
         o.name as office_name,
         pq.updated as updated01,pq.updated as updated02,
-        pq.sf_updated as updated03,
+        pqsm.modified as updated03,
         com.id as commission_user_id,com.sf_id as user_sf_id
     from 
         provider_queue pq
         left outer join office o on pq.office_id = o.id
+        left outer join provider_queue_sf_modified pqsm on pq.id=pqsm.provider_queue_id
         left outer join office_plans op on  op.office_id = o.id
         left outer join pricing_data pd on pd.id = op.pricing_data_id
         left outer join users u on u.id = o.user_id
@@ -336,7 +337,8 @@ for x in PAIN:
             PAINHASH[newdata['Id']]['newdata'] = newdata
             print("updating SF record: %s" % newdata['Id'])
             db.update("""
-                update provider_queue set sf_updated=now() where id = %s
+                replace into provider_queue_sf_sync(id,modified) 
+                    values (%s,now())
                 """,(x['pq_id'],)
             )
             db.update("""
@@ -421,14 +423,10 @@ for x in PAIN:
         if x['updated03'] is None:
             if not args.dryrun:
                 db.update("""
-                    update provider_queue set sf_updated=%s where id = %s
+                replace into provider_queue_sf_sync(id,modified) 
+                    values (%s,now())
                     """,(LAST_MOD,x['pq_id'],)
                 )
-                db.update("""
-                    insert into provider_queue_history(provider_queue_id,user_id,text) values (
-                        %s,1,'Updated SF Datestamp'
-                    )
-                """,(x['pq_id'],))
     if not args.dryrun:
         db.commit()
 
