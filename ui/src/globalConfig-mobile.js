@@ -1,6 +1,6 @@
 
 export const apiBaseUrl = function() {
-    return "https://uat-api.poundpain.com";
+    return process.env['BASE_URL']
 } 
 
 export const contextURL = function() { 

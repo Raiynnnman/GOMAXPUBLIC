@@ -1,14 +1,15 @@
 
 export const squareAppKey = function() {
-    return "sandbox-sq0idb-VMJrYSm-f05yoJICOTs_Xw";
+    return process.env['REACT_APP_SQUARE_APP_KEY'];
 }
 
 export const squareLocationKey = function() { 
-    return "LXCHFAQVFWE3E";
+    console.log("env",process.env);
+    return process.env['REACT_APP_SQUARE_LOCATION_KEY'];
 }
 
 export const squareApiKey = function() {
-    return "EAAAl77CLeJGt3cIFKCHHsXoUy6sCRPeP0AUWK1kwsnky87dXtgYELxlpX7rQd0W"
+    return process.env['REACT_APP_SQUARE_API_KEY'];
 }
 
 export default squareAppKey;

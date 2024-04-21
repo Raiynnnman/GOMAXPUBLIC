@@ -1,6 +1,0 @@
-
-export const cryptoKey = function() { 
-    return "__CRYPTO_KEY__";
-}
-
-export default cryptoKey;

@@ -168,7 +168,7 @@ else:
 SF_ALL_QUERY = "select"
 SF_ALL_QUERY += ','.join(ARR)
 SF_ALL_QUERY += " from Lead "
-res = sf.query_all(SFQUERY)
+res = sf.query_all(SF_ALL_QUERY)
 H=open('lead_backup.json',"w")
 H.write(json.dumps(res,indent=4))
 H.close()

@@ -9,11 +9,6 @@ version:
 
 build: version
 	rm -rf build
-	cp src/globalConfig.js.prod src/globalConfig.js
-	cp src/cryptoKey.js.prod src/cryptoKey.js
-	cp src/salesforceConfig.js.prod src/salesforceConfig.js
-	cp src/baseURLConfig.js.prod src/baseURLConfig.js
-	cp src/squareConfig.js.prod src/squareConfig.js
 	npm i
 	npm run build
 	cp src/version.js.dev src/version.js

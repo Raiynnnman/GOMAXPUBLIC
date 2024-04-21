@@ -1,6 +1,0 @@
-
-export const salesforceURL = function() {
-    return "__SALES_FORCE_URL__";
-}
-
-export default salesforceURL;

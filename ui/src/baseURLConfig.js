@@ -1,6 +1,6 @@
 
 export const baseURLConfig = function() {
-    return "http://localhost:3001";
+    return process.env['BASE_URL'];
 }
 
 export default baseURLConfig;

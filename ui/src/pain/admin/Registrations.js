@@ -11,6 +11,7 @@ import cellEditFactory from 'react-bootstrap-table2-editor';
 import EditIcon from '@mui/icons-material/Edit';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 import salesforceURL from '../../salesforceConfig';
+import squareLocationKey from '../../squareConfig';
 
 import { Type } from 'react-bootstrap-table2-editor';
 import { connect } from 'react-redux';
@@ -389,6 +390,8 @@ class Registrations extends Component {
     } 
 
     render() {
+        console.log("omg1",squareLocationKey());
+        console.log("omg2",salesforceURL());
         const pageButtonRenderer = ({
           page,
           currentPage,

@@ -1,6 +1,0 @@
-
-export const stripeKey = function() {
-    return "__STRIPE_KEY__";
-} 
-
-export default stripeKey;

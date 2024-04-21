@@ -1,6 +1,0 @@
-
-export const baseURLConfig = function() {
-    return "__BASE_URL__";
-}
-
-export default baseURLConfig;

@@ -1,6 +1,7 @@
 
 export const salesforceURL = function() {
-    return "https://poundpain--uat.sandbox.lightning.force.com/";
+    console.log("env",process.env);
+    return process.env['SALESFORCE_URL']
 }
 
 export default salesforceURL;
