@@ -21,7 +21,7 @@ import cx from 'classnames';
 import { NavbarTypes } from '../../reducers/layout';
 //import Notifications from '../Notifications';
 import { logoutUser } from '../../actions/auth';
-import Joyride, { STATUS } from 'react-joyride';
+// import Joyride, { STATUS } from 'react-joyride';
 import { toggleSidebar, openSidebar, closeSidebar, changeActiveSidebarItem } from '../../actions/navigation';
 
 import adminDefault from '../../images/chat/chat2.png';
@@ -187,7 +187,7 @@ class Header extends React.Component {
             <AppSpinner/>
         )}
       <Navbar className={`${s.root} d-print-none ${navbarType === NavbarTypes.FLOATING ? s.navbarFloatingType : ''}`}  style={{zIndex: !openUsersList ? 100 : 0}}>
-        <Joyride
+        {/*<Joyride
           callback={this.handleJoyrideCallback}
           continuous={true}
           run={this.state.run}
@@ -242,7 +242,7 @@ class Header extends React.Component {
               fontSize: 13,
             },
           }}
-        />
+        />*/}
         <div className="d-flex flex-row justify-content-md-start flex-grow-1 align-content-center align-self-start">
           <Nav className="my-auto">
             <NavItem>
