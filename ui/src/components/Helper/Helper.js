@@ -3,7 +3,7 @@ import cx from 'classnames';
 import { Button } from 'reactstrap';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import Joyride, { STATUS } from 'react-joyride';
+// import Joyride, { STATUS } from 'react-joyride';
 import { DashboardThemes, SidebarTypes, NavbarTypes } from '../../reducers/layout';
 import { changeTheme, changeSidebarColor, changeNavbarColor, navbarTypeToggle, sidebarTypeToggle } from '../../actions/layout';
 import CustomColorPicker from '../ColorPicker';
