@@ -395,7 +395,8 @@ for x in PAIN:
                 print(json.dumps(newdata,indent=4))
                 exc_type, exc_value, exc_traceback = sys.exc_info()
                 traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
-                raise e
+                continue
+                # raise e
     elif update == sf_util.updatePAIN() and not SAME:
         print("Disabled update pain")
         continue # Turn this off for now
