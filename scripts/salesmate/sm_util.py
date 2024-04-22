@@ -32,6 +32,7 @@ DEAL_MAPPING = {
     'OwnerId':'ownerid',
     'Payment_Amount__c':'textCustomField4',
     "Ready_To_Buy__c": 'textCustomField5',
+    "Invoice_Paid__c": 'textCustomField7',
     "Subscription_Plan__c": 'textCustomField6',
     "Id": 'textCustomField4',
     'PainID__c':'textCustomField1',

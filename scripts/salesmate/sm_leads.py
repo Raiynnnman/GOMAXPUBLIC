@@ -340,7 +340,7 @@ for x in PAIN:
                         update office set sm_id = %s 
                             where id=%s""",(company_sm_id,x['office_id'],)
                     )
-                    newdata['company'] = company_sm_id
+                    newdata['primaryCompany'] = company_sm_id
                     newdata['tags'] = 'Import SF'
                     r = CONTACT_OBJ.update(newdata,dryrun=args.no_commit)
                     user_sm_id = r['id']
