@@ -471,6 +471,7 @@ class SM_Deals(SM_Base):
         toset = {}
         additional = [
             'primaryContact',
+            'primaryCompany',
             'owner',
             'tags',
             'stage',

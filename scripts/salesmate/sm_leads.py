@@ -130,7 +130,6 @@ PSCHEMA = sf_util.getPainSchema(TYPE)
 CONTACTS = sm_util.getContacts(debug=args.debug)
 DEALS = sm_util.getDeals(debug=args.debug)
 COMPANIES = sm_util.getCompanies(debug=args.debug)
-sys.exit(0)
 
 ALL_FIELDS = []
 SCHEMA = {}
@@ -143,7 +142,7 @@ for x in PAIN:
     if debug:
         print("x=%s" % x)
     if x['sm_id'] is not None:
-        # only creating new records
+        print("only creating new records")
         continue
     o = db.query("""
         select count(id) as a from office_addresses where office_id = %s
@@ -273,6 +272,7 @@ for x in PAIN:
         update = sf_util.updatePAIN()
     
     if update == sf_util.updateSF() and not SAME: # Update SF
+        continue # Turn this off for now
         if 'Id' in newdata and newdata['Id'] is not None:
             PAINHASH[newdata['Id']]['newdata'] = newdata
             print("updating SF record: %s" % newdata['Id'])
@@ -341,7 +341,7 @@ for x in PAIN:
                             where id=%s""",(company_sm_id,x['office_id'],)
                     )
                     newdata['primaryCompany'] = company_sm_id
-                    newdata['tags'] = 'Import SF'
+                    newdata['tags'] = 'Import Platform'
                     r = CONTACT_OBJ.update(newdata,dryrun=args.no_commit)
                     user_sm_id = r['id']
                     if x['user_id'] is not None:
@@ -351,7 +351,7 @@ for x in PAIN:
                         )
                     newdata['primaryContact'] = user_sm_id
                     newdata['owner'] = owner_id
-                    newdata['tags'] = 'Import SF'
+                    newdata['tags'] = 'Import Platform'
                     newdata['title'] = "Lead for %s" % x['office_name']
                     sfl = x['sf_id']
                     newdata['textCustomField4'] = sfl
@@ -387,6 +387,7 @@ for x in PAIN:
                 traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
                 raise e
     elif update == sf_util.updatePAIN() and not SAME:
+        continue # Turn this off for now
         try:
             if not args.dryrun:
                 cmod = sf_util.updatePAINDB(x,SF_ROW,SFSCHEMA,PSCHEMA,db,debug=args.debug)
