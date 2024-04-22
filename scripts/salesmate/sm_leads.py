@@ -213,10 +213,6 @@ for x in PAIN:
             PAINHASH[SF_ID] = {}
         PAINHASH[SF_ID]['nd'] = newdata
 
-    if debug:
-        print("---- NEWDATA")
-        print(json.dumps(newdata,indent=4))
-        print("----")
     if 'LastModifiedDate' in newdata:
         del newdata['LastModifiedDate']
     if newdata['Company'] is None or len(newdata['Company']) < 1 or newdata['Company'] == "None":
@@ -262,9 +258,20 @@ for x in PAIN:
     if newdata['OwnerId'] is None:
         del newdata['OwnerId']
 
-
-    # print("upd=%s" % update)
+    if debug:
+        print("upd=%s" % update)
     SAME = sf_util.compareDicts(newdata,SF_ROW,debug=args.debug)
+
+    print("%s=%s" % (x['sf_id'],newdata['Id']))
+    if 'Id' in newdata and newdata['Id'] == x['sf_id']: # Disable this, need to move to SM
+        print("delete")
+        del newdata['Id']
+
+    if debug:
+        print("---- NEWDATA")
+        print(json.dumps(newdata,indent=4))
+        print("----")
+
 
     if args.force_sf:
         update = sf_util.updateSF()
@@ -272,8 +279,9 @@ for x in PAIN:
         update = sf_util.updatePAIN()
     
     if update == sf_util.updateSF() and not SAME: # Update SF
-        continue # Turn this off for now
         if 'Id' in newdata and newdata['Id'] is not None:
+            print("Disabled updates")
+            continue # Turn this off for now
             PAINHASH[newdata['Id']]['newdata'] = newdata
             print("updating SF record: %s" % newdata['Id'])
             db.update("""
@@ -301,7 +309,8 @@ for x in PAIN:
             if not args.dryrun:
                 r = DEALS_OBJ.update(newdata)
         else:
-            del newdata['Id']
+            if 'Id' in newdata:
+                del newdata['Id']
             print("creating SM record:%s " % x['office_name'])
             try:
                 if debug:
@@ -387,6 +396,7 @@ for x in PAIN:
                 traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
                 raise e
     elif update == sf_util.updatePAIN() and not SAME:
+        print("Disabled update pain")
         continue # Turn this off for now
         try:
             if not args.dryrun:
