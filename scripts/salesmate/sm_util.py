@@ -18,6 +18,40 @@ from util import getIDs
 config = settings.config()
 config.read("settings.cfg")
 
+CONTACT_MAPPING = {
+    'Email':'email',
+    'Salutation':'title',
+    'FirstName':'firstName',
+    'Phone':'phone',
+    'PainID__c':'textCustomField1',
+    'Id':'textCustomField2',
+    'LastName':'lastName'
+}
+
+DEAL_MAPPING = {
+    'OwnerId':'ownerid',
+    'Payment_Amount__c':'textCustomField4',
+    "Ready_To_Buy__c": 'textCustomField5',
+    "Subscription_Plan__c": 'textCustomField6',
+    "Id": 'textCustomField4',
+    'PainID__c':'textCustomField1',
+    'PainURL__c':'textCustomField3',
+    'Sales_Link__c':'textCustomField2'
+}
+COMPANY_MAPPING = {
+    'PainID__c':'textCustomField1',
+    'PainURL__c':'textCustomField2',
+    'Addresses_ID__c':'textCustomField4',
+    'Company':'name',
+    'OwnerId':'owner',
+    'Street': 'billingAddressLine1',
+    'Website':'website',
+    'PostalCode':'zip',
+    'Phone':'phone',
+    'City':'billingCity',
+    'State':'billingState',
+    'Id': 'textCustomField5'
+}
 
 class SM_Base:
 
@@ -143,6 +177,7 @@ class SM_Contacts(SM_Base):
             "contact.type",
             "contact.email",
             "contact.mobile",
+            "contact.phone",
             "contact.billingCity",
             "contact.billingCountry",
             "contact.tags",
@@ -210,11 +245,21 @@ class SM_Contacts(SM_Base):
         toget = self.getPayload()
         return self.getData(payload=toget)
 
-    def update(self,*args,**kwargs):
+    def update(self,args,dryrun=False):
         self.setCall('/apis/contact/v4')
         self.setType('POST')
-        toget = args[0]
-        return self.getData(payload=json.dumps(toget))
+        upd = args
+        toset = {}
+        for x in upd:
+            if x in CONTACT_MAPPING:
+                v = CONTACT_MAPPING[x] 
+                toset[v] = upd[x]
+        
+        print("CONTACTSET:%s" % json.dumps(toset,indent=4))
+        if dryrun:
+            return {'id':None}
+        else:
+            return self.getData(payload=json.dumps(toset))
     
 class SM_Companies(SM_Base):
     def __init__(self):
@@ -291,11 +336,20 @@ class SM_Companies(SM_Base):
         toget = self.getPayload()
         return self.getData(payload=toget)
 
-    def update(self,*args,**kwargs):
+    def update(self,args,dryrun=False):
         self.setType('POST')
         self.setCall('/apis/company/v4')
-        toget = args[0]
-        return self.getData(payload=json.dumps(toget))
+        upd = args
+        toset = {}
+        for x in upd:
+            if x in COMPANY_MAPPING:
+                v = COMPANY_MAPPING[x] 
+                toset[v] = upd[x]
+        print("COMPANYSET:%s" % json.dumps(toset,indent=4))
+        if dryrun:
+            return {'id':None}
+        else:
+            return self.getData(payload=json.dumps(toset))
 
 class SM_Deals(SM_Base):
     def __init__(self):
@@ -377,11 +431,55 @@ class SM_Deals(SM_Base):
         toget = self.getPayload()
         return self.getData(payload=toget)
 
-    def update(self,*args,**kwargs):
+    def update(self,args,dryrun=False):
         self.setCall('/apis/deal/v4')
         self.setType('POST')
-        toget = args[0]
-        return self.getData(payload=json.dumps(toget))
+        upd = args
+        toset = {}
+        for x in upd:
+            if x in DEAL_MAPPING:
+                v = DEAL_MAPPING[x] 
+                toset[v] = upd[x]
+        print("DEALSET:%s" % json.dumps(toset,indent=4))
+        if dryrun:
+            return {'id':None}
+        else:
+            return self.getData(payload=json.dumps(toset))
+
+def getContacts():
+    CONTACTS = {}
+    contact = SM_Contacts()
+    for x in contact.get():
+        print("contact=%s" % json.dumps(x,sort_keys=True))
+        v = x['id']
+        CONTACTS[v] = x
+    return CONTACTS
+
+def getDeals():
+    deals = SM_Deals()
+    DEALS = {}
+    for x in deals.get():
+        print("deal=%s" % json.dumps(x,sort_keys=True))
+        v = x['id']
+        DEALS[v] = x
+    return DEALS
+
+def getUsers():
+    USERS = {}
+    users = SM_Users()
+    for x in users.get():
+        print("user=%s" % json.dumps(x,sort_keys=True))
+        v = x['id']
+        USERS[v] = x
+    return USERS
 
 
+def getCompanies():
+    COMPANIES = {}
+    company = SM_Companies()
+    for x in company.get():
+        print("company=%s" % json.dumps(x,sort_keys=True))
+        v = x['id']
+        COMPANIES[v] = x
+    return COMPANIES
 
