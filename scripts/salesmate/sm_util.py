@@ -30,10 +30,12 @@ CONTACT_MAPPING = {
 
 DEAL_MAPPING = {
     'OwnerId':'ownerid',
-    'Payment_Amount__c':'textCustomField4',
-    "Ready_To_Buy__c": 'textCustomField5',
-    "Invoice_Paid__c": 'textCustomField7',
-    "Subscription_Plan__c": 'textCustomField6',
+    'Lead_Source__c': 'source',
+    'Is_PI_Provider__c': 'checkboxCustomField3',
+    'Payment_Amount__c':'decimalCustomField1',
+    "Ready_To_Buy__c": 'checkboxCustomField1',
+    "Invoice_Paid__c": 'checkboxCustomField2',
+    "Subscription_Plan__c": 'textCustomField5',
     "Id": 'textCustomField4',
     'PainID__c':'textCustomField1',
     'PainURL__c':'textCustomField3',
@@ -113,7 +115,7 @@ class SM_Base:
             }
             r = requests.request('GET',u,headers=headers,data=payload)
             if self.__DEBUG__:
-                print("%s: get: status: %s" % (self.__class__.__name__r.status_code))
+                print("%s: get: status: %s" % (self.__class__.__name__,r.status_code))
             if r.status_code != 200:
                 raise Exception("%s: %s" % (r.status_code,r.text))
             js = json.loads(r.text)
@@ -391,12 +393,20 @@ class SM_Deals(SM_Base):
     def getPayload(self):
         j = {
           "displayingFields": [
+            "deal.checkboxCustomField1",
+            "deal.checkboxCustomField2",
+            "deal.checkboxCustomField3",
+            "deal.decimalCustomField1",
             "deal.textCustomField1",
             "deal.textCustomField2",
             "deal.textCustomField3",
             "deal.textCustomField4",
             "deal.textCustomField5",
             "deal.textCustomField6",
+            "deal.textCustomField7",
+            "deal.textCustomField8",
+            "deal.textCustomField9",
+            "deal.textCustomField10",
             "deal.id",
             "deal.title",
             "deal.primaryContact.totalActivities",
@@ -462,7 +472,8 @@ class SM_Deals(SM_Base):
         self.setType('POST')
         self.setCall('/apis/deal/v4/search?rows=1000&from=0')
         toget = self.getPayload()
-        return self.getData(payload=toget)
+        j = self.getData(payload=toget)
+        return j
 
     def update(self,args,dryrun=False):
         self.setCall('/apis/deal/v4')
@@ -504,7 +515,7 @@ def getDeals(debug=False):
     DEALS = {}
     deals.setDebug(debug)
     for x in deals.get():
-        # print("deal=%s" % json.dumps(x,sort_keys=True))
+        print("deal=%s" % json.dumps(x,sort_keys=True))
         v = x['id']
         DEALS[v] = x
     return DEALS
