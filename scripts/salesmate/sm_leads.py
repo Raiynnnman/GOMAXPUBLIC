@@ -316,7 +316,7 @@ for x in PAIN:
                 if debug:
                     print("---- CREATING TO SM") 
                     print(json.dumps(newdata,indent=4))
-                if 'Phone' in newdata and newdata['Phone'] is not None:
+                if 'Phone' in newdata and newdata['Phone'] is not None and newdata['Phone'] != str("0"):
                     o = []
                     for b in CONTACTS:
                         p = CONTACTS[b]['phone']
@@ -341,8 +341,8 @@ for x in PAIN:
                         print("ERROR: Creating new record but phone found: %s (%s)" % (newdata['Phone'],o))
                         continue
                 owner_id = 4 # Paul
-                if 'OwnerId' not in newdata or newdata['OwnerId'] is None:
-                    newdata['OwnerId'] = owner_id
+                # if 'OwnerId' not in newdata or newdata['OwnerId'] is None:
+                newdata['OwnerId'] = owner_id
                 if not args.dryrun and not args.no_new:
                     r = COMPANY_OBJ.update(newdata,dryrun=args.no_commit)
                     company_sm_id = r['id']
