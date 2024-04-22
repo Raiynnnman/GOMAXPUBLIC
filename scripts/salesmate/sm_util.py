@@ -60,7 +60,7 @@ class SM_Base:
     __BASE__ = 'https://poundpain1.salesmate.io'
     __DEBUG__ = False
     __TYPE__ = 'GET'
-    __PAGESIZE__ = 250
+    __PAGESIZE__ = 1000
     def __init__(self):
         pass
 
@@ -268,7 +268,7 @@ class SM_Contacts(SM_Base):
         return json.dumps(j)
 
     def get(self,*args,**kwargs):
-        self.setCall('/apis/contact/v4/search?rows=250&from=0')
+        self.setCall('/apis/contact/v4/search?rows=1000&from=0')
         self.setType('POST')
         toget = self.getPayload()
         return self.getData(payload=toget)
@@ -362,7 +362,7 @@ class SM_Companies(SM_Base):
 
     def get(self,*args,**kwargs):
         self.setType('POST')
-        self.setCall('/apis/company/v4/search?rows=250&from=0')
+        self.setCall('/apis/company/v4/search?rows=1000&from=0')
         toget = self.getPayload()
         return self.getData(payload=toget)
 
@@ -460,7 +460,7 @@ class SM_Deals(SM_Base):
 
     def get(self,*args,**kwargs):
         self.setType('POST')
-        self.setCall('/apis/deal/v4/search?rows=250&from=0')
+        self.setCall('/apis/deal/v4/search?rows=1000&from=0')
         toget = self.getPayload()
         return self.getData(payload=toget)
 

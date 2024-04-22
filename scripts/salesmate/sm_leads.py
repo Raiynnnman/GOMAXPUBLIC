@@ -338,7 +338,8 @@ for x in PAIN:
                         if debug:
                             print("nd=%s,b=%s" % (newdata['Phone'],p))
                     if len(o) > 0:
-                        raise Exception("ERROR: Creating new record but phone found: %s (%s)" % (newdata['Phone'],o))
+                        print("ERROR: Creating new record but phone found: %s (%s)" % (newdata['Phone'],o))
+                        continue
                 owner_id = 4 # Paul
                 if 'OwnerId' not in newdata or newdata['OwnerId'] is None:
                     newdata['OwnerId'] = owner_id
