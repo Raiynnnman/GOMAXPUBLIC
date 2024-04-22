@@ -248,10 +248,7 @@ for x in PAIN:
         if newdata['Ready_To_Buy__c'] == None:
             newdata['Ready_To_Buy__c'] = False
 
-    if 'Sales_Link__c' in newdata and 'Subscription_Plan__c' in newdata and newdata['Subscription_Plan__c'] is not None:
-        newdata['Sales_Link__c'] = '%s/#/register-provider/%s' % (config.getKey("host_url"),x['pq_id'])
-    else:
-        newdata['Sales_Link__c'] = ''
+    newdata['Sales_Link__c'] = '%s/#/register-provider/%s' % (config.getKey("host_url"),x['pq_id'])
 
     if 'LastName' not in newdata or newdata['LastName'] is None or len(newdata['LastName']) < 2 or newdata['LastName'] == 'Unknown':
         if 'Dr' in newdata['Company'] or 'd.c.' in newdata['Company'].lower() or 'dc' in newdata['Company'].lower():
