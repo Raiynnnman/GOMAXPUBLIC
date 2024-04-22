@@ -59,6 +59,7 @@ class SM_Base:
     __BASE__ = 'https://poundpain1.salesmate.io'
     __DEBUG__ = False
     __TYPE__ = 'GET'
+    __PAGESIZE__ = 250
     def __init__(self):
         pass
 
@@ -91,10 +92,15 @@ class SM_Base:
     def setData(self,*args,**kwargs):
         pass
 
-    def getData(self,payload={}):
+    def getData(self,payload={},page=0):
         call = self.getCall()
         if call is None:
             raise Exception("Call required")
+        if '?rows=' in call and page > 0:
+            call = call.split('?')
+            call = "%s?rows=%s&from=%s" % (
+                call[0],self.__PAGESIZE__,page*self.__PAGESIZE__+1
+            )
         if self.requestType() == 'GET':
             u = "%s%s" % (self.__BASE__,call) 
             if self.__DEBUG__:
@@ -106,13 +112,25 @@ class SM_Base:
             }
             r = requests.request('GET',u,headers=headers,data=payload)
             if self.__DEBUG__:
-                print("status: %s" % r.status_code)
+                print("%s: get: status: %s" % (self.__class__.__name__r.status_code))
             if r.status_code != 200:
                 raise Exception("%s: %s" % (r.status_code,r.text))
             js = json.loads(r.text)
             if self.__DEBUG__:
                 print("response: %s" % js)
+            pages = 0
+            if 'Data' in js and 'totalRows' in js['Data']:
+                # Paging goes here
+                print("get: call=%s" % call)
+                print("%s: rows=%s" % (self.__class__.__name__,js['Data']['totalRows']))
+                rows = js['Data']['totalRows']
+                pages = int(rows/self.__PAGESIZE__)
+            if self.__DEBUG__:
+                print("%s: response: %s" % (self.__class__.__name__,js))
+            if self.__DEBUG__:
+                print("%s: pages: %s" % (self.__class__.__name__,pages))
             return js['Data']
+
         if self.requestType() == 'POST':
             u = "%s%s" % (self.__BASE__,call) 
             if self.__DEBUG__:
@@ -136,10 +154,19 @@ class SM_Base:
             ### fromDate
             ### toDate
             ### totalRows
+            pages = 0
             if 'Data' in js and 'totalRows' in js['Data']:
                 # Paging goes here
-                print("rows=%s" % js['Data']['totalRows'])
+                print("post: call=%s" % call)
+                rows = js['Data']['totalRows']
+                pages = int(rows/self.__PAGESIZE__)
+                print("%s: rows=%s" % (self.__class__.__name__,js['Data']['totalRows']))
             ret = {}
+            if self.__DEBUG__:
+                print("%s: response: %s" % (self.__class__.__name__,js))
+            if self.__DEBUG__:
+                print("%s: pages: %s" % (self.__class__.__name__,pages))
+            thispage = 0
             if 'Data' in js:
                 ret = js['Data']
             if 'Data' in js and 'data' in js['Data']:
@@ -460,39 +487,43 @@ class SM_Deals(SM_Base):
         else:
             return self.getData(payload=json.dumps(toset))
 
-def getContacts():
+def getContacts(debug=False):
     CONTACTS = {}
     contact = SM_Contacts()
+    contact.setDebug(debug)
     for x in contact.get():
-        print("contact=%s" % json.dumps(x,sort_keys=True))
+        # print("contact=%s" % json.dumps(x,sort_keys=True))
         v = x['id']
         CONTACTS[v] = x
     return CONTACTS
 
-def getDeals():
+def getDeals(debug=False):
     deals = SM_Deals()
     DEALS = {}
+    deals.setDebug(debug)
     for x in deals.get():
-        print("deal=%s" % json.dumps(x,sort_keys=True))
+        # print("deal=%s" % json.dumps(x,sort_keys=True))
         v = x['id']
         DEALS[v] = x
     return DEALS
 
-def getUsers():
+def getUsers(debug=False):
     USERS = {}
     users = SM_Users()
+    users.setDebug(debug)
     for x in users.get():
-        print("user=%s" % json.dumps(x,sort_keys=True))
+        # print("user=%s" % json.dumps(x,sort_keys=True))
         v = x['id']
         USERS[v] = x
     return USERS
 
 
-def getCompanies():
+def getCompanies(debug=False):
     COMPANIES = {}
     company = SM_Companies()
+    company.setDebug(debug)
     for x in company.get():
-        print("company=%s" % json.dumps(x,sort_keys=True))
+        # print("company=%s" % json.dumps(x,sort_keys=True))
         v = x['id']
         COMPANIES[v] = x
     return COMPANIES

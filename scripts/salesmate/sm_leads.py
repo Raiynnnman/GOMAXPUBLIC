@@ -16,7 +16,6 @@ from common import settings
 from util import encryption,calcdate
 from util import getIDs
 from salesforce import sf_util
-from simple_salesforce import Salesforce
 
 import argparse
 from salesmate import sm_util
@@ -49,6 +48,8 @@ TYPE='Lead'
 CONTACT_OBJ = SM_Contacts()
 COMPANY_OBJ = SM_Companies()
 DEALS_OBJ = SM_Deals()
+
+DEALS_OBJ.setDebug(True)
 
 PQ = getIDs.getProviderQueueStatus()
 ST = getIDs.getLeadStrength()
@@ -88,14 +89,8 @@ q = """
         1 = 1
     """
 
-sf = None
-if config.getKey("sf_test"):
-    sf = Salesforce(security_token=token, password=passw, username=user, instance=inst,domain='test')
-else:
-    sf = Salesforce(security_token=token, password=passw, username=user, instance=inst)
-
-schema_f = 'sf_leads_schema.json'
-res = sf_util.cacheOrLoad(schema_f,sf.Lead.describe)
+schema_f = './tests/sf_leads_schema.json'
+res = sf_util.cacheOrLoad(schema_f,{})
 SFSCHEMA = {}
 for x in res['fields']:
     # print(x['name'])
@@ -132,9 +127,10 @@ for x in PAIN:
 
 
 PSCHEMA = sf_util.getPainSchema(TYPE)
-CONTACTS = sm_util.getContacts()
-DEALS = sm_util.getDeals()
-COMPANIES = sm_util.getCompanies()
+CONTACTS = sm_util.getContacts(debug=args.debug)
+DEALS = sm_util.getDeals(debug=args.debug)
+COMPANIES = sm_util.getCompanies(debug=args.debug)
+sys.exit(0)
 
 ALL_FIELDS = []
 SCHEMA = {}
