@@ -235,8 +235,7 @@ for x in PAIN:
             p = p[1:]
         newdata['Phone'] = p
     
-    if 'PainURL__c' not in newdata:
-        newdata['PainURL__c'] = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),newdata['PainURL__c'])
+    newdata['PainURL__c'] = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),x['pq_id'])
 
     if 'Invoice_Paid__c' in newdata:
         if newdata['Invoice_Paid__c'] == None:
@@ -251,6 +250,8 @@ for x in PAIN:
 
     if 'Sales_Link__c' in newdata and 'Subscription_Plan__c' in newdata and newdata['Subscription_Plan__c'] is not None:
         newdata['Sales_Link__c'] = '%s/#/register-provider/%s' % (config.getKey("host_url"),x['pq_id'])
+    else:
+        newdata['Sales_Link__c'] = ''
 
     if 'LastName' not in newdata or newdata['LastName'] is None or len(newdata['LastName']) < 2 or newdata['LastName'] == 'Unknown':
         if 'Dr' in newdata['Company'] or 'd.c.' in newdata['Company'].lower() or 'dc' in newdata['Company'].lower():

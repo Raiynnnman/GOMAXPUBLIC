@@ -250,11 +250,13 @@ class SM_Contacts(SM_Base):
         self.setType('POST')
         upd = args
         toset = {}
+        additional = []
         for x in upd:
             if x in CONTACT_MAPPING:
                 v = CONTACT_MAPPING[x] 
                 toset[v] = upd[x]
-        
+        for x in additional:
+            toset[x] = upd[x]
         print("CONTACTSET:%s" % json.dumps(toset,indent=4))
         if dryrun:
             return {'id':None}
@@ -341,10 +343,13 @@ class SM_Companies(SM_Base):
         self.setCall('/apis/company/v4')
         upd = args
         toset = {}
+        additional = []
         for x in upd:
             if x in COMPANY_MAPPING:
                 v = COMPANY_MAPPING[x] 
                 toset[v] = upd[x]
+        for x in additional:
+            toset[x] = upd[x]
         print("COMPANYSET:%s" % json.dumps(toset,indent=4))
         if dryrun:
             return {'id':None}
@@ -436,10 +441,19 @@ class SM_Deals(SM_Base):
         self.setType('POST')
         upd = args
         toset = {}
+        additional = [
+            'primaryContact',
+            'owner',
+            'tags',
+            'stage',
+            'title'
+        ]
         for x in upd:
             if x in DEAL_MAPPING:
                 v = DEAL_MAPPING[x] 
                 toset[v] = upd[x]
+        for x in additional:
+            toset[x] = upd[x]
         print("DEALSET:%s" % json.dumps(toset,indent=4))
         if dryrun:
             return {'id':None}

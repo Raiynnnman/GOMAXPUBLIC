@@ -31,7 +31,7 @@ install: build
 	cp stripe/doall.sh pre/stripe
 	cp data_import/doall.sh pre/data_import
 	mkdir -p pre/tests
-	cp tests/*.xlsx pre/tests
+	cp tests/*.xlsx tests/*.json pre/tests
 	(cd pre && tar cfz ../targets/install.tar.gz  --exclude p \
 		--exclude targets \
         --exclude ui/src --exclude .git --exclude src \
