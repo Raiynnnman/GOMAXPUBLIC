@@ -25,7 +25,15 @@ CONTACT_MAPPING = {
     'Phone':'phone',
     'PainID__c':'textCustomField1',
     'Id':'textCustomField2',
-    'LastName':'lastName'
+}
+
+CONTACT_MAPPING_REV = { 
+    'lastName':'LastName',
+    'firstName':'FirstName',
+    'phone':'Phone',
+    'email':'Email',
+    'textCustomField1':'PainID__c',
+    'id':'Id'
 }
 
 DEAL_MAPPING = {
@@ -39,7 +47,25 @@ DEAL_MAPPING = {
     "Id": 'textCustomField4',
     'PainID__c':'textCustomField1',
     'PainURL__c':'textCustomField3',
-    'Sales_Link__c':'textCustomField2'
+    'Sales_Link__c':'textCustomField2',
+}
+
+DEAL_MAPPING_REV = { 
+    # Reverse mapping
+    'owner.id':'OwnerId',
+    'source':'Lead_Source__c',
+    'checkboxCustomField3':'Is_PI_Provider__c',
+    'decimalCustomField1':'Payment_Amount__c',
+    'checkboxCustomField1':"Ready_To_Buy__c",
+    'checkboxCustomField2':"Invoice_Paid__c",
+    'textCustomField5':"Subscription_Plan__c",
+    'textCustomField4':"Id",
+    'textCustomField1':'PainID__c',
+    'textCustomField3':'PainURL__c',
+    'textCustomField2':'Sales_Link__c'
+    #'primaryContact.id': 'primaryContact',
+    #'primaryCompany.id': 'primaryCompany',
+    #'stage': 'stage'
 }
 COMPANY_MAPPING = {
     'PainID__c':'textCustomField1',
@@ -53,7 +79,21 @@ COMPANY_MAPPING = {
     'Phone':'phone',
     'City':'billingCity',
     'State':'billingState',
-    'Id': 'textCustomField5'
+    'Id': 'textCustomField5',
+}
+COMPANY_MAPPING_REV = { 
+    'textCustomField1':'PainID__c',
+    'textCustomField2':'PainURL__c',
+    'textCustomField4':'Addresses_ID__c',
+    'name':'Company',
+    'owner':'OwnerId',
+    'billingAddressLine1':'Street',
+    'website':'Website',
+    'zip':'PostalCode',
+    'phone':'Phone',
+    'billingCity':'City',
+    'billingState':'State',
+    'textCustomField5':'Id',
 }
 
 class SM_Base:
@@ -76,8 +116,6 @@ class SM_Base:
         self.__TYPE__ = c
 
     def setCall(self,c):
-        if self.__DEBUG__:
-            print("DEBUG: setcall: %s" % c)
         self.__call__ = c
 
     def getPayload(self,painid):
@@ -99,6 +137,11 @@ class SM_Base:
         call = self.getCall()
         if call is None:
             raise Exception("Call required")
+        if '?rows=' in call and page == 0:
+            call = call.split('?')
+            call = "%s?rows=%s&from=%s" % (
+                call[0],self.__PAGESIZE__,page*self.__PAGESIZE__
+            )
         if '?rows=' in call and page > 0:
             call = call.split('?')
             call = "%s?rows=%s&from=%s" % (
@@ -169,11 +212,14 @@ class SM_Base:
                 print("%s: response: %s" % (self.__class__.__name__,js))
             if self.__DEBUG__:
                 print("%s: pages: %s" % (self.__class__.__name__,pages))
-            thispage = 0
             if 'Data' in js:
                 ret = js['Data']
             if 'Data' in js and 'data' in js['Data']:
                 ret = js['Data']['data']
+            if page < pages:
+                ret += self.getData(payload,page+1)
+            print(len(ret))
+            print("ret=%s" % ret)
             return ret
             
 
@@ -504,40 +550,128 @@ def getContacts(debug=False):
     CONTACTS = {}
     contact = SM_Contacts()
     contact.setDebug(debug)
+    F = "sm_contacts.json"
+    if os.path.exists(F):
+        print("using cached file: %s" % F)
+        H=open(F,"r")
+        js = json.loads(H.read())
+        H.close()
+        return js
     for x in contact.get():
         # print("contact=%s" % json.dumps(x,sort_keys=True))
-        v = x['id']
+        v = str(x['id'])
         CONTACTS[v] = x
+    H=open(F,"w")
+    H.write(json.dumps(CONTACTS,indent=4,sort_keys=True))
+    H.close()
     return CONTACTS
 
 def getDeals(debug=False):
     deals = SM_Deals()
     DEALS = {}
     deals.setDebug(debug)
+    F = "sm_deals.json"
+    if os.path.exists(F):
+        print("using cached file: %s" % F)
+        H=open(F,"r")
+        js = json.loads(H.read())
+        H.close()
+        return js
     for x in deals.get():
-        print("deal=%s" % json.dumps(x,sort_keys=True))
-        v = x['id']
+        # print("deal=%s" % json.dumps(x,sort_keys=True))
+        v = str(x['id'])
         DEALS[v] = x
+    H=open(F,"w")
+    H.write(json.dumps(DEALS,indent=4,sort_keys=True))
+    H.close()
     return DEALS
 
 def getUsers(debug=False):
     USERS = {}
-    users = SM_Users()
+    users = SM_User()
     users.setDebug(debug)
+    F = "sm_users.json"
+    if os.path.exists(F):
+        print("using cached file: %s" % F)
+        H=open(F,"r")
+        js = json.loads(H.read())
+        H.close()
+        return js
     for x in users.get():
         # print("user=%s" % json.dumps(x,sort_keys=True))
-        v = x['id']
+        v = str(x['id'])
         USERS[v] = x
+    H=open(F,"w")
+    H.write(json.dumps(USERS,indent=4,sort_keys=True))
+    H.close()
     return USERS
 
 
 def getCompanies(debug=False):
     COMPANIES = {}
     company = SM_Companies()
+    F = "sm_companies.json"
+    if os.path.exists(F):
+        print("using cached file: %s" % F)
+        H=open(F,"r")
+        js = json.loads(H.read())
+        H.close()
+        return js
     company.setDebug(debug)
     for x in company.get():
         # print("company=%s" % json.dumps(x,sort_keys=True))
-        v = x['id']
+        v = str(x['id'])
         COMPANIES[v] = x
+    H=open(F,"w")
+    H.write(json.dumps(COMPANIES,indent=4,sort_keys=True))
+    H.close()
     return COMPANIES
 
+def flattenDict(d,v=None):
+    newdict = {}
+    #print("v=%s" % v)
+    #print("d=%s" % d)
+    for x in d:
+        #print("x=%s,t=%s" % (x,type(d[x])))
+        if isinstance(d[x],dict):
+            g = flattenDict(d[x],v=x)
+            for b in g:
+                newdict[b] = g[b]
+        elif v is not None:
+            newdict["%s.%s" % (v,x)] = d[x]
+        else:
+            newdict[x] = d[x]
+    #print("retdict=%s" % newdict)
+    return newdict
+
+def normalizeDictionary(values,src,debug=False):
+    ret = {}
+    values = flattenDict(values)
+    if debug:
+        print("values=%s" % values)
+    for x in src:
+        v = src[x]
+        #if debug:
+        #    print("x=%s,v=%s" % (x,v))
+        if x in values:
+            ret[v] = values[x]
+        else:
+            ret[v] = None
+    if debug:
+        print("normalize=%s" % ret)
+    return ret
+
+def normalizeSMContact(j,debug=False):
+    if debug:
+        print("normalize contact")
+    return normalizeDictionary(j,CONTACT_MAPPING_REV,debug)
+
+def normalizeSMCompany(j,debug=False):
+    if debug:
+        print("normalize company")
+    return normalizeDictionary(j,COMPANY_MAPPING_REV,debug)
+        
+def normalizeSMDeal(j,debug=False):
+    if debug:
+        print("normalize deal")
+    return normalizeDictionary(j,DEAL_MAPPING_REV,debug)

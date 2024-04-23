@@ -382,11 +382,17 @@ class InvoicesUpdate(AdminBase):
                 if 'id' in x:
                     continue
                 bb2 = encryption.encrypt(
-                    x['text'],
+                    "%s: %s" % ("Invoice Comment",x['text']),
                     config.getKey('encryption_key')
                     )
                 db.update("""
                     insert into invoices_comment (user_id,invoices_id,text)
+                    values 
+                    (%s,%s,%s)
+                    """,(user['user_id'],params['id'],bb2)
+                )
+                db.update("""
+                    insert into office_comment (user_id,office_id,text)
                     values 
                     (%s,%s,%s)
                     """,(user['user_id'],params['id'],bb2)
@@ -513,24 +519,6 @@ class InvoicesList(AdminBase):
         o = db.query(q,search_par)
         for x in o:
             x['items'] = json.loads(x['items'])
-            x['assignee'] = db.query("""
-                    select
-                        u.id,u.first_name,u.last_name
-                    from
-                        office_user ou, users u
-                    where
-                        ou.user_id=u.id
-                        and office_id=%s
-                    UNION
-                    select
-                        u.id,u.first_name,u.last_name
-                    from users u
-                    where id in
-                    (select user_id
-                        from user_entitlements ue,entitlements e
-                        where ue.entitlements_id=e.id and e.name='Admin')
-                    """,(x['office_id'],)
-            )
             x['stripe'] = db.query("""
                 select
                     invoice_pdf_url, invoice_pay_url, amount_due/100 as amount_due, 
@@ -558,6 +546,24 @@ class InvoicesList(AdminBase):
                 """,(x['id'],)
             )
             x['last_comment'] = ''
+            x['assignee'] = db.query("""
+                    select
+                        u.id,u.first_name,u.last_name
+                    from
+                        office_user ou, users u
+                    where
+                        ou.user_id=u.id
+                        and office_id=%s
+                    UNION
+                    select
+                        u.id,u.first_name,u.last_name
+                    from users u
+                    where id in
+                    (select user_id
+                        from user_entitlements ue,entitlements e
+                        where ue.entitlements_id=e.id and e.name='Admin')
+                    """,(x['office_id'],)
+            )
             for cc in comms: 
                 # This happens when we switch environments, just skip
                 try:
@@ -722,6 +728,49 @@ class OfficeList(AdminBase):
         o = db.query(q,search_par)
         ret['offices'] = []
         for x in o:
+            x['comments'] = []
+            comms = db.query("""
+                select 
+                    ic.id,ic.text,ic.user_id,
+                    u.first_name,u.last_name,u.title,
+                    ic.created
+                from 
+                office_comment ic, users u
+                where ic.user_id = u.id and office_id=%s
+                order by created desc
+                """,(x['id'],)
+            )
+            x['assignee'] = db.query("""
+                    select
+                        u.id,u.first_name,u.last_name
+                    from
+                        office_user ou, users u
+                    where
+                        ou.user_id=u.id
+                        and office_id=%s
+                    UNION
+                    select
+                        u.id,u.first_name,u.last_name
+                    from users u
+                    where id in
+                    (select user_id
+                        from user_entitlements ue,entitlements e
+                        where ue.entitlements_id=e.id and e.name='Admin')
+                    """,(x['id'],)
+            )
+            for cc in comms: 
+                # This happens when we switch environments, just skip
+                try:
+                    bb2 = encryption.decrypt(
+                        cc['text'],
+                        config.getKey('encryption_key')
+                        )
+                    cc['text'] = bb2
+                    x['comments'].append(cc)
+                    x['last_comment'] = bb2
+                except:
+                    pass
+            x['last_comment'] = ''
             x['cards'] = db.query("""
                 select id,card_id,last4,exp_month,exp_year,is_default,brand
                 from office_cards where office_id=%s
@@ -880,6 +929,25 @@ class OfficeSave(AdminBase):
                 update office set commission_user_id=%s where id = %s
                 """,(params['commission_user_id'],insid)
             )
+        if 'comments' in params:
+            for x in params['comments']:
+                if 'id' in x:
+                    continue
+                bb2 = encryption.encrypt(
+                    x['text'],
+                    config.getKey('encryption_key')
+                    )
+                db.update("""
+                    insert into office_comment (user_id,office_id,text)
+                    values 
+                    (%s,%s,%s)
+                    """,(user['user_id'],params['id'],bb2)
+                )
+                db.update("""
+                    insert into office_history (office_id,user_id,text) values
+                        (%s,%s,%s)""",(params['id'],user['id'],"ADDED_COMMENT")
+                )
+            db.commit()
         db.update("""
             delete from office_addresses where office_id = %s
             """,(insid,)

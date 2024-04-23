@@ -769,7 +769,7 @@ class InvoiceAdminList extends Component {
                                         {(!e.edit) && ( 
                                         <Col md="12">
                                             <div style={{overflow:"auto",height:100,display: 'flex', 
-                                                alignItems: 'center', justifyContent: 'center'}}>
+                                                alignItems: 'left', justifyContent: 'left'}}>
                                             {e.text}
                                             </div>
                                         </Col>

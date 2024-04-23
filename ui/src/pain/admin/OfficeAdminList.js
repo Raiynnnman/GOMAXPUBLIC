@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import moment from 'moment';
 import { connect } from 'react-redux';
+import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 import { Col, Row } from 'reactstrap';
@@ -41,6 +42,8 @@ class OfficeList extends Component {
             selected: null,
             subTab: "plans",
             filter: [],
+            comments:[],
+            commentAdd:false,
             statusSelected:null,
             search:null,
             selProvider:null,
@@ -49,9 +52,14 @@ class OfficeList extends Component {
             selectedID: 0
         } 
         this.cancel = this.cancel.bind(this);
+        this.comment = this.comment.bind(this);
         this.search = this.search.bind(this);
         this.pageChange = this.pageChange.bind(this);
         this.sortChange = this.sortChange.bind(this);
+        this.showMore = this.showMore.bind(this);
+        this.showLess = this.showLess.bind(this);
+        this.cancelComment = this.cancelComment.bind(this);
+        this.saveComment = this.saveComment.bind(this);
         this.pageRowsChange = this.pageRowsChange.bind(this);
         this.activeChange = this.activeChange.bind(this);
         this.officeReport = this.officeReport.bind(this);
@@ -101,6 +109,38 @@ class OfficeList extends Component {
         this.setState(this.state);
         // this.props.dispatch(getOffices({page:this.state.page,limit:this.state.pageSize}))
     }
+
+    addComment() { 
+        this.state.selected.comments.unshift({text:'',edit:true})
+        this.state.commentAdd = true;
+        this.setState(this.state);
+    }
+
+    saveComment(e) { 
+        this.state.selected.comments[0].edit=false;
+        this.state.commentAdd = false;
+        this.setState(this.state);
+    }
+
+    cancelComment(e) { 
+        this.state.selected.comments.shift();
+        this.setState(this.state);
+    }
+
+    comment(e) { 
+        this.state.selected.comments[0].text=e.target.value
+        this.setState(this.state);
+    }
+
+    showMore(r) { 
+        this.state.comments.id = 1;
+        this.setState(this.state);
+    } 
+
+    showLess(r) { 
+        delete this.state.comments.id;
+        this.setState(this.state);
+    } 
 
     reload() { 
         this.props.dispatch(getOffices(
@@ -916,6 +956,12 @@ class OfficeList extends Component {
                                     <span>{translate('Clients')}</span>
                                 </NavLink>
                             </NavItem>
+                            <NavItem>
+                                <NavLink className={classnames({ active: this.state.subTab === 'comments' })}
+                                    onClick={() => { this.toggleSubTab('comments') }}>
+                                    <span>{translate('Comments')}</span>
+                                </NavLink>
+                            </NavItem>
                         </Nav>
                         <TabContent className='mb-lg' activeTab={this.state.subTab}>
                             <TabPane tabId="clients">
@@ -996,10 +1042,67 @@ class OfficeList extends Component {
                                     </BootstrapTable>
                                 )}
                             </TabPane>
+                            <TabPane tabId="comments">
+                                <Button onClick={() => this.addComment({id:"new"})} color="primary">Add Comment</Button>
+                                {this.state.selected.comments.sort((a,b) => (a.created > b.created ? -1:1)).map((e) => { 
+                                    return (
+                                        <Col md="3" key={e.id}>
+                                            <Card style={{margin:20,width:400,height:200}} className="mb-xlg border-1">
+                                                <CardBody>
+                                                    <Row md="12">
+                                                        <Col md="6">
+                                                            <font style={{fontSize:"14pt"}}>
+                                                                {
+                                                                this.state.selected.assignee.filter((g) => g.id === e.user_id).length > 0 ? 
+                                                                this.state.selected.assignee.filter((g) => g.id === e.user_id)[0].first_name + " " +
+                                                                this.state.selected.assignee.filter((g) => g.id === e.user_id)[0].last_name + " " : ""
+                                                                }
+                                                            </font>
+                                                        </Col>
+                                                        <Col md="6">
+                                                            {moment(e.created).format('LLL')}
+                                                        </Col>
+                                                    </Row>
+                                                    <hr/>
+                                                    <Row md="12">
+                                                        {(!e.edit) && ( 
+                                                        <Col md="12">
+                                                            <div style={{overflow:"auto",height:100,display: 'flex', 
+                                                                alignItems: 'left', justifyContent: 'start'}}>
+                                                            {e.text}
+                                                            </div>
+                                                        </Col>
+                                                        )}
+                                                        {(e.edit) && ( 
+                                                        <Col md="12">
+                                                            <FormGroup row>
+                                                              <Col md={12}>
+                                                                <Input value={e.text} rows="3" 
+                                                                    onChange={this.comment} type="textarea" 
+                                                                    name="text" id="default-textarea" />
+                                                              </Col>
+                                                            </FormGroup>
+                                                        </Col>
+                                                        )}
+                                                    </Row>
+                                                    <Row md="12">
+                                                        {(e.edit) && ( 
+                                                        <Col md="12">
+                                                            <Col md="6">
+                                                                <Button onClick={this.saveComment} color="primary">Save</Button>
+                                                                <Button outline style={{marginLeft:10}} onClick={this.cancelComment} color="secondary">Cancel</Button>
+                                                            </Col>
+                                                        </Col>
+                                                        )}
+                                                    </Row>
+                                                </CardBody>
+                                            </Card>
+                                        </Col>
+                                    )})}
+                            </TabPane>
                         </TabContent>
                     </Col>
                 </Row>
-                <hr/>
                 <Row md="12">
                     <Col md="6">
                         <Button onClick={this.save} color="primary" disabled={!this.state.selected.name || !this.state.selected.email || 

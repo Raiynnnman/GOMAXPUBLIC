@@ -123,16 +123,52 @@ if args.debug:
 
 for x in PAIN:
     if x['sm_id'] is not None:
-        PAINHASH[x['sm_id']] = x
+        PAINHASH[str(x['sm_id'])] = x
 
 
 PSCHEMA = sf_util.getPainSchema(TYPE)
 CONTACTS = sm_util.getContacts(debug=args.debug)
 DEALS = sm_util.getDeals(debug=args.debug)
 COMPANIES = sm_util.getCompanies(debug=args.debug)
+USERS = sm_util.getUsers(debug=args.debug)
 
 ALL_FIELDS = []
 SCHEMA = {}
+SF_DATA = {}
+
+print("companies=%s" % COMPANIES)
+for x in DEALS:
+    j = DEALS[x]
+    print("j=%s" % j)
+    myid = j['id']
+    SF_DATA[myid] = {}
+    pcomp = str(j['primaryCompany']['id'])
+    pcont = str(j['primaryContact']['id'])
+    puser = str(j['owner']['id'])
+    comp = cont = user = {}
+    print("pcomp/pcont/puser=%s/%s/%s" % (pcomp,pcont,puser))
+    if pcomp not in COMPANIES:
+        print("ERROR: comp (%s) not found" % pcomp)
+    else:
+        comp = COMPANIES[pcomp]
+    if pcont not in CONTACTS:
+        print("ERROR: contact (%s) not found" % pcont)
+    else:
+        cont = CONTACTS[pcont]
+    if puser not in USERS:
+        print("ERROR: user (%s) not found" % puser)
+    else:
+        user = USERS[puser]
+    SF_DATA[myid]['src'] = {}
+    SF_DATA[myid]['src']['contact'] = sm_util.normalizeSMContact(cont,debug=args.debug)
+    SF_DATA[myid]['src']['company'] = sm_util.normalizeSMCompany(comp,debug=args.debug)
+    SF_DATA[myid]['src']['deal'] = sm_util.normalizeSMDeal(j,debug=args.debug)
+    SF_DATA[myid].update(sm_util.flattenDict(SF_DATA[myid]['src']['contact']))
+    SF_DATA[myid].update(sm_util.flattenDict(SF_DATA[myid]['src']['company']))
+    SF_DATA[myid].update(sm_util.flattenDict(SF_DATA[myid]['src']['deal']))
+
+print("FINAL")
+print(json.dumps(SF_DATA,indent=4,sort_keys=True))
 
 #---- MAIN
 
@@ -436,6 +472,7 @@ for x in PAIN:
     CNTR += 1
     if args.limit is not None and CNTR > int(args.limit):
         break
+    time.sleep(2)
 
 print("Processing SM Records")
 
@@ -915,6 +952,7 @@ for x in SF_DATA:
     CNTR += 1
     if args.limit is not None and CNTR > int(args.limit):
         break
+    
 
 sf_util.setLastUpdate(TYPE)
 
