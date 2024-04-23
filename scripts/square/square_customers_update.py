@@ -78,12 +78,17 @@ for x in l:
             if config.getKey('email_to_override') is not None:
                 r['email'] = config.getKey('email_to_override')
             first = x['first_name']
+            last = x['last_name']
+            if first == 'Unknown':
+                first = ''
+            if last == 'Unknown':
+                last = ''
             if x['title'] is not None:
                 first = "%s %s" % (x['title'],first)
             if r['given_name'] != first:
                 newdata['given_name'] = first
             if 'family_name' not in r or r['family_name'] != x['last_name']:
-                newdata['family_name'] = x['last_name']
+                newdata['family_name'] = last
             if 'email' not in r or r['email'] != x['email']:
                 newdata['email_address'] = x['email']
             if 'company' not in r or r['company'] != x['office_name']:
