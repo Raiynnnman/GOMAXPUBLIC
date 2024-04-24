@@ -4,6 +4,7 @@ import os
 import random
 import traceback
 import sys
+import traceback
 from datetime import datetime, timedelta
 import time
 import json
@@ -34,6 +35,7 @@ parser.add_argument('--sm_id', dest="sm_id", action="store")
 parser.add_argument('--id', dest="pain_id", action="store")
 parser.add_argument('--limit', dest="limit", action="store")
 parser.add_argument('--force_sf', dest="force_sf", action="store_true")
+parser.add_argument("--sm_only", dest="sm_only", action="store_true")
 parser.add_argument('--no_commit', dest="no_commit", action="store_true")
 parser.add_argument('--excp_pass', dest="excp_pass", action="store_true")
 parser.add_argument('--force_pain', dest="force_pain", action="store_true")
@@ -59,11 +61,6 @@ debug = args.debug
 
 db = Query()
 PAINHASH = {}
-LASTMOD = None
-if not args.do_all:
-    LASTMOD = sf_util.getLastUpdate(TYPE)
-if args.sm_id is not None:
-    LASTMOD = None
 
 PAIN = []
 
@@ -101,9 +98,6 @@ for x in res['fields']:
 
 BS = getIDs.getBillingSystem()
 
-#if LASTMOD is not None and args.sm_id is None:
-#    q += " and (pq.updated > %s or pq.sf_updated > %s) " 
-#    PAIN = db.query(q,(LASTMOD,LASTMOD))
 if args.sm_id is not None:
     q += " and pq.sm_id = '%s'" % args.sm_id
     if args.debug:
@@ -135,17 +129,25 @@ USERS = sm_util.getUsers(debug=args.debug)
 ALL_FIELDS = []
 SCHEMA = {}
 SF_DATA = {}
+IDS = {}
 
-print("companies=%s" % COMPANIES)
+if args.debug:
+    print("companies=%s" % COMPANIES)
+
+PHONES = {}
 for x in DEALS:
     j = DEALS[x]
-    print("j=%s" % j)
+    print("j=%s" % json.dumps(j,sort_keys=True,indent=4))
     myid = j['id']
     SF_DATA[myid] = {}
+    v = None
     pcomp = str(j['primaryCompany']['id'])
     pcont = str(j['primaryContact']['id'])
     puser = str(j['owner']['id'])
     comp = cont = user = {}
+    if j['primaryContact']['phone'] not in PHONES:
+        PHONES[j['primaryContact']['phone']] = []
+    PHONES[j['primaryContact']['phone']].append(j['id'])
     print("pcomp/pcont/puser=%s/%s/%s" % (pcomp,pcont,puser))
     if pcomp not in COMPANIES:
         print("ERROR: comp (%s) not found" % pcomp)
@@ -166,15 +168,28 @@ for x in DEALS:
     SF_DATA[myid].update(sm_util.flattenDict(SF_DATA[myid]['src']['contact']))
     SF_DATA[myid].update(sm_util.flattenDict(SF_DATA[myid]['src']['company']))
     SF_DATA[myid].update(sm_util.flattenDict(SF_DATA[myid]['src']['deal']))
+    k = SF_DATA[myid]
+    if k['PainID__c'] in k and k['PainID__c'] is not None and len(k['PainID__c']) > 0:
+        v = k['PainID__c']
+        IDS[v] = []
+    if v is not None:
+        IDS[v].append(k['Id'])
 
-print("FINAL")
-print(json.dumps(SF_DATA,indent=4,sort_keys=True))
+for x in PHONES:
+    j = PHONES[x]
+    if len(j) > 1:
+        print("DUP %s" % (j,))
+
+# print("FINAL")
+# print(json.dumps(SF_DATA,indent=4,sort_keys=True))
 
 #---- MAIN
 
 CNTR = 0
 random.shuffle(PAIN)
 for x in PAIN:
+    if args.sm_only:
+        continue
     if debug:
         print("x=%s" % x)
     if x['sm_id'] is not None:
@@ -206,6 +221,9 @@ for x in PAIN:
     SF_ID = x['sm_id']
     SF_ROW = None
     LAST_MOD = None
+    if SF_ID is not None and SF_ID not in DEALS:
+        print("SF_ID (%s) not found, probably deleted" % SF_ID)
+        continue
     if SF_ID in DEALS:
         SF_ROW = DEALS[SF_ID]
         if debug:
@@ -340,7 +358,7 @@ for x in PAIN:
                         nd2[f] = newdata[f]
                 newdata = nd2
             if debug:
-                print("--- UPDATING TO SF")
+                print("--- UPDATING TO SM")
                 print(json.dumps(newdata,indent=4))
             if not args.dryrun:
                 r = DEALS_OBJ.update(newdata)
@@ -476,11 +494,15 @@ for x in PAIN:
 
 print("Processing SM Records")
 
-SF_DATA = {}
 CNTR = 0
 for x in SF_DATA:
-    continue # Skip for now
     j = SF_DATA[x]
+    if args.sm_id is not None:
+        # print("%s=%s" % (j['Id'],args.sm_id))
+        if str(j['Id']) != str(args.sm_id):
+            continue
+    if args.debug:
+        print(json.dumps(j,indent=4,sort_keys=True))
     FIELDS = 'PainID__c,PainURL__c,Sales_Link__c,Invoice_Paid__c'
     if j['Email'] is None:
         j['Email'] = "unknown-%s@poundpain.com" % encryption.getSHA256()[:6]
@@ -497,7 +519,7 @@ for x in SF_DATA:
     if debug:
         print("START---")
         print(json.dumps(j))
-    if j['PainID__c'] is None:
+    if j['PainID__c'] is None or len(j['PainID__c']) < 1:
         o = db.query("""
             select pq.id as t1 from office_addresses oa,office o,provider_queue pq  
                 where oa.office_id = o.id and pq.office_id=o.id and oa.phone = %s
@@ -587,16 +609,18 @@ for x in SF_DATA:
             j['PainID__c'] = pq_id
             j['PainURL__c'] = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),pq_id)
             j['Sales_Link__c'] = '%s/#/register-provider/%s' % (config.getKey("host_url"),pq_id)
-            if not args.dryrun:
-                try:
-                    sf.Lead.update(j['Id'],{
-                        'PainID__c': pq_id,
-                        'Sales_Link__c':j['Sales_Link__c'],
-                        'PainURL__c':j['PainURL__c']
-                    })
-                except Exception as e:
-                    print(json.dumps(j))
-                    print("%s: ERROR: %s" % (j['Id'],str(e)))
+            n = {}
+            n['Id'] = j['Id']
+            n['PainID__c'] = j['PainID__c']
+            n['PainURL__c'] = n['PainURL__c'] 
+            n['Sales_Link__c'] = '%s/#/register-provider/o/%s' % (config.getKey("host_url"),pq_id)
+            try:
+                DEALS_OBJ.update(n,dryrun=args.dryrun)
+            except Exception as e:
+                print(json.dumps(j))
+                print("%s: ERROR: %s" % (j['Id'],str(e)))
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
             print("Created office: %s = %s" % (j['Id'],pq_id))
         elif len(o) > 1:
             l = {}
@@ -618,16 +642,19 @@ for x in SF_DATA:
             off_id = off_id[0]['office_id']
             j['PainID__c'] = pq_id
             j['PainURL__c'] = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),pq_id)
+            n = {}
+            n['Id'] = j['Id']
+            n['PainID__c'] = pq_id
+            n['PainURL__c'] = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),pq_id)
+            n['Sales_Link__c'] = '%s/#/register-provider/o/%s' % (config.getKey("host_url"),pq_id)
             print("Found %s (%s)" % (j['Id'],pq_id))
-            if not args.dryrun:
-                try:
-                    sf.Lead.update(j['Id'],{
-                        'PainID__c': o[0]['t1'],
-                        'PainURL__c':j['PainURL__c']
-                    })
-                except Exception as e:
-                    print(json.dumps(j))
-                    print("%s: ERROR: %s" % (j['Id'],str(e)))
+            try:
+                DEALS_OBJ.update(n,dryrun=args.dryrun)
+            except Exception as e:
+                print(json.dumps(j))
+                print("%s: ERROR: %s" % (j['Id'],str(e)))
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
         else:
             pq_id = o[0]['t1']
             print("Found pq %s" % pq_id)
@@ -641,15 +668,24 @@ for x in SF_DATA:
             update = False
             t = pq_id
             u = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),pq_id)
+            s = '%s/#/register-provider/o/%s' % (config.getKey("host_url"),pq_id)
             if t != j['PainID__c']:
                 update = True
             if u != j['PainURL__c']:
+                update = True
+            if s != j['Sales_Link__c']:
                 update = True
             if not update:
                 continue
             j['PainID__c'] = t
             j['PainURL__c'] = u
-            j['Sales_Link__c'] = '%s/#/register-provider/o/%s' % (config.getKey("host_url"),pq_id)
+            j['Sales_Link__c'] = s
+            n = {}
+            n['Id'] = j['Id']
+            n['PainID__c'] = t
+            n['PainURL__c'] = u
+            n['Sales_Link__c'] = s
+            
             o = db.query("""
                 select id from provider_queue where office_id = %s
                 """,(off_id,)
@@ -657,15 +693,13 @@ for x in SF_DATA:
             if len(o) < 1:
                 raise Exception("ERROR: Established off but not in provider queue")
             print("Updating PainID: %s" % j['PainID__c'])
-            if not args.dryrun:
-                try:
-                    sf.Lead.update(j['Id'],{
-                        'PainID__c': pq_id,
-                        'PainURL__c':j['PainURL__c']
-                    })
-                except Exception as e:
-                    print(json.dumps(j))
-                    print("%s: ERROR: %s" % (j['Id'],str(e)))
+            try:
+                DEALS_OBJ.update(n,dryrun=args.dryrun)
+            except Exception as e:
+                print(json.dumps(j))
+                print("%s: ERROR: %s" % (j['Id'],str(e)))
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
             # print("set2: %s" % j['Id'])
             db.update("""
                 update provider_queue set sm_id = %s where id = %s
@@ -700,19 +734,22 @@ for x in SF_DATA:
             j['Sales_Link__c'] = '%s/#/register-provider/o/%s' % (config.getKey("host_url"),pq_id)
             j['PainID__c'] = pq_id
             j['PainURL__c'] = u
-            if not args.dryrun:
-                try:
-                    sf.Lead.update(j['Id'],{
-                        'PainID__c': pq_id,
-                        'PainURL__c':j['PainURL__c'],
-                        'Sales_Link__c': j['Sales_Link__c']
-                    })
-                except Exception as e:
-                    print(json.dumps(j))
-                    print("%s: ERROR: %s" % (j['Id'],str(e)))
+            n = {}
+            n['Id'] = j['Id']
+            n['PainID__c'] = j['PainID__c'] 
+            n['PainURL__c'] = j['PainURL__c'] 
+            n['Sales_Link__c'] = '%s/#/register-provider/o/%s' % (config.getKey("host_url"),pq_id)
+            try:
+                DEALS_OBJ.update(n,dryrun=args.dryrun)
+            except Exception as e:
+                print(json.dumps(j))
+                print("%s: ERROR: %s" % (j['Id'],str(e)))
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
     if debug:
         print("off_id=%s" % off_id)
-    if 'Subscription_Plan__c' in j and j['Subscription_Plan__c'] is not None:
+    if 'Subscription_Plan__c' in j and j['Subscription_Plan__c'] is not None \
+            and len(j['Subscription_Plan__c']) > 0 and j['Subscription_Plan__c'] != "N/A":
         p1 = j['PainID__c']
         if p1 in IDS and len(IDS[p1]) > 1:
             print("%s: Not continuing: duplicates found in leads for PainID" % j['Id'])
@@ -723,29 +760,13 @@ for x in SF_DATA:
             """,(pq_id,'Not progressing because multiple SF accounts were found with this ID: %s' % IDS[p1])
             )
             continue
-        if j['Status'] == 'New':
-            print("%s: Not progressing with status New" % j['Id'])
-            db.update("""
-                insert into provider_queue_history(provider_queue_id,user_id,text) values (
-                    %s,1,'Not progressing subscription plan: Status is New'
-                )
-            """,(pq_id,))
-            continue
-        if j['Status'] == 'Working':
-            print("%s: Not progressing with status Working" % j['Id'])
-            db.update("""
-                insert into provider_queue_history(provider_queue_id,user_id,text) values (
-                    %s,1,'Not progressing subscription plan: Status is Working'
-                )
-            """,(pq_id,))
-            continue
-        if j['Status'] == 'Converted':
+        if j['Stage'] != 'In Negotiation':
             print("%s: Cant update Converted status" % j['Id'])
             db.update("""
                 insert into provider_queue_history(provider_queue_id,user_id,text) values (
-                    %s,1,'Cant update Converted Status'
+                    %s,1,%s
                 )
-            """,(pq_id,))
+            """,(pq_id,'Not progressing subscription plan: Status is %s' % j['Stage']))
             continue
         o = db.query("""
             select id,description,duration,price from pricing_data where description = %s

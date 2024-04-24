@@ -44,7 +44,10 @@ DEAL_MAPPING = {
     "Ready_To_Buy__c": 'checkboxCustomField1',
     "Invoice_Paid__c": 'checkboxCustomField2',
     "Subscription_Plan__c": 'textCustomField5',
-    "Id": 'textCustomField4',
+    "Status":'status',
+    "Stage":'stage',
+    "Id": 'id',
+    'Title':'title',
     'PainID__c':'textCustomField1',
     'PainURL__c':'textCustomField3',
     'Sales_Link__c':'textCustomField2',
@@ -59,7 +62,10 @@ DEAL_MAPPING_REV = {
     'checkboxCustomField1':"Ready_To_Buy__c",
     'checkboxCustomField2':"Invoice_Paid__c",
     'textCustomField5':"Subscription_Plan__c",
-    'textCustomField4':"Id",
+    "stage":'Stage',
+    'id':"Id",
+    'title':'Title',
+    "status":'Status',
     'textCustomField1':'PainID__c',
     'textCustomField3':'PainURL__c',
     'textCustomField2':'Sales_Link__c'
@@ -102,7 +108,8 @@ class SM_Base:
     __BASE__ = 'https://poundpain1.salesmate.io'
     __DEBUG__ = False
     __TYPE__ = 'GET'
-    __PAGESIZE__ = 1000
+    __ISUPDATE__ = False
+    __PAGESIZE__ = 250
     def __init__(self):
         pass
 
@@ -114,6 +121,9 @@ class SM_Base:
 
     def setType(self,c):
         self.__TYPE__ = c
+
+    def setIsUpdate(self,c):
+        self.__ISUPDATE__ = c
 
     def setCall(self,c):
         self.__call__ = c
@@ -167,15 +177,71 @@ class SM_Base:
             pages = 0
             if 'Data' in js and 'totalRows' in js['Data']:
                 # Paging goes here
-                print("get: call=%s" % call)
-                print("%s: rows=%s" % (self.__class__.__name__,js['Data']['totalRows']))
+                if self.__DEBUG__:
+                    print("get: call=%s" % call)
+                    print("%s: rows=%s" % (self.__class__.__name__,js['Data']['totalRows']))
                 rows = js['Data']['totalRows']
-                pages = int(rows/self.__PAGESIZE__)
+                pages = int(rows/self.__PAGESIZE__)+1
             if self.__DEBUG__:
                 print("%s: response: %s" % (self.__class__.__name__,js))
             if self.__DEBUG__:
-                print("%s: pages: %s" % (self.__class__.__name__,pages))
-            return js['Data']
+                print("%s: tpages/page/pagesize: %s/%s/%s" % (self.__class__.__name__,pages,page,self.__PAGESIZE__))
+            ret = js['Data']
+            if page <= pages:
+                ret += self.getData(payload,page+1)
+            return ret
+
+        if self.requestType() == 'PUT':
+            u = "%s%s" % (self.__BASE__,call) 
+            if self.__DEBUG__:
+                print("DEBUG: u=%s" % u)
+            headers = {
+              'Content-Type': 'application/json',
+              'accessToken': self.getSession(),
+              'x-linkname': 'poundpain1.salesmate.io'
+            }
+            if self.__DEBUG__:
+                print("DEBUG: payload=%s" % payload)
+            r = requests.request('PUT',u,headers=headers,data=payload)
+            if self.__DEBUG__:
+                print("status: %s" % r.status_code)
+            if r.status_code != 200:
+                print(json.dumps(json.loads(payload),indent=4,sort_keys=True))
+                raise Exception("%s: %s" % (r.status_code,r.text))
+            js = json.loads(r.text)
+            if self.__DEBUG__:
+                print("response: %s" % js)
+            ### data
+            ### fromDate
+            ### toDate
+            ### totalRows
+            pages = 0
+            if 'Data' in js and 'totalRows' in js['Data']:
+                # Paging goes here
+                if self.__DEBUG__:
+                    print("post: call=%s" % call)
+                rows = js['Data']['totalRows']
+                pages = int(rows/self.__PAGESIZE__)+1
+                if self.__DEBUG__:
+                    print("%s: rows=%s" % (self.__class__.__name__,js['Data']['totalRows']))
+            ret = {}
+            if self.__DEBUG__:
+                print("%s: response: %s" % (self.__class__.__name__,js))
+            if self.__DEBUG__:
+                print("%s: tpages/page/pagesize: %s/%s/%s" % (self.__class__.__name__,pages,page,self.__PAGESIZE__))
+            if 'Data' in js:
+                ret = js['Data']
+            if 'Data' in js and 'data' in js['Data']:
+                ret = js['Data']['data']
+            if self.__DEBUG__:
+                print("slen=%s" % len(ret))
+            if self.__DEBUG__:
+                print("ret=%s" % ret)
+            if page <= pages and not self.__ISUPDATE__:
+                ret += self.getData(payload,page+1)
+            if self.__DEBUG__:
+                print("len=%s" % len(ret))
+            return ret
 
         if self.requestType() == 'POST':
             u = "%s%s" % (self.__BASE__,call) 
@@ -192,6 +258,7 @@ class SM_Base:
             if self.__DEBUG__:
                 print("status: %s" % r.status_code)
             if r.status_code != 200:
+                print(json.dumps(json.loads(payload),indent=4,sort_keys=True))
                 raise Exception("%s: %s" % (r.status_code,r.text))
             js = json.loads(r.text)
             if self.__DEBUG__:
@@ -203,23 +270,29 @@ class SM_Base:
             pages = 0
             if 'Data' in js and 'totalRows' in js['Data']:
                 # Paging goes here
-                print("post: call=%s" % call)
+                if self.__DEBUG__:
+                    print("post: call=%s" % call)
                 rows = js['Data']['totalRows']
-                pages = int(rows/self.__PAGESIZE__)
-                print("%s: rows=%s" % (self.__class__.__name__,js['Data']['totalRows']))
+                pages = int(rows/self.__PAGESIZE__)+1
+                if self.__DEBUG__:
+                    print("%s: rows=%s" % (self.__class__.__name__,js['Data']['totalRows']))
             ret = {}
             if self.__DEBUG__:
                 print("%s: response: %s" % (self.__class__.__name__,js))
             if self.__DEBUG__:
-                print("%s: pages: %s" % (self.__class__.__name__,pages))
+                print("%s: tpages/page/pagesize: %s/%s/%s" % (self.__class__.__name__,pages,page,self.__PAGESIZE__))
             if 'Data' in js:
                 ret = js['Data']
             if 'Data' in js and 'data' in js['Data']:
                 ret = js['Data']['data']
-            if page < pages:
+            if self.__DEBUG__:
+                print("slen=%s" % len(ret))
+            if self.__DEBUG__:
+                print("ret=%s" % ret)
+            if page <= pages and not self.__ISUPDATE__:
                 ret += self.getData(payload,page+1)
-            print(len(ret))
-            print("ret=%s" % ret)
+            if self.__DEBUG__:
+                print("len=%s" % len(ret))
             return ret
             
 
@@ -333,8 +406,8 @@ class SM_Contacts(SM_Base):
                 toset[v] = upd[x]
         for x in additional:
             toset[x] = upd[x]
-        print("CONTACTSET:%s" % json.dumps(toset,indent=4))
         if dryrun:
+            print("CONTACTSET:%s" % json.dumps(toset,indent=4))
             return {'id':None}
         else:
             return self.getData(payload=json.dumps(toset))
@@ -426,8 +499,8 @@ class SM_Companies(SM_Base):
                 toset[v] = upd[x]
         for x in additional:
             toset[x] = upd[x]
-        print("COMPANYSET:%s" % json.dumps(toset,indent=4))
         if dryrun:
+            print("COMPANYSET:%s" % json.dumps(toset,indent=4))
             return {'id':None}
         else:
             return self.getData(payload=json.dumps(toset))
@@ -457,6 +530,7 @@ class SM_Deals(SM_Base):
             "deal.title",
             "deal.primaryContact.totalActivities",
             "deal.primaryContact.id",
+            "deal.primaryContact.phone",
             "deal.primaryContact.photo",
             "deal.primaryContact.closedActivities",
             "deal.primaryContact.openActivities",
@@ -525,6 +599,10 @@ class SM_Deals(SM_Base):
         self.setCall('/apis/deal/v4')
         self.setType('POST')
         upd = args
+        if 'Id' in upd and upd['Id'] is not None and len(str(upd['Id'])) > 0:
+            self.setCall('/apis/deal/v4/%s' % upd['Id'])
+            self.setType('PUT')
+            self.setIsUpdate(True)
         toset = {}
         additional = [
             'primaryContact',
@@ -538,12 +616,19 @@ class SM_Deals(SM_Base):
             if x in DEAL_MAPPING:
                 v = DEAL_MAPPING[x] 
                 toset[v] = upd[x]
+                if 'checkbox' in v:
+                    if toset[v]:
+                        toset[v] = True
+                    else:
+                        toset[v] = False
         for x in additional:
-            toset[x] = upd[x]
-        print("DEALSET:%s" % json.dumps(toset,indent=4))
+            if x in upd:
+                toset[x] = upd[x]
         if dryrun:
+            print("DEALSET:%s" % json.dumps(toset,indent=4))
             return {'id':None}
         else:
+            print("sending: %s" % toset)
             return self.getData(payload=json.dumps(toset))
 
 def getContacts(debug=False):

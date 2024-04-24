@@ -34,7 +34,7 @@ db = Query()
 
 SCHEMA = {}
 schema_f = 'sf_user_schema.json'
-data_f = 'sf_user_data.json'
+data_f = 'sm_user_data.json'
 # res = sf_util.cacheOrLoad(schema_f,sf.User.describe)
 user = SM_User()
 user.setDebug(True)
@@ -46,14 +46,13 @@ if os.path.exists(data_f):
     res = json.loads(H.read())
     H.close()
 else:
-    res = user.get(None,None)
+    res = user.get({},0)
     H=open(data_f,"w")
     H.write(json.dumps(res,indent=4))
     H.close()
 
-
 for x in res:
-    print(json.dumps(x,indent=4))
+    # print(json.dumps(x,indent=4))
     if 'uatpart' in x['email']:
         x['email'] = x['email'].replace(".uatpart","")
     if x['email'] == "admin@poundpain.com":
@@ -63,7 +62,7 @@ for x in res:
         """,(x['email'].lower(),)
     )
     if len(o) < 1:
-        print("User %s doesnt have a platform account" % x['email'])
+        # print("User %s doesnt have a platform account" % x['email'])
         continue 
     if o[0]['sm_id'] == x['id']:
         continue
