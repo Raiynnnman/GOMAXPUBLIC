@@ -31,15 +31,13 @@ class Welcome extends React.Component {
 
     render() {
         return (
-            <div className="auth-page">
+            <div style={{backgroundColor:"black",color:"white"}} className="auth-page">
                 <Container>
-                    <h5 className="auth-logo">
-                        <i className="la la-circle text-primary" />
-                        #PAIN
-                        <i className="la la-circle text-danger" />
-                    </h5>
-                    <Widget className="widget-auth mx-auto" title={<h3 className="mt-0">Welcome to #PAIN</h3>}>
-                        <p className="widget-auth-info">
+                    <div style={{backgroundColor:'black',display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                        <img width="20%" height="20%" src='/painlogo.png'/>
+                    </div>
+                    <Widget style={{backgroundColor:"black"}} className="widget-auth mx-auto" title={<h3 style={{color:'white'}} className="mt-0">Welcome to #PAIN</h3>}>
+                        <p className="widget-auth-info" style={{color:'white'}}>
                             Welcome to #PAIN! You will receive an email with details on how to login and get started. 
                         <br/>
                         </p>

@@ -69,6 +69,7 @@ class RegisterProvider extends Component {
         }
         this.nameChange = this.nameChange.bind(this);
         this.nextPage = this.nextPage.bind(this);
+        this.selectPlan = this.selectPlan.bind(this);
         this.couponChange = this.couponChange.bind(this);
         this.updateVerified = this.updateVerified.bind(this);
         this.getCoupon = this.getCoupon.bind(this);
@@ -86,6 +87,7 @@ class RegisterProvider extends Component {
         this.officePhoneChange = this.officePhoneChange.bind(this);
         this.officeAddr1Change = this.officeAddr1Change.bind(this);
         this.provtypeChange = this.provtypeChange.bind(this);
+        this.zipcodeChange = this.zipcodeChange.bind(this);
         this.addRow = this.addRow.bind(this);
         this.saveRow = this.saveRow.bind(this);
         this.checkValid = this.checkValid.bind(this);
@@ -108,6 +110,8 @@ class RegisterProvider extends Component {
             this.state.selPlan = p.landingData.data.pricing.filter((e) => parseInt(p.landingData.data.pq.plan) === e.id)
             if (this.state.selPlan.length > 0) { 
                 this.state.selPlan = this.state.selPlan[0]
+            } else { 
+                this.state.selPlan = null;
             } 
             this.checkValid()
             
@@ -116,6 +120,8 @@ class RegisterProvider extends Component {
             this.state.selPlan = p.landingData.data.pricing.filter((e) => parseInt(this.state.plan) === e.id)
             if (this.state.selPlan.length > 0) { 
                 this.state.selPlan = this.state.selPlan[0]
+            } else { 
+                this.state.selPlan = null;
             } 
             this.setState(this.state);
         } 
@@ -148,6 +154,15 @@ class RegisterProvider extends Component {
     checkValid() { 
         /* Implement checks */
         this.state.isValid = true;
+        this.setState(this.state);
+    } 
+    zipcodeChange(e) { 
+        this.state.zipcode = e.target.value;
+        this.setState(this.state);
+    } 
+
+    selectPlan(e) { 
+        this.state.selPlan = e;
         this.setState(this.state);
     } 
 
@@ -262,8 +277,9 @@ class RegisterProvider extends Component {
     saveCard(e,i) { 
         this.state.card = e;
         this.state.intentid = i;
-        this.nextPage();
         this.setState(this.state);
+        this.register()
+        // this.nextPage();
     } 
     officeNameChange(e) {
         this.state.currentName = e.target.value;
@@ -309,6 +325,7 @@ class RegisterProvider extends Component {
             provtype:this.state.provtype,
             card: this.state.card,
             last: this.state.last,
+            zipcode:this.state.zipcode,
             addresses: a 
         } 
         if (this.state.coupon_id) { 
@@ -433,15 +450,17 @@ class RegisterProvider extends Component {
             {(this.props.searchProvider && this.props.searchProvider.isReceiving) && (
                 <AppSpinner/>
             )}
-            <div className="auth-page">
-                <Container>
-                    <h5 className="auth-logo">
-                        <i className="la la-circle text-primary" />
-                        #PAIN
-                        <i className="la la-circle text-danger" />
-                    </h5>
+            <div style={{backgroundColor:'black',display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                <img width="20%" height="20%" src='/painlogo.png'/>
+            </div>
+            {(this.props.landingData && this.props.landingData.data && this.props.landingData.data.pricing) && (
+            <div style={{backgroundColor:"black",display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                <Row md="12">
+                {(this.state.selPlan !== null) && (
+                    <>
                     {(this.state.page === 0) && (
-                    <Widget className="widget-auth mx-auto" title={<h3 className="mt-0">Register with #PAIN</h3>}>
+                    <Widget className="widget-auth mx-auto" 
+                        style={{backgroundColor:"black",color:"white"}} title={<h3 style={{color:"white"}} className="mt-0">Register with #PAIN</h3>}>
                         <p className="widget-auth-info">
                             Please enter the information below to register
                         </p>
@@ -479,266 +498,93 @@ class RegisterProvider extends Component {
                                       size="10"
                                     />*/}
                             </div>
+                            <div className="form-group mb-1" style={{borderBottom:'1px solid black'}}>
+                                Postal Code:
+                                <input className="form-control no-border" style={{backgroundColor:'white'}} value={this.state.zipcode} 
+                                    onChange={this.zipcodeChange} placeholder="Postal Code" />
+                            </div>
                         </form>
                     </Widget>
-                    )}
-                    {(this.state.page === 1) && (
-                    <>
-                    <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        Enter your practice addresses below. These will show up when clients search for services in your area.
-                    </div>
-                    <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        There are preloaded addresses, select your addresses or enter a new one.
-                    </div>
-                    <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        <div style={{width:1000}}>
-                                <table style={{width:"100%"}}>
-                                    <tr style={{borderBottom:'1px solid black'}}>
-                                    {heads.map((e) => { 
-                                        return (
-                                            <th style={{width:e.width}}>{e.text}</th>
-                                        )
-                                    })}
-                                    </tr>
-                                    <tr style={{borderBottom:'1px solid black'}}>
-                                        <td></td>
-                                        <td style={{width:200}}>
-                                            <input className="form-control no-border" style={{backgroundColor:'white'}} value={this.state.currentName} 
-                                                onChange={this.officeNameChange} required name="name" placeholder="Name" />
-                                        </td>
-                                        <td style={{width:200}}>
-                                            <input className="form-control no-border" style={{backgroundColor:'white'}} value={this.state.currentPhone} 
-                                                onChange={this.officePhoneChange} required name="phone" placeholder="Phone" />
-                                            {/*<MaskedInput style={{backgroundColor:'white',border:'0px solid white'}}
-                                              className="form-control" id="mask-phone" mask="(111) 111-1111"
-                                              onChange={this.officePhoneChange} value={this.state.currentPhone}
-                                              size="10"
-                                            />*/}
-                                        </td>
-                                        <td style={{width:400}}>
-                                            <GooglePlacesAutocomplete 
-                                                selectProps={{ value, onChange: this.updateAddress }} apiKey={googleKey()}/>
-                                        </td>
-                                        {(this.state.selectedAddrId === null) && ( 
-                                        <td style={{width:100}}>
-                                        </td>
-                                        )}
-                                    </tr>
-                                    {this.state.showAddresses.map((e) => {
-                                        return (
-                                        <tr style={{borderBottom:'1px solid black'}}>
-                                            <td style={{width:20}}>
-                                                <Input type="checkbox" id="normal-field"
-                                                  onChange={() => this.updateVerified(e.id)} checked={e.verified}/>
-                                            </td>
-                                            <td style={{width:100}}>
-                                                <input className="form-control no-border" style={{backgroundColor:'white'}} value={e.name} 
-                                                    onChange={this.officeNameChange} required name="name" placeholder="Name" />
-                                            </td>
-                                            <td style={{width:100}}>
-                                                <input className="form-control no-border" style={{backgroundColor:'white'}} value={e.phone} 
-                                                    onChange={this.officePhoneChange} required phone="phone" placeholder="Phone" />
-                                            </td>
-                                            <td style={{width:400}}>
-                                                <input className="form-control no-border" style={{backgroundColor:'white'}} value={e.addr1 + ' ' + e.city + ', ' + e.state}/>
-                                            </td>
-                                            {(this.state.selectedAddrId === null) && ( 
-                                            <td style={{width:100}}>
-                                            </td>
-                                            )}
-                                        </tr>
-                                        )
-                                    })}
-                                </table>
-                        </div>
-                    </div>
-                    </>
-                    )}
-                    {(this.state.selPlan && this.state.selPlan.trial === 0 && this.state.page === 2) && (
-                    <>
-                    <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        <Row md="12">
-                            <Col md="12">
-                            <Card style={{
-                                margin:20,width:450,height:window.innerWidth < 600 ? 295 : 200,
-                                borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}} className="mb-xlg border-1">
-                                <CardBody>
-                                    <Row md="12" style={{marginBottom:10}}>
-                                        <Col md="7">
-                                        <font style={{alignText:'left'}}>Description</font>
-                                        </Col>
-                                        <Col md="5">
-                                        <font class="pull-right" style={{marginRight:40,alignText:'right'}}>Price</font>
-                                        </Col>
-                                    </Row>
-                                    <hr/>
-                                    <Row md="12">
-                                        <Col md="7">
-                                        <font style={{alignText:'left'}}>{this.state.selPlan.description}</font>
-                                        </Col>
-                                        <Col md="5">
-                                        <font class='pull-right' style={{marginRight:20,alignText:'right'}}>${parseFloat(this.state.selPlan.upfront_cost * this.state.selPlan.duration).toFixed(2)}</font>
-                                        </Col>
-                                    </Row>
-                                    {(this.state.selPlan.coupons.length > 0) && (<Row md="12">
-                                        <Col md="7">
-                                            <input className="form-control no-border" 
-                                                style={{backgroundColor:'white'}} 
-                                                value={this.state.coupon} 
-                                                onInput={this.couponChange} 
-                                                onChange={this.couponChange} placeholder="Enter Coupon Code" />
-                                        </Col>
-                                        <Col md="5">
-                                            <font class='pull-right' style={{marginRight:20,alignText:'right'}}>{this.state.couponRed}</font>
-                                        </Col>
-                                    </Row>
-                                    )}
-                                    <hr/>
-                                    <Row md="12">
-                                        <Col md="7">
-                                        {(this.state.coupon_id !== null) && (     
-                                            <font class='pull-right' style={{alignText:'left'}}>Total:</font>
-                                        )}
-                                        {(this.state.coupon_id === null) && (     
-                                            <font class='pull-right' style={{marginRight:20,alignText:'left'}}>Total:</font>
-                                        )}
-                                        </Col>
-                                        <Col md="5">
-                                            {(this.state.coupon_id !== null) && (     
-                                                <font class='pull-right' style={{marginRight:20,alignText:'left'}}>{this.calculatePrice()}</font>
-                                            )}
-                                            {(this.state.coupon_id === null) && (     
-                                                <font class='pull-right' style={{marginRight:20,alignText:'left'}}>{this.calculatePrice()}</font>
-                                            )}
-                                        </Col>
-                                    </Row>
-                                </CardBody>
-                            </Card>
-                        </Col>
-                        </Row> 
-                    </div>
-                    </>
-                    )}
-                    {(this.state.selPlan && this.state.selPlan.trial === 0 && this.state.page === 3 && this.state.selPlan.price===0) && (
-                    <>
-                    <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        Enter your credit card information. 
-                    </div>
-                    <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        <div style={{width:400}}>
-                                <PaymentForm style={{display:'grid',justifyContent:'center',alignContent:'center'}}
-                                    applicationId={squareAppKey()}
-                                    locationId={squareLocationKey()}
-                                    cardTokenizeResponseReceived={(token,verifiedBuyer) => { 
-                                            this.saveCard({token:token});
-                                    }}>
-                                    <>
-                                        <CreditCard>Save</CreditCard>
-                                    </>
-                                </PaymentForm>
-                        </div>
-                    </div>
-                    </>
-                    )}
-                    {(this.state.selPlan && this.state.selPlan.trial === 0 && this.state.page === 3 && this.state.selPlan.price>0) && (
-                    <>
-                    <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        Enter your credit card information. 
-                    </div>
-                    <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        <div style={{width:400}}>
-                                <PaymentForm style={{display:'grid',justifyContent:'center',alignContent:'center'}}
-                                    applicationId={squareAppKey()}
-                                    locationId={squareLocationKey()}
-                                    createPaymentRequest={() => ({
-                                            countryCode: "US",
-                                            currencyCode: "USD",
-                                            lineItems: [
-                                              {
-                                                amount: this.state.setPrice,
-                                                label: this.state.selPlan.description,
-                                                pending: true,
-                                              }
-                                            ],
-                                            discounts: this.state.coupon_id ? [
-                                              {
-                                                label: this.state.coupon,
-                                                amount: this.state.couponRedValue * -1,
-                                                pending: true
-                                              }
-                                            ] : [],
-                                            requestBillingContact: false,
-                                            requestShippingContact: false,
-                                            total: {
-                                              amount: this.state.setPrice,
-                                              label: "Total",
-                                            },
-                                          })}
-                                    cardTokenizeResponseReceived={(token,verifiedBuyer) => { 
-                                            this.saveCard({token:token});
-                                    }}>
-                                    <>
-                                        {/*<ApplePay/>
-                                        <GooglePay/>*/}
-                                        <CreditCard>Save</CreditCard>
-                                    </>
-                                </PaymentForm>
-                        </div>
-                    </div>
-                    </>
-                    )}
-                    {(this.state.page === 2 && this.state.selPlan.trial === 0) && (
-                        <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        <div style={{border:"1px solid black"}}></div>
-                        <Button type="submit" onClick={this.nextPage} color="primary" className="auth-btn mb-3" disabled={
-                              !this.state.isValid} size="lg">Next</Button>
-                        </div>
                     )}
                     {(this.state.page === 0) && (
                         <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                         <div style={{border:"1px solid black"}}></div>
-                        <Button type="submit" onClick={this.nextPage} color="primary" className="auth-btn mb-3" disabled={
+                        <Button type="submit" onClick={this.nextPage} style={{backgroundColor:"#fa6a0a",color:"white"}} 
+                            className="auth-btn mb-3" disabled={
                               !this.state.isValid} size="lg">Next</Button>
                         </div>
                     )}
                     {(this.state.page === 1) && (
-                        <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        <div style={{border:"1px solid black"}}></div>
-                        <Button type="submit" onClick={this.nextPage} color="primary" className="auth-btn mb-3" disabled={
-                              !this.state.isValid} size="lg">Next</Button>
-                        </div>
+                        <PaymentForm style={{display:'grid',justifyContent:'center',alignContent:'center'}}
+                            applicationId={squareAppKey()}
+                            locationId={squareLocationKey()}
+                            cardTokenizeResponseReceived={(token,verifiedBuyer) => { 
+                                    this.saveCard({token:token});
+                            }}>
+                            <>
+                                <CreditCard>Register</CreditCard>
+                            </>
+                        </PaymentForm>
                     )}
-                    {(this.state.selPlan && this.state.selPlan.trial === 1 && this.state.page === 2) && (
-                        <>
-                        <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        <font>Thank you! Click register below to finish the registration process</font>
-                        </div>
-                        <br/>
-                        <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                            <div style={{border:"1px solid black"}}></div>
-                            <Button type="submit" style={{marginTop:20}} color="primary" className="auth-btn mb-3" onClick={this.register} disabled={
-                                  !this.state.isValid} size="sm">{this.props.registerProvider.isReceiving ? 'Saving...' : 'Register'}</Button>
-                        </div>
-                        </>
-                    )}
-                    {(this.state.selPlan && this.state.selPlan.trial === 0 && this.state.page === 4 && this.state.card !== null) && (
-                        <>
-                        <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        <font>Thank you! Click register below to finish the registration process</font>
-                        </div>
-                        <br/>
-                        <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                            <div style={{border:"1px solid black"}}></div>
-                            <Button type="submit" style={{marginTop:20}} color="primary" className="auth-btn mb-3" onClick={this.register} disabled={
-                                  !this.state.isValid} size="sm">{this.props.registerProvider.isReceiving ? 'Saving...' : 'Register'}</Button>
-                        </div>
-                        </>
-                    )}
-                </Container>
-                <footer className="auth-footer">
-                  {getVersion()} - {new Date().getFullYear()} &copy; <a rel="noopener noreferrer" target="_blank" href="https://www.poundpain.com">#PAIN</a>
-                </footer>
+                    </>
+                )}
+                {(this.state.selPlan === null) && (
+                    this.props.landingData.data.pricing.filter((g) => g.toshow === 1).map((f) => { 
+                        return (
+                        <Col md="4">
+                            <Card style={{border:"1px solid white",margin:20,backgroundColor:"black",color:"white",borderRadius:"10px"}}> 
+                                <CardBody style={{margin:0,padding:0,cursor:"pointer"}}>
+                                    <div style={{paddingTop:10,borderRadius:"10px 10px 0px 0px",backgroundColor:"#fa6a0a"}}>
+                                        <div style={{backgroundColor:"#fa6a0a",borderRadius:"10px",fontSize:"18px",display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                                            {f.description}
+                                        </div>
+                                        <div style={{paddingBottom:10,fontWeight:"bold",
+                                            fontSize:'34px',backgroundColor:"#fa6a0a",color:"white",
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                                            ${f.upfront_cost.toFixed(0)}/Month
+                                        </div>
+                                    </div>
+                                    <div style={{fontSize:"17px", padding:20,borderBottom:"1px solid white",display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                                        {(f.benefits.length > 0) && (
+                                        <>
+                                            {f.benefits[1].description}
+                                        </>
+                                        )}
+                                    </div>
+                                    <div style={{fontSize:"17px", padding:20,borderBottom:"1px solid white",display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                                        {(f.benefits.length > 0) && (
+                                        <>
+                                            {f.benefits[2].description}
+                                        </>
+                                        )}
+                                    </div>
+                                    <div>
+                                    {f.benefits.slice(3).map((h) => { 
+                                        return (
+                                        <div style={{fontSize:"17px", padding:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                                            <>
+                                                {h.description}
+                                            </>
+                                        </div>
+                                        )
+                                    })}
+                                    </div>
+                                    <div style={{borderTop:"1px solid white",margin:0,padding:0,display: 'flex', alignItems: 'center', justifyContent: 'start'}}></div>
+                                    <div style={{margin:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                                        <Button onClick={() => this.selectPlan(f)} 
+                                            style={{backgroundColor:'#fa6a0a',width:"100%"}}>Subscribe</Button>
+                                    </div>
+                                </CardBody>
+                            </Card>
+                        </Col>
+                        )
+                    })
+                )}
+                </Row>
+                
             </div>
+            )}
+        <div style={{height:"500px",backgroundColor:"black"}}></div>
         </>
         )
     }

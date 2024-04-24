@@ -234,9 +234,8 @@ class RegistrationLandingData(RegistrationsBase):
             select 
                 p.id, p.trial, p.price,
                 p.locations, p.duration,p.upfront_cost,
-                p.description,
+                p.description,p.toshow,
                 p.start_date,p.end_date,p.active,p.slot
-                        
             from
                 pricing_data p
             """
@@ -253,6 +252,17 @@ class RegistrationLandingData(RegistrationsBase):
         o = db.query(q,p)
         ret['pricing'] = []
         for x in o:
+            x['benefits'] = db.query("""
+                select
+                        id,
+                        description,
+                        slot
+                from 
+                    pricing_data_benefits where 
+                pricing_data_id = %s
+                order by slot
+                """,(x['id'],)
+            )
             x['coupons'] = db.query("""
                 select 
                         c.id,
@@ -395,6 +405,15 @@ class RegisterProvider(RegistrationsBase):
                 )
             """,(off_id,))
         db.update("delete from office_addresses where office_id=%s",(off_id,))
+        if 'addresses' not in params or len(params['addresses']) < 1 and \
+            'zipcode' in params:
+            db.update(
+                """
+                    insert into office_addresses (
+                        office_id,name,zipcode
+                    ) values (%s,%s,%s)
+                """,(off_id,params['name'],params['zipcode'])
+            )
         for x in params['addresses']:
             db.update(
                 """

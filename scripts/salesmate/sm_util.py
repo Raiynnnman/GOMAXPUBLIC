@@ -145,7 +145,7 @@ class SM_Base:
         if '?rows=' in call and page > 0:
             call = call.split('?')
             call = "%s?rows=%s&from=%s" % (
-                call[0],self.__PAGESIZE__,page*self.__PAGESIZE__+1
+                call[0],self.__PAGESIZE__,page*self.__PAGESIZE__
             )
         if self.requestType() == 'GET':
             u = "%s%s" % (self.__BASE__,call) 
