@@ -48,7 +48,7 @@ class App extends React.PureComponent {
             <ConnectedRouter history={getHistory()}>
               <HashRouter>
                   <Switch>
-                      <Route path="/" exact render={() => <Redirect to="/landing"/>}/>
+                      <Route path="/" exact render={() => <Redirect to="/register-provider"/>}/>
                       <Route path="/app" exact render={() => <Redirect to="/app/main"/>}/>
                       <UserRoute path="/app" dispatch={this.props.dispatch} component={LayoutComponent}/>
                       <Route path="/reset/:token" exact component={Reset}/>
