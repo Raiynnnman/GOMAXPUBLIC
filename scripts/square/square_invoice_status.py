@@ -52,6 +52,7 @@ if not args.force:
     q+= "and (ic.nextcheck is null or ic.nextcheck < now())"
 
 l = db.query(q)
+INV = getIDs.getInvoiceStatus()
 
 for x in l:
     if args.debug:
@@ -64,7 +65,14 @@ for x in l:
             r = client.invoices.cancel_invoice(invoice_id = x['stripe_invoice_id'],body={'version':x['version']})
             if r.is_error():
                 print(r.errors)
-                raise Exception("ERROR canceling invoice")
+                if 'NOT_FOUND' in str(r.errors):
+                    db.update("""
+                        update invoices set invoice_status_id = %s where id = %s
+                            (%s,%s,%s)
+                        """,(INV['VOID'],x['invoice_id'])
+                    )
+                else:
+                    raise Exception("ERROR canceling invoice")
             db.update("""
                 insert into invoice_history (invoices_id,user_id,text) values 
                     (%s,%s,%s)

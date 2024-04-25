@@ -65,7 +65,7 @@ CNT = 0
 for x in l:
     email = x['email']
     if config.getKey('email_to_override') is not None:
-        email = config.getKey('email_to_override')
+        x['email'] = email = config.getKey('email_to_override')
     CNT += 1
     newdata = {}
     try:
