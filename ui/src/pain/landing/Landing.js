@@ -221,83 +221,50 @@ class Landing extends Component {
         }
         return (
         <>
-            <div style={{backgroundColor:"black",color:"white"}}>
-                <div style={{marginLeft:150,marginRight:150,position:"sticky",top:"0px",zIndex:1000,backgroundColor:"black"}}>
-                    <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-evenly'}}>
-                        <div style={{height:50,display: 'flex', alignItems: 'end',marginTop:20}} className="home-menu">
-                            <a href="/" onClick={() => this.selectMenu("/#")}><font style={{fontFamily:"sans-serif",fontSize:"16px"}}>Home</font></a>
-                        </div>
-                        <div style={{height:50,display: 'flex', alignItems: 'end',marginTop:20}} className="home-menu">
-                            <a onClick={() => this.selectMenu("/#/join")} ><font style={{fontFamily:"sans-serif",fontSize:"16px"}}>Join Our Network</font></a>
-                        </div>
-                        <div style={{height:50,display: 'flex', alignItems: 'end',marginTop:20}} className="home-menu">
-                            <a href="/#/provider" onClick={() => this.selectMenu("/#/provider")}><font style={{fontFamily:"sans-serif",fontSize:"16px"}}>Preferred Provider</font></a>
-                        </div>
-                        <div style={{height:50,display: 'flex', alignItems: 'end',marginTop:20}} className="home-menu">
-                            <a href="/#/about-us" onClick={() => this.selectMenu("/#/about-us")}><font style={{fontFamily:"sans-serif",fontSize:"16px"}}>About Us</font></a>
-                        </div>
-                        <div style={{height:50,display: 'flex', alignItems: 'end',marginTop:20}} className="home-menu">
-                            <a href="/#/contact-us" onClick={() => this.selectMenu("/#")}><font style={{fontFamily:"sans-serif",fontSize:"16px"}}>Contact Us</font></a>
-                        </div>
-                        <div style={{height:50,display: 'flex', alignItems: 'end',marginTop:20}} className="home-menu">
-                            <a href="/#/careers" onClick={() => this.selectMenu("/#")}><font style={{fontFamily:"sans-serif",fontSize:"16px"}}>Careers</font></a>
-                        </div>
-                        <div style={{height:50,display: 'flex', alignItems: 'end',marginTop:20}} className="home-menu">
-                            <a href="/#/login"><font style={{fontFamily:"sans-serif",fontSize:"16px"}}>Login</font></a>
-                        </div>
-                    </div>
-                </div>
-                {(this.state.location === "/") && (
-                    <Home landingData={this.props.landingData}/>
-                )}
-                {(this.state.location === "/landing") && (
-                    <Home landingData={this.props.landingData}/>
-                )}
-                {(this.state.location === "/#/join") && (
-                    <Join landingData={this.props.landingData}/>
-                )}
-                {(this.state.location === "/join") && (
-                    <Join landingData={this.props.landingData}/>
-                )}
-                <div style={{marginTop:20}}> 
+            <div style={{backgroundColor:'black',display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                <img width="330px" height="330px" src='/painlogo.png'/>
+            </div>
+            {(this.props.landingData && this.props.landingData.data && this.props.landingData.data.pricing) && (
+            <div style={{height:800,backgroundColor:"black"}}>
+                <div style={{backgroundColor:"black",display: 'flex', alignItems: 'center', justifyContent: 'space-around'}}>
+                    <>
                     <Row md="12">
-                        <Col md="3"></Col>
-                        <Col md="3"> 
-                            <Row md="12">
-                            Chase Plaza Towers
-                            </Row>
-                            <Row md="12">
-                            121 S Orange Ave. Suite. 1220
-                            </Row>
-                            <Row md="12">
-                            Orlando, FL 32801
-                            </Row>
-                            <Row md="12">&nbsp;</Row>
-                            <Row md="12">
-                            info@poundpain.com
-                            </Row>
+                        <Col md="6" sx="6" style={{paddingLeft:0,marginLeft:0}}>
+                            <div style={{backgroundColor:"black",display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                                <iframe 
+                                    src={
+                                        this.props.landingData.data.introduction.length > 0 ? 
+                                            this.props.landingData.data.introduction[0].url : 
+                                            "https://player.vimeo.com/video/939097958?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" 
+                                    }
+                                    allow="autoplay; fullscreen; picture-in-picture; clipboard-write" 
+                                    style={{width:window.innerWidth < 500 ? window.innerWidth : "800px",
+                                            height:window.innerWidth < 500 ? "100%vw" : "600px",
+                                            }}
+                                    title="PoundPain Sample">
+                                </iframe>
+                            </div>
                         </Col>
-                        <Col md="3"> 
-                            <Row md="12">
-                                <a href="/">Home</a>
-                            </Row>
-                            <Row md="12" style={{marginTop:5}}>
-                                <a href="/contact-us">Contact Us</a>
-                            </Row>
-                            <Row md="12" style={{marginTop:5}}>
-                                <a href="/terms-of-service">Terms of Service</a>
-                            </Row>
-                            <Row md="12" style={{marginTop:5}}>
-                                <a href="/privacy-policy">Privacy Policy</a>
-                            </Row>
-                        </Col>
-                        <Col md="3"> 
-                            <a href="https://www.facebook.com/poundpainusa"><img src="/facebook.webp"/></a>
-                            <a href="https://www.instagram.com/poundpain/"><img src="/instagram.webp" style={{marginLeft:"-10px"}}/></a>
+                        <Col md="6" sx="6" style={{marginTop:10,paddingRight:0,marginRight:0}}>
+                            <div style={{backgroundColor:"black",display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                                <iframe 
+                                    src={
+                                        this.props.landingData.data.introduction.length > 0 ? 
+                                            this.props.landingData.data.introduction[1].url : 
+                                            "https://calendly.com/d/ck2s-xvq-t7n/poundpain-introduction"
+                                    }
+                                    style={{width:window.innerWidth < 500 ? window.innerWidth : "600px",
+                                            height:window.innerWidth < 500 ? "800px" : "800px",
+                                            }}
+                                    title="PoundPain Invite">
+                                </iframe>
+                            </div>
                         </Col>
                     </Row>
+                    </>
                 </div>
             </div>
+            )}
         </>
         )
     }

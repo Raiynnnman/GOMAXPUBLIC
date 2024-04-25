@@ -515,16 +515,86 @@ class RegisterProvider extends Component {
                         </div>
                     )}
                     {(this.state.page === 1) && (
-                        <PaymentForm style={{display:'grid',justifyContent:'center',alignContent:'center'}}
-                            applicationId={squareAppKey()}
-                            locationId={squareLocationKey()}
-                            cardTokenizeResponseReceived={(token,verifiedBuyer) => { 
-                                    this.saveCard({token:token});
-                            }}>
-                            <>
-                                <CreditCard>Register</CreditCard>
-                            </>
-                        </PaymentForm>
+                        <>
+                        <div style={{marginTop:20}}>
+                            <Row md="12">
+                                <Col md="12" sx="3">
+                                <Card style={{
+                                    margin:0,
+                                    borderRadius:"10px",color:"white",backgroundColor:"black"}}> 
+                                    <CardBody>
+                                        <Row md="12" style={{marginBottom:10}}>
+                                            <Col md="7">
+                                            <font style={{alignText:'left'}}>Description</font>
+                                            </Col>
+                                            <Col md="5">
+                                            <font class="pull-right" style={{marginRight:40,alignText:'right'}}>Price</font>
+                                            </Col>
+                                        </Row>
+                                        <hr/>
+                                        <Row md="12">
+                                            <Col md="7">
+                                            <font style={{alignText:'left'}}>{this.state.selPlan.description}</font>
+                                            </Col>
+                                            <Col md="5">
+                                            <font class='pull-right' style={{marginRight:20,alignText:'right'}}>${parseFloat(this.state.selPlan.upfront_cost * this.state.selPlan.duration).toFixed(2)}</font>
+                                            </Col>
+                                        </Row>
+                                        {(this.state.selPlan.coupons.length > 0) && (
+                                        <Row md="12">
+                                            <Col md="7">
+                                                <input className="form-control no-border" 
+                                                    style={{marginLeft:0,paddingLeft:0,backgroundColor:'black',color:"white"}} 
+                                                    value={this.state.coupon} 
+                                                    onInput={this.couponChange} 
+                                                    onChange={this.couponChange} placeholder="Enter Coupon Code" />
+                                            </Col>
+                                            <Col md="5">
+                                                <font class="pull-right" style={{textAlign:"right",marginRight:20}}>{this.state.couponRed}</font>
+                                            </Col>
+                                        </Row>
+                                        )}
+                                        <hr/>
+                                        <Row md="12">
+                                            <Col md="7">
+                                            {(this.state.coupon_id !== null) && (     
+                                                <font style={{alignText:'left'}}>Total:</font>
+                                            )}
+                                            {(this.state.coupon_id === null) && (     
+                                                <font style={{marginRight:20,alignText:'left'}}>Total:</font>
+                                            )}
+                                            </Col>
+                                            <Col md="5">
+                                                {(this.state.coupon_id !== null) && (     
+                                                    <font class='pull-right' style={{marginRight:20,alignText:'left'}}>{this.calculatePrice()}</font>
+                                                )}
+                                                {(this.state.coupon_id === null) && (     
+                                                    <font class='pull-right' style={{marginRight:20,alignText:'left'}}>{this.calculatePrice()}</font>
+                                                )}
+                                            </Col>
+                                        </Row>
+                                    </CardBody>
+                                </Card>
+                            </Col>
+                            </Row> 
+                        </div>
+                        <div style={{marginTop:20}}>
+                        <Row md="12">
+                            <Col md="12" sx="3">
+                                <PaymentForm style={{margin:10,display:'grid',justifyContent:'center',alignContent:'center'}}
+                                    applicationId={squareAppKey()}
+                                    locationId={squareLocationKey()}
+                                    cardTokenizeResponseReceived={(token,verifiedBuyer) => { 
+                                            this.saveCard({token:token});
+                                    }}>
+                                    <>
+                                        <CreditCard>Register</CreditCard>
+                                    </>
+                                </PaymentForm>
+                            </Col>
+                        </Row>
+                        </div>
+                    </>
                     )}
                     </>
                 )}

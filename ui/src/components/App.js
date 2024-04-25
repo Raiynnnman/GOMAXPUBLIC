@@ -16,6 +16,7 @@ import LayoutComponent from '../components/Layout';
 import Login from '../pain/login';
 import Reset from '../pain/reset/Reset';
 import Forgot from '../pain/forgot/Forgot';
+import Landing from '../pain/landing/Landing';
 import Search from '../pain/search/Search';
 import Welcome from '../pain/welcome/Welcome';
 import ThankYou from '../pain/landing/ThankYou';
@@ -53,6 +54,7 @@ class App extends React.PureComponent {
                       <Route path="/reset/:token" exact component={Reset}/>
                       <Route path="/verify/:token" exact component={Verified}/> 
                       <Route path="/register" exact component={Register}/>}
+                      <Route path="/landing" exact component={Landing}/>
                       <Route path="/register-provider" exact component={RegisterProvider}/>
                       <Route path="/register-provider/:id" exact component={RegisterProvider}/>
                       <Route path="/register-provider/o/:pq_id" exact component={RegisterProvider}/>

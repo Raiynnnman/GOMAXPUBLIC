@@ -283,6 +283,11 @@ class RegistrationLandingData(RegistrationsBase):
                 otd.office_type_id = ot.id
             """)
         ret['roles'] = l
+        ret['introduction'] = db.query("""
+            select url,slot from landing_configuration
+            where active = 1
+            order by slot
+        """)
         if 'pq_id' in params and params['pq_id'] is not None:
             o = db.query("""
                 select
