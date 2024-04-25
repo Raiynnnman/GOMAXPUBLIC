@@ -98,11 +98,11 @@ for x in l:
                 if r.is_error():
                     print(r.errors)
                     raise Exception("ERROR updating user")
-            db.update("""
-                insert into office_history(office_id,user_id,text) values (
-                    %s,1,'Updated square information for customer'
-                )
-            """,(x['id'],))
+                db.update("""
+                    insert into office_history(office_id,user_id,text) values (
+                        %s,1,'Updated square information for customer'
+                    )
+                """,(x['id'],))
         db.commit()
     except Exception as e:
         print("ERROR: %s has an issue: %s" % (x['email'],str(e)))
