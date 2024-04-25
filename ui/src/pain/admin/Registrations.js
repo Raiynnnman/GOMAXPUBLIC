@@ -598,8 +598,8 @@ class Registrations extends Component {
                 formatter:(cellContent,row) => (
                     <div>
                     {row.sf_id !== null && (
-                        <a target="_blank" href={salesforceURL() + 'lightning/r/Lead/' + row.sf_id + '/view'}>
-                            <img height={50} width={100}src='/salesforce.jpg'/>
+                        <a target="_blank" href={'https://poundpain1.salesmate.io/#/app/deals/' + row.sm_id + '/detail'}>
+                            <img height={50} width={50}src='/salesmate.webp'/>
                         </a>
                     )}
                     </div>

@@ -1262,7 +1262,7 @@ class RegistrationList(AdminBase):
         q = """
             select 
                 pq.id,o.name,o.email,o.id as office_id,pqs.name as status,
-                pq.provider_queue_status_id,pq.sf_id,pqls.name as lead_strength,
+                pq.provider_queue_status_id,pq.sm_id,pqls.name as lead_strength,
                 pqls.id as lead_strength_id, pq.created,pq.updated,pq.places_id,
                 pq.initial_payment,ot.id as office_type_id,
                 ot.name as office_type,op.pricing_data_id as pricing_id,
