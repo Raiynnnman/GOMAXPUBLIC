@@ -221,15 +221,16 @@ class Landing extends Component {
         }
         return (
         <>
+            {(this.props.landingData && this.props.landingData.data && this.props.landingData.data.pricing) && (
+            <>
             <div style={{backgroundColor:'black',display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                 <img width="330px" height="330px" src='/painlogo.png'/>
             </div>
-            {(this.props.landingData && this.props.landingData.data && this.props.landingData.data.pricing) && (
             <div style={{height:800,backgroundColor:"black"}}>
-                <div style={{backgroundColor:"black",display: 'flex', alignItems: 'center', justifyContent: 'space-around'}}>
+                <div style={{backgroundColor:"black",display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                     <>
                     <Row md="12">
-                        <Col md="6" sx="6" style={{paddingLeft:0,marginLeft:0}}>
+                        {/*<Col md="6" sx="6" style={{paddingLeft:0,marginLeft:0}}>
                             <div style={{backgroundColor:"black",display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                 <iframe 
                                     src={
@@ -244,8 +245,8 @@ class Landing extends Component {
                                     title="PoundPain Sample">
                                 </iframe>
                             </div>
-                        </Col>
-                        <Col md="6" sx="6" style={{marginTop:10,paddingRight:0,marginRight:0}}>
+                        </Col>*/}
+                        <Col md="12" sx="12" style={{marginTop:10,paddingRight:0,marginRight:0}}>
                             <div style={{backgroundColor:"black",display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                 <iframe 
                                     src={
@@ -264,6 +265,7 @@ class Landing extends Component {
                     </>
                 </div>
             </div>
+            </>
             )}
         </>
         )
