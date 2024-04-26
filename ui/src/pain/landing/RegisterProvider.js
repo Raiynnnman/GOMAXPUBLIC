@@ -616,14 +616,14 @@ class RegisterProvider extends Component {
                                             ${f.upfront_cost.toFixed(0)}/Month
                                         </div>
                                     </div>
-                                    <div style={{fontSize:"17px", padding:20,borderBottom:"1px solid white",display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                                    <div style={{fontSize:"17px", padding:10,borderBottom:"1px solid white",display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                         {(f.benefits.length > 0) && (
                                         <>
                                             {f.benefits[1].description}
                                         </>
                                         )}
                                     </div>
-                                    <div style={{fontSize:"17px", padding:20,borderBottom:"1px solid white",display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                                    <div style={{fontSize:"17px", padding:10,borderBottom:"1px solid white",display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                         {(f.benefits.length > 0) && (
                                         <>
                                             {f.benefits[2].description}
@@ -633,7 +633,7 @@ class RegisterProvider extends Component {
                                     <div>
                                     {f.benefits.slice(3).map((h) => { 
                                         return (
-                                        <div style={{fontSize:"17px", padding:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                                        <div style={{fontSize:"17px", padding:10,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                             <>
                                                 {h.description}
                                             </>
