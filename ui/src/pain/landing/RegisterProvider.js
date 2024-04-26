@@ -656,6 +656,9 @@ class RegisterProvider extends Component {
                 
             </div>
             )}
+        {(this.props.match.path.includes("short") && this.state.selPlan !== null) && (
+            <div style={{height:"75px",backgroundColor:"black"}}></div>
+        )}
         {(!this.props.match.path.includes("short")) && (
         <div style={{height:"500px",backgroundColor:"black"}}></div>
         )}
