@@ -456,7 +456,7 @@ class RegisterProvider extends Component {
             </div>
             )}
             {(this.props.landingData && this.props.landingData.data && this.props.landingData.data.pricing) && (
-            <div style={{backgroundColor:"black",display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+            <div style={{height:this.props.match.path.includes("short") ? 620 :'',backgroundColor:"black",display: 'flex', alignItems: 'start', justifyContent: 'center'}}>
                 <Row md="12">
                 {(this.state.selPlan !== null) && (
                     <>
@@ -656,9 +656,6 @@ class RegisterProvider extends Component {
                 
             </div>
             )}
-        {(this.props.match.path.includes("short") && this.state.selPlan !== null) && (
-            <div style={{height:"85px",backgroundColor:"black"}}></div>
-        )}
         {(!this.props.match.path.includes("short")) && (
         <div style={{height:"500px",backgroundColor:"black"}}></div>
         )}
