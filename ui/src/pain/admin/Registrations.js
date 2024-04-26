@@ -655,12 +655,12 @@ class Registrations extends Component {
                 )
             },
             {
-                dataField:'updated',
+                dataField:'start_date',
                 sort:true,
-                text:'Updated',
+                text:'Plan Start',
                 formatter:(cellContent,row) => (
                     <div>
-                        {moment(row['updated']).format('LLL')} 
+                        {row['start_date'] ? moment(row['start_date']).format('LL') : ''} 
                     </div>
                 )
             },

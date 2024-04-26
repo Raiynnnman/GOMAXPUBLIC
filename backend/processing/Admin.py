@@ -1266,7 +1266,7 @@ class RegistrationList(AdminBase):
                 pqls.id as lead_strength_id, pq.created,pq.updated,pq.places_id,
                 pq.initial_payment,ot.id as office_type_id,
                 ot.name as office_type,op.pricing_data_id as pricing_id,
-                o.commission_user_id,oa.state,
+                o.commission_user_id,oa.state,op.start_date,
                 concat(comu.first_name, ' ', comu.last_name) as commission_name
             from
                 provider_queue pq

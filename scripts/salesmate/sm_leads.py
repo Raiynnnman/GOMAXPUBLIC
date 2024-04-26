@@ -748,7 +748,7 @@ for x in SF_DATA:
                 traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
     if debug:
         print("off_id=%s" % off_id)
-    if 'Subscription_Plan__c' in j and j['Subscription_Plan__c'] is not None \
+    if False and 'Subscription_Plan__c' in j and j['Subscription_Plan__c'] is not None \
             and len(j['Subscription_Plan__c']) > 0 and j['Subscription_Plan__c'] != "N/A":
         p1 = j['PainID__c']
         if p1 in IDS and len(IDS[p1]) > 1:
@@ -956,7 +956,7 @@ for x in SF_DATA:
             continue
         if not args.dryrun:
             try:
-                sf.Lead.update(x,t)
+                DEALS_OBJ.update(n,dryrun=args.dryrun)
             except Exception as e:
                 print("%s : ERROR : %s" % (x,str(e)))
                 exc_type, exc_value, exc_traceback = sys.exc_info()
