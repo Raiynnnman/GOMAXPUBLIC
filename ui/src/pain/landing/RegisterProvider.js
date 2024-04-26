@@ -479,19 +479,19 @@ class RegisterProvider extends Component {
                                     {this.state.errorMessage}
                                 </font>
                             </p>
-                            <div className="form-group mb-1" style={{borderBottom:'1px solid black'}}>
+                            <div style={{marginBottom:10,borderBottom:'1px solid black'}}>
                                 Practice Name:
                                 <input className="form-control no-border" style={{backgroundColor:'white'}} value={this.state.name} onChange={this.nameChange} required name="name" placeholder="Name" />
                             </div>
-                            <div className="form-group mb-1" style={{borderBottom:'1px solid black'}}>
+                            <div style={{marginBottom:10,borderBottom:'1px solid black'}}>
                                 Name:
                                 <input className="form-control no-border" style={{backgroundColor:'white'}} value={this.state.first} onChange={this.firstChange} required name="first" placeholder="Name" />
                             </div>
-                            <div className="form-group mb-1" style={{borderBottom:'1px solid black'}}>
+                            <div style={{marginBottom:10,borderBottom:'1px solid black'}}>
                                 Email:
                                 <input className="form-control no-border" style={{backgroundColor:'white'}} value={this.state.email} onChange={this.emailChange} type="email" required name="email" placeholder="Email" />
                             </div>
-                            <div className="form-group mb-1" style={{borderBottom:'1px solid black'}}>
+                            <div style={{marginBottom:10,borderBottom:'1px solid black'}}>
                                 Phone:
                                 <input className="form-control no-border" style={{backgroundColor:'white'}} value={this.state.phone} onChange={this.phoneChange} type="phone" required name="phone" placeholder="Phone" />
                                     {/*<MaskedInput style={{backgroundColor:'white',border:'0px solid white'}}
@@ -500,7 +500,7 @@ class RegisterProvider extends Component {
                                       size="10"
                                     />*/}
                             </div>
-                            <div className="form-group mb-1" style={{borderBottom:'1px solid black'}}>
+                            <div style={{marginBottom:0,borderBottom:'1px solid black'}}>
                                 Postal Code:
                                 <input className="form-control no-border" style={{backgroundColor:'white'}} value={this.state.zipcode} 
                                     onChange={this.zipcodeChange} placeholder="Postal Code" />
@@ -509,7 +509,7 @@ class RegisterProvider extends Component {
                     </Widget>
                     )}
                     {(this.state.page === 0) && (
-                        <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                        <div style={{marginTop:0,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                         <div style={{border:"1px solid black"}}></div>
                         <Button type="submit" onClick={this.nextPage} style={{backgroundColor:"#fa6a0a",color:"white"}} 
                             className="auth-btn mb-3" disabled={
