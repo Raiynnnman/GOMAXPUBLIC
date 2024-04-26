@@ -450,9 +450,11 @@ class RegisterProvider extends Component {
             {(this.props.searchProvider && this.props.searchProvider.isReceiving) && (
                 <AppSpinner/>
             )}
+            {(!this.props.match.path.includes("short")) && (
             <div style={{backgroundColor:'black',display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                 <img width="20%" height="20%" src='/painlogo.png'/>
             </div>
+            )}
             {(this.props.landingData && this.props.landingData.data && this.props.landingData.data.pricing) && (
             <div style={{backgroundColor:"black",display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                 <Row md="12">

@@ -56,6 +56,7 @@ class App extends React.PureComponent {
                       <Route path="/register" exact component={Register}/>}
                       <Route path="/landing" exact component={Landing}/>
                       <Route path="/register-provider" exact component={RegisterProvider}/>
+                      <Route path="/register-provider/short" exact component={RegisterProvider}/>
                       <Route path="/register-provider/:id" exact component={RegisterProvider}/>
                       <Route path="/register-provider/o/:pq_id" exact component={RegisterProvider}/>
                       <Route path="/register-legal" exact component={RegisterLegal}/>
