@@ -490,6 +490,10 @@ class RegisterProvider(RegistrationsBase):
                 """,(uid,PERM['Admin'])
             )
             userid = uid
+        db.update("""
+            update provider_queue set updated=now() where office_id=%s
+            """,(off_id,)
+        )
         if 'plan' in params and params['plan'] is not None:
             if 'pq' not in params or params['pq'] is None:
                 selplan = int(params['plan'])
