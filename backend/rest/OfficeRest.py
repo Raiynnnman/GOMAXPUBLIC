@@ -76,5 +76,17 @@ class ReferrerUpdateRest(RestBase):
         ret = u.process(args[0])
         return ret
 
+class LocationsListRest(RestBase):
 
+    def post(self, *args, **kwargs):
+        u = Office.LocationList()
+        ret = u.process(args[0])
+        return ret
+
+class LocationUpdateRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Office.LocationUpdate()
+        ret = u.process(args[0])
+        return ret
 

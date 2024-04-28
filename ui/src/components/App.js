@@ -37,7 +37,6 @@ class App extends React.PureComponent {
     if (this.props.loadingInit) {
       return <div/>;
     }
-
     return (
         <div>
             <ToastContainer
@@ -48,7 +47,18 @@ class App extends React.PureComponent {
             <ConnectedRouter history={getHistory()}>
               <HashRouter>
                   <Switch>
-                      <Route path="/" exact render={() => <Redirect to="/register-provider"/>}/>
+                    {(this.props.currentUser && this.props.currentUser.entitlements &&
+                      this.props.currentUser.entitlements.includes("Provider")) && (
+                      <Route path="/" exact render={() => <Redirect to="/login"/>}/>
+                    )}
+                    {(this.props.currentUser && this.props.currentUser.entitlements &&
+                      this.props.currentUser.entitlements.includes("Customer")) && (
+                      <Route path="/" exact render={() => <Redirect to="/login"/>}/>
+                    )}
+                    {(this.props.currentUser && this.props.currentUser.entitlements &&
+                      this.props.currentUser.entitlements.includes("Admin")) && (
+                      <Route path="/" exact render={() => <Redirect to="/login"/>}/>
+                    )}
                       <Route path="/app" exact render={() => <Redirect to="/app/main"/>}/>
                       <UserRoute path="/app" dispatch={this.props.dispatch} component={LayoutComponent}/>
                       <Route path="/reset/:token" exact component={Reset}/>
@@ -69,7 +79,12 @@ class App extends React.PureComponent {
                       <AuthRoute path="/thankyou" exact component={ThankYou}/>
                       <AuthRoute path="/forgot" exact component={Forgot}/>
                       <Route path="/error" exact component={ErrorPage}/>
+                    {window.location.href.includes("search.") && (
+                      <Redirect from="*" to="/search"/>
+                    )}
+                    {!window.location.href.includes("search.") && (
                       <Redirect from="*" to="/register-provider"/>
+                    )}
                   </Switch>
               </HashRouter>
             </ConnectedRouter>

@@ -77,3 +77,17 @@ def refdashboard(*args, **kwargs):
 def refupdate(*args, **kwargs):
     po = OfficeRest.ReferrerUpdateRest()
     return po.postWrapper(*args,**kwargs)
+
+@office_set.route('/office/locations/list', methods=['POST'])
+@token_required
+@swag_from(docs_dir + 'office_users_list.yaml')
+def locationlist(*args, **kwargs):
+    po = OfficeRest.LocationsListRest()
+    return po.postWrapper(*args,**kwargs)
+
+@office_set.route('/office/locations/update', methods=['POST'])
+@token_required
+@swag_from(docs_dir + 'office_users_update.yaml')
+def locationupdate(*args, **kwargs):
+    po = OfficeRest.LocationUpdateRest()
+    return po.postWrapper(*args,**kwargs)

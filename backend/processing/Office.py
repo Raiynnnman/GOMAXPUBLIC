@@ -165,40 +165,38 @@ class PhysicianList(OfficeBase):
             """
             select
                u.id,email,first_name,last_name,phone_prefix,phone,title,active,
-               json_arrayagg(
-                    json_object(
-                        'procedure',p.id
-                    )
-               ) as procs,ou.office_id as office_id
+               ou.office_id as office_id,round(avg(ifnull(r.rating,0)),2) as rating,
+               0 as miles
             from
                 office_user ou
                 left join users u on ou.user_id = u.id
-                left outer join procedures_phy pp on pp.user_id=u.id
-                left join procedures p on p.id=pp.procedures_id
+                left outer join ratings r on r.user_id=u.id
             where
                 ou.user_id = u.id and
-                office_id = %s
+                ou.office_id = %s
             group by 
                 ou.user_id
             """,(group_id,)
         )
-        ret['procedures'] = db.query("select id,name from procedures")
         fin = []
+        ret['physicians'] = []
         for x in o:
-            j = json.loads(x['procs'])
-            x['procs'] = []
-            if j[0]['procedure'] == None:
-                x['procs'] = []
-            else:
-                HAVE = {}
-                for q in j:
-                    b = q['procedure']
-                    if b in HAVE:
-                        continue
-                    x['procs'].append({'procedure':b})
-                    HAVE[b] = 1
-            fin.append(x)
-        ret['physicians'] = o
+            x['locations'] = db.query("""
+                select
+                    oa.id,oa.addr1,
+                    oa.city,oa.state,
+                    oa.zipcode,oa.lat,
+                    oa.lon
+                from 
+                    office_providers op
+                    left join users u on op.user_id=u.id
+                    left outer join office_addresses oa on oa.id = op.office_addresses_id
+                where
+                    oa.office_id=%s and
+                    op.user_id=%s
+                """,(group_id,x['id'])
+            )
+            ret['physicians'].append(x)
         return ret
 
 class PhysicianSave(OfficeBase):
@@ -651,6 +649,74 @@ class ReferrerUpdate(OfficeBase):
             )
             for x in params['clients']:
                 self.processRow(off_id,x,insid,db)
+        db.commit()
+        ret['success'] = True
+        return ret
+
+class LocationUpdate(OfficeBase):
+
+    def __init__(self):
+        super().__init__()
+
+    def isDeferred(self):
+        return False
+
+    @check_office
+    def execute(self, *args, **kwargs):
+        ret = {}
+        job,user,off_id,params = self.getArgs(*args,**kwargs)
+        db = Query()
+        #db.update("""
+        #    update client_intake set client_intake_status_id = %s
+        #        where id = %s
+        #    """,(params['status_id'],params['id'])
+        #)
+        db.commit()
+        ret['success'] = True
+        return ret
+
+class LocationList(OfficeBase):
+
+    def __init__(self):
+        super().__init__()
+
+    def isDeferred(self):
+        return False
+
+    @check_office
+    def execute(self, *args, **kwargs):
+        ret = {}
+        job,user,off_id,params = self.getArgs(*args,**kwargs)
+        db = Query()
+        o = db.query("""
+            select 
+                oa.id,oa.name,oa.phone,oa.addr1,oa.city,oa.state,oa.zipcode,
+                    oa.lat as lat, oa.lon as lng,
+                    round(avg(ifnull(r.rating,0)),2) as rating
+            from 
+                office_addresses oa
+                left outer join ratings r on r.office_id = oa.office_id
+            where oa.office_id = %s
+            """,(off_id,)
+        )
+        ret['locations'] = []
+        for x in o:
+            if x['id'] is None:
+                continue
+            x['providers'] = db.query("""
+                select 
+                    u.id,u.email,u.first_name,u.last_name,
+                    opa.text,opm.headshot
+                from 
+                    office_addresses oa
+                    left join office_providers op on op.office_addresses_id = oa.id
+                    left join users u on op.user_id = u.id
+                    left outer join office_provider_about opa on opa.user_id=u.id
+                    left outer join office_provider_media opm on opm.user_id=u.id
+                where oa.id=%s
+                """,(x['id'],)
+            ) 
+            ret['locations'].append(x)
         db.commit()
         ret['success'] = True
         return ret

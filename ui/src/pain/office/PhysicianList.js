@@ -20,6 +20,7 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import PhysicianCard from './PhysicianCard';
 
 const { SearchBar } = Search;
 class PhysicianList extends Component {
@@ -31,12 +32,12 @@ class PhysicianList extends Component {
         } 
         this.cancel = this.cancel.bind(this);
         this.save = this.save.bind(this);
+        this.edit = this.edit.bind(this);
         this.emailChange = this.emailChange.bind(this);
         this.titleChange = this.titleChange.bind(this);
         this.firstChange = this.firstChange.bind(this);
         this.lastChange = this.lastChange.bind(this);
         this.phoneChange = this.phoneChange.bind(this);
-        this.changeProcedure = this.changeProcedure.bind(this);
     } 
 
     componentWillReceiveProps(p) { 
@@ -44,23 +45,7 @@ class PhysicianList extends Component {
 
     componentDidMount() {
     }
-    changeProcedure(e) { 
-        if (e === null) { 
-            this.state.selected.procs = []
-            this.setState(this.state);
-            return;
-        } 
-        var c = 0;
-        var fin = [];
-        for (c; c < e.length;c++) { 
-            fin.push({
-                procedure: e[c].value,
-                name: e[c].label
-            })
-        } 
-        this.state.selected.procs = fin
-        this.setState(this.state);
-    } 
+
     edit(row) { 
         this.state.selected = JSON.parse(JSON.stringify(row));
         this.setState(this.state);
@@ -146,6 +131,8 @@ class PhysicianList extends Component {
     } 
 
     render() {
+        console.log("s",this.state)
+        console.log("p",this.props)
         const options = {
           showTotal:true,
           sizePerPage:10,
@@ -198,6 +185,7 @@ class PhysicianList extends Component {
                 )
             },
         ];
+        console.log("p",this.props);
         return (
         <>
             {(this.props.phySave && this.props.phySave.isReceiving) && (
@@ -212,24 +200,24 @@ class PhysicianList extends Component {
                 </Col>
             </Row>
             <Row md="12">
-                <Col md="12">
-                    <BootstrapTable 
-                        keyField='id' data={this.props.phy.data.physicians} 
-                        columns={heads} pagination={ paginationFactory(options)}>
-                    </BootstrapTable>
-                </Col>                
+            <>
+                {this.props.phy.data.physicians.map((e) => {         
+                    return (
+                    <Col md="3">
+                    <PhysicianCard onEdit={this.edit} provider={e}/>
+                    </Col>
+                    )
+                })}
+            </>
             </Row>
             </>
             )}
-            {(this.props && this.props.phy && this.props.phy.data && this.props.phy.data.procedures &&
-              this.props.phy.data.procedures.length > 0 && this.state.selected !== null) && ( 
+            {(this.props && this.props.phy && this.props.phy.data && 
+              this.state.selected !== null) && ( 
             <>
             <Row md="12">
                 <Col md="4">
                     <h5>Information</h5>
-                </Col>
-                <Col md="8">
-                    <h5>Procedures</h5>
                 </Col>
             </Row>
             <hr/>
@@ -307,41 +295,6 @@ class PhysicianList extends Component {
                               }
                             </Col>
                           </FormGroup>
-                        </Col>
-                    </Row>
-                </Col>                
-                <Col md="8">
-                    <Row md="12">
-                        <Col md="12">
-                            {(this.state.selected && this.state.selected.procs) && (
-                            <>
-                            <h5>Assigned</h5>
-                                <Select 
-                                  onChange={this.changeProcedure}
-                                  isMulti
-                                  value={this.state.selected.procs.map((g) => { 
-                                    return (
-                                        { 
-                                        label: this.props.phy.data.procedures.filter((k) => k.id === g.procedure).length > 0 ? 
-                                            this.props.phy.data.procedures.filter((k) => k.id === g.procedure)[0].name : "Error: " + g.procedure,
-                                        id: g.procedure,
-                                        value: g.procedure
-                                        }
-                                    )
-                                  })}
-                                  options={this.props.phy.data.procedures.map((g) => { 
-                                    if (this.state.selected.procs.includes(g.id)) { return (<></>); }
-                                    return (
-                                        { 
-                                        label: this.props.phy.data.procedures.filter((k) => k.id === g.id)[0].name,
-                                        id: g.id,
-                                        value: g.id
-                                        }
-                                    )
-                                  })}
-                                />
-                            </>
-                            )}
                         </Col>
                     </Row>
                 </Col>

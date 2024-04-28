@@ -9,7 +9,6 @@ import classnames from 'classnames';
 import s from './default.module.scss';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
-import { getOffices } from '../../actions/offices';
 
 class Template extends Component {
     constructor(props) { 
@@ -24,7 +23,7 @@ class Template extends Component {
     }
 
     componentDidMount() {
-        this.props.dispatch(getOffices({page:0,limit:10000}))
+        // this.props.dispatch(getOffices({page:0,limit:10000}))
     }
 
     toggleTab(e) { 

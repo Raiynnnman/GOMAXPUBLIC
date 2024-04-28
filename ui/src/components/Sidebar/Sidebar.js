@@ -1,5 +1,7 @@
 import React from 'react';
+import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
 import DynamicFeedIcon from '@mui/icons-material/DynamicFeed';
+import AddLocationIcon from '@mui/icons-material/AddLocation';
 import UploadIcon from '@mui/icons-material/Upload';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import PropTypes from 'prop-types';
@@ -262,43 +264,44 @@ class Sidebar extends React.Component {
           />
           )}
           {(this.props.currentUser && this.props.currentUser.entitlements && 
+            this.props.currentUser.entitlements.includes("OfficeAdmin")) && (
+          <LinksGroup
+            onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
+            activeItem={this.props.activeItem}
+            header="Providers"
+            iconElement={<MedicalServicesIcon/>}
+            isHeader
+            iconName="flaticon-document"
+            link="/app/main/office/providers"
+            index="providers"
+          />
+          )}
+          {(this.props.currentUser && this.props.currentUser.entitlements && 
             this.props.currentUser.entitlements.includes("OfficeAdmin") && 
             this.props.currentUser.entitlements.includes("Provider")) && (
           <LinksGroup
             onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
             activeItem={this.props.activeItem}
-            header="Billing"
-            iconElement={<AccountBalanceIcon/>}
+            header="Locations"
+            iconElement={<AddLocationIcon/>}
             isHeader
             iconName="flaticon-document"
-            link="/app/main/office/billing"
-            index="billing"
-            childrenLinks={[
-              {
-                header: 'Invoices', link: '/app/main/office/invoices',
-              },
-            ]}
+            link="/app/main/office/locations"
+            index="locations"
           />
           )}
           {(this.props.currentUser && this.props.currentUser.entitlements && 
-            this.props.currentUser.entitlements.includes("OfficeAdmin2")) && (
+            this.props.currentUser.entitlements.includes("OfficeAdmin") && 
+            this.props.currentUser.entitlements.includes("Provider")) && (
           <LinksGroup
             onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
             activeItem={this.props.activeItem}
-            header="Settings"
+            header="Invoices"
+            iconElement={<AccountBalanceIcon/>}
             isHeader
-            iconName="flaticon-settings"
-            iconElement={<SettingsIcon/>}
-            link="/app/main/settings"
-            index="settings"
-            childrenLinks={[
-              {
-                header: 'Physician', link: '/app/main/office/physicians',
-              },
-              {
-                header: 'Users', link: '/app/main/office/users',
-              }
-            ]}
+            iconName="flaticon-document"
+            link="/app/main/office/invoices"
+            index="billing"
           />
           )}
           {(this.props.currentUser && this.props.currentUser.entitlements && 

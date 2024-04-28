@@ -17,7 +17,7 @@ import BreadcrumbHistory from '../BreadcrumbHistory';
 
 /* PAIN */
 import { getVersion } from '../../version';
-import Physician from '../../pain/physician/Physician';
+import Physician from '../../pain/office/Physician';
 import OfficeAdmin from '../../pain/admin/OfficeAdmin';
 import Customers from '../../pain/office/Customers';
 import Map from '../../pain/admin/Map';
@@ -43,6 +43,7 @@ import OfficeInvoices from '../../pain/office/OfficeInvoices';
 import OfficeAssociation from '../../pain/office/OfficeAssociation';
 import Users from '../../pain/office/Users';
 import Registrations from '../../pain/admin/Registrations';
+import OfficeAddresses from '../../pain/office/OfficeAddresses';
 
 class Layout extends React.Component {
   static propTypes = {
@@ -120,7 +121,8 @@ class Layout extends React.Component {
                   <Switch>
                     <Route path="/app/main" exact render={() => <Redirect to="/app/main/dashboard" />} />
                     <Route path="/app/main/dashboard" exact component={Dashboard} />
-                    <Route path="/app/main/office/physicians" exact component={Physician} />
+                    <Route path="/app/main/office/providers" exact component={Physician} />
+                    <Route path="/app/main/office/locations" exact component={OfficeAddresses} />
                     <Route path="/app/main/office/invoices" exact component={OfficeInvoices} />
                     <Route path="/app/main/office/users" exact component={Users} />
                     <Route path="/app/main/office/customers" exact component={Customers} />
