@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Col, Row } from 'reactstrap';
+import { toast } from 'react-toastify';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { TabContent, TabPane } from 'reactstrap';
 import cx from 'classnames';
@@ -13,6 +14,7 @@ import s from './default.module.scss';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import {getOfficeLocations} from '../../actions/officeLocations';
+import {officeLocationsSave} from '../../actions/officeLocationsSave';
 import LocationCard from './LocationCard';
 
 class OfficeAddresses extends Component {
@@ -26,6 +28,7 @@ class OfficeAddresses extends Component {
         this.edit = this.edit.bind(this);
         this.save = this.save.bind(this);
         this.cancel = this.cancel.bind(this);
+        this.onUpdate = this.onUpdate.bind(this);
     } 
 
     componentWillReceiveProps(p) { 
@@ -44,7 +47,30 @@ class OfficeAddresses extends Component {
         this.setState(this.state)
     } 
 
+    onUpdate(e) { 
+        this.state.selected = e;
+        this.setState(this.state)
+    } 
+
     save() { 
+        var g = this.state.selected;
+        if (g.id && g.id === 'new') { 
+            delete g.id;
+        } 
+        this.props.dispatch(officeLocationsSave(g,function(err,args) { 
+            args.props.dispatch(
+                getOfficeLocations(
+                    {limit:args.state.pageSize,offset:args.state.page,status:args.state.filter},function(err,args) { 
+              toast.success('Successfully saved address.',
+                {
+                    position:"top-right",
+                    autoClose:3000,
+                    hideProgressBar:true
+                }
+              );
+              args.cancel()
+            },args))
+        },this));
     } 
 
     edit(e) { 
@@ -52,18 +78,18 @@ class OfficeAddresses extends Component {
             this.state.selected = { 
                 name:'',
                 miles:0,
-                addr:{addr1:'',city:'',state:'',zipcode:'',phone:''},
+                addr1:'',city:'',
+                state:'',zipcode:'',phone:'',
                 rating:0
             } 
         } else { 
-            t = this.props.officeLocations.data.locations.filter((g) => g.id === e.id)
+            var t = this.props.officeLocations.data.locations.filter((g) => g.id === e.id)
             this.state.selected = t[0] 
         } 
         this.setState(this.state)
     } 
 
     render() {
-        console.log("p",this.props)
         return (
         <>
             {(this.props.officeLocations && this.props.officeLocations.isReceiving) && (
@@ -73,7 +99,7 @@ class OfficeAddresses extends Component {
             <>
             <Row md="12">
                 <Col md="4">
-                    <LocationCard provider={this.state.selected} onCancel={this.cancel} onSave={this.onSave} edit={true}/>
+                    <LocationCard provider={this.state.selected} onUpdate={this.onUpdate} edit={true}/>
                 </Col>
             </Row>
             <hr/>
@@ -104,7 +130,7 @@ class OfficeAddresses extends Component {
                     {this.props.officeLocations.data.locations.map((e) => {
                         return (
                         <Col md="4">
-                            <LocationCard provider={e} edit={false}/>
+                            <LocationCard onEdit={this.edit} provider={e} edit={false}/>
                         </Col>
                         )
                     })}

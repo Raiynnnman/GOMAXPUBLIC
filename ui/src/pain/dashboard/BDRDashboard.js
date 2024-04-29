@@ -27,7 +27,6 @@ class BDRDashboard extends Component {
     }
 
     render() {
-        console.log("p",this.props);
         return (
         <>
             {(this.props.offices && this.props.offices.isReceiving) && (

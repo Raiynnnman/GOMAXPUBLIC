@@ -131,8 +131,6 @@ class PhysicianList extends Component {
     } 
 
     render() {
-        console.log("s",this.state)
-        console.log("p",this.props)
         const options = {
           showTotal:true,
           sizePerPage:10,
@@ -185,7 +183,6 @@ class PhysicianList extends Component {
                 )
             },
         ];
-        console.log("p",this.props);
         return (
         <>
             {(this.props.phySave && this.props.phySave.isReceiving) && (

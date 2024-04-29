@@ -35,6 +35,7 @@ class LocationCard extends Component {
         }
         this.onDateChange = this.onDateChange.bind(this);
         this.save = this.save.bind(this);
+        this.save = this.save.bind(this);
         this.cancel = this.cancel.bind(this);
         this.getDate = this.getDate.bind(this);
         this.changeValue = this.changeValue.bind(this);
@@ -85,7 +86,6 @@ class LocationCard extends Component {
     } 
 
     changeValue(e,t) { 
-        console.log(e,t);
         if (t.target && t.target.value) { 
             this.state.selected[e] = t.target.value;
         } else { 
@@ -98,6 +98,7 @@ class LocationCard extends Component {
             this.state.selected.phone = validPhone;
             this.setState(this.state);
         } 
+        this.props.onUpdate(this.state.selected);
         this.setState(this.state);
     } 
 
@@ -149,8 +150,6 @@ class LocationCard extends Component {
     } 
 
     render() {
-        console.log("s",this.state);
-        console.log("p",this.props);
         if (this.state.inMore > 0 && !this.props.moreSchedules.isReceiving)  {
             this.state.more[this.props.provider.phy_id] = true;
             this.state.inMore = 0;
@@ -194,10 +193,9 @@ class LocationCard extends Component {
                             )}
                             {(!this.props.edit) && (
                                 <div>
-                                Address: 
-                                {this.props.provider.addr.addr1 + " " + 
-                                    this.props.provider.addr.addr2 ? this.props.provider.addr.addr2 : '' + 
-                                    " " + this.props.provider.city + " " + this.props.provider.state
+                                Address:&nbsp;
+                                {this.props.provider.addr1 + " " + 
+                                    this.props.provider.city + " " + this.props.provider.state
                                 }
                                 </div>
                             )}
@@ -227,15 +225,9 @@ class LocationCard extends Component {
                     <Row md="12"> 
                         <Col md="12">
                         <>
-                            {(this.props.edit) && (
-                                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                                    <Button color="primary" onClick={this.save}>Save</Button>
-                                    <Button color="primary" style={{marginLeft:20}} onClick={this.cancel} outline>Cancel</Button>
-                                </div>
-                            )}
                             {(!this.props.edit) && (
                                 <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                                    <Button color="primary" onClick={this.edit}>Edit</Button>
+                                    <Button color="primary" onClick={() => this.props.onEdit(this.props.provider)}>Edit</Button>
                                 </div>
                             )}
                         </>

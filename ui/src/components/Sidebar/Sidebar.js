@@ -263,7 +263,7 @@ class Sidebar extends React.Component {
             labelColor="info"
           />
           )}
-          {(this.props.currentUser && this.props.currentUser.entitlements && 
+          {(false && this.props.currentUser && this.props.currentUser.entitlements && 
             this.props.currentUser.entitlements.includes("OfficeAdmin")) && (
           <LinksGroup
             onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}

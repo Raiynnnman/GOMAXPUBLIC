@@ -666,11 +666,36 @@ class LocationUpdate(OfficeBase):
         ret = {}
         job,user,off_id,params = self.getArgs(*args,**kwargs)
         db = Query()
-        #db.update("""
-        #    update client_intake set client_intake_status_id = %s
-        #        where id = %s
-        #    """,(params['status_id'],params['id'])
-        #)
+        print(params)
+        if 'id' in params:
+            db.update("""
+                update office_addresses set name = %s,
+                    addr1=%s,city=%s,state=%s,zipcode=%s,phone=%s,
+                    lat=0,lon=0,places_id=null,lat_attempt_count=0,
+                    nextcheck=null
+                    where id = %s
+                """,(params['name'],
+                     params['addr1'],
+                     params['city'],
+                     params['state'],
+                     params['zipcode'],
+                     params['phone'],
+                     params['id'])
+            )
+        else:
+            db.update("""
+                insert into office_addresses (
+                    office_id,name,addr1,city,state,zipcode,phone,full_addr)
+                    values (%s,%s,%s,%s,%s,%s,%s,%s)
+                """,(off_id,params['name'],
+                     params['addr1'],
+                     params['city'],
+                     params['state'],
+                     params['zipcode'],
+                     params['phone'],
+                     params['fulladdr']
+                )
+            )
         db.commit()
         ret['success'] = True
         return ret

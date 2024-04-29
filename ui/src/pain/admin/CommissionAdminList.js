@@ -373,7 +373,6 @@ class CommissionAdminList extends Component {
                 )
             },
         ];
-        console.log("p",this.props);
         return (
         <>
             {(this.props.commissions && this.props.commissions.isReceiving) && (

@@ -6,8 +6,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import handleError from './handleError';
 const cookies = new Cookies();
 
-export const RECEIVED_OFFLOC_DATA_SUCCESS = 'RECEIVED_OFFLOC_DATA_SUCCESS';
-export const RECEIVING_OFFLOC_DATA = 'RECEIVING_OFFLOC_DATA';
+export const RECEIVED_OFFLOCS_DATA_SUCCESS = 'RECEIVED_OFFLOCS_DATA_SUCCESS';
+export const RECEIVING_OFFLOCS_DATA = 'RECEIVING_OFFLOCS_DATA';
 
 export function receiveDataRequest(params) {
     return (dispatch) => {
@@ -19,12 +19,12 @@ export function receiveDataRequest(params) {
 
 export function receiveDataSuccess(payload) {
     return {
-        type: RECEIVED_OFFLOC_DATA_SUCCESS,
+        type: RECEIVED_OFFLOCS_DATA_SUCCESS,
         payload
     }
 }
 
-export function getOfficeLocations(params,callback,args) { 
+export function officeLocationsSave(params,callback,args) { 
   return async (dispatch) => {
     dispatch(receivingData(params,callback,args));
   };
@@ -33,7 +33,7 @@ export function getOfficeLocations(params,callback,args) {
 export function receivingData(params,callback,args) {
   return async (dispatch) => {
     dispatch({
-        type: RECEIVING_OFFLOC_DATA
+        type: RECEIVING_OFFLOCS_DATA
     });
     const response = await axios.create({
             baseURL: apiBaseUrl(),
@@ -42,10 +42,10 @@ export function receivingData(params,callback,args) {
               Accept: "application/json",
               "Content-Type": "application/json",
             },
-        }).post('/office/locations/list',params)
+        }).post('/office/locations/update',params)
       .then((e) => { 
           dispatch({
-                type: RECEIVED_OFFLOC_DATA_SUCCESS,
+                type: RECEIVED_OFFLOCS_DATA_SUCCESS,
                 payload: e.data.data
             });
           if (callback) {

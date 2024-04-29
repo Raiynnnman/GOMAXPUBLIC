@@ -124,7 +124,6 @@ class PhysicianCard extends Component {
             this.state.inMore = 0;
             this.setState(this.state)
         } 
-        console.log("p",this.props);
         return (
         <>
         {(this.props.provider) && (

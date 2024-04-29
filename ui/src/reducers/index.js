@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 import auth from './auth';
 import officeLocations from './officeLocations';
+import officeLocationsSave from './officeLocationsSave';
 import couponSave from './couponSave';
 import bdrDashboard from './bdrDashboard';
 import coupons from './coupons';
@@ -183,6 +184,7 @@ export default (history) =>
     coupons,
     bdrDashboard,
     officeLocations,
+    officeLocationsSave,
     commissionsUser,
     couponSave,
     registerReferrer,

@@ -7,7 +7,6 @@ function GoogleAutoComplete({onChange}) {
     const [value,onValueChange] = useState('');
 
     useEffect(() => { 
-        console.log("v=",value);
         if (value.value && value.value.terms) { 
             var t = value.value.terms
             var c = t[t.length-2].value ? t[t.length-2].value : ''
