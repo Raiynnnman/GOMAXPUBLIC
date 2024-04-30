@@ -175,9 +175,9 @@ COMPANIES = sm_util.getCompanies(debug=args.debug)
 USERS = sm_util.getUsers(debug=args.debug)
 
 for g in CONTACTS:
-    v = g['Email']
+    v = g['email']
     HAVE[v] = 1
-    v = g['Phone']
+    v = g['phone']
     HAVE[v] = 1
 
 SF_USERS = {}
