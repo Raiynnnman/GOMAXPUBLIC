@@ -347,6 +347,7 @@ class RegisterProvider(RegistrationsBase):
         off_id = 0
         userid = 0
         pq_id = 0
+        print(params)
         if 'cust_id' not in params:
             params['cust_id'] = "cust-%s" % (encryption.getSHA256(params['email']))
         if 'phone' in params and params['phone'] is not None:
@@ -534,7 +535,7 @@ class RegisterProvider(RegistrationsBase):
                 if 'coupon_id' in params and params['coupon_id'] is not None:
                     db.update("""update office_plans set coupons_id = %s
                         where id = %s
-                        """,(planid,params['coupon_id'])
+                        """,(params['coupon_id'],planid)
                     )
                     coup = db.query("""
                         select total,perc,reduction,name from coupons where id = %s
@@ -544,14 +545,14 @@ class RegisterProvider(RegistrationsBase):
                         coup = coup[0]
                         val = 0
                         if coup['total'] is not None:
-                            val = PL[selplan]['price'] * PL[selplan]['duration']
+                            val = PL[selplan]['upfront_cost'] * PL[selplan]['duration']
                             val = val - coup['total']
                         if coup['perc'] is not None:
-                            val = PL[selplan]['price'] * PL[selplan]['duration']
+                            val = PL[selplan]['upfront_cost'] * PL[selplan]['duration']
                             val = val * coup['perc']
                         if coup['reduction'] is not None:
-                            val = PL[selplan]['price'] * PL[selplan]['duration']
-                            val = val - coup['reduction']
+                            val = PL[selplan]['upfront_cost'] * PL[selplan]['duration']
+                            val = coup['reduction']
                         db.update("""
                             insert into office_plan_items (
                                 office_plans_id,price,quantity,description) 

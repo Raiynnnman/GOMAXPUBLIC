@@ -52,7 +52,7 @@ if not args.force:
     q+= "and (ic.nextcheck is null or ic.nextcheck < now())"
 
 l = db.query(q)
-INV = getIDs.getInvoiceStatus()
+INV = getIDs.getInvoiceIDs()
 
 for x in l:
     if args.debug:
@@ -68,7 +68,6 @@ for x in l:
                 if 'NOT_FOUND' in str(r.errors):
                     db.update("""
                         update invoices set invoice_status_id = %s where id = %s
-                            (%s,%s,%s)
                         """,(INV['VOID'],x['invoice_id'])
                     )
                 else:
