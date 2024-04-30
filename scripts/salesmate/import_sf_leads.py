@@ -12,14 +12,15 @@ from nameparser import HumanName
 sys.path.append(os.getcwd())  # noqa: E402
 
 from util.DBOps import Query
+from salesmate import sm_util
 from common import settings
 from util import encryption,calcdate
 from util import getIDs
 from salesforce import sf_util
+from salesmate.sm_util import SM_Contacts,SM_Companies,SM_Deals
 
 import argparse
 from simple_salesforce import Salesforce
-from salesmate.sm_util import SM_Contacts,SM_Companies,SM_Deals
 
 config = settings.config()
 config.read("settings.cfg")
@@ -35,6 +36,7 @@ parser.add_argument('--limit', dest="limit", action="store")
 parser.add_argument('--force_sf', dest="force_sf", action="store_true")
 parser.add_argument('--excp_pass', dest="excp_pass", action="store_true")
 parser.add_argument('--force_pain', dest="force_pain", action="store_true")
+parser.add_argument('--deal', dest="deal", action="store_true")
 parser.add_argument('--del_dups', dest="del_dups", action="store_true")
 parser.add_argument('--doall', dest="do_all", action="store_true")
 parser.add_argument('--only_fields', dest="only_fields", action="store")
@@ -123,7 +125,9 @@ for x in res['records']:
         del x['attributes']
 
 contact = SM_Contacts()
+contact.setDebug(args.debug)
 company = SM_Companies()
+company.setDebug(args.debug)
 deals = SM_Deals()
 
 # contact.setDebug(True)
@@ -134,9 +138,10 @@ CONTACT_MAPPING = {
     'FirstName':'firstName',
     'Phone':'phone',
     'PainID__c':'textCustomField1',
-    'Id':'textCustomField2',
-    'LastName':'lastName'
+    'LastName':'lastName',
+    'OwnerId':'ownerid',
 }
+
 DEAL_MAPPING = {
     'OwnerId':'ownerid',
     'Payment_Amount__c':'textCustomField4',
@@ -147,6 +152,7 @@ DEAL_MAPPING = {
     'PainURL__c':'textCustomField3',
     'Sales_Link__c':'textCustomField2'
 }
+
 COMPANY_MAPPING = {
     'PainID__c':'textCustomField1',
     'PainURL__c':'textCustomField2',
@@ -163,28 +169,16 @@ COMPANY_MAPPING = {
 }
 
 HAVE = {}
-COMPANIES = {}
-CONTACTS = {}
-DEALS = {}
-for x in company.get():
-    print("company=%s" % json.dumps(x,sort_keys=True))
-    v = x['id']
-    COMPANIES[v] = x
-    t = COMPANY_MAPPING['PainID__c']
-    print("t=%s,%s" % (t,x[t]))
-    if x[t] is not None or len(x[t]) > 0:
-        HAVE[int(x[t])] = 1
+CONTACTS = sm_util.getContacts(debug=args.debug)
+DEALS = sm_util.getDeals(debug=args.debug)
+COMPANIES = sm_util.getCompanies(debug=args.debug)
+USERS = sm_util.getUsers(debug=args.debug)
 
-
-for x in contact.get():
-    # print("contact=%s" % json.dumps(x,sort_keys=True))
-    v = x['id']
-    CONTACTS[v] = x
-
-for x in deals.get():
-    # print("deal=%s" % json.dumps(x,sort_keys=True))
-    v = x['id']
-    DEALS[v] = x
+for g in CONTACTS:
+    v = g['Email']
+    HAVE[v] = 1
+    v = g['Phone']
+    HAVE[v] = 1
 
 SF_USERS = {}
 o = db.query("""
@@ -204,16 +198,22 @@ for x in SF_DATA:
     CONTACT = {}
     COMPANY = {}
     DEAL = {}
+    e = j['Email']
+    if e in HAVE:
+        continue
+    e = j['Phone']
+    if e in HAVE:
+        continue
 
     for x in j:
         if x in CONTACT_MAPPING:
-            v = CONTACT_MAPPING[x] 
+            v = CONTACT_MAPPING[x]
             CONTACT[v] = j[x]
         if x in DEAL_MAPPING:
-            v = DEAL_MAPPING[x] 
+            v = DEAL_MAPPING[x]
             DEAL[v] = j[x]
         if x in COMPANY_MAPPING:
-            v = COMPANY_MAPPING[x] 
+            v = COMPANY_MAPPING[x]
             COMPANY[v] = j[x]
 
     if j['PainID__c'] is None:
@@ -256,41 +256,52 @@ for x in SF_DATA:
     COMPANY['tags'] = 'Import SF'
 
     print("COMPANY=%s" % COMPANY)
-    r = company.update(COMPANY)
+    company.setCall('/apis/company/v4')
+    company.setType('POST')
+    company.setIsUpdate(False)
+    r = company.getData(payload=json.dumps(COMPANY))
     company_sm_id = r['id']
     db.update("""
-        update office set sm_id = %s 
+        update office set sm_id = %s
             where id=%s""",(company_sm_id,off_id,)
     )
     print("result=%s" % r)
     print("CONT=%s" % CONTACT)
     CONTACT['company'] = company_sm_id
     CONTACT['tags'] = 'Import SF'
-    r = contact.update(CONTACT)
+    CONTACT['owner'] = owner_id
+    contact.setIsUpdate(False)
+    contact.setCall('/apis/contact/v4')
+    contact.setType('POST')
+    r = contact.getData(payload=json.dumps(CONTACT))
     user_sm_id = r['id']
     db.update("""
-        update users set sm_id = %s 
+        update users set sm_id = %s
             where id=%s""",(user_sm_id,user_id,)
     )
-    DEAL['primaryContact'] = user_sm_id
-    DEAL['owner'] = owner_id
-    DEAL['tags'] = 'Import SF'
-    DEAL['title'] = "Lead for %s" % j['Company']
-    sfl = DEAL_MAPPING['Id']
-    DEAL[sfl] = j['Id']
-    stage = "New (Untouched)"
-    if j['Status'] == 'Working':
-        stage = 'Contacted'
-    if j['Status'] == 'Nurturing':
-        stage = 'Qualified'
-    DEAL['stage'] = stage
-    print("DEAL=%s" % DEAL)
-    r = deals.update(DEAL)
-    deal_sm_id = r['id']
-    db.update("""
-        update provider_queue set sm_id = %s 
-            where id=%s""",(deal_sm_id,pq_id,)
-    )
+    if args.deal:
+        DEAL['primaryContact'] = user_sm_id
+        DEAL['owner'] = owner_id
+        DEAL['tags'] = 'Import SF'
+        DEAL['title'] = "Lead for %s" % j['Company']
+        sfl = DEAL_MAPPING['Id']
+        DEAL[sfl] = j['Id']
+        stage = "New (Untouched)"
+        if j['Status'] == 'Working':
+            stage = 'Contacted'
+        if j['Status'] == 'Nurturing':
+            stage = 'Qualified'
+        DEAL['stage'] = stage
+        print("DEAL=%s" % DEAL)
+        r = deals.update(DEAL)
+        deal_sm_id = r['id']
+        db.update("""
+            update provider_queue set sm_id = %s
+                where id=%s""",(deal_sm_id,pq_id,)
+        )
     db.commit()
-    break
-    
+    CNTR += 1
+    if args.limit is not None:
+        if CNTR > int(args.limit):
+            break
+

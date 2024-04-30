@@ -419,6 +419,7 @@ class RegisterProvider extends Component {
 
 
     render() {
+        console.log("p",this.props);
         var heads = [
             {
                 dataField:'name',

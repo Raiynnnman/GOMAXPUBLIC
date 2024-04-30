@@ -290,7 +290,8 @@ class SM_Base:
             if self.__DEBUG__:
                 print("ret=%s" % ret)
             if page <= pages and not self.__ISUPDATE__:
-                ret += self.getData(payload,page+1)
+                if not isinstance(ret,dict):
+                    ret += self.getData(payload,page+1)
             if self.__DEBUG__:
                 print("len=%s" % len(ret))
             return ret
