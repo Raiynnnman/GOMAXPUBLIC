@@ -11,7 +11,7 @@ sys.path.append(os.getcwd())  # noqa: E402
 
 from util.DBOps import Query
 from common import settings
-from util import encryption,calcdate
+from util import encryption,calcdate,getIDs
 import argparse
 from square.client import Client
 
