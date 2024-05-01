@@ -29,7 +29,7 @@ PQS = getIDs.getProviderQueueStatus()
 db = Query()
 CNT = 0
 l = db.query("""
-    select invoices_id,sum(price*quantity) as calc,i.id,i.total
+    select invoices_id,round(sum(price*quantity),2) as calc,i.id,i.total
         from 
         invoices i,
         invoice_items ii
