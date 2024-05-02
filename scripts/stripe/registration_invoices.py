@@ -57,6 +57,7 @@ l = db.query("""
             pq.provider_queue_status_id = %s
         )
         and pq.provider_queue_status_id <> %s
+        and commission_id is not null
         and offset_days < 1
     group by
         op.id

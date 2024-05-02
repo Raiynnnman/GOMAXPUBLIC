@@ -1459,6 +1459,8 @@ class RegistrationList(AdminBase):
         ret['config']['type'] = db.query("select id,name from office_type where name <> 'Customer'")
         ret['config']['status'] = db.query("select id,name from provider_queue_status")
         ret['config']['commission_users'] = db.query("""
+            select 1 as id,'System' as name
+            UNION ALL
             select id,concat(first_name,' ',last_name) as name from users 
                 where id in (select user_id from user_entitlements where entitlements_id=10)
         """)
