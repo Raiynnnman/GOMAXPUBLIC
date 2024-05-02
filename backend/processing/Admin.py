@@ -1436,10 +1436,14 @@ class RegistrationList(AdminBase):
                 from
                     invoices i,
                     invoice_status isi,
+                    office_plans op,
                     invoice_items ii
                 where
                     i.invoice_status_id = isi.id and
+                    i.office_id = op.office_id and
                     ii.invoices_id = i.id and
+                    month(i.billing_period) = month(op.start_date) and
+                    year(i.billing_period) = year(op.start_date) and
                     i.office_id = %s
                 group by
                     i.id
