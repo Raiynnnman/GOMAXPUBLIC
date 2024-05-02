@@ -254,8 +254,8 @@ class PhysicianSave(OfficeBase):
             """,(insid,group_id)
         )
         if len(oid) < 1:
-            db.update("insert into physician_about(user_id) values(%s)",(insid,))
-            db.update("insert into physician_media(user_id) values(%s)",(insid,))
+            db.update("insert into office_provider_about(user_id) values(%s)",(insid,))
+            db.update("insert into office_provider_media(user_id) values(%s)",(insid,))
             db.update("""
                 insert into office_user (office_id,user_id) values (%s,%s)
                 """,(group_id,insid)

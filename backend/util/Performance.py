@@ -25,6 +25,10 @@ class performance():
     __subsys = None
     __data__ = {}
     __status__ = 0
+    __user_id__ = None
+
+    def setUserID(self,c):
+        self.__user_id__ = c
 
     def start(self, subsys):
         global con
@@ -81,11 +85,11 @@ class performance():
         j = self.__data__
         db.update("""
             insert into performance 
-                (classname,lat,lon,country,state,city,ms,ip,continent) 
-                values (%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                (classname,lat,lon,country,state,city,ms,ip,continent,user_id) 
+                values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
             """,(j['classname'],j['lat'],j['lon'],j['country'],
                  j['stateprov'],j['city'],j['ms'],
-                 j['ip'],j['continent']
+                 j['ip'],j['continent'],self.__user_id__
                 )
         )
         db.commit()

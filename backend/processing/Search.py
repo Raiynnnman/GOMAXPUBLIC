@@ -141,7 +141,7 @@ class SearchGet(SearchBase):
                 left join office o on o.id = ou.office_id
                 left join office_addresses oa on oa.office_id=o.id
                 left join provider_queue pq on o.id = pq.office_id 
-                left outer join physician_media pm on pm.user_id = u.id
+                left outer join office_provider_media pm on pm.user_id = u.id
             where
                 st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192 < 10 and
                 o.active = 1 and 
@@ -171,7 +171,7 @@ class SearchGet(SearchBase):
                 "select ifnull(round(avg(rating),2),0) as avg from ratings where user_id=%s",(x['phy_id'],)
             )
             x['about'] = db.query(
-                "select text from physician_about where user_id=%s",(x['phy_id'],)
+                "select text from office_provider_about where user_id=%s",(x['phy_id'],)
             )
             if len(x['about']) > 0:
                 x['about'] = x['about'][0]['text']

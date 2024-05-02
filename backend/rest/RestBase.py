@@ -26,6 +26,10 @@ class RestBase:
         ret = {}
         perf = Performance.performance()
         perf.start(self.__class__.__name__)
+        if len(args) > 0:
+            t = args[0]
+            if 'id' in t:
+                perf.setUserID(t['id'])
         try: 
            ret['success'] = True
            ret['data'] = self.get(*args, **kwargs)
@@ -49,6 +53,10 @@ class RestBase:
         ret = {}
         perf = Performance.performance()
         req = perf.start(self.__class__.__name__)
+        if len(args) > 0:
+            t = args[0]
+            if 'id' in t:
+                perf.setUserID(t['id'])
         try: 
             postdata = request.get_json()
             if postdata is None:
