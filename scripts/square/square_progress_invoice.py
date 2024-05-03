@@ -132,6 +132,12 @@ for x in l:
                 body = { 'version': x['version'] }
             )
             if r.is_error():
+                if 'CARD_DECLINED' in json.dumps(r.errors):
+                    print("CARD_DECLINED")
+                    db.update("""
+                        delete from office_cards where office_id=%s
+                        """,(x['office_id'],)
+                    )
                 raise Exception(json.dumps(r.errors))
             print("changing status to SENT: %s" % x['id'])
             db.update("""
