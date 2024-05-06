@@ -400,7 +400,7 @@ class RegisterProvider(RegistrationsBase):
         if 'provtype' in params and params['provtype'] is not None:
             provtype = params['provtype']
         if off_id == 0:
-            db.update("insert into office (name,office_type_id,email,cust_id,active,billing_system_id) values (%s,%s,%s,%s,0,%s)",
+            db.update("insert into office (name,office_type_id,email,cust_id,active,billing_system_id) values (%s,%s,%s,%s,1,%s)",
                 (params['name'],provtype,params['email'].lower(),params['cust_id'],BS)
             )
             off_id = db.query("select LAST_INSERT_ID()");
@@ -465,7 +465,7 @@ class RegisterProvider(RegistrationsBase):
                 params['last'] = "%s %s" % (n.last,n.suffix)
                 db.update(
                     """
-                    insert into users (first_name,last_name,email,phone) values (%s,%s,%s,%s)
+                    insert into users (first_name,last_name,email,phone,active) values (%s,%s,%s,%s,1)
                     """,(params['first'],params['last'],params['email'].lower(),params['phone'])
                 )
                 uid = db.query("select LAST_INSERT_ID()");
@@ -679,8 +679,10 @@ class RegisterProvider(RegistrationsBase):
         } 
         if config.getKey("appt_email_override") is not None:
             email = config.getKey("appt_email_override")
+        sysemail = "dev@poundpain.com"
         m = Mail()
         m.defer(email,"Registration with #PAIN","templates/mail/registration-verification.html",data)
+        m.defer(sysemail,"New Customer Signed Up","templates/mail/registration-verification.html",data)
         db.commit()
         return ret
 
