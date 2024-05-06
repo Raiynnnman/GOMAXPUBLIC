@@ -59,7 +59,8 @@ class ProcessingBase:
     def getPlans(self):
         db = Query()
         ret = {}
-        o = db.query("select id,price,duration,description from pricing_data")
+        o = db.query("""select id,price,
+            upfront_cost,duration,description from pricing_data""")
         for x in o:
             i = x['id']
             ret[i] = x

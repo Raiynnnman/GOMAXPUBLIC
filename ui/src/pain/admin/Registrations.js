@@ -59,6 +59,7 @@ class Registrations extends Component {
         this.onTypeChange = this.onTypeChange.bind(this);
         this.onLeadStrengthChange = this.onLeadStrengthChange.bind(this);
         this.onPlansChange = this.onPlansChange.bind(this);
+        this.onCouponChange = this.onCouponChange.bind(this);
         this.onStatusFilter = this.onStatusFilter.bind(this);
         this.onTypeFilter = this.onTypeFilter.bind(this);
         this.renderTotalLabel = this.renderTotalLabel.bind(this);
@@ -306,6 +307,7 @@ class Registrations extends Component {
             initial_payment:this.state.selected.initial_payment,
             last_name:this.state.selected.last_name,
             lead_strength_id:this.state.selected.lead_strength_id,
+            coupon_id:this.state.selected.coupon_id,
             commission_user_id:this.state.selected.commission_user_id,
             addr:this.state.selected.addr,
             phone: this.state.selected.phone,
@@ -335,6 +337,10 @@ class Registrations extends Component {
             },args))
         },this));
     } 
+    onCouponChange(e) { 
+        this.state.selected.coupon_id = e.value;
+        this.setState(this.state);
+    }
     onPlansChange(e) { 
         this.state.selected.pricing_id = e.value;
         var t = this.props.plansList.data.filter((g) => this.state.selected.pricing_id === g.id)
@@ -1084,6 +1090,25 @@ class Registrations extends Component {
                                                               options={
                                                                     this.props.plansList.data.map((g) => {
                                                                         return ({label:g.description,value:g.id})
+                                                                    })
+                                                                }
+                                                            />
+                                                        </Col>
+                                                        <Col md="5">
+                                                          <Select
+                                                              closeMenuOnSelect={true}
+                                                              isSearchable={false}
+                                                              onChange={this.onCouponChange}
+                                                              value={{
+                                                                label:
+                                                                    this.props.registrationsAdminList.data.config.coupons.filter((g) => 
+                                                                        this.state.selected.coupon_id === g.id).length > 0 ?
+                                                                        this.props.registrationsAdminList.data.config.coupons.filter((g) => 
+                                                                            this.state.selected.coupon_id === g.id)[0].name : ''
+                                                              }}
+                                                              options={
+                                                                    this.props.registrationsAdminList.data.config.coupons.map((g) => {
+                                                                        return ({label:g.name,value:g.id})
                                                                     })
                                                                 }
                                                             />

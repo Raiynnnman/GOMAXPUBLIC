@@ -1167,6 +1167,35 @@ class RegistrationUpdate(AdminBase):
                 """,(planid,PL[selplan]['price'],1,PL[selplan]['description'])
                     
             )
+            if 'coupon_id' in params and params['coupon_id'] is not None:
+                db.update("""update office_plans set coupons_id = %s
+                    where id = %s
+                    """,(params['coupon_id'],planid)
+                )
+                coup = db.query("""
+                    select total,perc,reduction,name from coupons where id = %s
+                    """,(params['coupon_id'],)
+                )
+                if len(coup) > 0:
+                    coup = coup[0]
+                    val = 0
+                    if coup['total'] is not None:
+                        val = PL[selplan]['upfront_cost'] * PL[selplan]['duration']
+                        val = val - coup['total']
+                    if coup['perc'] is not None:
+                        val = PL[selplan]['upfront_cost'] * PL[selplan]['duration']
+                        val = val * coup['perc']
+                    if coup['reduction'] is not None:
+                        val = PL[selplan]['upfront_cost'] * PL[selplan]['duration']
+                        val = coup['reduction']
+                    db.update("""
+                        insert into office_plan_items (
+                            office_plans_id,price,quantity,description) 
+                        values 
+                            (%s,%s,%s,%s)
+                        """,(planid,-val,1,coup['name'])
+                            
+                    )
         db.update("""
             delete from office_addresses where office_id=%s
             """,(offid,)
@@ -1267,7 +1296,8 @@ class RegistrationList(AdminBase):
                 pq.initial_payment,ot.id as office_type_id,
                 ot.name as office_type,op.pricing_data_id as pricing_id,
                 o.commission_user_id,oa.state,op.start_date,
-                concat(comu.first_name, ' ', comu.last_name) as commission_name
+                concat(comu.first_name, ' ', comu.last_name) as commission_name,
+                coup.id as coupon_id,coup.name as coupon_name
             from
                 provider_queue pq
                 left join office o on pq.office_id = o.id
@@ -1275,6 +1305,7 @@ class RegistrationList(AdminBase):
                 left outer join provider_queue_status pqs on pqs.id=pq.provider_queue_status_id
                 left outer join provider_queue_lead_strength pqls on pq.provider_queue_lead_strength_id=pqls.id
                 left outer join office_plans op on op.office_id = o.id
+                left outer join coupons coup on coup.id = op.coupons_id
                 left outer join office_type ot on ot.id=o.office_type_id
                 left outer join users comu on comu.id = o.commission_user_id
             where
@@ -1462,6 +1493,7 @@ class RegistrationList(AdminBase):
         ret['config'] = {}
         ret['config']['type'] = db.query("select id,name from office_type where name <> 'Customer'")
         ret['config']['status'] = db.query("select id,name from provider_queue_status")
+        ret['config']['coupons'] = db.query("select id,name,total,perc,reduction from coupons")
         ret['config']['commission_users'] = db.query("""
             select 1 as id,'System' as name
             UNION ALL
