@@ -501,11 +501,11 @@ class RegisterProvider extends Component {
                                       size="10"
                                     />*/}
                             </div>
-                            <div style={{marginBottom:0,borderBottom:'1px solid black'}}>
+                            {/*<div style={{marginBottom:0,borderBottom:'1px solid black'}}>
                                 Postal Code:
                                 <input className="form-control no-border" style={{backgroundColor:'white'}} value={this.state.zipcode} 
                                     onChange={this.zipcodeChange} placeholder="Postal Code" />
-                            </div>
+                            </div>*/}
                         </form>
                     </Widget>
                     )}

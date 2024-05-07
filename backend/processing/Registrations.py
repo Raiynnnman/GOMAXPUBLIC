@@ -421,6 +421,8 @@ class RegisterProvider(RegistrationsBase):
                 """,(off_id,params['name'],params['zipcode'])
             )
         for x in params['addresses']:
+            if x['addr1'] is None:
+                continue
             db.update(
                 """
                     insert into office_addresses (
