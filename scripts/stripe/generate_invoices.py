@@ -53,6 +53,7 @@ q = """
     where
         op.pricing_data_id = pd.id and
         o.id = op.office_id and
+        op.end_date < now() and
         o.active = 1 and
         o.stripe_cust_id is not null and
         date(op.end_date) > now() and
@@ -139,6 +140,8 @@ for x in l:
         # print(g)
         subtotal = round(g['price']*g['quantity'],2)
         price = round(g['price']*g['quantity'],2)
+        if price < 0:
+            continue
         if x['migrated_stripe'] and x['customers_required'] == 1 and x['cust_total'] == 0:
             price = 0
             db.update("""

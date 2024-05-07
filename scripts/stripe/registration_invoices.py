@@ -52,16 +52,11 @@ l = db.query("""
         left join provider_queue pq on pq.office_id = op.office_id 
     where 
         op.office_id not in (select office_id from invoices) and
-        (
-            pq.provider_queue_status_id = %s or pq.provider_queue_status_id = %s or
-            pq.provider_queue_status_id = %s
-        )
-        and pq.provider_queue_status_id <> %s
         and commission_user_id is not null
         and offset_days < 1
     group by
         op.id
-    """,(PQS['APPROVED'],PQS['QUEUED'],PQS['INVITED'],PQS['DENIED'])
+    """
 )
 CNT = 0
 for x in l:

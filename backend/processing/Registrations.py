@@ -347,7 +347,6 @@ class RegisterProvider(RegistrationsBase):
         off_id = 0
         userid = 0
         pq_id = 0
-        print(params)
         if 'cust_id' not in params:
             params['cust_id'] = "cust-%s" % (encryption.getSHA256(params['email']))
         if 'phone' in params and params['phone'] is not None:
