@@ -824,7 +824,7 @@ class OfficeList(AdminBase):
                             'id',ii.id,'price',ii.price,
                             'description',ii.description,'quantity',ii.quantity
                         )
-                    ) as items,i.stripe_invoice_id,sis.status as stripe_status 
+                    ) as items,i.stripe_invoice_id,sis.status as stripe_status,i.office_id
                 
                 from
                     invoices i,
@@ -836,7 +836,7 @@ class OfficeList(AdminBase):
                     sis.invoices_id = i.id and
                     ii.invoices_id = i.id and
                     month(billing_period) <= month(now()) and
-                    year(billing_period) <= month(now()) and
+                    year(billing_period) <= year(now()) and
                     i.office_id = %s
                 group by
                     i.id

@@ -650,15 +650,14 @@ class OfficeList extends Component {
             {
                 dataField:'id',
                 sort:true,
-                hidden:true,
                 text:'ID'
             },
             {
                 dataField:'stripe_invoice_id',
-                text:'ID',
+                text:'Link',
                 formatter: (cellContent,row) => (
                     <div>
-                        <a href={'https://dashboard.stripe.com/invoices/' + row.stripe_invoice_id} 
+                        <a style={{color:'black'}} href={'https://squareup.com/dashboard/invoices/' + row.stripe_invoice_id}
                             target='_blank'>{row.stripe_invoice_id}</a>
                     </div>
                 )
