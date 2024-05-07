@@ -377,6 +377,7 @@ class RegisterProvider(RegistrationsBase):
         for t in l:
             HAVE=True
             userid = t['a']
+        
         if 'pq_id' in params and params['pq_id'] is not None:
             HAVE = True
             pq_id = int(params['pq_id'])
@@ -491,6 +492,13 @@ class RegisterProvider(RegistrationsBase):
                 """,(uid,PERM['Admin'])
             )
             userid = uid
+        else:
+            l = db.query("""
+                select id from provider_queue where office_id=%s
+                """,(off_id,)
+            )
+            if len(l) > 0:
+                pq_id = l[0]['id']
         db.update("""
             update provider_queue set updated=now() where office_id=%s
             """,(off_id,)
@@ -615,27 +623,30 @@ class RegisterProvider(RegistrationsBase):
                         card['token']['details']['card']['brand']
                         )
                 )
-        if 'pq_id' in params and params['pq_id'] is not None: 
-            db.update("""
-                update provider_queue set 
-                sf_lead_executed=1,
-                provider_queue_status_id = %s where id = %s
-                """,(PQ['INVITED'],pq_id)
+        db.update("""
+            update provider_queue set 
+            sf_lead_executed=1,
+            provider_queue_status_id = %s where id = %s
+            """,(PQ['INVITED'],pq_id)
+        )
+        db.update("""
+            insert into provider_queue_history(provider_queue_id,user_id,text) values (
+                %s,1,'User Registered, Set to INVITED (SF Lead Registration)'
             )
-            db.update("""
-                insert into provider_queue_history(provider_queue_id,user_id,text) values (
-                    %s,1,'User Registered, Set to INVITED (SF Lead Registration)'
-                )
-            """,(params['pq_id'],))
-            db.update("""
-                update office set active = 1,import_sf=1 where id = %s
-                """,(off_id,)
+        """,(pq_id,))
+        db.update("""
+            update office set active = 1,import_sf=1 where id = %s
+            """,(off_id,)
+        )
+        db.update("""
+            update users set active = 1 where id = %s
+            """,(userid,)
+        )
+        db.update("""
+            insert into office_history(office_id,user_id,text) values (
+                %s,1,'Set to active (SF Lead Registration)'
             )
-            db.update("""
-                insert into office_history(office_id,user_id,text) values (
-                    %s,1,'Set to active (SF Lead Registration)'
-                )
-            """,(off_id,))
+        """,(off_id,))
         self.setJenkinsID(off_id)
         db.update("""
             delete from registrations_tokens where 
