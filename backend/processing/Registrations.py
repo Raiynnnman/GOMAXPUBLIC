@@ -689,10 +689,11 @@ class RegisterProvider(RegistrationsBase):
         } 
         if config.getKey("appt_email_override") is not None:
             email = config.getKey("appt_email_override")
-        sysemail = "dev@poundpain.com"
+        
+        sysemail = config.getKey("support_email")
         m = Mail()
         data['__OFFICE_NAME__'] = params['name']
-        data['__OFFICE_URL__'] = "%s/#/app/main/office/%s" % (url,off_id)
+        data['__OFFICE_URL__'] = "%s/#/app/main/admin/office/%s" % (url,off_id)
         m.defer(email,"Registration with #PAIN","templates/mail/registration-verification.html",data)
         m.defer(sysemail,"New Customer Signed Up","templates/mail/office-signup.html",data)
         db.commit()
