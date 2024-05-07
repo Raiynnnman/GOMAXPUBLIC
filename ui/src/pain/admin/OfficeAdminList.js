@@ -158,7 +158,7 @@ class OfficeList extends Component {
         this.props.dispatch(officeReportDownload({report:'office_report'}));
     } 
     onCommissionChange(e,t) { 
-        this.state.commission_user_id = e.value;
+        this.state.selected.commission_user_id = e.value;
         this.state.selected.commission_name = 
             this.props.offices.data.config.commission_users.filter((g) => g.id === e.value)[0].name
         this.setState(this.state);
@@ -883,28 +883,15 @@ class OfficeList extends Component {
                               <Label for="normal-field" md={4} className="text-md-right">
                                 Provider ID
                               </Label>
-                              <Col md={8}>
+                              <Col md={8} style={{color:'black'}}>
                                   {(this.state.selected.stripe_cust_id && this.state.selected.stripe_cust_id.includes('cus_'))  && (
                                       <a href={'https://dashboard.stripe.com/customers/' + this.state.selected.stripe_cust_id}
                                         target='_blank'>{this.state.selected.stripe_cust_id}</a>
                                   )}
                                   {(this.state.selected.stripe_cust_id && !this.state.selected.stripe_cust_id.includes('cus_'))  && (
-                                      <a href={'https://squareup.com/dashboard/customers/directory/customer/' + this.state.selected.stripe_cust_id}
+                                      <a style={{color:'black'}} href={'https://squareup.com/dashboard/customers/directory/customer/' + this.state.selected.stripe_cust_id}
                                         target='_blank'>{this.state.selected.stripe_cust_id}</a>
                                   )}
-                              </Col>
-                            </FormGroup>
-                          </Col>
-                        </Row>
-                        <Row md="12">
-                          <Col md={4}>
-                            <FormGroup row>
-                              <Label for="normal-field" md={4} className="text-md-right">
-                                Old Provider ID
-                              </Label>
-                              <Col md={8}>
-                                  <a href={'https://dashboard.stripe.com/customers/' + this.state.selected.stripe_cust_id}
-                                    target='_blank'>{this.state.selected.old_stripe_cust_id}</a>
                               </Col>
                             </FormGroup>
                           </Col>
