@@ -694,7 +694,7 @@ class RegisterProvider(RegistrationsBase):
         data['__OFFICE_NAME__'] = params['name']
         data['__OFFICE_URL__'] = "%s/#/app/main/office/%s" % (url,off_id)
         m.defer(email,"Registration with #PAIN","templates/mail/registration-verification.html",data)
-        m.defer(sysemail,"New Customer Signed Up","templates/mail/office_signup.html",data)
+        m.defer(sysemail,"New Customer Signed Up","templates/mail/office-signup.html",data)
         db.commit()
         return ret
 
