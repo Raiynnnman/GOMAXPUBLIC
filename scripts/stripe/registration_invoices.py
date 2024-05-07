@@ -52,8 +52,8 @@ l = db.query("""
         left join provider_queue pq on pq.office_id = op.office_id 
     where 
         op.office_id not in (select office_id from invoices) and
-        and commission_user_id is not null
-        and offset_days < 1
+        commission_user_id is not null and
+        offset_days < 1
     group by
         op.id
     """
