@@ -113,7 +113,7 @@ class Reset extends React.Component {
               <p className="widget-auth-info">
                 or
               </p>
-              <Link className="d-block text-center" onClick={this.doLogin}>Login</Link>
+              <Link className="text-center" onClick={this.doLogin}>Login</Link>
             </Widget>
           </Container>
           <footer className="auth-footer">

@@ -728,6 +728,8 @@ class LocationList(OfficeBase):
         for x in o:
             if x['id'] is None:
                 continue
+            if x['addr1'] is None:
+                continue
             x['providers'] = db.query("""
                 select 
                     u.id,u.email,u.first_name,u.last_name,
