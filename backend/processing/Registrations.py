@@ -410,7 +410,7 @@ class RegisterProvider(RegistrationsBase):
                     %s,1,'Created (Registration)'
                 )
             """,(off_id,))
-        db.update("delete from office_addresses where office_id=%s",(off_id,))
+        # db.update("delete from office_addresses where office_id=%s",(off_id,))
         if 'addresses' not in params or len(params['addresses']) < 1 and \
             'zipcode' in params:
             db.update(
