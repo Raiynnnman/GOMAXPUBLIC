@@ -1550,7 +1550,7 @@ class TrafficGet(AdminBase):
         l = db.query("""
             select id,name from traffic_categories where category_id = 1
             UNION ALL
-            select 99,'Location'
+            select 99,'Preferred Providers'
             UNION ALL
             select 101,'Potential Providers'
             UNION ALL
@@ -1756,9 +1756,10 @@ class TrafficGet(AdminBase):
                 select 
                     oa.id,oa.name,oa.addr1,'' as uuid,
                     oa.city,oa.state,oa.zipcode,99 as category_id,
+                    oa.phone,
                     pq.provider_queue_lead_strength_id as lead_strength_id,
                     pqls.name as lead_strength,
-                    'Location' as category, oa.lat, oa.lon as lng,
+                    'Preferred Provider' as category, oa.lat, oa.lon as lng,
                     json_arrayagg(
                         json_object('lat',oa.lat,'lng',oa.lon)) as coords
                 from 

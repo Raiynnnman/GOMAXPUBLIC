@@ -3,6 +3,7 @@ import { Map, Circle, Marker, GoogleApiWrapper } from "google-maps-react";
 import { Col, Row } from 'reactstrap';
 import './Map.scss';
 import moment from 'moment';
+import formatPhoneNumber from '../utils/formatPhone';
 
 class MapContainer extends React.Component {
   constructor(props) {
@@ -468,6 +469,14 @@ class MapContainer extends React.Component {
                         </Col>
                         <Col md="8">
                             {this.state.selected.zipcode}
+                        </Col>
+                    </Row>
+                    <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
+                        <Col md="4">
+                            Phone
+                        </Col>
+                        <Col md="8">
+                            {formatPhoneNumber(this.state.selected.phone)}
                         </Col>
                     </Row>
                     <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>

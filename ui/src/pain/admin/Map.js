@@ -43,7 +43,13 @@ class Map extends Component {
             changed = true;
         } */
         if (p.trafficData.data && p.trafficData.data.config && p.trafficData.data.config.avail && this.state.categories === null) { 
-            this.state.categories = p.trafficData.data.config.categories;
+            var c = 0;
+            this.state.categories = [];
+            for (c = 0; c < p.trafficData.data.config.categories.length; c++) { 
+                if (p.trafficData.data.config.categories[c].name === 'Accident') { continue; }
+                if (p.trafficData.data.config.categories[c].name === 'Potential Providers') { continue; }
+                this.state.categories.push(p.trafficData.data.config.categories[c]);
+            } 
             this.setState(this.state);
             changed = true;
         } 
