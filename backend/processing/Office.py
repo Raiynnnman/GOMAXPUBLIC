@@ -682,7 +682,6 @@ class LocationUpdate(OfficeBase):
                      params['id'])
             )
         else:
-            print("insert",off_id)
             db.update("""
                 insert into office_addresses (
                     office_id,name,addr1,city,state,zipcode,phone,full_addr)

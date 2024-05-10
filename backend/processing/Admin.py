@@ -948,10 +948,15 @@ class OfficeSave(AdminBase):
                         (%s,%s,%s)""",(params['id'],user['id'],"ADDED_COMMENT")
                 )
             db.commit()
-        #db.update("""
-        #    delete from office_addresses where office_id = %s
-        #    """,(insid,)
-        #)
+        db.update("""
+            delete from office_providers where office_addresses_id in
+                (select id from office_addresses where office_id=%s)
+            """,(insid,)
+        )
+        db.update("""
+            delete from office_addresses where office_id = %s
+            """,(insid,)
+        )
         for x in params['addr']:
             db.update(
                 """
@@ -1196,6 +1201,11 @@ class RegistrationUpdate(AdminBase):
                         """,(planid,-val,1,coup['name'])
                             
                     )
+        db.update("""
+            delete from office_providers where office_addresses_id in
+                (select id from office_addresses where office_id=%s)
+            """,(offid,)
+        )
         db.update("""
             delete from office_addresses where office_id=%s
             """,(offid,)
