@@ -948,10 +948,10 @@ class OfficeSave(AdminBase):
                         (%s,%s,%s)""",(params['id'],user['id'],"ADDED_COMMENT")
                 )
             db.commit()
-        db.update("""
-            delete from office_addresses where office_id = %s
-            """,(insid,)
-        )
+        #db.update("""
+        #    delete from office_addresses where office_id = %s
+        #    """,(insid,)
+        #)
         for x in params['addr']:
             db.update(
                 """

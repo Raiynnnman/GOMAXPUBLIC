@@ -666,7 +666,6 @@ class LocationUpdate(OfficeBase):
         ret = {}
         job,user,off_id,params = self.getArgs(*args,**kwargs)
         db = Query()
-        print(params)
         if 'id' in params:
             db.update("""
                 update office_addresses set name = %s,
@@ -683,6 +682,7 @@ class LocationUpdate(OfficeBase):
                      params['id'])
             )
         else:
+            print("insert",off_id)
             db.update("""
                 insert into office_addresses (
                     office_id,name,addr1,city,state,zipcode,phone,full_addr)
@@ -716,12 +716,11 @@ class LocationList(OfficeBase):
         o = db.query("""
             select 
                 oa.id,oa.name,oa.phone,oa.addr1,oa.city,oa.state,oa.zipcode,
-                    oa.lat as lat, oa.lon as lng,
-                    round(avg(ifnull(r.rating,0)),2) as rating
+                    oa.lat as lat, oa.lon as lng
             from 
                 office_addresses oa
-                left outer join ratings r on r.office_id = oa.office_id
             where oa.office_id = %s
+            
             """,(off_id,)
         )
         ret['locations'] = []
