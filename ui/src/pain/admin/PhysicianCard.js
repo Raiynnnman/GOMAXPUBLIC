@@ -16,7 +16,8 @@ import AppSpinner from '../utils/Spinner';
 import AppSpinnerInternal from '../utils/SpinnerInternal';
 import { getMoreSchedules } from '../../actions/moreSchedules';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import { isValidDate } from '../utils/validationUtils.js';
+import { isValidDate } from '../utils/validationUtils';
+import formatPhoneNumber from '../utils/formatPhone';
 
 class PhysicianCard extends Component {
     constructor(props) { 
@@ -117,18 +118,24 @@ class PhysicianCard extends Component {
             this.state.inMore = 0;
             this.setState(this.state)
         } 
+        console.log("p",this.props);
         return (
         <>
         {(this.props.provider) && (
             <Card style={{
-                margin:20,height:375,
+                margin:20,
                 borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}} className="mb-xlg border-1">
                 <CardBody>
                     <Row md="12">
                         <Col md="12">
                             <font style={{fontSize:"14pt",fontWeight:"bold"}}>
-                            {this.props.provider.title ? this.props.provider.title + " ": ''} 
-                            {this.props.provider.first_name + " " + this.props.provider.last_name}
+                            {this.props.provider.office_name} 
+                            </font>
+                            <br/>
+                            <font style={{fontSize:"14pt",fontWeight:"bold"}}>
+                            {this.props.provider.profile.title ? this.props.provider.title + " ": ''} 
+                            {this.props.provider.profile.first_name + " " + 
+                                this.props.provider.profile.last_name}
                             </font>
                             <br/>
                             {(this.props.provider.rating === 5) && (
@@ -201,9 +208,20 @@ class PhysicianCard extends Component {
                     </>
                     </div>
                     <Row md="12"> <Col md="12">{this.props.provider.miles.toFixed(2)} miles</Col> </Row>
-                    <Row md="12"> <Col md="12">{this.props.provider.addr[0][0].addr1 + " " + this.props.provider.addr[0][0].addr2}</Col> </Row>
+                    <Row md="12"> <Col md="12">
+                            {this.props.provider.addr.addr1}
+                        </Col> 
+                    </Row>
                     <Row md="12">
-                        <Col md="12">{this.props.provider.addr[0][0].city}, {this.props.provider.addr[0][0].state} {this.props.provider.addr[0][0].zipcode}
+                        <Col md="12">
+                            {this.props.provider.addr.city ? this.props.provider.addr.city : ''},&nbsp;
+                            {this.props.provider.addr.state? this.props.provider.addr.state:''}&nbsp;
+                            {this.props.provider.addr.zipcode ? this.props.provider.addr.zipcode : ''}
+                        </Col> 
+                    </Row>
+                    <Row md="12">
+                        <Col md="12">
+                            {formatPhoneNumber(this.props.provider.profile.phone)}
                         </Col> 
                     </Row>
                     {(false) && ( <Row md="12"> 

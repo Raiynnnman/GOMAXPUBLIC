@@ -128,13 +128,43 @@ class SearchGet(SearchBase):
         #        st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192 < 50 
         #    """,(lon,lat,lon,lat))
         #log.debug("dist=%s" % o)
-        print(params,lat,lon)
+        # print(params,lat,lon)
+        IDS = []
         o = db.query("""
             select
-                o.id as office_id,o.name,
-                u.first_name,u.last_name,u.title,
-                pm.headshot,pm.video,u.id as phy_id,
+                oa.id,o.id as office_id,
+                o.name as office_name,
+                JSON_OBJECT(
+                    'id',oa.id,'addr1',concat(oa.addr1,' ',ifnull(oa.addr2,'')),'phone',oa.phone,
+                    'lat',oa.lat,'lon',oa.lon, 'city',oa.city,'state',
+                    oa.state,'zipcode',oa.zipcode
+                ) as addr,
                 round(st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192,2) as miles
+            from
+                office_addresses oa,
+                office o,
+                provider_queue pq
+            where
+                st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192 < 10 and
+                pq.office_id = o.id and
+                oa.office_id = o.id and
+                o.active = 1 and
+                oa.lat <> 0 and
+                o.office_type_id = %s
+            order by
+                pq.provider_queue_status_id, 
+                round(st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192,2) 
+            limit 10
+            """,(lon,lat,lon,lat,provtype,lon,lat)
+        )
+        for x in o:
+            x['addr'] = json.loads(x['addr'])
+            IDS.append(x['id'])
+            x['profile'] = db.query("""
+            select
+                o.id as office_id,o.name,oa.phone,
+                u.first_name,u.last_name,u.title,
+                pm.headshot,pm.video,u.id as phy_id
             from
                 users u
                 left join office_user ou on ou.user_id = u.id
@@ -143,50 +173,28 @@ class SearchGet(SearchBase):
                 left join provider_queue pq on o.id = pq.office_id 
                 left outer join office_provider_media pm on pm.user_id = u.id
             where
-                st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192 < 10 and
-                o.active = 1 and 
-                oa.lat <> 0 and
-                o.office_type_id = %s
-            group by 
-                u.id
-            order by
-                pq.provider_queue_status_id, 
-                round(st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192,2) 
-            limit 5
-            """,(lon,lat,lon,lat,provtype,lon,lat)
-        )
-        for x in o:
-            q = db.query("""
-                select 
-                JSON_ARRAYAGG(
-                    JSON_OBJECT(
-                        'id',oa.id,'addr1',oa.addr1,'addr2',oa.addr2,'phone',oa.phone,
-                        'lat',oa.lat,'lon',oa.lon, 'city',oa.city,'state',
-                        oa.state,'zipcode',oa.zipcode)
-                ) as addr
-                from office_addresses oa
-                where oa.office_id=%s""" % (x['office_id'],))
-            x['addr'] = []
+                o.id = %s
+            """,(x['office_id'],)
+            )
             x['rating'] = db.query(
-                "select ifnull(round(avg(rating),2),0) as avg from ratings where user_id=%s",(x['phy_id'],)
+                "select ifnull(round(avg(rating),2),0) as avg from ratings where office_id=%s",(x['office_id'],)
             )
-            x['about'] = db.query(
-                "select text from office_provider_about where user_id=%s",(x['phy_id'],)
-            )
-            if len(x['about']) > 0:
-                x['about'] = x['about'][0]['text']
+            x['about'] = ''
+            if len(x['profile']) > 0:
+                x['profile'] = x['profile'][0]
             else:
-                x['about'] = ''
+                x['profile'] = {}
             if len(x['rating']) > 0:
                 x['rating'] = x['rating'][0]['avg']
             else:
                 x['rating'] = 0
-            for g in q:
-                x['addr'].append(json.loads(g['addr']))
             ret.append(x)
         vid = 0
         sha = encryption.getSHA256("%s,%s" %(lat,lon))
-        db.update("insert into search_no_results(sha,lat,lon,ret_size) values (%s,%s,%s,%s)",(sha,lat,lon,len(ret)))
+        db.update("""
+            insert into search_no_results(sha,lat,lon,ret_size,office_ids) values (%s,%s,%s,%s,%s)
+            """,(sha,lat,lon,len(ret),json.dumps(IDS))
+        )
         if 'novisit' not in params:
             db.update("insert into visits (office_type_id) values (%s)",(provtype,))
             vid = db.query("select LAST_INSERT_ID()");

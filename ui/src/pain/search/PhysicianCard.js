@@ -10,13 +10,14 @@ import classnames from 'classnames';
 import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
 import { Badge,Button } from 'reactstrap';
 import { Popover, PopoverHeader, PopoverBody } from 'reactstrap';
-import s from './default.module.scss';
+import s from '../utils/default.module.scss';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import AppSpinnerInternal from '../utils/SpinnerInternal';
 import { getMoreSchedules } from '../../actions/moreSchedules';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import { isValidDate } from '../utils/validationUtils.js';
+import { isValidDate } from '../utils/validationUtils';
+import formatPhoneNumber from '../utils/formatPhone';
 
 class PhysicianCard extends Component {
     constructor(props) { 
@@ -102,7 +103,6 @@ class PhysicianCard extends Component {
     } 
 
     scheduleAppt(e) { 
-        this.moreToggle(this.props.provider.phy_id);
         this.props.onScheduleAppt(this.props.provider,e)
     } 
 
@@ -122,14 +122,19 @@ class PhysicianCard extends Component {
         <>
         {(this.props.provider) && (
             <Card style={{
-                margin:20,width:250,height:350,
+                margin:20,
                 borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}} className="mb-xlg border-1">
                 <CardBody>
                     <Row md="12">
                         <Col md="12">
                             <font style={{fontSize:"14pt",fontWeight:"bold"}}>
-                            {this.props.provider.title ? this.props.provider.title + " ": ''} 
-                            {this.props.provider.first_name + " " + this.props.provider.last_name}
+                            {this.props.provider.office_name} 
+                            </font>
+                            <br/>
+                            <font style={{fontSize:"14pt",fontWeight:"bold"}}>
+                            {this.props.provider.profile.title ? this.props.provider.title + " ": ''} 
+                            {this.props.provider.profile.first_name + " " + 
+                                this.props.provider.profile.last_name}
                             </font>
                             <br/>
                             {(this.props.provider.rating === 5) && (
@@ -202,11 +207,6 @@ class PhysicianCard extends Component {
                     </>
                     </div>
                     <Row md="12"> <Col md="12">{this.props.provider.miles.toFixed(2)} miles</Col> </Row>
-                    <Row md="12"> <Col md="12">{this.props.provider.addr[0][0].addr1 + " " + this.props.provider.addr[0][0].addr2 ? this.props.provider.addr[0][0].addr2 : ''}</Col> </Row>
-                    <Row md="12">
-                        <Col md="12">{this.props.provider.addr[0][0].city}, {this.props.provider.addr[0][0].state} {this.props.provider.addr[0][0].zipcode}
-                        </Col> 
-                    </Row>
                     {(false) && ( <Row md="12"> 
                         <Col md="4">
                             <Button color="secondary">See Reviews</Button>
@@ -219,8 +219,8 @@ class PhysicianCard extends Component {
                     <hr/>
                     <Row md="12"> 
                         <Col md="12">
-                            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                                <Button color="primary" onClick={this.scheduleAppt}>Contact</Button>
+                            <div style={{height:30,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                                <Button color="primary" onClick={this.scheduleAppt}>Book</Button>
                             </div>
                         </Col>
                     </Row>
