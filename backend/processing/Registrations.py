@@ -361,7 +361,6 @@ class RegisterProvider(RegistrationsBase):
                 %s,1,'Added to Square as customer'
             )
         """,(off_id,))
-        db.commit()
         return r['customer']['id']
 
     def customerCard(self,cust_id,token,card,pcard_id,off_id,db):
@@ -396,29 +395,7 @@ class RegisterProvider(RegistrationsBase):
             update office_cards set sync_provider=1 where id=%s
             """,(pcard_id,)
         )
-        db.commit()
         return r['card']['id']
-
-    def invoiceSubmit(self,off_id,db):
-        inv = """
-                select 
-                    i.id,o.stripe_cust_id,i.office_id as office_id,
-                    sum(ii.price * ii.quantity) as total,count(i.id) as minv,
-                    i.version,i.billing_period
-                from 
-                    invoices i
-                    left join office o on i.office_id = o.id 
-                    left join invoice_items ii on ii.invoices_id = i.id 
-                    left outer join office_cards uc on uc.office_id=o.id
-                 where 
-                    o.id = i.office_id and 
-                    i.billing_system_id = 2 and
-                    o.stripe_cust_id is not null and
-                    i.billing_period <= now() and 
-                    o.id = %s
-                group by i.id
-            """,(off_id,)
-        
 
     def execute(self, *args, **kwargs):
         ret = {}
