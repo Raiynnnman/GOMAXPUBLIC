@@ -73,7 +73,6 @@ pytest==7.1.2
 pytz==2020.4
 PyYAML==5.3.1
 redis==3.5.3
-requests==2.25.0
 requirements-detector==0.7
 s3transfer==0.3.3
 scipy==1.7.3
