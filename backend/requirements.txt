@@ -70,7 +70,6 @@ pyparsing==2.4.7
 pyrsistent==0.17.3
 pyspark==3.1.2
 pytest==7.1.2
-python-dateutil==2.9.0.post0
 pytz==2020.4
 PyYAML==5.3.1
 redis==3.5.3
