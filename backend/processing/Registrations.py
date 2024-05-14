@@ -2,15 +2,18 @@
 
 import sys
 import os
+import uuid
 import random
 import json
 import unittest
 import jwt
 import base64
+import traceback
 from nameparser import HumanName
 
 sys.path.append(os.path.realpath(os.curdir))
 
+from square.client import Client
 from util import encryption
 from util.Logging import Logging
 from processing import Stripe
@@ -26,6 +29,13 @@ from util.Mail import Mail
 log = Logging()
 config = settings.config()
 config.read("settings.cfg")
+
+key = config.getKey("square_api_key")
+client = None
+if  config.getKey("environment") == 'prod':
+    client = Client(access_token=key,environment='production')
+else:
+    client = Client(access_token=key,environment='sandbox')
 
 class RegistrationsBase(SubmitDataRequest):
 
@@ -330,6 +340,86 @@ class RegisterProvider(RegistrationsBase):
     def isDeferred(self):
         return False
 
+    def createCustomer(self,name,email,off_id,db):
+        if config.getKey('email_to_override') is not None:
+            email = config.getKey('email_to_override')
+        r = client.customers.create_customer({
+            'given_name': name,
+            'email_address':email,
+            'idempotency_key': str(uuid.uuid4())            
+        })
+        if r.is_error():
+            print(r.errors)
+            raise Exception("ERROR retrieving cards")
+        print(r.body)
+        r = r.body
+        db.update("update office set stripe_cust_id=%s where id=%s",
+            (r['customer']['id'],off_id)
+        )
+        db.update("""
+            insert into office_history(office_id,user_id,text) values (
+                %s,1,'Added to Square as customer'
+            )
+        """,(off_id,))
+        db.commit()
+        return r['customer']['id']
+
+    def customerCard(self,cust_id,token,card,pcard_id,off_id,db):
+        print(cust_id,card)
+        r = client.cards.create_card(body = {
+                'source_id':token,
+                'idempotency_key': encryption.getSHA256()[:45],
+                'card': { 
+                    'customer_id': cust_id,
+                    'card_brand': card['brand'],
+                    'last_4':card['last4'],
+                    'exp_month':card['expMonth'],
+                    'exp_year':card['expYear']
+                } 
+            }
+        )
+        if r.is_error():
+            print(r.errors)
+            raise Exception("ERROR retrieving cards")
+        if r.is_error():
+            print(r.errors)
+            raise Exception("ERROR retrieving cards")
+        r = r.body
+        print("card=%s" % card)
+        print("r=%s" % r)
+        db.update("""
+            insert into office_history(office_id,user_id,text) values (
+                %s,1,'Added card to Square'
+            )
+        """,(off_id,))
+        db.update("""
+            update office_cards set sync_provider=1 where id=%s
+            """,(pcard_id,)
+        )
+        db.commit()
+        return r['card']['id']
+
+    def invoiceSubmit(self,off_id,db):
+        inv = """
+                select 
+                    i.id,o.stripe_cust_id,i.office_id as office_id,
+                    sum(ii.price * ii.quantity) as total,count(i.id) as minv,
+                    i.version,i.billing_period
+                from 
+                    invoices i
+                    left join office o on i.office_id = o.id 
+                    left join invoice_items ii on ii.invoices_id = i.id 
+                    left outer join office_cards uc on uc.office_id=o.id
+                 where 
+                    o.id = i.office_id and 
+                    i.billing_system_id = 2 and
+                    o.stripe_cust_id is not null and
+                    i.billing_period <= now() and 
+                    o.id = %s
+                group by i.id
+            """,(off_id,)
+        
+
     def execute(self, *args, **kwargs):
         ret = {}
         ret['success'] = True
@@ -337,6 +427,7 @@ class RegisterProvider(RegistrationsBase):
         db = Query()
         RT = self.getRegistrationTypes()
         OT = self.getOfficeTypes()
+        INV = self.getInvoiceIDs()
         ST = self.getLeadStrength()
         ENT = self.getEntitlementIDs()
         PERM = self.getPermissionIDs()
@@ -473,7 +564,7 @@ class RegisterProvider(RegistrationsBase):
                 uid = db.query("select LAST_INSERT_ID()");
                 uid = uid[0]['LAST_INSERT_ID()']
             db.update("""
-                update office set user_id=%s where id=%s
+                update office set user_id=%s,commission_user_id=1 where id=%s
                 """,(uid,off_id)
             )
             db.update("""
@@ -504,6 +595,11 @@ class RegisterProvider(RegistrationsBase):
             update provider_queue set updated=now() where office_id=%s
             """,(off_id,)
         )
+        planid = 0
+        coup = {}
+        selplan = 0
+        discount = 0
+        plan_total = 0
         if 'plan' in params and params['plan'] is not None:
             if 'pq' not in params or params['pq'] is None:
                 selplan = int(params['plan'])
@@ -533,6 +629,7 @@ class RegisterProvider(RegistrationsBase):
                 )
                 planid = db.query("select LAST_INSERT_ID()");
                 planid = planid[0]['LAST_INSERT_ID()']
+                plan_total = PL[selplan]['upfront_cost']*PL[selplan]['duration']
                 db.update("""
                     insert into office_plan_items (
                         office_plans_id,price,quantity,description) 
@@ -546,12 +643,12 @@ class RegisterProvider(RegistrationsBase):
                         where id = %s
                         """,(params['coupon_id'],planid)
                     )
-                    coup = db.query("""
+                    ocoup = db.query("""
                         select total,perc,reduction,name from coupons where id = %s
                         """,(params['coupon_id'],)
                     )
-                    if len(coup) > 0:
-                        coup = coup[0]
+                    if len(ocoup) > 0:
+                        coup = ocoup[0]
                         val = 0
                         if coup['total'] is not None:
                             val = PL[selplan]['upfront_cost'] * PL[selplan]['duration']
@@ -562,6 +659,8 @@ class RegisterProvider(RegistrationsBase):
                         if coup['reduction'] is not None:
                             val = PL[selplan]['upfront_cost'] * PL[selplan]['duration']
                             val = coup['reduction']
+                        discount = -val
+                        plan_total += -val
                         db.update("""
                             insert into office_plan_items (
                                 office_plans_id,price,quantity,description) 
@@ -577,6 +676,7 @@ class RegisterProvider(RegistrationsBase):
                 """,(off_id,))
         if 'card' in params and params['card'] is not None:
             stripe_id = None
+            card_id = 0
             if BS == 1:
                 cust_id = params['cust_id']
                 card = params['card']['card']
@@ -624,6 +724,132 @@ class RegisterProvider(RegistrationsBase):
                         card['token']['details']['card']['brand']
                         )
                 )
+                card_id = db.query("select LAST_INSERT_ID()");
+                card_id = card_id[0]['LAST_INSERT_ID()']
+            try: 
+                # Create the customer
+                cust = self.createCustomer(params['name'],params['email'],off_id,db)
+                # save the card to the customer
+                card = self.customerCard(cust,card['token']['token'],card['token']['details']['card'],card_id,off_id,db)
+                # make a payment
+                payment = client.payments.create_payment(
+                    body= {
+                        "source_id": card,
+                        "amount_money": { 
+                            "amount": plan_total * 100,
+                            "currency": "USD"
+                        },
+                        "autocomplete": True,
+                        'idempotency_key': encryption.getSHA256()[:45],
+                        "customer_id": cust,
+                        "location_id":config.getKey("square_loc_key"),
+                        "reference_id": "ref:%s-%s" % (off_id,planid)
+                    }
+                )
+                if payment.is_error():
+                  print(payment.errors)
+                  raise Exception(json.dumps(result.errors))
+                payment = payment.body
+                print(payment)
+                db.update("""
+                    insert into invoices (office_id,invoice_status_id,
+                        office_plans_id,billing_period,total,billing_system_id,payment_id) 
+                        values (%s,%s,%s,date(now()),%s,%s,%s)
+                    """,(off_id,INV['PAID'],planid,plan_total,BS,payment['payment']['id'])
+                )
+                invid = db.query("select LAST_INSERT_ID()")
+                invid = invid[0]['LAST_INSERT_ID()']
+                db.update("""
+                    insert into stripe_invoice_status (office_id,invoices_id,status) values (%s,%s,%s)
+                    """,(off_id,invid,'draft')
+                )
+                db.update("""
+                    insert into invoice_items 
+                        (invoices_id,description,price,quantity)
+                    values 
+                        (%s,%s,%s,%s)
+                    """,
+                    (invid,PL[selplan]['description'],PL[selplan]['upfront_cost']*PL[selplan]['duration'],1)
+                )
+                if len(coup) > 0:
+                    db.update("""
+                        insert into invoice_items 
+                            (invoices_id,description,price,quantity)
+                        values 
+                            (%s,%s,%s,%s)
+                        """,
+                        (invid,coup['name'],discount,1)
+                    )
+                comm = db.query("""
+                    select id,commission from commission_structure
+                        where pricing_data_id=%s
+                    """,(params['plan'],)
+                )
+                if len(comm) > 0:
+                    comm = comm[0]
+                    db.update("""
+                        insert into commission_users (user_id,commission_structure_id,amount,office_id,invoices_id)
+                            values (%s,%s,%s,%s,%s)
+                        """,(1,
+                             comm['id'],
+                             plan_total*comm['commission'],off_id,invid
+                            )
+                    )
+                    db.update("""
+                        insert into invoice_history (invoices_id,user_id,text) values 
+                            (%s,%s,%s)
+                        """,(invid,1,'Calculated commission based on plan' )
+                    )
+                months = 0
+                months = PL[selplan]['duration']
+                start_date = db.query("""
+                    select
+                        date_add(now(), INTERVAL %s month) as bp
+                    """,(0,)
+                )
+                start_date = start_date[0]['bp']
+                for t in range(1,months):
+                    j = db.query("""
+                        select
+                            date_add(%s, INTERVAL %s month) as bp
+                        """,(start_date,t)
+                    )
+                    bp = j[0]['bp']
+                    o = db.update("""
+                        insert into invoices (office_id,invoice_status_id,office_plans_id,billing_period,billing_system_id) 
+                            values (%s,%s,%s,%s,%s)
+                        """,(off_id,INV['CREATED'],planid,bp,BS)
+                    )
+                    newid = db.query("select LAST_INSERT_ID()")
+                    newid = newid[0]['LAST_INSERT_ID()']
+                    db.update("""
+                        insert into invoice_items 
+                            (invoices_id,description,price,quantity)
+                        values 
+                            (%s,%s,%s,%s)
+                        """,
+                        (newid,PL[selplan]['description'],0,1)
+                    )
+                    db.update("""
+                        insert into invoice_history (invoices_id,user_id,text) values 
+                            (%s,%s,%s)
+                        """,(newid,1,'Generated invoice' )
+                    )
+                    db.update("""
+                        insert into invoice_history (invoices_id,user_id,text) values 
+                            (%s,%s,%s)
+                        """,(newid,1,'Set invoice to $0 for plan' )
+                    )
+                    db.update("""
+                        insert into stripe_invoice_status (office_id,invoices_id,status) values (%s,%s,%s)
+                        """,(off_id,newid,'draft')
+                    )
+                db.commit()
+            except Exception as e:
+                print(str(e))
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
+                return {'success': False, 'message': 'There was an error with the payment method. Please try again.'}
         db.update("""
             update provider_queue set 
             sf_lead_executed=1,

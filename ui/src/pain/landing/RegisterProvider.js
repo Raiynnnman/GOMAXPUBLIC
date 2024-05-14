@@ -50,6 +50,7 @@ class RegisterProvider extends Component {
             last:'',
             phone:'',
             email:'',
+            error_message:null,
             pq_id:null,
             coupon:null,
             setPrice:0,
@@ -336,6 +337,11 @@ class RegisterProvider extends Component {
             delete tosend.plan
         } 
         this.props.dispatch(registerProvider(tosend,function(err,args) { 
+            if (err !== null) { 
+                args.state.error_message = err.message;
+                args.setState(args.state);
+                return;
+            } 
             window.location = "/#/welcome";
         },this));
     } 
@@ -419,7 +425,6 @@ class RegisterProvider extends Component {
 
 
     render() {
-        console.log("p",this.props);
         var heads = [
             {
                 dataField:'name',
@@ -526,6 +531,13 @@ class RegisterProvider extends Component {
                                     margin:0,
                                     borderRadius:"10px",color:"white",backgroundColor:"black"}}> 
                                     <CardBody>
+                                        {(this.state.error_message) && (
+                                        <Row md="12" style={{marginBottom:10}}>
+                                            <Col md="12">
+                                            <font style={{color:'red',alignText:'center'}}>{this.state.error_message}</font>
+                                            </Col>
+                                        </Row>
+                                        )}
                                         <Row md="12" style={{marginBottom:10}}>
                                             <Col md="7">
                                             <font style={{alignText:'left'}}>Description</font>
