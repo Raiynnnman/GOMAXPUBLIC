@@ -25,6 +25,9 @@ def getYearMonthDayHour():
 def getTimestampUTCMonth():
     return datetime.utcnow().strftime("%Y-%m")
 
+def getYearMonthDay():
+    return datetime.utcnow().strftime("%Y-%m-%d")
+
 def getTimeIntervalAddSecondsRaw(d, seconds):
     if d is None:
         d = datetime.utcnow()
