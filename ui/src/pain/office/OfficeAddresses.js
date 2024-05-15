@@ -107,7 +107,7 @@ class OfficeAddresses extends Component {
                 <Col md="12">
                     <Col md="6">
                         <Button onClick={this.save} color="primary">Save</Button>
-                        <Button outline style={{marginLeft:10}} onClick={this.close} 
+                        <Button outline style={{marginLeft:10}} onClick={this.cancel} 
                             color="secondary">Close</Button>
                     </Col>
                 </Col>

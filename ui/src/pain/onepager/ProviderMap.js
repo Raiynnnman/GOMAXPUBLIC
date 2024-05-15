@@ -23,12 +23,10 @@ class MapContainer extends React.Component {
 
   componentWillReceiveProps(p) { 
     if (false && this.state.center === null) { 
-        console.log("cp1");
         this.state.center = this.props.centerPoint;
         this.setState(this.state);
     } 
     if (false && this.state.mapRef !== null) { 
-        console.log("cp2");
         this.state.center = this.props.centerPoint;
         this.state.mapRef.panTo(this.state.center);
         this.setState(this.state);
@@ -58,7 +56,7 @@ class MapContainer extends React.Component {
             "elementType": "labels.text.fill",
             "stylers": [
               {
-                "visibility": "off"
+                "visibility": "on"
               }
             ]
           },
@@ -66,7 +64,7 @@ class MapContainer extends React.Component {
             "elementType": "labels.text.stroke",
             "stylers": [
               {
-                "visibility": "off"
+                "visibility": "on"
               }
             ]
           },
@@ -279,13 +277,8 @@ class MapContainer extends React.Component {
           }
         ]
     n.setOptions({styles:styles})
-    console.log("m",m);
-    console.log("n",n);
-    console.log("ncen",n.center);
     n.zoom = this.state.zoomAmounts[0];
-    console.log("cp3",this.props.centerPoint);
     this.state.center = this.props.centerPoint;
-    this.state.center.lng += 5;
     n.disableDefaultUI = true;
     n.scrollwheel = true;
     n.panTo(this.state.center);
@@ -295,16 +288,11 @@ class MapContainer extends React.Component {
   }
 
   handleZoom(t) { 
-    console.log("update",this.state.zoomAmounts);
     var g = this.state.zoomAmounts.indexOf(this.state.zoomCurrent);
-    console.log("mapRef",this.state.mapRef);
-    console.log("g",g);
     if (g === 0) { 
-        console.log("removing 5");
         this.state.center = this.props.centerPoint;
         this.state.center.lng = this.props.centerPoint.lng-5;
     } else { 
-        console.log("adding 5");
         //this.state.center = this.props.centerPoint-5;
     } 
     if (g+1 >= this.state.zoomAmounts.length) { 
@@ -317,7 +305,6 @@ class MapContainer extends React.Component {
         this.state.zoomCurrent = this.state.zoomAmounts[g+1];
     } 
     this.state.mapRef.panTo(this.state.center);
-    console.log("newg",this.state.zoomCurrent);
     setTimeout((e) => { e.handleZoom() }, this.state.delay, this)
     this.setState(this.state);
   } 
@@ -327,13 +314,10 @@ class MapContainer extends React.Component {
     this.setState(prevState => ({
       locations: [...prevState.locations, location]
     }));
-    console.log("pan:",location)
     map.panTo(location);
   }; 
 
   render() {
-    console.log("p1",this.props);
-    console.log("s1",this.state);
     return (
     <>
         <Row md="12">

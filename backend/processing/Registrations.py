@@ -637,7 +637,6 @@ class RegisterProvider(RegistrationsBase):
                             val = PL[selplan]['upfront_cost'] * PL[selplan]['duration']
                             val = coup['reduction']
                         discount = -val
-                        plan_total += -val
                         db.update("""
                             insert into office_plan_items (
                                 office_plans_id,price,quantity,description) 

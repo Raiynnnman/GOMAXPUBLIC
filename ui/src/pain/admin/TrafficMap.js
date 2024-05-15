@@ -46,7 +46,7 @@ class MapContainer extends React.Component {
             "elementType": "geometry",
             "stylers": [
               {
-                "color": "#1d2c4d"
+                "color": "white"
               }
             ]
           },
@@ -62,7 +62,7 @@ class MapContainer extends React.Component {
             "elementType": "labels.text.stroke",
             "stylers": [
               {
-                "visibility": "off"
+                "visibility": "on"
               }
             ]
           },
@@ -275,6 +275,12 @@ class MapContainer extends React.Component {
           }
         ]
     n.setOptions({styles:styles})
+    this.state.center = this.props.centerPoint;
+    this.state.center.lng += 5;
+    n.disableDefaultUI = true;
+    n.scrollwheel = true;
+    n.panTo(this.state.center);
+    this.state.mapRef = n;
     this.setState(this.state);
   }
 
@@ -365,7 +371,7 @@ class MapContainer extends React.Component {
                                 return (
                                   <Marker onClick={this.handleMarkerClick}
                                     data={e}
-                                    icon={locationMarkerPref}
+                                    icon="http://maps.google.com/mapfiles/ms/icons/orange-dot.png"
                                     position={e.coords[0]}/>
                                 )
                             }
@@ -422,10 +428,39 @@ class MapContainer extends React.Component {
                     {(this.state.selected.category_id) === 99 && (
                         <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
                             <Col md="4">
+                                Name
+                            </Col>
+                            <Col md="8">
+                                {this.state.selected.providers.map((g) => { 
+                                    return (
+                                    <>
+                                        Name: {g.first_name + " " + g.last_name}
+                                        <br/>
+                                        email: {g.email}
+                                        <br/>
+                                    </>
+                                    )
+                                })}
+                            </Col>
+                        </Row>
+                    )}
+                    {(this.state.selected.category_id) === 99 && (
+                        <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
+                            <Col md="4">
                                 Office
                             </Col>
                             <Col md="8">
                                 {this.state.selected.name}
+                            </Col>
+                        </Row>
+                    )}
+                    {(this.state.selected.category_id) === 99 && (
+                        <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
+                            <Col md="4">
+                                Website    
+                            </Col>
+                            <Col md="8">
+                                {this.state.selected.website}
                             </Col>
                         </Row>
                     )}

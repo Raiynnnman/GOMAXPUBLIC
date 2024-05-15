@@ -1680,7 +1680,7 @@ class TrafficGet(AdminBase):
                 select 
                     oa.id,oa.name,oa.addr1,'' as uuid,
                     round(st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192,2) as miles,
-                    oa.city,oa.state,oa.zipcode,99 as category_id,
+                    oa.city,oa.state,oa.zipcode,99 as category_id,pq.website,
                     'Potential Provider' as category, oa.lat, oa.lon as lng,
                     json_arrayagg(
                         json_object('lat',oa.lat,'lng',oa.lon)) as coords
@@ -1767,7 +1767,7 @@ class TrafficGet(AdminBase):
                 select 
                     oa.id,oa.name,oa.addr1,'' as uuid,
                     oa.city,oa.state,oa.zipcode,99 as category_id,
-                    oa.phone,
+                    oa.phone,oa.office_id,
                     pq.provider_queue_lead_strength_id as lead_strength_id,
                     pqls.name as lead_strength,
                     'Preferred Provider' as category, oa.lat, oa.lon as lng,
@@ -1787,6 +1787,12 @@ class TrafficGet(AdminBase):
                 """,(STR['Potential Provider'],)
             )
             for t in o:
+                t['providers'] = db.query("""
+                    select u.id,u.first_name,u.last_name,u.email,u.phone 
+                        from office_user ou,users u
+                    where ou.user_id=u.id and ou.office_id=%s
+                    """,(t['office_id'],)
+                )
                 t['coords'] = json.loads(t['coords'])
                 ret['data'].append(t) 
         return ret
