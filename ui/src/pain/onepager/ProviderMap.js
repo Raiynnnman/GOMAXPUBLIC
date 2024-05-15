@@ -1,0 +1,377 @@
+import React, { Component } from "react";
+import { Map, Circle, Marker, GoogleApiWrapper } from "google-maps-react";
+import { Col, Row } from 'reactstrap';
+
+class MapContainer extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      locations: [],
+      mapRef:null,
+      zoomAmounts: [6,8,10],
+      zoomCurrent: 6,
+      zoomTimer:null,
+      delay:5000,
+      center:null,
+      selected:null
+    };
+    this.handleMapClick = this.handleMapClick.bind(this);
+    this.mapLoaded = this.mapLoaded.bind(this);
+    this.handleZoom = this.handleZoom.bind(this);
+    this.handleMarkerClick = this.handleMarkerClick.bind(this);
+  }
+
+  componentWillReceiveProps(p) { 
+    if (false && this.state.center === null) { 
+        console.log("cp1");
+        this.state.center = this.props.centerPoint;
+        this.setState(this.state);
+    } 
+    if (false && this.state.mapRef !== null) { 
+        console.log("cp2");
+        this.state.center = this.props.centerPoint;
+        this.state.mapRef.panTo(this.state.center);
+        this.setState(this.state);
+    } 
+  }
+
+  handleMarkerClick(ref,map,ev) { 
+    var location = {lat:ref.data.lat,lng:ref.data.lng};
+    this.state.selected = ref.data;
+    this.setState(prevState => ({
+      locations: [...prevState.locations, location]
+    }));
+  }
+
+  mapLoaded(m,n) { 
+    var styles = 
+        [
+          {
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#1d2c4d"
+              }
+            ]
+          },
+          {
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "visibility": "off"
+              }
+            ]
+          },
+          {
+            "elementType": "labels.text.stroke",
+            "stylers": [
+              {
+                "visibility": "off"
+              }
+            ]
+          },
+          {
+            "featureType": "administrative.country",
+            "elementType": "geometry.stroke",
+            "stylers": [
+              {
+                "visibility": "#4b6878"
+              }
+            ]
+          },
+          {
+            "featureType": "administrative.land_parcel",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#64779e"
+              }
+            ]
+          },
+          {
+            "featureType": "administrative.province",
+            "elementType": "geometry.stroke",
+            "stylers": [
+              {
+                "color": "#4b6878"
+              }
+            ]
+          },
+          {
+            "featureType": "landscape.man_made",
+            "elementType": "geometry.stroke",
+            "stylers": [
+              {
+                "color": "#334e87"
+              }
+            ]
+          },
+          {
+            "featureType": "landscape.natural",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#023e58"
+              }
+            ]
+          },
+          {
+            "featureType": "poi",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#283d6a"
+              }
+            ]
+          },
+          {
+            "featureType": "poi",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#6f9ba5"
+              }
+            ]
+          },
+          {
+            "featureType": "poi",
+            "elementType": "labels.text.stroke",
+            "stylers": [
+              {
+                "color": "#1d2c4d"
+              }
+            ]
+          },
+          {
+            "featureType": "poi.park",
+            "elementType": "geometry.fill",
+            "stylers": [
+              {
+                "color": "#023e58"
+              }
+            ]
+          },
+          {
+            "featureType": "poi.park",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#3C7680"
+              }
+            ]
+          },
+          {
+            "featureType": "road",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#304a7d"
+              }
+            ]
+          },
+          {
+            "featureType": "road",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#98a5be"
+              }
+            ]
+          },
+          {
+            "featureType": "road",
+            "elementType": "labels.text.stroke",
+            "stylers": [
+              {
+                "color": "#1d2c4d"
+              }
+            ]
+          },
+          {
+            "featureType": "road.highway",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#2c6675"
+              }
+            ]
+          },
+          {
+            "featureType": "road.highway",
+            "elementType": "geometry.stroke",
+            "stylers": [
+              {
+                "color": "#255763"
+              }
+            ]
+          },
+          {
+            "featureType": "road.highway",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#b0d5ce"
+              }
+            ]
+          },
+          {
+            "featureType": "road.highway",
+            "elementType": "labels.text.stroke",
+            "stylers": [
+              {
+                "color": "#023e58"
+              }
+            ]
+          },
+          {
+            "featureType": "transit",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#98a5be"
+              }
+            ]
+          },
+          {
+            "featureType": "transit",
+            "elementType": "labels.text.stroke",
+            "stylers": [
+              {
+                "color": "#1d2c4d"
+              }
+            ]
+          },
+          {
+            "featureType": "transit.line",
+            "elementType": "geometry.fill",
+            "stylers": [
+              {
+                "color": "#283d6a"
+              }
+            ]
+          },
+          {
+            "featureType": "transit.station",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#3a4762"
+              }
+            ]
+          },
+          {
+            "featureType": "water",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#0e1626"
+              }
+            ]
+          },
+          {
+            "featureType": "water",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#4e6d70"
+              }
+            ]
+          }
+        ]
+    n.setOptions({styles:styles})
+    console.log("m",m);
+    console.log("n",n);
+    console.log("ncen",n.center);
+    n.zoom = this.state.zoomAmounts[0];
+    console.log("cp3",this.props.centerPoint);
+    this.state.center = this.props.centerPoint;
+    this.state.center.lng += 5;
+    n.disableDefaultUI = true;
+    n.scrollwheel = true;
+    n.panTo(this.state.center);
+    this.state.mapRef = n;
+    setTimeout((e) => { e.handleZoom() }, this.state.delay, this)
+    this.setState(this.state);
+  }
+
+  handleZoom(t) { 
+    console.log("update",this.state.zoomAmounts);
+    var g = this.state.zoomAmounts.indexOf(this.state.zoomCurrent);
+    console.log("mapRef",this.state.mapRef);
+    console.log("g",g);
+    if (g === 0) { 
+        console.log("removing 5");
+        this.state.center = this.props.centerPoint;
+        this.state.center.lng = this.props.centerPoint.lng-5;
+    } else { 
+        console.log("adding 5");
+        //this.state.center = this.props.centerPoint-5;
+    } 
+    if (g+1 >= this.state.zoomAmounts.length) { 
+        this.state.mapRef.zoom = this.state.zoomAmounts[0];
+        this.state.zoomCurrent = this.state.zoomAmounts[0];
+        this.state.center = this.props.centerPoint;
+        this.state.center.lng += 5;
+    } else { 
+        this.state.mapRef.zoom = this.state.zoomAmounts[g+1];
+        this.state.zoomCurrent = this.state.zoomAmounts[g+1];
+    } 
+    this.state.mapRef.panTo(this.state.center);
+    console.log("newg",this.state.zoomCurrent);
+    setTimeout((e) => { e.handleZoom() }, this.state.delay, this)
+    this.setState(this.state);
+  } 
+
+  handleMapClick(ref,map,ev) { 
+    const location = ev.latLng;
+    this.setState(prevState => ({
+      locations: [...prevState.locations, location]
+    }));
+    console.log("pan:",location)
+    map.panTo(location);
+  }; 
+
+  render() {
+    console.log("p1",this.props);
+    console.log("s1",this.state);
+    return (
+    <>
+        <Row md="12">
+            <Col md="12">
+                <Map
+                  google={this.props.google}
+                  zoom={4}
+                  style={{height:400}}
+                  options={{
+                    disableDefaultUI: true, // disable default map UI
+                    libraries: ['visualization'],
+                    draggable: true, // make map draggable
+                    libraries:['visualization'],
+                    keyboardShortcuts: false, // disable keyboard shortcuts
+                    scaleControl: true, // allow scale controle
+                    scrollwheel: true, // allow scroll wheel
+                  }}
+                  onReady={(m,n) => this.mapLoaded(m,n)}
+                  onClick={this.handleMapClick}
+                >
+                {this.props.data.data.data.map((e) => {
+                    if (e.category_id === 99) {
+                        return (
+                          <Marker icon="http://maps.google.com/mapfiles/ms/icons/orange-dot.png"
+                                data={e} onClick={this.handleMarkerClick}
+                                position={e.coords[0]}/>
+                        )
+                    }
+                })}
+                </Map>
+            </Col>
+        </Row>
+    </>
+    );
+  }
+}
+
+export default GoogleApiWrapper({
+  apiKey: "AIzaSyCjn4U7o_J0AHbNBvkyijucaX_KgTU-46w",
+  libraries: ['visualization']
+})(MapContainer);

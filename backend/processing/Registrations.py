@@ -727,7 +727,7 @@ class RegisterProvider(RegistrationsBase):
                         'uid': coup['name'].replace("#","").replace(" ",""),
                         'name':coup['name'],
                         'scope': 'ORDER',
-                        'amount_money':{'amount':discount * 100,'currency':'USD'}
+                        'amount_money':{'amount':-discount * 100,'currency':'USD'}
                     })
                 print("ord=%s" % order)
                 if plan_total > 0:

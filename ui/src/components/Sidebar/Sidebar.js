@@ -1,4 +1,5 @@
 import React from 'react';
+import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
 import DynamicFeedIcon from '@mui/icons-material/DynamicFeed';
 import AddLocationIcon from '@mui/icons-material/AddLocation';
@@ -193,6 +194,17 @@ class Sidebar extends React.Component {
             link="/app/main/admin/search"
             isHeader
             iconElement={<Location/>}
+            iconName="flaticon-users"
+            labelColor="info"
+          />
+          )}
+          {(this.props.currentUser && this.props.currentUser.entitlements && 
+            this.props.currentUser.entitlements.includes("Admin") && !this.props.currentUser.context) && (
+          <LinksGroup
+            header="One Pager"
+            link="/app/main/admin/onepage"
+            isHeader
+            iconElement={<AutoStoriesIcon/>}
             iconName="flaticon-users"
             labelColor="info"
           />

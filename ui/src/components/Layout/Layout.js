@@ -44,6 +44,7 @@ import OfficeAssociation from '../../pain/office/OfficeAssociation';
 import Users from '../../pain/office/Users';
 import Registrations from '../../pain/admin/Registrations';
 import OfficeAddresses from '../../pain/office/OfficeAddresses';
+import OnePager from '../../pain/onepager/OnePager';
 
 class Layout extends React.Component {
   static propTypes = {
@@ -129,6 +130,7 @@ class Layout extends React.Component {
                     <Route path="/app/main/office/upload" exact component={ReferrerUpload} />
                     <Route path="/app/main/admin/commissions" exact component={CommissionAdminList} />
                     <Route path="/app/main/admin/coupons" exact component={CouponAdminList} />
+                    <Route path="/app/main/admin/onepage" exact component={OnePager} />
                     <Route path="/app/main/admin/office" exact component={OfficeAdmin} />
                     <Route path="/app/main/admin/office/:id" exact component={OfficeAdmin} />
                     <Route path="/app/main/admin/registrations" exact component={Registrations} />

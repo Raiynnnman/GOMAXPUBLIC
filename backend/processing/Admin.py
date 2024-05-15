@@ -1619,7 +1619,8 @@ class TrafficGet(AdminBase):
                 else:
                     ret['center'] = {'lat':l[0]['lat'],'lng':l[0]['lng']}
             else:
-                ret['center'] = {'lat':l[0]['lat'],'lng':l[0]['lng']}
+                w = int(len(l)/2)
+                ret['center'] = {'lat':l[w]['lat'],'lng':l[w]['lng']}
         else:
             ret['center'] = {'lat':0,'lng':0}
         q = """
