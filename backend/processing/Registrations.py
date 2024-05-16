@@ -796,7 +796,7 @@ class RegisterProvider(RegistrationsBase):
                         body = { 'version': 0}
                     )
                     if pub.is_error():
-                        de = client.invoices.delete_invoice(invoice_id=s['invoice']['id'])
+                        de = client.invoices.delete_invoice(invoice_id=s['invoice']['id'],body={'version': 1})
                         if de.is_error():
                             print(json.dumps(de.errors))
                             raise Exception(json.dumps(s.errors))

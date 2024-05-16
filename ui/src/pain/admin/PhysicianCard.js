@@ -122,17 +122,17 @@ class PhysicianCard extends Component {
         <>
         {(this.props.provider) && (
             <Card style={{
-                margin:20,
+                margin:20,height:410,
                 borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}} className="mb-xlg border-1">
                 <CardBody>
                     <Row md="12">
                         <Col md="12">
-                            <font style={{fontSize:"14pt",fontWeight:"bold"}}>
+                            <font style={{fontSize:"12pt",fontWeight:"bold"}}>
                             {this.props.provider.office_name} 
                             </font>
                             <br/>
-                            <font style={{fontSize:"14pt",fontWeight:"bold"}}>
-                            {this.props.provider.profile.title ? this.props.provider.title + " ": ''} 
+                            <font style={{fontSize:"12pt",fontWeight:"bold"}}>
+                            {this.props.provider.profile.title ? this.props.provider.profile.title + " ": ''} 
                             {this.props.provider.profile.first_name + " " + 
                                 this.props.provider.profile.last_name}
                             </font>

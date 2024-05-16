@@ -1,6 +1,7 @@
 import React, { Component } from "react";
-import { Map, Circle, Marker, GoogleApiWrapper } from "google-maps-react";
+import { InfoWindow, Map, Circle, Marker, GoogleApiWrapper } from "google-maps-react";
 import { Col, Row } from 'reactstrap';
+import PushPinIcon from '@mui/icons-material/PushPin';
 import './Map.scss';
 import moment from 'moment';
 import formatPhoneNumber from '../utils/formatPhone';
@@ -11,12 +12,17 @@ class MapContainer extends React.Component {
     this.state = {
       locations: [],
       mapRef:null,
+      showInfoWindow:false,
+      selected:null,
+      sticky:false,
       //center:{lat:0,lng:0},
       center:null,
       selected:null
     };
     this.handleMapClick = this.handleMapClick.bind(this);
     this.mapLoaded = this.mapLoaded.bind(this);
+    this.onMouseout = this.onMouseout.bind(this);
+    this.onMouseover = this.onMouseover.bind(this);
     this.handleMarkerClick = this.handleMarkerClick.bind(this);
   }
   componentWillReceiveProps(p) { 
@@ -31,9 +37,26 @@ class MapContainer extends React.Component {
     } 
   }
 
+  onMouseover(e) { 
+    if (this.state.sticky) { return; }
+    if (!e.data) { return; }
+    this.state.selected = e.data;
+    this.state.showInfoWindow = true;
+    this.setState(this.state)
+  }
+
+  onMouseout(e) { 
+    if (this.state.sticky) { return; }
+    this.state.selected = null;
+    this.state.showInfoWindow = false;
+    this.setState(this.state)
+  }
+
   handleMarkerClick(ref,map,ev) { 
     var location = {lat:ref.data.lat,lng:ref.data.lng};
     this.state.selected = ref.data;
+    this.state.sticky = this.state.sticky ? false : true;
+    this.setState(this.state);
     this.setState(prevState => ({
       locations: [...prevState.locations, location]
     }));
@@ -339,10 +362,10 @@ class MapContainer extends React.Component {
     return (
       <div style={{zIndex:1,borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}} className="map-container">
         <Row md="12">
-            <Col md="8">
+            <Col md="7" style={{position:"relative"}}>
                 <Map
                   google={this.props.google}
-                  style={{width:"1000px",height:"800px"}}
+                  style={{margin:10,position:"relative",width:"100%",height:"600px"}}
                   zoom={4}
                   options={{
                     disableDefaultUI: true, // disable default map UI
@@ -361,6 +384,7 @@ class MapContainer extends React.Component {
                     if (e.category_id === 2) {
                             return (
                               <Marker onClick={this.handleMarkerClick}
+                                onMouseover={this.onMouseover} onMouseout={this.onMouseout}
                                 data={e}
                                 icon={accidentMarker}
                                 position={e.coords[0]}/>
@@ -370,6 +394,7 @@ class MapContainer extends React.Component {
                             if (e.lead_strength_id === 1) { 
                                 return (
                                   <Marker onClick={this.handleMarkerClick}
+                                    onMouseover={this.onMouseover} onMouseout={this.onMouseout}
                                     data={e}
                                     icon="http://maps.google.com/mapfiles/ms/icons/orange-dot.png"
                                     position={e.coords[0]}/>
@@ -378,6 +403,7 @@ class MapContainer extends React.Component {
                             if (e.lead_strength_id === 2) { 
                                 return (
                                   <Marker onClick={this.handleMarkerClick}
+                                    onMouseover={this.onMouseover} onMouseout={this.onMouseout}
                                     data={e}
                                     icon={locationMarkerInNet}
                                     position={e.coords[0]}/>
@@ -386,15 +412,25 @@ class MapContainer extends React.Component {
                             if (e.lead_strength_id === 3) { 
                                 return (
                                   <Marker onClick={this.handleMarkerClick}
+                                    onMouseover={this.onMouseover} onMouseout={this.onMouseout}
                                     data={e}
                                     icon={locationMarkerPotent}
                                     position={e.coords[0]}/>
                                 )
                             }
                         }
+                    if (e.category_id === 101) {
+                            return (
+                              <Marker icon="http://maps.google.com/mapfiles/ms/icons/purple-dot.png"
+                                    onMouseover={this.onMouseover} onMouseout={this.onMouseout}
+                                    data={e} onClick={this.handleMarkerClick}
+                                    position={e.coords[0]}/>
+                            )
+                        }
                     if (e.category_id === 104) {
                             return (
                               <Marker icon="http://maps.google.com/mapfiles/ms/icons/red-dot.png"
+                                    onMouseover={this.onMouseover} onMouseout={this.onMouseout}
                                     data={e} onClick={this.handleMarkerClick}
                                     position={e.coords[0]}/>
                             )
@@ -402,22 +438,34 @@ class MapContainer extends React.Component {
                     if (e.category_id === 103) {
                             return (
                               <Marker icon="http://maps.google.com/mapfiles/ms/icons/purple-dot.png"
+                                    onMouseover={this.onMouseover} onMouseout={this.onMouseout}
                                     data={e} onClick={this.handleMarkerClick}
                                     position={e.coords[0]}/>
                             )
                         }
                     if (e.category_id === 100) {
                             return (
-                              <Marker position={e.coords[0]}/>
+                              <Marker position={e.coords[0]}
+                                    onMouseover={this.onMouseover} onMouseout={this.onMouseout}/>
                             )
                         }
                 })}
                 </Map>
             </Col>
-            <Col md="4" style={{borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}}>
-                <Row md="12" style={{margin:20}}></Row>
-                <div style={{height:800,overflow:"auto"}}>
-                    <Row md="12" style={{margin:20}}></Row>
+            <Col md="5" style={{borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}}>
+                <div style={{height:600,overflow:"auto"}}>
+                    <Row md="12" style={{margin:20}}>
+                        <Col md="12">
+                        <>
+                            {(this.state.sticky) && (
+                                <PushPinIcon style={{color:"red"}}/>
+                            )}
+                            {(!this.state.sticky) && (
+                                <PushPinIcon style={{color:"black"}}/>
+                            )}
+                        </>
+                        </Col>
+                    </Row>
                     {(this.state.selected === null) && (
                     <Row md="12" style={{margin:20}}>
                         <Col md="12">
@@ -448,6 +496,16 @@ class MapContainer extends React.Component {
                                     </>
                                     )
                                 })}
+                            </Col>
+                        </Row>
+                    )}
+                    {(this.state.selected.category_id === 101) && (
+                        <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
+                            <Col md="4">
+                                Office
+                            </Col>
+                            <Col md="8">
+                                {this.state.selected.name}
                             </Col>
                         </Row>
                     )}
@@ -507,6 +565,14 @@ class MapContainer extends React.Component {
                         </Col>
                         <Col md="8">
                             {this.state.selected.category}
+                        </Col>
+                    </Row>
+                    <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
+                        <Col md="4">
+                            Address
+                        </Col>
+                        <Col md="8">
+                            {this.state.selected.addr1}
                         </Col>
                     </Row>
                     <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
@@ -575,7 +641,7 @@ class MapContainer extends React.Component {
                         </Col>
                     </Row>
                     )}
-                    {(this.state.selected.category_id !== 99) && (
+                    {(this.state.selected.category_id === 1) && (
                         <>
                         <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
                             <Col md="4">

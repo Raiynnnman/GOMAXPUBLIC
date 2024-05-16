@@ -280,7 +280,8 @@ class MapContainer extends React.Component {
     n.zoom = this.state.zoomAmounts[0];
     this.state.center = this.props.centerPoint;
     n.disableDefaultUI = true;
-    n.scrollwheel = true;
+    n.scrollwheel = false;
+    n.draggable = false;
     n.panTo(this.state.center);
     this.state.mapRef = n;
     setTimeout((e) => { e.handleZoom() }, this.state.delay, this)

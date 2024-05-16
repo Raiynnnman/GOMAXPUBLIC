@@ -1532,6 +1532,7 @@ class TrafficGet(AdminBase):
         ret = {}
         job,user,off_id,params = self.getArgs(*args,**kwargs)
         today = calcdate.getYearToday()
+        print(params)
         if 'date' in params:
             if params['date'] == 'All':
                 del params['date']
@@ -1735,7 +1736,7 @@ class TrafficGet(AdminBase):
                 select 
                     oa.id,oa.name,oa.addr1,'' as uuid,
                     round(st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192,2) as miles,
-                    oa.city,oa.state,oa.zipcode,99 as category_id,
+                    oa.phone, oa.city,oa.state,oa.zipcode,101 as category_id,
                     'Potential Provider' as category, oa.lat, oa.lon as lng,
                     json_arrayagg(
                         json_object('lat',oa.lat,'lng',oa.lon)) as coords
@@ -1755,6 +1756,7 @@ class TrafficGet(AdminBase):
                      zipcoords['lat'],STR['Potential Provider'],
                      zipcoords['lng'],zipcoords['lat'])
             )
+            print(o)
             for t in o:
                 t['coords'] = json.loads(t['coords'])
                 ret['data'].append(t) 
