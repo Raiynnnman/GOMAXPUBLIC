@@ -1567,6 +1567,8 @@ class TrafficGet(AdminBase):
             select 102,'Customers'
             UNION ALL
             select 103,'No Results'
+            UNION ALL
+            select 104,'Pending Provider'
             """)
         ret['config']['categories'] = l
         if 'categories' not in params or len(params['categories']) == 0:
@@ -1699,6 +1701,31 @@ class TrafficGet(AdminBase):
                 """,(zipcoords['lng'],
                      zipcoords['lat'],
                      zipcoords['lng'],zipcoords['lat'])
+            )
+            for t in o:
+                t['coords'] = json.loads(t['coords'])
+                ret['data'].append(t) 
+        if 104 in params['categories']:
+            o = db.query("""
+                select 
+                    oa.id,oa.name,oa.addr1,'' as uuid,
+                    oa.city,oa.state,oa.zipcode,104 as category_id,pq.website,
+                    'Pending Provider' as category, oa.lat, oa.lon as lng,
+                    json_arrayagg(
+                        json_object('lat',oa.lat,'lng',oa.lon)) as coords
+                from 
+                    office_addresses oa,office o,
+                    provider_queue_lead_strength pqls,
+                    provider_queue pq
+                where
+                    lat <> 0 and
+                    oa.office_id = o.id and
+                    pq.provider_queue_lead_strength_id = %s and
+                    pq.provider_queue_lead_strength_id = pqls.id and
+                    pq.office_id = oa.office_id
+                group by 
+                    oa.id
+                """,(STR['Pending Provider'],)
             )
             for t in o:
                 t['coords'] = json.loads(t['coords'])

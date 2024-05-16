@@ -392,6 +392,13 @@ class MapContainer extends React.Component {
                                 )
                             }
                         }
+                    if (e.category_id === 104) {
+                            return (
+                              <Marker icon="http://maps.google.com/mapfiles/ms/icons/red-dot.png"
+                                    data={e} onClick={this.handleMarkerClick}
+                                    position={e.coords[0]}/>
+                            )
+                        }
                     if (e.category_id === 103) {
                             return (
                               <Marker icon="http://maps.google.com/mapfiles/ms/icons/purple-dot.png"
@@ -444,7 +451,7 @@ class MapContainer extends React.Component {
                             </Col>
                         </Row>
                     )}
-                    {(this.state.selected.category_id) === 99 && (
+                    {(this.state.selected.category_id) === 104 && (
                         <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
                             <Col md="4">
                                 Office
@@ -455,6 +462,26 @@ class MapContainer extends React.Component {
                         </Row>
                     )}
                     {(this.state.selected.category_id) === 99 && (
+                        <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
+                            <Col md="4">
+                                Office
+                            </Col>
+                            <Col md="8">
+                                {this.state.selected.name}
+                            </Col>
+                        </Row>
+                    )}
+                    {(this.state.selected.category_id === 104) && (
+                        <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
+                            <Col md="4">
+                                Website    
+                            </Col>
+                            <Col md="8">
+                                {this.state.selected.website}
+                            </Col>
+                        </Row>
+                    )}
+                    {(this.state.selected.category_id === 99) && (
                         <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
                             <Col md="4">
                                 Website    
