@@ -843,7 +843,7 @@ class OfficeList extends Component {
                                 <Col md="8" style={{zIndex:9995}}>
                                   {(this.props.offices && this.props.offices.data && 
                                     this.props.offices.data.config &&
-                                    this.props.offices.data.config.provider_status && this.state.statusSelected !== null) && (
+                                    this.props.offices.data.config.commission_users) && (
                                       <Select
                                           closeMenuOnSelect={true}
                                           isSearchable={false}

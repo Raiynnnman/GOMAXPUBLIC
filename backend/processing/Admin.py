@@ -719,7 +719,7 @@ class OfficeList(AdminBase):
             count_par.insert(0,params['search']+'%%')
             count_par.insert(0,params['search']+'%%')
             count_par.insert(0,params['search']+'%%')
-        elif 'status' in params and params['status'] is not None:
+        elif 'status' in params and params['status'] is not None and len(params['status']) > 0:
             q += " and pq.provider_queue_status_id in (%s) " % ','.join(map(str,params['status']))
         q += " group by o.id order by o.updated desc "
         cnt = db.query("select count(id) as cnt from (" + q + ") as t", count_par)
@@ -927,6 +927,10 @@ class OfficeSave(AdminBase):
         if 'commission_user_id' in params:
             db.update("""
                 update office set commission_user_id=%s where id = %s
+                """,(params['commission_user_id'],insid)
+            )
+            db.update("""
+                update commission_users set user_id=%s where office_id = %s
                 """,(params['commission_user_id'],insid)
             )
         if 'comments' in params:
@@ -2387,19 +2391,21 @@ class CommissionList(AdminBase):
         ENT = self.getEntitlementIDs()
         ret['config'] = {}
         ret['config']['period'] = db.query("""
-            select count(i.id) as count,
-                i.billing_period as value,
-                date_format(i.billing_period,'%b, %Y') as label from 
-                commission_users cu, invoices i
-            where cu.invoices_id = i.id
+            select count(cu.id) as count,
+                date(cu.created) as value,
+                date_format(cu.created,'%b, %Y') as label from 
+                commission_users cu
+            group by
+                date_format(cu.created,'%b, %Y')
             order by
-                i.billing_period desc
+                date_format(cu.created,'%b, %Y') desc
         """)
         q1 = """
             select 
                 u.id,concat(u.first_name,' ',u.last_name) as name,
                 amount,
                 cus.created,
+                i.id as invoice_id,
                 i.billing_period,
                 o.id as office_id,o.name as office_name
             from 
@@ -2419,6 +2425,7 @@ class CommissionList(AdminBase):
                 u.id,concat(u.first_name,' ',u.last_name) as name,
                 amount,
                 cus.created,
+                i.id as invoice_id,
                 i.billing_period,
                 o.id as office_id,o.name as office_name
             from 
