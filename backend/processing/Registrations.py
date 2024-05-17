@@ -539,7 +539,7 @@ class RegisterProvider(RegistrationsBase):
                     """,(params['first'],params['last'],params['email'].lower(),params['phone'])
                 )
                 uid = db.query("select LAST_INSERT_ID()");
-                uid = uid[0]['LAST_INSERT_ID()']
+                userid = uid = uid[0]['LAST_INSERT_ID()']
             db.update("""
                 update office set user_id=%s,commission_user_id=1 where id=%s
                 """,(uid,off_id)
@@ -571,6 +571,10 @@ class RegisterProvider(RegistrationsBase):
         db.update("""
             update provider_queue set updated=now() where office_id=%s
             """,(off_id,)
+        )
+        db.update("""
+            update users set active=1 where id=%s
+            """,(userid,)
         )
         planid = 0
         coup = {}
@@ -912,6 +916,7 @@ class RegisterProvider(RegistrationsBase):
             update office set active = 1,import_sf=1 where id = %s
             """,(off_id,)
         )
+        print("userid=%s" % userid)
         db.update("""
             update users set active = 1 where id = %s
             """,(userid,)
