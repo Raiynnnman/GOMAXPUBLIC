@@ -11,18 +11,35 @@ import microsoft from '../../images/microsoft.png';
 import getVersion from '../../version.js';
 import { push } from 'connected-react-router';
 import translate from '../utils/translate';
+import {referralResponse} from '../../actions/referralResponse';
 
-class Welcome extends React.Component {
+class Accept extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
+            id:null,
+            accepted:null,
+            error_message:null
         };
         this.loginPage = this.loginPage.bind(this);
 
     }
 
+    componentWillReceiveProps(p) { 
+        console.log("p",this.props);
+        if (p.match && p.match.params && p.match.params.id && this.state.accepted === null) { 
+        } 
+    }
+
     componentDidMount() {
+        var tosend = {}
+        tosend.token = this.props.match.params.token
+        tosend.accept = false;
+        this.state.token = this.props.match.params.token;
+        this.props.dispatch(referralResponse(tosend,function(err,args) { 
+            console.log(err,args);
+        },this));
     }
 
     loginPage() { 
@@ -30,15 +47,17 @@ class Welcome extends React.Component {
     } 
 
     render() {
+        console.log("p",this.props);
+        console.log("s",this.state);
         return (
             <div style={{backgroundColor:"black",color:"white"}} className="auth-page">
                 <Container>
                     <div style={{backgroundColor:'black',display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                         <img width="20%" height="20%" src='/painlogo.png'/>
                     </div>
-                    <Widget style={{backgroundColor:"black"}} className="widget-auth mx-auto" title={<h3 style={{color:'white'}} className="mt-0">Welcome to #PAIN</h3>}>
+                    <Widget style={{backgroundColor:"black"}} className="widget-auth mx-auto" title={<h3 style={{color:'white'}} className="mt-0">Client Accepted!</h3>}>
                         <p className="widget-auth-info" style={{color:'white'}}>
-                            Welcome to #PAIN! You will receive an email with details on how to login and get started. 
+                            Client accepted. Click <a onClick={this.loginPage} style={{color:"blue"}} href="/#/login" to see details>HERE</a> to see details
                         <br/>
                         </p>
                     </Widget>
@@ -48,10 +67,11 @@ class Welcome extends React.Component {
     }
 }
 
-function mapStateToProps(state) {
+function mapStateToProps(store) {
     return {
+        referralResponse: store.referralResponse
     };
 }
 
-export default withRouter(connect(mapStateToProps)(Welcome));
+export default withRouter(connect(mapStateToProps)(Accept));
 
