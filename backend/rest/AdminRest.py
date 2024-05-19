@@ -206,3 +206,17 @@ class CommissionUserListRest(RestBase):
         u = Admin.CommissionUserList()
         ret = u.process(args[0])
         return ret
+
+class CustomersUpdateRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Admin.CustomerUpdate()
+        ret = u.process(args[0])
+        return ret
+
+class CustomersListRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Admin.CustomerList()
+        ret = u.process(args[0])
+        return ret

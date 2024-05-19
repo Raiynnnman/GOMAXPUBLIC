@@ -3,6 +3,7 @@ import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
 import DynamicFeedIcon from '@mui/icons-material/DynamicFeed';
 import AddLocationIcon from '@mui/icons-material/AddLocation';
+import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
 import UploadIcon from '@mui/icons-material/Upload';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import PropTypes from 'prop-types';
@@ -194,6 +195,17 @@ class Sidebar extends React.Component {
             link="/app/main/admin/search"
             isHeader
             iconElement={<Location/>}
+            iconName="flaticon-users"
+            labelColor="info"
+          />
+          )}
+          {(this.props.currentUser && this.props.currentUser.entitlements && 
+            this.props.currentUser.entitlements.includes("Admin") && !this.props.currentUser.context) && (
+          <LinksGroup
+            header="Customers"
+            link="/app/main/admin/customers"
+            isHeader
+            iconElement={<EmojiPeopleIcon/>}
             iconName="flaticon-users"
             labelColor="info"
           />

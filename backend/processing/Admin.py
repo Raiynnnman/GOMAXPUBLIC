@@ -311,6 +311,77 @@ class AdminDashboard(AdminBase):
         ret['website_stats'] = self.getWebsiteTraffic()
         return ret
 
+class CustomerUpdate(AdminBase):
+    def __init__(self):
+        super().__init__()
+
+    def isDeferred(self):
+        return False
+
+    @check_admin
+    def execute(self, *args, **kwargs):
+        ret = {}
+        job,user,off_id,params = self.getArgs(*args,**kwargs)
+        db = Query()
+        db.update("""
+            update referral_users set name=%s,
+                phone=%s,referrer_users_status_id=%s,
+                email=%s where id=%s
+            """,(
+            params['name'],params['phone'],params['status_id'],
+            params['email'],params['id']
+            )
+        )
+        db.commit()
+        return ret
+
+class CustomerList(AdminBase):
+    def __init__(self):
+        super().__init__()
+
+    def isDeferred(self):
+        return False
+
+    @check_admin
+    def execute(self, *args, **kwargs):
+        ret = {}
+        job,user,off_id,params = self.getArgs(*args,**kwargs)
+        limit = 10
+        offset = 0
+        if 'limit' in params:
+            limit = int(params['limit'])
+        if 'offset' in params:
+            offset = int(params['offset'])
+        db = Query()
+        ENT = self.getEntitlementIDs()
+        q = """
+            select 
+                u.id,u.email,u.name,u.phone,
+                rus.name as status,
+                rus.id as status_id,o.name as office_name,
+                o.id as office_id,timestampdiff(minute,u.created,now()) as queue_time
+            from 
+                referrer_users u
+                left join referrer_users_status rus on rus.id=u.referrer_users_status_id
+                left outer join office o on u.office_id = o.id
+            where 
+                rus.id = u.referrer_users_status_id
+            order by 
+                u.updated desc
+            """
+        cnt = db.query("select count(id) as cnt from (%s) as t" % (q,))
+        q += " limit %s offset %s " 
+        o = db.query(q,(limit,offset*limit))
+        ret['total'] = cnt[0]['cnt']
+        ret['config'] = {}
+        ret['config']['status'] = db.query("""
+            select id,name from referrer_users_status
+            """)
+        ret['customers'] = []
+        for x in o:
+            ret['customers'].append(x)
+        return ret
+
 class UserList(AdminBase):
     def __init__(self):
         super().__init__()

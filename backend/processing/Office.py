@@ -578,13 +578,14 @@ class ReferrerUpdate(OfficeBase):
                 """,(row['email'],insid)
             )
         if 'phone' in row:
+            print(row['phone'])
             db.update("""
                 update referrer_users set phone=%s where id = %s
                 """,(row['phone'],insid)
             )
         if 'user_id' in row:
             db.update("""
-                update referrer_users set phone=%s where id = %s
+                update referrer_users set user_id=%s where id = %s
                 """,(row['user_id'],insid)
             )
         if 'zipcode' in row:

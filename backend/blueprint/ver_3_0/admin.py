@@ -204,3 +204,17 @@ def couponlist(*args, **kwargs):
 def couponupdate(*args, **kwargs):
     po = AdminRest.CouponUpdateRest()
     return po.postWrapper(*args,**kwargs)
+
+@admin.route('/admin/customers/list', methods=['POST'])
+@token_required
+@swag_from(docs_dir + 'admin_office_list.yaml')
+def customerslist(*args, **kwargs):
+    po = AdminRest.CustomersListRest()
+    return po.postWrapper(*args,**kwargs)
+
+@admin.route('/admin/customers/update', methods=['POST'])
+@token_required
+@swag_from(docs_dir + 'admin_office_list.yaml')
+def customersupdate(*args, **kwargs):
+    po = AdminRest.CustomersUpdateRest()
+    return po.postWrapper(*args,**kwargs)

@@ -28,6 +28,7 @@ import MyHealthBilling from '../../pain/myhealth/MyHealthBilling';
 import Search from '../../pain/search/Search';
 import SearchAdmin from '../../pain/admin/SearchAdmin';
 import Dashboard from '../../pain/dashboard/Dashboard';
+import ClientList from '../../pain/admin/ClientList';
 import LegalAdmin from '../../pain/admin/LegalAdmin';
 import CommissionAdminList from '../../pain/admin/CommissionAdminList';
 import CouponAdminList from '../../pain/admin/CouponAdminList';
@@ -131,6 +132,7 @@ class Layout extends React.Component {
                     <Route path="/app/main/admin/commissions" exact component={CommissionAdminList} />
                     <Route path="/app/main/admin/coupons" exact component={CouponAdminList} />
                     <Route path="/app/main/admin/onepage" exact component={OnePager} />
+                    <Route path="/app/main/admin/customers" exact component={ClientList} />
                     <Route path="/app/main/admin/office" exact component={OfficeAdmin} />
                     <Route path="/app/main/admin/office/:id" exact component={OfficeAdmin} />
                     <Route path="/app/main/admin/registrations" exact component={Registrations} />
