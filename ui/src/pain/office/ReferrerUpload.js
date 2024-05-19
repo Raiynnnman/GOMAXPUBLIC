@@ -23,6 +23,8 @@ class ReferrerUpload extends Component {
         super(props);
         this.state = { 
             activeTab: "upload",
+            tarea:'',
+            error_message:null,
             clients:[],
             current:{
                 'name':'',
@@ -34,6 +36,7 @@ class ReferrerUpload extends Component {
             uploadFile:null
         }
         this.toggleTab = this.toggleTab.bind(this);
+        this.setValue = this.setValue.bind(this);
         this.cancel = this.cancel.bind(this);
         this.valueChange = this.valueChange.bind(this);
         this.addRow = this.addRow.bind(this);
@@ -43,6 +46,11 @@ class ReferrerUpload extends Component {
 
     componentWillReceiveProps(p) { 
     }
+
+    setValue(e,t) { 
+        this.state.tarea = e.target.value;
+        this.setState(this.state)
+    } 
 
     addRow() { 
         this.state.clients.push(this.state.current);
@@ -66,6 +74,7 @@ class ReferrerUpload extends Component {
     cancel() { 
         this.state.clients = [];
         this.state.uploadFile = null;
+        this.state.tarea = '';
         this.setState(this.state);
     } 
 
@@ -95,6 +104,11 @@ class ReferrerUpload extends Component {
     save() { 
         if (this.state.uploadFile !== null ) { 
             this.props.dispatch(referrerSave(this.state.uploadFile,function(err,args) { 
+                  if (err && err.message) { 
+                    args.state.error_message = err.message;
+                    args.setState(args);
+                    return;
+                  } 
                   toast.success('Successfully saved clients.',
                     {
                         position:"top-right",
@@ -105,7 +119,12 @@ class ReferrerUpload extends Component {
                   args.cancel()
                 },this));
         } else { 
-            this.props.dispatch(referrerSave({clients:this.state.clients},function(err,args) { 
+            this.props.dispatch(referrerSave({client:this.state.tarea},function(err,args) { 
+                  if (err && err.message) { 
+                    args.state.error_message = err.message;
+                    args.setState(args);
+                    return;
+                  } 
                   toast.success('Successfully saved clients.',
                     {
                         position:"top-right",
@@ -177,133 +196,43 @@ class ReferrerUpload extends Component {
                     </Nav>
                     <TabContent className='mb-lg' activeTab={this.state.activeTab}>
                         <TabPane tabId="upload">
+                            {(this.state.error_message) && (
+                            <Row md="12" xs="12" style={{marginTop:20}}>
+                                <Col md="12">
+                                    <font style={{color:'red'}}>{this.state.error_message}</font>       
+                                </Col>
+                            </Row>
+                            )}
                             <>
+                            {/*
+                                <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                                    <h4>Use this <a style={{color:'blue'}} href='/referral_upload.xlsx' target="_blank">template</a> to upload, or details enter below.</h4>
+                                </div>
+                                <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                                    <InputGroup style={{width:200}} className="fileinput fileinput-new">
+                                      <input
+                                        onChange={this.onChangeInputFiles}
+                                        id="fileupload1"
+                                        type="file" name="file" className="display-none"
+                                      />
+                                    </InputGroup>
+                                </div>
+                                <hr/>
+                            */}
+                            <Row md="12" xs="12" style={{marginTop:20}}>
+                                <Col md="12">
+                                    <TextareaAutosize
+                                      rows={5} style={{backgroundColor:'white'}}
+                                      placeholder=""
+                                      onChange={this.setValue} value={this.state.tarea}
+                                      className={`form-control ${s.autogrow} transition-height`}
+                                    />
+                                </Col>
+                            </Row>
+                            </>
                             <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'start'}}>
                                 <Button color="primary" onClick={this.save}>Save</Button>
                             </div>
-                            <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                                <h4>Use this <a href='/referral_upload.xlsx' target="_blank">template</a> to upload, or details enter below.</h4>
-                            </div>
-                            <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                                <InputGroup style={{width:200}} className="fileinput fileinput-new">
-                                  <input
-                                    onChange={this.onChangeInputFiles}
-                                    id="fileupload1"
-                                    type="file" name="file" className="display-none"
-                                  />
-                                </InputGroup>
-                            </div>
-                            <hr/>
-                            <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                                <div style={{width:1500}}>
-                                    <table style={{width:"100%"}}>
-                                        <tr style={{borderBottom:'1px solid black'}}>
-                                        {heads.map((e) => { 
-                                            return (
-                                                <th style={{width:e.width}}>{e.text}</th>
-                                            )
-                                        })}
-                                        </tr>
-                                        <tr style={{borderBottom:'1px solid black'}}>
-                                        {heads.map((e) => { 
-                                            if (e.type === 'text') { 
-                                                return (
-                                                    <td style={{width:e.width}}>
-                                                        <input className="form-control no-border" style={{backgroundColor:'white'}} 
-                                                            value={this.state.current[e.dataField]} 
-                                                            onChange={(g) => this.valueChange(e,g)} required name="name" placeholder={e.text} />
-                                                    </td>
-                                                )
-                                            }
-                                            if (e.type === 'zipcode') { 
-                                                return (
-                                                    <td style={{width:e.width}}>
-                                                        <MaskedInput style={{backgroundColor:'white',border:'0px solid white'}}
-                                                          className="form-control" mask="11111"
-                                                          onChange={(g) => this.valueChange(e,g)} 
-                                                          value={this.state.current[e.dataField]} 
-                                                          size="10"
-                                                        />
-                                                    </td>
-                                                )
-                                            }
-                                            if (e.type === 'phone') { 
-                                                return (
-                                                    <td style={{width:e.width}}>
-                                                        <MaskedInput style={{backgroundColor:'white',border:'0px solid white'}}
-                                                          className="form-control" id="mask-phone" mask="(111) 111-1111"
-                                                          onChange={(g) => this.valueChange(e,g)} 
-                                                          value={this.state.current[e.dataField]} 
-                                                          size="10"
-                                                        />
-                                                    </td>
-                                                )
-                                            }
-                                            if (e.type === 'action') {
-                                                return (
-                                                    <td style={{width:e.width}}>
-                                                    <Button color="primary" onClick={this.addRow}><SaveIcon/></Button>
-                                                    </td>
-                                                )
-                                            }
-                                            if (e.type === 'textfield') {
-                                                return (
-                                                    <td style={{width:e.width}}>
-                                                    <TextareaAutosize
-                                                      rows={2} style={{backgroundColor:'white'}}
-                                                      placeholder=""
-                                                      onChange={(g) => this.valueChange(e,g)} 
-                                                      value={this.state.current[e.dataField]} 
-                                                      className={`form-control ${s.autogrow} transition-height`}
-                                                    />
-                                                    </td>
-                                                )
-                                            }
-                                        })}
-                                        </tr>
-                                        {this.state.clients.map((e) => {
-                                            return (
-                                            <tr style={{borderBottom:'1px solid black'}}>
-                                                {heads.map((g) => { 
-                                                    return (
-                                                    <>
-                                                    {g.type === 'text' && (
-                                                        <td style={{width:g.width}}>
-                                                            <input className="form-control no-border" style={{backgroundColor:'white'}} value={e[g['dataField']]} 
-                                                               placeholder="" />
-                                                        </td>
-                                                    )}
-                                                    {g.type === 'zipcode' && (
-                                                        <td style={{width:g.width}}>
-                                                            <input className="form-control no-border" style={{backgroundColor:'white'}} value={e[g['dataField']]} 
-                                                               placeholder="" />
-                                                        </td>
-                                                    )}
-                                                    {g.type === 'phone' && (
-                                                        <td style={{width:g.width}}>
-                                                            <input className="form-control no-border" style={{backgroundColor:'white'}} value={e[g['dataField']]} 
-                                                               placeholder="" />
-                                                        </td>
-                                                    )}
-                                                    {g.type === 'textfield' && (
-                                                        <td style={{width:g.width}}>
-                                                            <TextareaAutosize
-                                                              rows={2} style={{backgroundColor:'white'}}
-                                                              placeholder=""
-                                                              value={e[g['dataField']]} 
-                                                              className={`form-control ${s.autogrow} transition-height`}
-                                                            />
-                                                        </td>
-                                                    )}
-                                                    </>
-                                                )})}
-                                            </tr>
-                                            )
-                                        })}
-                                    </table>
-                                </div>
-                            </div>
-                            </>
                         </TabPane>
                     </TabContent>
                 </Col>                

@@ -16,6 +16,16 @@ class ProcessingBase:
         ret = o[0]['billing_system_id']
         return ret
 
+    def getLanguages(self):
+        db = Query()
+        ret = {}
+        o = db.query("select id,name from languages")
+        for x in o:
+            n = x['name']
+            i = x['id']
+            ret[n] = i
+        return ret 
+
     def getReferrerUserStatus(self):
         db = Query()
         ret = {}

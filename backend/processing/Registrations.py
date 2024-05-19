@@ -474,6 +474,10 @@ class RegisterProvider(RegistrationsBase):
             off_id = db.query("select LAST_INSERT_ID()");
             off_id = off_id[0]['LAST_INSERT_ID()']
             db.update("""
+                insert into office_languages (office_id,languages_id) values (%s,1)
+                """,(off_id,)
+            )
+            db.update("""
                 insert into office_history(office_id,user_id,text) values (
                     %s,1,'Created (Registration)'
                 )
@@ -1207,6 +1211,10 @@ class RegisterReferrer(RegistrationsBase):
         if config.getKey("appt_email_override") is not None:
             email = config.getKey("appt_email_override")
         m = Mail()
+        data['__OFFICE_NAME__'] = params['name']
+        data['__OFFICE_URL__'] = "%s/#/app/main/admin/office/%s" % (url,insid)
+        sysemail = config.getKey("support_email")
         m.defer(email,"Registration with #PAIN","templates/mail/registration-verification.html",data)
+        m.defer(sysemail,"New Referrer Signed Up","templates/mail/office-signup.html",data)
         db.commit()
         return ret

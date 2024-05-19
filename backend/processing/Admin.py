@@ -2,6 +2,7 @@
 
 import sys
 import os
+import pyap
 import json
 import unittest
 import traceback
@@ -9,6 +10,7 @@ import base64
 import jwt
 import pandas as pd
 from io import StringIO
+from nameparser import HumanName
 
 sys.path.append(os.path.realpath(os.curdir))
 
@@ -1907,82 +1909,101 @@ class AdminBookingRegister(AdminBase):
         ret = {}
         job,user,off_id,params = self.getArgs(*args,**kwargs)
         db = Query()
-        inputs = [
-                {'l':'Description of accident','f':'description','t':'textfield','v':''},
-                {'l':'Hospital','f':'hospital','t':'checkbox','v':0},
-                {'l':'Ambulance','f':'ambulance','t':'checkbox','v':0},
-                {'l':'Witnesses','f':'witnesses','t':'textfield','v':''},
-                {'l':'Reporting Law Enforment Agency','f':'rep_law_enforcement','t':'text','v':''},
-                {'l':'Police Report #','f':'police_report_num','t':'text','v':''},
-                {'l':'Citations','f':'citations','t':'text','v':''},
-                {'l':'Who was cited','f':'citations_person','t':'text','v':''},
-                {'l':'Pics of damage','f':'pics_of_damage','t':'checkbox','v':0},
-                {'l':'Passengers in Vehicle','f':'passengers','t':'textfield','v':''},
-                {'l':'Def Insurance Info','f':'def_insurance','t':'text','v':''},
-                {'l':'Claim #/Policy #','f':'def_claim_num','t':'text','v':''},
-                {'l':'Def Name#','f':'def_name','t':'text','v':''},
-                {'l':'PIP Insurance Info','f':'ins_info','t':'text','v':''},
-                {'l':'Claim #/Policy #','f':'ins_claim_num','t':'text','v':''},
-                {'l':'Policy Holder','f':'ins_policy_holder','t':'text','v':''},
-              ]
-        user_id = 0
-        l = db.query("select id from users where email = %s",(params['email'].lower(),))
-        for x in l:
-            user_id = x['id']
-        if user_id == 0:
-            n = params['name'].split(' ')
-            f = n[0] 
-            l = ''
-            if len(n) > 1:
-                l = n[1] 
-            db.update("""
-                insert into users (email, first_name, last_name, phone ) values (%s,%s,%s,%s)
-                """,(params['email'],f,l,params['phone'])
+        print(params)
+        if 'value' not in params:
+            return {'success': False,'message': 'DATA_REQUIRED'}
+        inputs = ['name','phone','email','doa','address','attny','language']
+        tosave = {}
+        line = 0
+        LANG = self.getLanguages()
+        try: 
+            j = params['value'].split('\n')
+            print(j)
+            for x in j:
+                if ':' not in x:
+                    continue
+                i = x.split(':')
+                if len(i) < 2:
+                    continue
+                key = i[0]
+                value = i[1]
+                key = key.lower()
+                tosave[key] = value.rstrip().lstrip()
+                line += 1 
+            print(tosave)
+            if 'address' not in tosave:
+                return {'success': False,'message': 'ADDRESS_REQUIRED'}
+            addr = pyap.parse(tosave['address'],country='US')
+            parsed_address = addr[0]
+            street = parsed_address.street_number + " " + parsed_address.street_name
+            city = parsed_address.city
+            state = parsed_address.region1
+            postal_code = parsed_address.postal_code
+            tosave['addr1'] = street
+            tosave['city'] = city
+            tosave['state'] = state
+            tosave['zipcode'] = postal_code
+            if 'language' not in tosave:
+                tosave['language'] = LANG['English']
+            else:
+                tosave['language'] = LANG[tosave['language']]
+            tosave['fulladdr'] = tosave['address'] 
+            del tosave['address']
+
+            sha256 = encryption.getSHA256(json.dumps(tosave,sort_keys=True))
+            have = db.query("""
+                select id from client_intake where sha256=%s
+                """,(sha256,)
             )
-            user_id = db.query("select LAST_INSERT_ID()");
-            user_id = user_id[0]['LAST_INSERT_ID()']
-            db.update("""
-                insert into user_addresses (user_id,addr1,city,state,places_id,fulladdr)
-                    values (%s,%s,%s,%s,%s,%s)
-                """,(
-                    user_id,
-                    params['address']['addr1'],
-                    params['address']['city'],
-                    params['address']['state'],
-                    params['address']['places_id'],
-                    params['address']['fulladdr']
-                    )
-            )
-        if 'id' in params:
-            # Update here
-            pass
-        else:
-            fields = [
-                'user_id'
-            ]
-            values = [
-                user_id
-            ]
-            for x in inputs:
-                fields.append(x['f'])
-                if x['f'] not in params:
-                    params[x['f']] = ''
-                values.append(params[x['f']])
-            q = 'insert into client_intake (' + ','.join(fields) + ') values ('
-            for n in range(len(fields)):
-                q += '%s,'
-            q = q[:len(q)-1]
-            q += ' ) '
-            db.update(q,values)
-            ci_id = db.query("select LAST_INSERT_ID()");
-            ci_id = ci_id[0]['LAST_INSERT_ID()']
-            db.update("""
-                insert into client_intake_offices (client_intake_id,office_id,phy_id) 
-                    values(%s,%s,%s)
-                """,(ci_id,params['office_id'],params['phy_id'])
-            )
-        db.commit()
-        return ret
+
+            if len(have) > 0:
+                return {'success': False,'message': 'RECORD_ALREADY_EXISTS'}
+
+            user_id = 0
+            l = db.query("select id from users where email = %s",(tosave['email'].lower(),))
+            for x in l:
+                user_id = x['id']
+            if user_id == 0:
+                t1 = HumanName(tosave['name'])
+                first = "%s %s" % (t1.title,t1.first)
+                last = "%s %s" % (t1.last,t1.suffix)
+                db.update("""
+                    insert into users (email, first_name, last_name, phone ) values (%s,%s,%s,%s)
+                    """,(tosave['email'],first,last,tosave['phone'])
+                )
+                user_id = db.query("select LAST_INSERT_ID()");
+                user_id = user_id[0]['LAST_INSERT_ID()']
+                db.update("""
+                    insert into user_addresses (user_id,addr1,city,state,zipcode,fulladdr)
+                        values (%s,%s,%s,%s,%s,%s)
+                    """,(
+                        user_id,
+                        tosave['addr1'],
+                        tosave['city'],
+                        tosave['state'],
+                        tosave['zipcode'],
+                        tosave['fulladdr']
+                        )
+                )
+                db.update("""
+                    insert into client_intake 
+                        (user_id,date_of_accident,attny_name,languages_id,sha256,office_type_id) 
+                        values (%s,%s,%s,%s,%s,%s)
+                    """,(user_id,tosave['doa'],tosave['attny'],tosave['language'],sha256,params['office_type_id'])
+                )
+                ci = db.query("select LAST_INSERT_ID()")
+                ci = ci[0]['LAST_INSERT_ID()']
+                if 'office_id' in params:
+                    db.update("""
+                        insert into client_intake_offices(client_intake_id,office_id) values (%s,%s)
+                    """,(ci,params['office_id'])
+                )
+                db.commit()
+        except Exception as e:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
+            return {'success': False,'message': 'Error on line %s: %s' % (line,str(e))}
+        return {'success': True}
 
 class ReferrerList(AdminBase):
 

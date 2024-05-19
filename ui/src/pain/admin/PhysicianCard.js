@@ -213,9 +213,11 @@ class PhysicianCard extends Component {
                     </Row>
                     <Row md="12">
                         <Col md="12">
-                            {this.props.provider.addr.city ? this.props.provider.addr.city : ''},&nbsp;
-                            {this.props.provider.addr.state? this.props.provider.addr.state:''}&nbsp;
-                            {this.props.provider.addr.zipcode ? this.props.provider.addr.zipcode : ''}
+                            <div style={{display:'flex',alignContent:'center',justifyContent:'start'}}>
+                                {this.props.provider.addr.city ? this.props.provider.addr.city : ''},&nbsp;
+                                {this.props.provider.addr.state? this.props.provider.addr.state:''}&nbsp;
+                                {this.props.provider.addr.zipcode ? this.props.provider.addr.zipcode : ''}
+                            </div>
                         </Col> 
                     </Row>
                     <Row md="12">

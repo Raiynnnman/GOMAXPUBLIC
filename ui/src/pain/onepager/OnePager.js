@@ -40,7 +40,6 @@ class OnePager extends Component {
     }
 
     render() {
-        console.log("p",this.props);
         return (
         <>
             <Row md="12" style={{margin:0,height:400}}>

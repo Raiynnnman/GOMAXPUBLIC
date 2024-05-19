@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import SavedSearchIcon from '@mui/icons-material/SavedSearch';
+import { toast } from 'react-toastify';
 import { push } from 'connected-react-router';
 import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
 import { Col, Row } from 'reactstrap';
@@ -37,7 +38,9 @@ class SearchAdmin extends Component {
             selected:0,
             geo: false,
             selectedProcedure:0,
+            error_message:null,
             selectedProvider:null,
+            selectedProviderType:null,
             selectedAppt:null,
             apptBooked:false,
             error:'',
@@ -87,7 +90,8 @@ class SearchAdmin extends Component {
         this.setState(this.state);
         if (this.state.zipcode.length === 5) { 
             this.props.dispatch(getProviderSearchAdmin(
-                {type:this.state.selectedProvider,
+                {type:this.state.selectedProviderType,
+                 all:true,
                  zipcode:this.state.zipcode
                 }
             ))
@@ -114,10 +118,10 @@ class SearchAdmin extends Component {
     }
 
     setProviderType(e) { 
-        this.state.selectedProvider = e;
+        this.state.selectedProviderType = e;
         this.setState(this.state);
         this.props.dispatch(getProviderSearchAdmin(
-            {type:this.state.selectedProvider,
+            {type:this.state.selectedProviderType,
              location:this.state.mylocation
         }))
     } 
@@ -129,15 +133,23 @@ class SearchAdmin extends Component {
 
     cancel() { 
         this.state.selectedAppt = null;
+        this.state.selectedProviderType = null;
+        this.state.provider = null;
+        this.state.error_message = null;
         this.setState(this.state);
     } 
 
     register(e,d) { 
         var params = e;
-        params.phy_id = d.phy_id;
-        params.office_id = d.office_id;
+        params.office_type_id = this.state.selectedProviderType;
+        params.office_id = this.state.selectedAppt.id;
         this.props.dispatch(searchRegisterAdmin(params,function(err,args) { 
-              toast.success('Successfully saved booking.',
+              if (err && err.message) { 
+                args.state.error_message = err.message;
+                args.setState(args);
+                return;
+              } 
+              toast.success('Successfully saved user to queue.',
                 {
                     position:"top-right",
                     autoClose:3000,
@@ -145,7 +157,7 @@ class SearchAdmin extends Component {
                 }
               );
               args.cancel()
-            }))
+            },this));
     } 
     setLocation(lat,lon) {
         this.state.mylocation={lat:lat,lon:lon}
@@ -187,7 +199,8 @@ class SearchAdmin extends Component {
         }
         var params = { 
             procedure:this.state.selectedProcedure,
-            'location':this.state.mylocation,
+            location:this.state.mylocation,
+            all:true,
             selected: this.state.selected,
             zipcode: this.state.zipcode
         } 
@@ -234,7 +247,7 @@ class SearchAdmin extends Component {
                     <h5>Use the zipcode box to find providers. Book an appointment in minutes.</h5>
                 </div>
             )}
-            {(Login.isAuthenticated() && this.state.selectedProvider !== null) && ( 
+            {(Login.isAuthenticated() && this.state.selectedProviderType !== null) && ( 
                 <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                     <div className="form-group mb-0">
                         <input className="form-control no-border" value={this.state.zipcode} onChange={this.changeZip} required name="zip" placeholder="Zip" />
@@ -273,7 +286,7 @@ class SearchAdmin extends Component {
             </Row>
             )}
             {(this.props.searchConfig && this.props.searchConfig.data && this.props.searchConfig.data.types && 
-              this.state.selectedProvider === null) && ( 
+              this.state.selectedProviderType === null) && ( 
                 <Row md="12" style={{marginTop:20}}>
                     {this.props.searchConfig.data.types.map((e) => { 
                         return (
@@ -322,7 +335,7 @@ class SearchAdmin extends Component {
             {(this.state.selectedAppt !== null) && (
                 <Row md="12">
                     <Col md="12">
-                        <UserRegistration data={this.state.selectedAppt} onCancel={this.cancel} onRegister={this.register}/>
+                        <UserRegistration error_message={this.state.error_message} data={this.state.selectedAppt} onCancel={this.cancel} onRegister={this.register}/>
                     </Col>
                 </Row>
             )}

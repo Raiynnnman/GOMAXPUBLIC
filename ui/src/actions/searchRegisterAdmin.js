@@ -24,13 +24,13 @@ export function receiveDataSuccess(payload) {
     }
 }
 
-export function searchRegisterAdmin(params) { 
+export function searchRegisterAdmin(params,callback,args) { 
   return async (dispatch) => {
-    dispatch(receivingData(params));
+    dispatch(receivingData(params,callback,args));
   };
 } 
 
-export function receivingData(params) {
+export function receivingData(params,callback,args) {
   return async (dispatch) => {
     dispatch({
         type: RECEIVING_SRA_DATA
@@ -48,6 +48,13 @@ export function receivingData(params) {
                 type: RECEIVED_SRA_DATA_SUCCESS,
                 payload: e.data.data
             });
+          if (callback) {
+            if (!e.data.data.success) {
+                callback(e.data.data,args);
+            } else {
+                callback(null,args,e.data.data);
+            }
+          }
       })
       .catch((e) => { 
         handleError(e);

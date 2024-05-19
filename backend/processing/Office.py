@@ -2,8 +2,11 @@
 
 import sys
 import os
+import traceback
+import pyap
 import base64
 import json
+from nameparser import HumanName
 import unittest
 import jwt
 import pandas as pd
@@ -543,9 +546,10 @@ class ReferrerUpdate(OfficeBase):
         super().__init__()
 
     def isDeferred(self):
-        return True
+        return False
 
-    def processRow(self,office_id,row,docid,db):
+    def processRow(self,office_id,row,docid,sha,db):
+        REF=self.getReferrerUserStatus()
         o = db.query("""
             select id from referrer_users where
                 office_id = %s and phone = %s 
@@ -557,9 +561,9 @@ class ReferrerUpdate(OfficeBase):
             return
         db.update("""
             insert into referrer_users 
-                (referrer_id,referrer_users_status_id,referrer_documents_id,row_meta) 
-                values (%s,1,%s,%s)
-            """,(office_id,docid,json.dumps(row))
+                (referrer_id,referrer_users_status_id,referrer_documents_id,row_meta,sha256) 
+                values (%s,%s,%s,%s,%s)
+            """,(office_id,REF['QUEUED'],docid,json.dumps(row),sha)
         )
         insid = db.query("select LAST_INSERT_ID()");
         insid = insid[0]['LAST_INSERT_ID()']
@@ -577,6 +581,11 @@ class ReferrerUpdate(OfficeBase):
             db.update("""
                 update referrer_users set phone=%s where id = %s
                 """,(row['phone'],insid)
+            )
+        if 'user_id' in row:
+            db.update("""
+                update referrer_users set phone=%s where id = %s
+                """,(row['user_id'],insid)
             )
         if 'zipcode' in row:
             lat = lon = 0 
@@ -601,6 +610,7 @@ class ReferrerUpdate(OfficeBase):
             off_id,
             encryption.getSHA256("%s-%s" % (off_id,calcdate.getTimestampUTC()))
         )
+        print(params)
         ext = '.json'
         if 'content' in params:
             data = params['content'].split('base64,')
@@ -629,7 +639,7 @@ class ReferrerUpdate(OfficeBase):
             df.columns = [x.lower() for x in df.columns]
             df = df.to_dict(orient='index')
             for x in df:
-                self.processRow(off_id,df[x],insid,db)
+                self.processRow(off_id,df[x],insid,sha,db)
         else:
             path = '%s%s' % (s3path,ext)
             q=db.update("""
@@ -645,10 +655,91 @@ class ReferrerUpdate(OfficeBase):
                 config.getKey("document_bucket"),
                 path,
                 "application/json",
-                json.dumps(params['clients'])
+                json.dumps(params['client'])
             )
-            for x in params['clients']:
-                self.processRow(off_id,x,insid,db)
+            if 'client' not in params:
+                return {'success': False,'message': 'DATA_REQUIRED'}
+            inputs = ['name','phone','email','doa','address','attny','language']
+            tosave = {}
+            line = 0
+            LANG = self.getLanguages()
+            try: 
+                j = params['client'].split('\n')
+                print(j)
+                for x in j:
+                    if ':' not in x:
+                        continue
+                    i = x.split(':')
+                    if len(i) < 2:
+                        continue
+                    key = i[0]
+                    value = i[1]
+                    key = key.lower()
+                    tosave[key] = value.rstrip().lstrip()
+                    line += 1 
+                print(tosave)
+                if 'address' not in tosave:
+                    return {'success': False,'message': 'ADDRESS_REQUIRED'}
+                addr = pyap.parse(tosave['address'],country='US')
+                parsed_address = addr[0]
+                street = parsed_address.street_number + " " + parsed_address.street_name
+                city = parsed_address.city
+                state = parsed_address.region1
+                postal_code = parsed_address.postal_code
+                tosave['addr1'] = street
+                tosave['city'] = city
+                tosave['state'] = state
+                tosave['zipcode'] = postal_code
+                if 'language' not in tosave:
+                    tosave['language'] = LANG['English']
+                else:
+                    tosave['language'] = LANG[tosave['language']]
+                tosave['fulladdr'] = tosave['address'] 
+                del tosave['address']
+
+                sha256 = encryption.getSHA256(json.dumps(tosave,sort_keys=True))
+                have = db.query("""
+                    select id from client_intake where sha256=%s
+                    UNION ALL
+                    select id from referrer_users where sha256=%s
+                    """,(sha256,sha256)
+                )
+
+                if len(have) > 0:
+                    return {'success': False,'message': 'RECORD_ALREADY_EXISTS'}
+
+                user_id = 0
+                l = db.query("select id from users where email = %s",(tosave['email'].lower(),))
+                for x in l:
+                    user_id = x['id']
+                if user_id == 0:
+                    t1 = HumanName(tosave['name'])
+                    first = "%s %s" % (t1.title,t1.first)
+                    last = "%s %s" % (t1.last,t1.suffix)
+                    db.update("""
+                        insert into users (email, first_name, last_name, phone ) values (%s,%s,%s,%s)
+                        """,(tosave['email'],first,last,tosave['phone'])
+                    )
+                    user_id = db.query("select LAST_INSERT_ID()");
+                    user_id = user_id[0]['LAST_INSERT_ID()']
+                    tosave['user_id'] = user_id
+                    db.update("""
+                        insert into user_addresses (user_id,addr1,city,state,zipcode,fulladdr)
+                            values (%s,%s,%s,%s,%s,%s)
+                        """,(
+                            user_id,
+                            tosave['addr1'],
+                            tosave['city'],
+                            tosave['state'],
+                            tosave['zipcode'],
+                            tosave['fulladdr']
+                            )
+                    )
+                    self.processRow(off_id,tosave,insid,sha256,db)
+            except Exception as e:
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
+                return {'success': False,'message': 'Error on line %s: %s' % (line,str(e))}
         db.commit()
         ret['success'] = True
         return ret
@@ -669,12 +760,13 @@ class LocationUpdate(OfficeBase):
         if 'id' in params:
             db.update("""
                 update office_addresses set name = %s,
-                    addr1=%s,city=%s,state=%s,zipcode=%s,phone=%s,
+                    addr1=%s,addr2=%s,city=%s,state=%s,zipcode=%s,phone=%s,
                     lat=0,lon=0,places_id=null,lat_attempt_count=0,
                     nextcheck=null
                     where id = %s
                 """,(params['name'],
                      params['addr1'],
+                     params['addr2'],
                      params['city'],
                      params['state'],
                      params['zipcode'],
@@ -684,10 +776,11 @@ class LocationUpdate(OfficeBase):
         else:
             db.update("""
                 insert into office_addresses (
-                    office_id,name,addr1,city,state,zipcode,phone,full_addr)
-                    values (%s,%s,%s,%s,%s,%s,%s,%s)
+                    office_id,name,addr1,addr2,city,state,zipcode,phone,full_addr)
+                    values (%s,%s,%s,%s,%s,%s,%s,%s,%s)
                 """,(off_id,params['name'],
                      params['addr1'],
+                     params['addr2'],
                      params['city'],
                      params['state'],
                      params['zipcode'],
@@ -714,7 +807,8 @@ class LocationList(OfficeBase):
         db = Query()
         o = db.query("""
             select 
-                oa.id,oa.name,oa.phone,oa.addr1,oa.city,oa.state,oa.zipcode,
+                oa.id,oa.name,oa.phone,oa.addr1,oa.addr2,
+                    oa.city,oa.state,oa.zipcode,
                     oa.lat as lat, oa.lon as lng
             from 
                 office_addresses oa

@@ -207,6 +207,25 @@ class LocationCard extends Component {
                         <>
                             {(this.props.edit && this.state.selected !== null) && (
                                 <div> 
+                                Address 2: 
+                                <input className="form-control no-border" style={{border:'1px solid black',backgroundColor:'white'}} 
+                                    value={this.state.selected.addr2} onChange={(e) => this.changeValue('addr2',e)} 
+                                    required placeholder="Address 2" />
+                                </div>
+                            )}
+                            {(!this.props.edit) && (
+                                <div>
+                                Phone: {this.props.provider.addr2} 
+                                </div>
+                            )}
+                        </>
+                        </Col>
+                    </Row>
+                    <Row md="12" style={{marginTop:20}}>
+                        <Col md="12">
+                        <>
+                            {(this.props.edit && this.state.selected !== null) && (
+                                <div> 
                                 Phone: 
                                 <input className="form-control no-border" style={{border:'1px solid black',backgroundColor:'white'}} 
                                     value={this.state.selected.phone} onChange={(e) => this.changeValue('phone',e)} 

@@ -128,8 +128,10 @@ class SearchGet(SearchBase):
         #        st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192 < 50 
         #    """,(lon,lat,lon,lat))
         #log.debug("dist=%s" % o)
-        # print(params,lat,lon)
         IDS = []
+        limit = 10
+        if 'all' in params and params['all']:
+            limit = 10000
         o = db.query("""
             select
                 oa.id,o.id as office_id,
@@ -154,8 +156,8 @@ class SearchGet(SearchBase):
             order by
                 pq.provider_queue_status_id, 
                 round(st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192,2) 
-            limit 10
-            """,(lon,lat,lon,lat,provtype,lon,lat)
+            limit %s
+            """,(lon,lat,lon,lat,provtype,lon,lat,limit)
         )
         for x in o:
             x['addr'] = json.loads(x['addr'])
