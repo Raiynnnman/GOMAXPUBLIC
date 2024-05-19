@@ -91,3 +91,9 @@ def locationlist(*args, **kwargs):
 def locationupdate(*args, **kwargs):
     po = OfficeRest.LocationUpdateRest()
     return po.postWrapper(*args,**kwargs)
+
+@office_set.route('/office/referral/update', methods=['POST'])
+@swag_from(docs_dir + 'office_users_update.yaml')
+def referralupdate(*args, **kwargs):
+    po = OfficeRest.ReferralUpdateRest()
+    return po.postWrapper(*args,**kwargs)

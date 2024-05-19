@@ -22,6 +22,7 @@ from processing.Audit import Audit
 from common.DataException import DataException
 from common.InvalidCredentials import InvalidCredentials
 from util.Permissions import check_office
+from util.Mail import Mail
 
 log = Logging()
 config = settings.config()
@@ -530,7 +531,7 @@ class ReferrerDashboard(OfficeBase):
                     referrer_id = %s and
                     ci.referrer_users_status_id = rus.id 
                     and ci.referrer_users_status_id=%s) as t4
-            """,(off_id,off_id,off_id,off_id,CI['REFERRED']))
+            """,(off_id,off_id,off_id,off_id,CI['ACCEPTED']))
         return o[0]
 
     @check_office
@@ -539,6 +540,117 @@ class ReferrerDashboard(OfficeBase):
         job,user,off_id,params = self.getArgs(*args,**kwargs)
         ret['clients'] = self.getCustomers(off_id)
         return ret
+
+class ReferralUpdate(OfficeBase):
+    def __init__(self):
+        super().__init__()
+
+    def isDeferred(self):
+        return False
+
+    def execute(self, *args, **kwargs):
+        ret = {}
+        print(args,kwargs)
+        if len(args) < 2:
+            return {'success': False, 'message': 'TOKEN_MISSING'}
+        js = args[1]
+        if len(js) < 1:
+            return {'success': False, 'message': 'TOKEN_INVALID_FORMAT'}
+        js = js[0]
+        print(js)
+        if 'token' not in js:
+            return {'success': False, 'message': 'TOKEN_REQUIRED'}
+        db = Query()
+        token = js['token']
+        REF = self.getReferrerUserStatus()
+        try:
+            token = base64.b64decode(token.encode('utf-8'))
+            myjson = encryption.decrypt(token,config.getKey("encryption_key"))
+            myjson = json.loads(myjson)
+            o = myjson['o']
+            r = myjson['i']
+            q = db.query("""
+                select 
+                    ru.id,ru.referrer_users_status_id,ru.email,ru.name,ru.phone,
+                    zipcode,rus.name as status,ru.user_id,ru.doa,ru.office_id
+                 from 
+                    referrer_users ru,
+                    referrer_users_status rus
+                where 
+                    rus.id = ru.referrer_users_status_id and
+                    ru.id = %s
+                """,(r,)
+            )
+            if len(q) < 1:
+                return {'success': False, 'message': 'REFERRAL_DOESNT_EXIST'}
+            q = q[0]
+            if q['referrer_users_status_id'] != REF['QUEUED']:
+                return {'success': False, 'message': 'ALREADY_ACCEPTED'}
+            if q['office_id'] == o:
+                return {'success': False, 'message': 'OFFICE_ALREADY_ACCEPTED'}
+            print(q)
+            if js['accept']:
+                off = db.query("""select email from office where id=%s""",(o,))
+                if len(off) < 1:
+                    print("ERROR: No office email found for %s" % o)
+                    return {'success': False, 'message': 'NO_EMAIL_FOUND_FOR_PRACTICE'}
+                off = off[0]
+                db.update("""
+                    update referrer_users set 
+                        referrer_users_status_id=%s,office_id=%s 
+                    where
+                        id = %s
+                    """,(REF['ACCEPTED'],o,r)
+                )
+                db.update("""
+                    update referrer_users_queue set 
+                        response_date=now(),
+                        referrer_users_status_id=%s
+                    where referrer_users_id = %s
+                """,(REF['ACCEPTED'],r)
+                )
+                db.update("""
+                    insert into client_intake 
+                        (user_id,date_of_accident) values (%s,%s)
+                    """,(q['user_id'],q['doa'])
+                )
+                clid = db.query("select LAST_INSERT_ID()");
+                clid = clid[0]['LAST_INSERT_ID()']
+                db.update("""
+                    insert into client_intake_offices (client_intake_id,office_id)
+                        values(%s,%s)
+                    """,(clid,o)
+                )
+                email = off['email']
+                url = config.getKey("host_url")
+                data = { 
+                    '__LINK__':"%s/#/login" % (url,),
+                    '__BASE__':url
+                } 
+                if config.getKey("appt_email_override") is not None:
+                    email = config.getKey("appt_email_override")
+                m = Mail()
+                m.defer(email,"Client Acquired with #PAIN","templates/mail/office-appointment.html",data)
+            else:
+                db.update("""
+                    update referrer_users set referrer_status_id=%s where
+                        id = %s
+                    """,(REF['ACCEPTED']),
+                )
+                db.update("""
+                    update referrer_users_queue set 
+                        response_date=now(),
+                        referrer_users_status_id=%s
+                    where id = %s
+                """,(REF['REJECTED'],r)
+                )
+            db.commit()
+        except Exception as e:
+            print(str(e))
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
+            return {'success':False,'message':str(e)}
+        return {'success':False,'message':"ZOMG"}
 
 class ReferrerUpdate(OfficeBase):
 
@@ -600,6 +712,11 @@ class ReferrerUpdate(OfficeBase):
             db.update("""
                 update referrer_users set zipcode=%s,lat=%s,lon=%s where id = %s
                 """,(row['zipcode'],lat,lon,insid)
+            )
+        if 'doa' in row:
+            db.update("""
+                update referrer_users set doa=%s where id = %s
+                """,(row['doa'],insid)
             )
 
     @check_office

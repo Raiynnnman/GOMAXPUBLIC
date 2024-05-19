@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 import auth from './auth';
+import referralResponse from './referralResponse';
 import customersSave from './customersSave';
 import officeLocations from './officeLocations';
 import customers from './customers';
@@ -191,6 +192,7 @@ export default (history) =>
     couponSave,
     customers,
     customersSave,
+    referralResponse,
     registerReferrer,
     userDocumentsUpdate,
     chat,

@@ -7,6 +7,16 @@ def getBillingSystem():
     ret = o[0]['billing_system_id']
     return ret
 
+def getReferrerUserStatus():
+    db = Query()
+    ret = {}
+    o = db.query("select id,name from referrer_users_status")
+    for x in o:
+        n = x['name']
+        i = x['id']
+        ret[n] = i
+    return ret
+
 def getLeadStrength():
     db = Query()
     ret = {}
