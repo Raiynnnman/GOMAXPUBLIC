@@ -27,7 +27,6 @@ class Accept extends React.Component {
     }
 
     componentWillReceiveProps(p) { 
-        console.log("p",this.props);
         if (p.match && p.match.params && p.match.params.id && this.state.accepted === null) { 
         } 
     }
@@ -38,7 +37,6 @@ class Accept extends React.Component {
         tosend.accept = true;
         this.state.token = this.props.match.params.token;
         this.props.dispatch(referralResponse(tosend,function(err,args) { 
-            console.log(err,args);
         },this));
     }
 
@@ -47,8 +45,6 @@ class Accept extends React.Component {
     } 
 
     render() {
-        console.log("p",this.props);
-        console.log("s",this.state);
         return (
             <div style={{backgroundColor:"black",color:"white"}} className="auth-page">
                 <Container>

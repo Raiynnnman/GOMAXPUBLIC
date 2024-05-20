@@ -64,7 +64,6 @@ class Customers extends Component {
     } 
 
     render() {
-        console.log("p",this.props)
         return (
         <>
             {(this.props.officeClient && this.props.officeClient.isReceiving) && (

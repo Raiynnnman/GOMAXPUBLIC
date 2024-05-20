@@ -177,7 +177,6 @@ class ClientList extends Component {
     } 
 
     render() {
-        console.log("p",this.props);
         var heads = [
             {
                 dataField:'id',

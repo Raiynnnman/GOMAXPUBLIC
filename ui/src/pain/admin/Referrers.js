@@ -254,7 +254,6 @@ class Referrers extends Component {
     } 
 
     render() {
-        console.log("p",this.props);
         const pageButtonRenderer = ({
           page,
           currentPage,
