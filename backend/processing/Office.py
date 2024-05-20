@@ -612,8 +612,10 @@ class ReferralUpdate(OfficeBase):
                     update referrer_users_queue set 
                         response_date=now(),
                         referrer_users_status_id=%s
-                    where referrer_users_id = %s
-                """,(REF['ACCEPTED'],r)
+                    where 
+                        referrer_users_id = %s and
+                        office_id = %s
+                """,(REF['ACCEPTED'],r,o)
                 )
                 doa = ''
                 try:
@@ -647,16 +649,13 @@ class ReferralUpdate(OfficeBase):
                 m.defer(email,"Client Acquired with #PAIN","templates/mail/office-appointment.html",data)
             else:
                 db.update("""
-                    update referrer_users set referrer_status_id=%s where
-                        id = %s
-                    """,(r,),
-                )
-                db.update("""
                     update referrer_users_queue set 
                         response_date=now(),
                         referrer_users_status_id=%s
-                    where id = %s
-                """,(REF['REJECTED'],r)
+                    where 
+                        referrer_users_id = %s and
+                        office_id = %s 
+                """,(REF['REJECTED'],r,o)
                 )
             db.commit()
         except Exception as e:

@@ -103,13 +103,14 @@ for x in o:
                 update referrer_users set error_mail_sent = 1 where id = %s
                 """,(x['id'],)
             )
+    DIDSEND = False
     for j in off:
         g = db.query("""
             select id from referrer_users_queue 
             where 
                 office_id=%s and
                 referrer_users_id=%s
-            """,(j['id'],x['id'])
+            """,(j['office_id'],x['id'])
         )
         if len(g) > 0 and not args.force:
             print("Already sent accept email to %s" % j['office_name'])
@@ -132,16 +133,15 @@ for x in o:
         sysemail = config.getKey("support_email")
         m.send(sysemail,"New client from POUNDPAIN","templates/mail/invitation-email.html",data)
         db.update("""
-            insert into referrer_users_queue (referrer_users_id,office_id,accept_mail_sent)
-                values (%s,%s,%s)
-            """,(x['id'],j['office_id'],1)
+            insert into referrer_users_queue (
+                referrer_users_id,office_id,accept_mail_sent,referrer_users_status_id)
+                values (%s,%s,%s,%s)
+            """,(x['id'],j['office_id'],1,REF['QUEUED'])
         )
+
+
     db.update("""
         update referrer_users set nextcheck=date_add(now(),INTERVAL 5 MINUTE) where id = %s
         """,(x['id'],)
     )
     db.commit()
-        
-
-
-
