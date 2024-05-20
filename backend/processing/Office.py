@@ -498,13 +498,13 @@ class ClientUpdate(OfficeBase):
         )
         if params['status_id'] == CI['SCHEDULED']:
             db.update("""
-                update referral_users set referral_users_status_id = %s
+                update referrer_users set referral_users_status_id = %s
                     where client_intake_id = %s
                 """,(REF['SCHEDULED'],params['id'])
             )
         if params['status_id'] == CI['COMPLETED']:
             db.update("""
-                update referral_users set referral_users_status_id = %s
+                update referrer_users set referral_users_status_id = %s
                     where client_intake_id = %s
                 """,(REF['COMPLETED'],params['id'])
             )

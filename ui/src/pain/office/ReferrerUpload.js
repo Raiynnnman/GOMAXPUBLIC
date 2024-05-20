@@ -25,6 +25,7 @@ class ReferrerUpload extends Component {
             activeTab: "upload",
             tarea:'',
             error_message:null,
+            disabled:false,
             clients:[],
             current:{
                 'name':'',
@@ -75,6 +76,8 @@ class ReferrerUpload extends Component {
         this.state.clients = [];
         this.state.uploadFile = null;
         this.state.tarea = '';
+        this.state.error_message = null;
+        this.state.disabled = false;
         this.setState(this.state);
     } 
 
@@ -102,6 +105,8 @@ class ReferrerUpload extends Component {
     }
 
     save() { 
+        this.state.disabled = true;
+        this.setState(this.state);
         if (this.state.uploadFile !== null ) { 
             this.props.dispatch(referrerSave(this.state.uploadFile,function(err,args) { 
                   if (err && err.message) { 
@@ -231,7 +236,7 @@ class ReferrerUpload extends Component {
                             </Row>
                             </>
                             <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'start'}}>
-                                <Button color="primary" onClick={this.save}>Save</Button>
+                                <Button disabled={this.state.disabled} color="primary" onClick={this.save}>Save</Button>
                             </div>
                         </TabPane>
                     </TabContent>
