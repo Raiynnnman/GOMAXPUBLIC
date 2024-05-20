@@ -2104,7 +2104,8 @@ class ReferrerList(AdminBase):
             select 
                 ru.id,ru.email,ru.name,ru.phone,o.name as office_name,ru.referred,
                 ru.referrer_users_status_id, rs.name as status,ru.zipcode,
-                ru.updated,o.id as office_id, ro.name as referrer_name
+                ru.updated,o.id as office_id, ro.name as referrer_name,
+                timestampdiff(minute,ru.created,now()) as time
             from 
                 referrer_users ru
                 left join referrer_users_status rs on ru.referrer_users_status_id=rs.id

@@ -254,6 +254,7 @@ class Referrers extends Component {
     } 
 
     render() {
+        console.log("p",this.props);
         const pageButtonRenderer = ({
           page,
           currentPage,
@@ -327,6 +328,17 @@ class Referrers extends Component {
                 text:'Off Name'
             },
             {
+                dataField:'time',
+                sort:true,
+                align:'center',
+                text:'Minutes',
+                formatter: (cellContent,row) => (
+                    <div>
+                        {row.time + " min"}
+                    </div>
+                )
+            },
+            {
                 dataField:'status',
                 sort:true,
                 align:'center',
@@ -368,7 +380,7 @@ class Referrers extends Component {
                         <NavItem>
                             <NavLink className={classnames({ active: this.state.activeTab === 'referrer' })}
                                 onClick={() => { this.toggleTab('referrer') }}>
-                                <span>{translate('Referrers')}</span>
+                                <span>{translate('Referrals')}</span>
                             </NavLink>
                         </NavItem>
                     </Nav>
