@@ -489,11 +489,25 @@ class ClientUpdate(OfficeBase):
         ret = {}
         job,user,off_id,params = self.getArgs(*args,**kwargs)
         db = Query()
+        REF = self.getReferrerUserStatus()
+        CI = self.getClientIntake()
         db.update("""
             update client_intake set client_intake_status_id = %s
                 where id = %s
             """,(params['status_id'],params['id'])
         )
+        if params['status_id'] == CI['SCHEDULED']:
+            db.update("""
+                update referral_users set referral_users_status_id = %s
+                    where client_intake_id = %s
+                """,(REF['SCHEDULED'],params['id'])
+            )
+        if params['status_id'] == CI['COMPLETED']:
+            db.update("""
+                update referral_users set referral_users_status_id = %s
+                    where client_intake_id = %s
+                """,(REF['COMPLETED'],params['id'])
+            )
         db.commit()
         ret['success'] = True
         return ret
@@ -636,6 +650,10 @@ class ReferralUpdate(OfficeBase):
                         (client_intake_id,office_id,office_addresses_id)
                         values(%s,%s,%s)
                     """,(clid,o,oa)
+                )
+                db.update("""
+                    update referrer_users set client_intake_id=%s where id = %s
+                    """,(clid,r)
                 )
                 email = off['email']
                 url = config.getKey("host_url")

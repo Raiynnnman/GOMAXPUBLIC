@@ -69,8 +69,6 @@ class Referrers extends Component {
             var c = 0;
             var t = [];
             for (c = 0; c < p.referrerAdminList.data.config.status.length; c++) { 
-                if (p.referrerAdminList.data.config.status[c].name === 'SCHEDULED') { continue; }
-                if (p.referrerAdminList.data.config.status[c].name === 'RESCHEDULED') { continue; }
                 t.push(p.referrerAdminList.data.config.status[c].id); 
             } 
             this.state.statusSelected = t;
