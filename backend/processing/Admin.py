@@ -2495,7 +2495,7 @@ class CommissionList(AdminBase):
         """)
         q1 = """
             select 
-                u.id,concat(u.first_name,' ',u.last_name) as name,
+                cus.id,concat(u.first_name,' ',u.last_name) as name,
                 amount,
                 cus.created,
                 i.id as invoice_id,
@@ -2515,7 +2515,7 @@ class CommissionList(AdminBase):
         """
         q2 = """
             select 
-                u.id,concat(u.first_name,' ',u.last_name) as name,
+                cus.id,concat(u.first_name,' ',u.last_name) as name,
                 amount,
                 cus.created,
                 i.id as invoice_id,
@@ -2534,6 +2534,7 @@ class CommissionList(AdminBase):
                 u.id = cus.user_id
         """
         p = []
+        print(params)
         if 'CommissionsAdmin' not in user['entitlements']:
             q1 += ' and cus.user_id = %s ' % user['id']
             q2 += ' and cus.user_id = %s ' % user['id']
@@ -2550,20 +2551,23 @@ class CommissionList(AdminBase):
                 """)
                 p.append(x)
                 p.append(x)
-                p.append(x)
-                p.append(x)
+                # p.append(x)
+                # p.append(x)
             v += " or ".join(a)
             v += ")"
             q1 += v
             q2 += v
-        q = q1 + " UNION ALL " + q2
+        q = q1 # + " UNION ALL " + q2
         cnt = db.query("select count(id) as cnt from (" + q + ") as t",p)
+        q += " order by cus.updated desc "
         ret['total'] = cnt[0]['cnt']
         if 'report' not in params or params['report'] is None:
             q +=  " limit %s offset %s " 
             p.append(limit)
             p.append(offset*limit)
+        print(q,p)
         o = db.query(q,p)
+        print(len(o))
         if 'report' in params and params['report'] is not None:
             ret['filename'] = 'commission_report.csv'
             frame = pd.DataFrame.from_dict(o)

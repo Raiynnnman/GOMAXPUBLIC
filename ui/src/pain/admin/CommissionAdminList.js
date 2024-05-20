@@ -145,7 +145,7 @@ class CommissionAdminList extends Component {
     } 
 
     onPeriodFilter(e,t) { 
-        if (e.length <2 ) { return; }
+        if (e.length < 1 ) { return; }
         var c = 0;
         var t = [];
         for (c = 0; c < e.length; c++) { 
