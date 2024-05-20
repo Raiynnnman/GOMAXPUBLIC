@@ -412,6 +412,7 @@ class ClientList(OfficeBase):
                 {'l':'Witnesses','f':'witnesses','t':'textfield','v':''},
                 {'l':'Reporting Law Enforment Agency','f':'rep_law_enforcement','t':'text','v':''},
                 {'l':'Police Report #','f':'police_report_num','t':'text','v':''},
+                {'l':'Date of Accident','f':'date_of_accident','t':'text','v':''},
                 {'l':'Citations','f':'citations','t':'text','v':''},
                 {'l':'Who was cited','f':'citations_person','t':'text','v':''},
                 {'l':'Pics of damage','f':'pics_of_damage','t':'checkbox','v':0},
@@ -427,10 +428,12 @@ class ClientList(OfficeBase):
         CI = self.getClientIntake()
         for g in inputs:
             cols.append(g['f'])
+        print(off_id)
         o = db.query("""
             select
                 ci.id,u.first_name as client_first,
                 u.last_name as client_last, 
+                oa.name as office_name,
                 u.id as user_id,
                 concat(u.first_name,' ', u.last_name) as name,
                 u.email email, u.phone as phone,
@@ -440,10 +443,13 @@ class ClientList(OfficeBase):
             from
                 users u,
                 office o,
+                office_addresses oa,
                 client_intake ci,
                 client_intake_status cis,
                 client_intake_offices cio
             where
+                oa.office_id = o.id and
+                oa.id = cio.office_addresses_id and
                 cio.client_intake_id = ci.id and
                 cis.id = ci.client_intake_status_id and
                 ci.user_id = u.id and
@@ -560,13 +566,15 @@ class ReferralUpdate(OfficeBase):
         db = Query()
         token = js['token']
         REF = self.getReferrerUserStatus()
-        CI = self.getReferrerUserStatus()
+        CI = self.getClientIntake()
         try:
             token = base64.b64decode(token.encode('utf-8'))
             myjson = encryption.decrypt(token,config.getKey("encryption_key"))
             myjson = json.loads(myjson)
             o = myjson['o']
             r = myjson['i']
+            oa = myjson['oa']
+            print(o,r,oa)
             q = db.query("""
                 select 
                     ru.id,ru.referrer_users_status_id,ru.email,ru.name,ru.phone,
@@ -607,17 +615,25 @@ class ReferralUpdate(OfficeBase):
                     where referrer_users_id = %s
                 """,(REF['ACCEPTED'],r)
                 )
+                doa = ''
+                try:
+                    doa = calcdate.parseDate(q['doa'])
+                    print(doa)
+                except Exception as e:
+                    print(str(e))
+                    print("couldnt parse date: %s" % q['doa'])
                 db.update("""
                     insert into client_intake 
                         (user_id,date_of_accident,client_intake_status_id) values (%s,%s,%s)
-                    """,(q['user_id'],q['doa'],CI['ASSIGNED'])
+                    """,(q['user_id'],doa.strftime('%Y-%m-%d'),CI['ASSIGNED'])
                 )
                 clid = db.query("select LAST_INSERT_ID()");
                 clid = clid[0]['LAST_INSERT_ID()']
                 db.update("""
-                    insert into client_intake_offices (client_intake_id,office_id)
-                        values(%s,%s)
-                    """,(clid,o)
+                    insert into client_intake_offices 
+                        (client_intake_id,office_id,office_addresses_id)
+                        values(%s,%s,%s)
+                    """,(clid,o,oa)
                 )
                 email = off['email']
                 url = config.getKey("host_url")
@@ -633,7 +649,7 @@ class ReferralUpdate(OfficeBase):
                 db.update("""
                     update referrer_users set referrer_status_id=%s where
                         id = %s
-                    """,(REF['ACCEPTED']),
+                    """,(r,),
                 )
                 db.update("""
                     update referrer_users_queue set 
@@ -712,9 +728,15 @@ class ReferrerUpdate(OfficeBase):
                 """,(row['zipcode'],lat,lon,insid)
             )
         if 'doa' in row:
+            doa = ''
+            try:
+                doa = calcdate.sysParseDate(row['doa'])
+            except Exception as e:
+                print(str(e))
+                print("couldnt parse date: %s" % row['doa'])
             db.update("""
                 update referrer_users set doa=%s where id = %s
-                """,(row['doa'],insid)
+                """,(doa,insid)
             )
 
     @check_office

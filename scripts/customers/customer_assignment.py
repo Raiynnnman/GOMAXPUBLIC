@@ -117,7 +117,7 @@ for x in o:
         print(j)
         url = config.getKey("host_url")
         val = encryption.encrypt(
-            json.dumps({'i':x['id'],'o':j['id']}),
+            json.dumps({'oa':j['id'],'i':x['id'],'o':j['office_id']}),
             config.getKey("encryption_key")
         )
         val = base64.b64encode(val.encode('utf-8'))
@@ -134,7 +134,7 @@ for x in o:
         db.update("""
             insert into referrer_users_queue (referrer_users_id,office_id,accept_mail_sent)
                 values (%s,%s,%s)
-            """,(x['id'],j['id'],1)
+            """,(x['id'],j['office_id'],1)
         )
     db.update("""
         update referrer_users set nextcheck=date_add(now(),INTERVAL 5 MINUTE) where id = %s

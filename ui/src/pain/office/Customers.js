@@ -14,7 +14,7 @@ import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import {clientList} from '../../actions/officeClients';
 import {clientUpdate} from '../../actions/officeClientUpdate';
-import UserRegistration from '../admin/UserRegistration';
+import CustomerView from './CustomerView';
 
 class Customers extends Component {
     constructor(props) { 
@@ -75,7 +75,7 @@ class Customers extends Component {
             )}
             {(this.props.officeClients && this.props.officeClients.data &&
               this.props.officeClients.data.clients && this.state.selectedAppt !== null) && (
-                <UserRegistration filled={true} config={this.props.officeClients.data.config} 
+                <CustomerView filled={true} config={this.props.officeClients.data.config} 
                     data={this.state.selectedAppt} onCancel={this.close} onRegister={this.save}/>
             )}
             {(this.props.officeClients && this.props.officeClients.data &&
@@ -91,13 +91,13 @@ class Customers extends Component {
                         <>
                         <Col md="4" onClick={() => this.selectAppt(e)} style={{cursor:'pointer'}}>
                             <Card style={{
-                                margin:20,height:325,
+                                margin:20,
                                 borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}} className="mb-xlg border-1">
                                 <CardBody>
                                     <Row md="12">
                                         <Col md="8">
                                             <font style={{fontSize:"14pt",fontWeight:"bold"}}>
-                                            {e.phy_first + " " + e.phy_last}
+                                            {e.office_name}
                                             </font>
                                             <br/>
                                         </Col>
@@ -107,31 +107,25 @@ class Customers extends Component {
                                     </Row>
                                     <hr/>
                                     <Row md="12">
-                                        <Col md="8">
-                                            <font style={{fontSize:"14pt",fontWeight:"bold"}}>
+                                        <Col md="12">
+                                            <font style={{fontSize:"14pt"}}>
                                             {e.client_first + " " + e.client_last}
                                             </font>
                                             <br/>
                                         </Col>
-                                        <Col md="4" class="pull-right">
-                                        </Col>
                                     </Row>
                                     <Row md="12">
-                                        <Col md="8">
-                                            <font style={{fontSize:"14pt",fontWeight:"bold"}}>
+                                        <Col md="12">
+                                            <font style={{fontSize:"14pt"}}>
                                             {e.email}
                                             </font>
                                         </Col>
-                                        <Col md="4" class="pull-right">
-                                        </Col>
                                     </Row>
                                     <Row md="12">
                                         <Col md="8">
-                                            <font style={{fontSize:"14pt",fontWeight:"bold"}}>
+                                            <font style={{fontSize:"14pt"}}>
                                             {e.phone}
                                             </font>
-                                        </Col>
-                                        <Col md="4" class="pull-right">
                                         </Col>
                                     </Row>
                                     <Row md="12">

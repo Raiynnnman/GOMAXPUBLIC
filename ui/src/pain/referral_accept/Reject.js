@@ -47,8 +47,6 @@ class Accept extends React.Component {
     } 
 
     render() {
-        console.log("p",this.props);
-        console.log("s",this.state);
         return (
             <div style={{backgroundColor:"black",color:"white"}} className="auth-page">
                 <Container>
@@ -57,7 +55,7 @@ class Accept extends React.Component {
                     </div>
                     <Widget style={{backgroundColor:"black"}} className="widget-auth mx-auto" title={<h3 style={{color:'white'}} className="mt-0">Client Accepted!</h3>}>
                         <p className="widget-auth-info" style={{color:'white'}}>
-                            Client accepted. Click <a onClick={this.loginPage} style={{color:"blue"}} href="/#/login" to see details>HERE</a> to see details
+                            Thank you for submitting your response.
                         <br/>
                         </p>
                     </Widget>

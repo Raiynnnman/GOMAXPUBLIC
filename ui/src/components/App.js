@@ -25,8 +25,8 @@ import Register from '../pain/landing/Register';
 import RegisterProvider from '../pain/landing/RegisterProvider';
 import RegisterLegal from '../pain/landing/RegisterLegal';
 import RegisterReferrer from '../pain/landing/RegisterReferrer';
-import Accept from '../pain/referral_accept/Accept.js';
-import Reject from '../pain/referral_accept/Reject.js';
+import Accept from '../pain/referral_accept/Accept';
+import Reject from '../pain/referral_accept/Reject';
 
 const CloseButton = ({closeToast}) => <i onClick={closeToast} className="la la-close notifications-close"/>
 
