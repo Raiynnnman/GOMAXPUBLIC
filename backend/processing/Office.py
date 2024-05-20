@@ -434,13 +434,11 @@ class ClientList(OfficeBase):
                 u.id as user_id,
                 concat(u.first_name,' ', u.last_name) as name,
                 u.email email, u.phone as phone,
-                u2.id as phy_id,u2.first_name as phy_first,
-                u2.last_name as phy_last,cis.name as status,
+                cis.name as status,
                 cis.id as status_id,
                 """ + ','.join(cols) + """
             from
                 users u,
-                users u2,
                 office o,
                 client_intake ci,
                 client_intake_status cis,
@@ -451,7 +449,6 @@ class ClientList(OfficeBase):
                 ci.user_id = u.id and
                 hidden = 0 and
                 o.id = cio.office_id and
-                cio.phy_id = u2.id and
                 o.id=%s and
                 cis.id < %s 
             """,(off_id,CI['COMPLETED'])
@@ -563,6 +560,7 @@ class ReferralUpdate(OfficeBase):
         db = Query()
         token = js['token']
         REF = self.getReferrerUserStatus()
+        CI = self.getReferrerUserStatus()
         try:
             token = base64.b64decode(token.encode('utf-8'))
             myjson = encryption.decrypt(token,config.getKey("encryption_key"))
@@ -611,8 +609,8 @@ class ReferralUpdate(OfficeBase):
                 )
                 db.update("""
                     insert into client_intake 
-                        (user_id,date_of_accident) values (%s,%s)
-                    """,(q['user_id'],q['doa'])
+                        (user_id,date_of_accident,client_intake_status_id) values (%s,%s,%s)
+                    """,(q['user_id'],q['doa'],CI['ASSIGNED'])
                 )
                 clid = db.query("select LAST_INSERT_ID()");
                 clid = clid[0]['LAST_INSERT_ID()']

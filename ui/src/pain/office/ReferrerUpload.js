@@ -125,7 +125,7 @@ class ReferrerUpload extends Component {
                     args.setState(args);
                     return;
                   } 
-                  toast.success('Successfully saved clients.',
+                  toast.success('Successfully saved client.',
                     {
                         position:"top-right",
                         autoClose:3000,

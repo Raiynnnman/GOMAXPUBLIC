@@ -19,6 +19,7 @@ class Reset extends React.Component {
 
       this.state = {
         password: '',
+        disabled: false,
         confirmPassword: ''
       };
 
@@ -31,11 +32,15 @@ class Reset extends React.Component {
     }
 
   changePassword(event) {
-    this.setState({password: event.target.value});
+    this.state.disabled = false;
+    this.state.password = event.target.value;
+    this.setState(this.state);
   }
 
   changeConfirmPassword(event) {
-    this.setState({confirmPassword: event.target.value});
+    this.state.disabled = false;
+    this.state.confirmPassword = event.target.value;
+    this.setState(this.state);
   }
 
   checkPassword() {
@@ -68,9 +73,12 @@ class Reset extends React.Component {
     if (!this.isPasswordValid()) {
       this.checkPassword();
     } else {
+      this.state.disabled = true;
       this.props.dispatch(resetPassword(token, this.state.password));
+      this.setState(this.state);
     }
   }
+
   doLogin() { 
       window.location.href = "/#/login"
   }
@@ -107,13 +115,13 @@ class Reset extends React.Component {
                          name="confirmPassword"
                          placeholder="Confirm"/>
                 </div>
-                <Button type="submit" color="inverse" className="auth-btn mb-3"
+                <Button type="submit" disabled={this.state.disabled} color="inverse" className="auth-btn mb-3"
                         size="sm">{this.props.isFetching ? 'Loading...' : 'Reset'}</Button>
               </form>
               <p className="widget-auth-info">
                 or
               </p>
-              <Link className="text-center" onClick={this.doLogin}>Login</Link>
+              <Link style={{color:'black'}} className="text-center" onClick={this.doLogin}>Login</Link>
             </Widget>
           </Container>
           <footer className="auth-footer">

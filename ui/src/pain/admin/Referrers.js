@@ -254,6 +254,7 @@ class Referrers extends Component {
     } 
 
     render() {
+        console.log("p",this.props);
         const pageButtonRenderer = ({
           page,
           currentPage,
@@ -333,10 +334,13 @@ class Referrers extends Component {
                 text:'Status',
                 formatter:(cellContent,row) => (
                     <div>
-                        {(row.status === 'REFERRED') && (<Badge color="secondary">REFERRED</Badge>)}
                         {(row.status === 'QUEUED') && (<Badge color="secondary">QUEUED</Badge>)}
+                        {(row.status === 'REJECTED') && (<Badge color="danger">REJECTED</Badge>)}
+                        {(row.status === 'ACCEPTED') && (<Badge color="primary">ACCEPTED</Badge>)}
+                        {(row.status === 'CONTACTED') && (<Badge color="primary">CONTACTED</Badge>)}
+                        {(row.status === 'FOLLOWUP') && (<Badge color="primary">FOLLOWUP</Badge>)}
                         {(row.status === 'SCHEDULED') && (<Badge color="primary">SCHEDULED</Badge>)}
-                        {(row.status === 'RESCHEDULED') && (<Badge color="danger">RESCHEDULED</Badge>)}
+                        {(row.status === 'COMPLETED') && (<Badge color="primary">COMPLETED</Badge>)}
                     </div>
                 )
             },

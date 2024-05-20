@@ -1089,6 +1089,7 @@ class RegisterReferrer(RegistrationsBase):
         ENT = self.getEntitlementIDs()
         PERM = self.getPermissionIDs()
         PL = self.getPlans()
+        PQ = self.getProviderQueueStatus()
         BS = self.getBillingSystem()
         HAVE = False
         userid = 0
@@ -1111,7 +1112,7 @@ class RegisterReferrer(RegistrationsBase):
             insid = t['id']
         params['phone'] = params['phone'].replace(')','').replace('(','').replace('-','').replace(' ','')
         if insid == 0:
-            db.update("insert into office (name,office_type_id,email,active) values (%s,%s,%s,0)",
+            db.update("insert into office (name,office_type_id,email,active) values (%s,%s,%s,1)",
                 (params['name'],OT['Referrer'],params['email'].lower())
             )
             insid = db.query("select LAST_INSERT_ID()");
@@ -1130,8 +1131,8 @@ class RegisterReferrer(RegistrationsBase):
             db.update(
                 """
                 insert into provider_queue (office_id,provider_queue_lead_strength_id) 
-                    values (%s,%s)
-                """,(insid,ST['Potential Provider'])
+                    values (%s,%s,provider_queue_status_id)
+                """,(insid,ST['Preferred Provider'],PQ['INVITED'])
             )
             l = db.query("""
                 select id from users where email = %s
