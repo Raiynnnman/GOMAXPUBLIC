@@ -145,13 +145,15 @@ class CommissionAdminList extends Component {
     } 
 
     onPeriodFilter(e,t) { 
-        if (e.length < 1 ) { return; }
         var c = 0;
         var t = [];
+        this.state.periodSelected = []
+        if (!e) { return; }
         for (c = 0; c < e.length; c++) { 
             t.push(e[c].value); 
+            this.state.periodSelected.push(e[c])
         } 
-        this.state.statusSelected = t;
+        if (t.length < 1 ) { return; }
         this.state.filter = t;
         if (this.props.currentUser.entitlements && 
             this.props.currentUser.entitlements.includes('BusinessDevelopmentRepresentative')) { 
@@ -483,8 +485,8 @@ class CommissionAdminList extends Component {
                           value={this.state.periodSelected.map((g) => { 
                             return (
                                 {
-                                label:this.props.commissions.data.config.period.filter((f) => f.billing_period === g.billing_period)[0].label,
-                                value:this.props.commissions.data.config.period.filter((f) => f.billing_period === g.billing_period)[0].value
+                                label:this.props.commissions.data.config.period.filter((f) => f.value === g.value)[0].label,
+                                value:this.props.commissions.data.config.period.filter((f) => f.value === g.value)[0].value
                                 }
                             )
                           })}
