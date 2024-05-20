@@ -51,7 +51,7 @@ class Accept extends React.Component {
                     <div style={{backgroundColor:'black',display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                         <img width="20%" height="20%" src='/painlogo.png'/>
                     </div>
-                    <Widget style={{backgroundColor:"black"}} className="widget-auth mx-auto" title={<h3 style={{color:'white'}} className="mt-0">Client Accepted!</h3>}>
+                    <Widget style={{backgroundColor:"black"}} className="widget-auth mx-auto" title={<h3 style={{color:'white'}} className="mt-0">Client removed from your queue!</h3>}>
                         <p className="widget-auth-info" style={{color:'white'}}>
                             Thank you for submitting your response.
                         <br/>
