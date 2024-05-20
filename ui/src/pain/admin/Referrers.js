@@ -379,7 +379,7 @@ class Referrers extends Component {
                             <>
                             <div style={{zIndex:512}}>
                                 <Row md="12">
-                                    <Col md="5" style={{zIndex:9995}}>
+                                    <Col md="6" style={{zIndex:9995}}>
                                       {(this.props.referrerAdminList && this.props.referrerAdminList.data && 
                                         this.props.referrerAdminList.data.config &&
                                         this.props.referrerAdminList.data.config.status && this.state.statusSelected !== null) && (

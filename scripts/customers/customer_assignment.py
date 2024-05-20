@@ -105,11 +105,15 @@ for x in o:
             )
     for j in off:
         g = db.query("""
-            select id from referrer_users_queue where office_id=%s
-            """,(j['id'],)
+            select id from referrer_users_queue 
+            where 
+                office_id=%s and
+                referrer_users_id=%s
+            """,(j['id'],x['id'])
         )
         if len(g) > 0 and not args.force:
-            print("Already sent accept email to %s" % j['name'])
+            print("Already sent accept email to %s" % j['office_name'])
+            continue
         print(j)
         url = config.getKey("host_url")
         val = encryption.encrypt(
