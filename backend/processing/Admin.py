@@ -1982,7 +1982,7 @@ class AdminBookingRegister(AdminBase):
         ret = {}
         job,user,off_id,params = self.getArgs(*args,**kwargs)
         db = Query()
-        print(params)
+        print("params=%s" % params)
         if 'value' not in params:
             return {'success': False,'message': 'DATA_REQUIRED'}
         inputs = ['name','phone','email','doa','address','attny','language']

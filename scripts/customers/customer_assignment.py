@@ -87,6 +87,7 @@ for x in o:
             round(st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192,2) 
         limit %s
     """
+    print(q % (lon,lat,lon,lat,provtype,lon,lat,limit))
     off = db.query(q,(lon,lat,lon,lat,provtype,lon,lat,limit))
     print("off=%s" % off)
     #if config.getKey("appt_email_override") is not None:

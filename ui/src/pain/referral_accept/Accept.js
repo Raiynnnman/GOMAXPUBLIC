@@ -19,15 +19,21 @@ class Accept extends React.Component {
         super(props);
         this.state = {
             id:null,
+            error_message:null,
             accepted:null,
-            error_message:null
+            response_received:false
         };
         this.loginPage = this.loginPage.bind(this);
 
     }
 
     componentWillReceiveProps(p) { 
-        if (p.match && p.match.params && p.match.params.id && this.state.accepted === null) { 
+        if (p.referralResponse && p.referralResponse.data &&
+            p.referralResponse.data.success === false && 
+            p.referralResponse.data.message && this.state.error_message === null) { 
+            this.state.error_message = p.referralResponse.data.message;
+            this.state.response_received = true;
+            this.setState(this.state);
         } 
     }
 
@@ -51,12 +57,26 @@ class Accept extends React.Component {
                     <div style={{backgroundColor:'black',display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                         <img width="20%" height="20%" src='/painlogo.png'/>
                     </div>
+                    {(this.state.response_received) && (
+                    <>
                     <Widget style={{backgroundColor:"black"}} className="widget-auth mx-auto" title={<h3 style={{color:'white'}} className="mt-0">Client Accepted!</h3>}>
+                        {(this.state.error_message === null) && (
                         <p className="widget-auth-info" style={{color:'white'}}>
                             Client accepted. Click <a onClick={this.loginPage} style={{color:"blue"}} href="/#/login" to see details>HERE</a> to see details
                         <br/>
                         </p>
+                        )}
+                        {(this.state.error_message !== null) && (
+                        <>
+                        <p className="widget-auth-info" style={{color:'white'}}>
+                            {translate(this.state.error_message)}
+                        <br/>
+                        </p>
+                        </>
+                        )}
                     </Widget>
+                    </>
+                    )}
                 </Container>
             </div>
         );

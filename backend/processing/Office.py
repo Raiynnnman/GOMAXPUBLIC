@@ -581,6 +581,7 @@ class ReferralUpdate(OfficeBase):
         token = js['token']
         REF = self.getReferrerUserStatus()
         CI = self.getClientIntake()
+        lck_id = 0
         try:
             token = base64.b64decode(token.encode('utf-8'))
             myjson = encryption.decrypt(token,config.getKey("encryption_key"))
@@ -588,6 +589,21 @@ class ReferralUpdate(OfficeBase):
             o = myjson['o']
             r = myjson['i']
             oa = myjson['oa']
+            lck = db.query("""
+                select id from referrer_users_lock where referrer_users_id=%s
+                """,(r,)
+            )
+            if len(lck) > 0:
+                print("ALREADY_ACCEPTED_BY_ANOTHER_PROVIDER (%s)" % r)
+                return {'success': False, 'message': 'ALREADY_ACCEPTED_BY_ANOTHER_PROVIDER'}
+            db.update("""
+                insert into referrer_users_lock (referrer_users_id) values
+                    (%s)
+                """,(r,)
+            )
+            lck_id = db.query("select LAST_INSERT_ID()");
+            lck_id = lck_id[0]['LAST_INSERT_ID()']
+            db.commit()
             print(o,r,oa)
             q = db.query("""
                 select 
@@ -604,10 +620,12 @@ class ReferralUpdate(OfficeBase):
             if len(q) < 1:
                 return {'success': False, 'message': 'REFERRAL_DOESNT_EXIST'}
             q = q[0]
-            if q['referrer_users_status_id'] != REF['QUEUED']:
-                return {'success': False, 'message': 'ALREADY_ACCEPTED'}
-            if q['office_id'] == o:
+            if q['referrer_users_status_id'] != REF['QUEUED'] and q['office_id'] == o:
+                print("OFFICE_ALREADY_ACCEPTED (%s)" % r)
                 return {'success': False, 'message': 'OFFICE_ALREADY_ACCEPTED'}
+            if q['referrer_users_status_id'] != REF['QUEUED']:
+                print("ALREADY_ACCEPTED_BY_ANOTHER_PROVIDER (%s)" % r)
+                return {'success': False, 'message': 'ALREADY_ACCEPTED_BY_ANOTHER_PROVIDER'}
             print(q)
             if js['accept']:
                 off = db.query("""select email from office where id=%s""",(o,))
@@ -615,6 +633,9 @@ class ReferralUpdate(OfficeBase):
                     print("ERROR: No office email found for %s" % o)
                     return {'success': False, 'message': 'NO_EMAIL_FOUND_FOR_PRACTICE'}
                 off = off[0]
+                if off['email'] is None or len(off['email']) < 1:
+                    print("ERROR: No office email found for %s" % o)
+                    return {'success': False, 'message': 'INVALID_EMAIL_FOUND_FOR_PRACTICE'}
                 db.update("""
                     update referrer_users set 
                         referrer_users_status_id=%s,office_id=%s 
@@ -681,6 +702,9 @@ class ReferralUpdate(OfficeBase):
             exc_type, exc_value, exc_traceback = sys.exc_info()
             traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
             return {'success':False,'message':str(e)}
+        finally:
+            db.update("""delete from referrer_users_lock where id = %s""",(lck_id,))
+            db.commit()
         return {'success':False,'message':"ZOMG"}
 
 class ReferrerUpdate(OfficeBase):
@@ -715,6 +739,7 @@ class ReferrerUpdate(OfficeBase):
                 update referrer_users set referrer_users_status_id=%s where id=%s
                 """,(status,insid)
             )
+        print("doi=%s" % dest_office_id)
         if dest_office_id is not None:
             db.update("""
                 update referrer_users set office_id=%s where id=%s
