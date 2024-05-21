@@ -234,8 +234,6 @@ class SearchAdmin extends Component {
             width: 325
             })
         }
-        console.log("s",this.state);
-        console.log("p",this.props);
         return (
         <>
             {(this.props.providerSearchAdmin && this.props.providerSearchAdmin.isReceiving) && (

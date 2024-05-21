@@ -80,7 +80,7 @@ for x in o:
             o.office_type_id = %s
     """
     if x['office_id'] is not None:
-        q += " and o.id = %s " % office_id
+        q += " and o.id = %s " % x['office_id']
     q += """
         order by
             pq.provider_queue_status_id, 
