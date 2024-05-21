@@ -69,6 +69,7 @@ class Referrers extends Component {
             var c = 0;
             var t = [];
             for (c = 0; c < p.referrerAdminList.data.config.status.length; c++) { 
+                if (p.referrerAdminList.data.config.status[c].name === 'COMPLETED') { continue; }
                 t.push(p.referrerAdminList.data.config.status[c].id); 
             } 
             this.state.statusSelected = t;
@@ -252,7 +253,6 @@ class Referrers extends Component {
     } 
 
     render() {
-        console.log("p",this.props);
         const pageButtonRenderer = ({
           page,
           currentPage,
