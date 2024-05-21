@@ -765,6 +765,7 @@ class ReferrerUpdate(OfficeBase):
                 update referrer_users set doa=%s where id = %s
                 """,(doa,insid)
             )
+        return insid
 
     @check_office
     def execute(self, *args, **kwargs):
@@ -900,7 +901,7 @@ class ReferrerUpdate(OfficeBase):
                             tosave['fulladdr']
                             )
                     )
-                    self.processRow(off_id,tosave,insid,sha256,db)
+                    rus_id = self.processRow(off_id,tosave,insid,sha256,db)
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
                 traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
