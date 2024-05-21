@@ -753,6 +753,7 @@ class OfficeList(AdminBase):
             limit = int(params['limit'])
         if 'offset' in params:
             offset = int(params['offset'])
+        INV = self.getInvoiceIDs()
         db = Query()
         OT = self.getOfficeTypes()
         q = """
@@ -845,6 +846,15 @@ class OfficeList(AdminBase):
                     x['last_comment'] = bb2
                 except:
                     pass
+            x['last_paid'] = db.query("""
+                select max(billing_period) as a from invoices
+                    where office_id = %s and invoice_status_id=%s
+                """,(x['id'],INV['PAID'])
+            )
+            if len(x['last_paid']) > 0:
+                x['last_paid'] = x['last_paid'][0]['a']
+            else:
+                x['last_paid'] = None
             x['last_comment'] = ''
             x['cards'] = db.query("""
                 select id,card_id,last4,exp_month,exp_year,is_default,brand
@@ -872,6 +882,8 @@ class OfficeList(AdminBase):
                 """,(x['id'],)
             )
             x['addr'] = json.loads(x['addr'])
+            if len(x['addr']) > 0:
+                x['phone'] = x['addr'][0]['phone']
             x['potential'] = db.query("""
                 select
                     name,places_id,addr1,phone,city,state,
@@ -1917,6 +1929,7 @@ class AdminReportGet(AdminBase):
         q = """
             select
                 o.id,o.name,o.email,i.id as invoice_id,
+                json_array(i4.phone) as phone,
                 pd.description as subscription_plan,
                 pd.duration as subscription_duration,
                 op.start_date as plan_start,
@@ -1925,7 +1938,8 @@ class AdminReportGet(AdminBase):
                 i1.total as first_invoice_total,
                 i2.name as last_invoice_status, i2.bp as  last_billing_period,
                 i2.total as last_invoice_total, 
-                date_add(max(i.billing_period),INTERVAL 1 MONTH) as next_invoice
+                date_add(max(i.billing_period),INTERVAL 1 MONTH) as next_invoice,
+                i3.bp as last_paid
             from
                 office o
                 left outer join invoices i on i.office_id=o.id
@@ -1943,6 +1957,16 @@ class AdminReportGet(AdminBase):
                         isi.id=i.invoice_status_id group by office_id
                         order by max(i.billing_period) desc
                 ) i2 on i2.office_id = o.id
+                left outer join (
+                    select i.office_id,i.total,i.id,isi.name,max(i.billing_period) as bp
+                        from invoices i,invoice_status isi where 
+                        i.invoice_status_id=15 and isi.id=i.invoice_status_id group by office_id
+                        order by max(i.billing_period) desc
+                ) i3 on i3.office_id = o.id
+                left outer join (
+                    select oa.office_id,oa.phone as phone
+                        from office_addresses oa 
+                ) i4 on i4.office_id = o.id
             where
                 o.active = 1 and
                 o.office_type_id=1 
@@ -1951,7 +1975,17 @@ class AdminReportGet(AdminBase):
             """
         db = Query()
         o = db.query(q)
-        ret = pd.DataFrame.from_dict(o)
+        ret = []
+        for y in o:
+            if y['phone'] is not None:
+                y['phone'] = json.loads(y['phone'])
+                if len(y['phone']) > 1:
+                    y['phone'] = json.loads(y['phone'][0])
+                if y['phone'][0] == None:
+                    y['Phone'] = None
+            ret.append(y)
+
+        ret = pd.DataFrame.from_dict(ret)
         return ret
 
     @check_admin

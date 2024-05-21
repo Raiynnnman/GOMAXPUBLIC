@@ -335,6 +335,7 @@ class OfficeList extends Component {
     } 
 
     render() {
+        console.log("p",this.props);
         const pageButtonRenderer = ({
           page,
           currentPage,
@@ -509,10 +510,10 @@ class OfficeList extends Component {
                 )
             },
             {
-                dataField:'next_invoice',
+                dataField:'last_paid',
                 sort:true,
                 align:'center',
-                text:'Next Inv'
+                text:'Last Payment'
             },
             {
                 dataField:'updated',
