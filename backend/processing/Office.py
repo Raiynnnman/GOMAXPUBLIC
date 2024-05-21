@@ -691,7 +691,7 @@ class ReferrerUpdate(OfficeBase):
     def isDeferred(self):
         return False
 
-    def processRow(self,office_id,row,docid,sha,db,dest_office_id=None):
+    def processRow(self,office_id,row,docid,sha,db,dest_office_id=None,status=None):
         REF=self.getReferrerUserStatus()
         o = db.query("""
             select id from referrer_users where
@@ -710,6 +710,11 @@ class ReferrerUpdate(OfficeBase):
         )
         insid = db.query("select LAST_INSERT_ID()");
         insid = insid[0]['LAST_INSERT_ID()']
+        if status is not None:
+            db.update("""
+                update referrer_users set referrer_users_status_id=%s where id=%s
+                """,(status,insid)
+            )
         if dest_office_id is not None:
             db.update("""
                 update referrer_users set office_id=%s where id=%s
