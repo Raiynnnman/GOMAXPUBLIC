@@ -965,6 +965,8 @@ class LocationUpdate(OfficeBase):
                      params['id'])
             )
         else:
+            if 'fulladdr' not in params:
+                params['fulladdr'] = ''
             db.update("""
                 insert into office_addresses (
                     office_id,name,addr1,addr2,city,state,zipcode,phone,full_addr)
