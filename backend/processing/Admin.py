@@ -2088,8 +2088,10 @@ class AdminBookingRegister(AdminBase):
                     "application/json",
                     json.dumps(tosave)
                 )
+                REF=self.getReferrerUserStatus()
                 r = ReferrerUpdate()
                 dest_office_id = None
+                status = None
                 if 'office_id' in params:
                     g = db.query("""
                         select office_id from office_addresses where id=%s
@@ -2098,7 +2100,7 @@ class AdminBookingRegister(AdminBase):
                     if len(g) < 1:
                         return {'success': False,'message': 'OFFICE_NOT_FOUND'}
                     dest_office_id = g[0]['office_id']
-                r.processRow(1,tosave,insid,sha256,db,dest_office_id=dest_office_id)
+                r.processRow(1,tosave,insid,sha256,db,dest_office_id=dest_office_id,status=status)
                 if 'office_id' in params:
                     db.update("""
                         insert into client_intake 

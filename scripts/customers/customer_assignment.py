@@ -57,7 +57,7 @@ for x in o:
     print(x)
     provtype = 1
     limit = 10
-    off = db.query("""
+    q = """
         select
             oa.id,o.id as office_id,
             oa.name as office_name,oa.phone,o.email,
@@ -78,12 +78,16 @@ for x in o:
             o.active = 1 and
             oa.lat <> 0 and
             o.office_type_id = %s
+    """
+    if x['office_id'] is not None:
+        q += " and o.id = %s " % office_id
+    q += """
         order by
             pq.provider_queue_status_id, 
             round(st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192,2) 
         limit %s
-        """,(lon,lat,lon,lat,provtype,lon,lat,limit)
-    )
+    """
+    off = db.query(q,(lon,lat,lon,lat,provtype,lon,lat,limit))
     print("off=%s" % off)
     #if config.getKey("appt_email_override") is not None:
     #    email = config.getKey("appt_email_override")
@@ -98,7 +102,10 @@ for x in o:
             data['__USER_NAME__'] = x['name']
             data['__ZIPCODE__'] = x['zipcode']
             data['__OFFICE_URL__'] = "%s/#/app/main/admin/customers/%s" % (url,x['id'])
-            m.send(sysemail,"No locations found for customer referral","templates/mail/no-locations-referrer.html",data)
+            if x['office_id'] is not None:
+                m.send(sysemail,"Office Assigned but not found for customer referral","templates/mail/no-locations-referrer.html",data)
+            else:
+                m.send(sysemail,"No locations found for customer referral","templates/mail/no-locations-referrer.html",data)
             db.update("""
                 update referrer_users set error_mail_sent = 1 where id = %s
                 """,(x['id'],)
