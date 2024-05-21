@@ -27,6 +27,7 @@ import { getReferrers } from '../../actions/referrerAdminList';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import formatPhoneNumber from '../utils/formatPhone';
+import PainTable from '../utils/PainTable';
 
 class Referrers extends Component {
     constructor(props) { 
@@ -47,7 +48,10 @@ class Referrers extends Component {
         this.onLeadStrengthChange = this.onLeadStrengthChange.bind(this);
         this.onPlansChange = this.onPlansChange.bind(this);
         this.onStatusFilter = this.onStatusFilter.bind(this);
+        this.pageChange = this.pageChange.bind(this);
+        this.sortChange = this.sortChange.bind(this);
         this.renderTotalLabel = this.renderTotalLabel.bind(this);
+        this.pageRowsChange = this.pageRowsChange.bind(this);
         this.save = this.save.bind(this);
         this.reload = this.reload.bind(this);
         this.edit = this.edit.bind(this);
@@ -81,17 +85,14 @@ class Referrers extends Component {
         } 
     }
 
-    pageChange(e,t) { 
-        if (e === '>') { 
-            this.state.page = this.state.page + 1;
-        } else { 
-            this.state.page = e - 1;
-        }
+    pageChange(e) { 
+        this.state.page = e
         this.props.dispatch(getReferrers(
-            {search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
+            {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
         ));
         this.setState(this.state);
     } 
+
 
     renderTotalLabel(f,t,s) { 
         var numpage = s/t;
@@ -114,7 +115,27 @@ class Referrers extends Component {
         this.setState(this.state);
     } 
 
+    pageRowsChange(t) { 
+        this.state.pageSize = t
+        this.state.page = 0
+        this.props.dispatch(getReferrers(
+            {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
+        ));
+        this.setState(this.state);
+    } 
 
+    sortChange(t) { 
+        var g = this.props.offices.data.sort.filter((e) => t.dataField === e.col);
+        if (g.length > 0) { 
+            g = g[0]
+            this.state.sort = g.id
+            this.state.direction = g.direction === 'asc' ? 'desc' : 'asc'
+            this.props.dispatch(getReferrers(
+                {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
+            ));
+            this.setState(this.state);
+        } 
+    } 
     onStatusFilter(e,t) { 
         if (e.length <2 ) { return; }
         var c = 0;
@@ -434,11 +455,25 @@ class Referrers extends Component {
                                     {(this.props.referrerAdminList && this.props.referrerAdminList.data && 
                                       this.props.referrerAdminList.data.data && 
                                       this.props.referrerAdminList.data.data.length > 0)&& ( 
-                                    <BootstrapTable 
-                                        keyField='id' data={this.props.referrerAdminList.data.data} 
-                                        pagination={paginationFactory(options)}
-                                        columns={regheads}>
-                                    </BootstrapTable>
+                                    <>
+                                        {/*<BootstrapTable 
+                                            keyField='id' data={this.props.referrerAdminList.data.data} 
+                                            pagination={paginationFactory(options)}
+                                            columns={regheads}>
+                                        </BootstrapTable>
+                                        */}
+                                        <PainTable
+                                                keyField='id' 
+                                                data={this.props.referrerAdminList.data.data} 
+                                                total={this.props.referrerAdminList.data.total}
+                                                page={this.state.page}
+                                                pageSize={this.state.pageSize}
+                                                onPageChange={this.pageChange}
+                                                onSort={this.sortChange}
+                                                onPageRowsPerPageChange={this.pageRowsChange}
+                                                columns={regheads}>
+                                        </PainTable> 
+                                    </>
                                     )}
                                     {(this.props.referrerAdminList && this.props.referrerAdminList.data && 
                                       this.props.referrerAdminList.data.data && 
