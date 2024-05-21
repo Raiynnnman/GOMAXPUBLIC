@@ -443,7 +443,7 @@ for x in PAIN:
                     """,(x['pq_id'],))
                 #if r['Id'] not in PAINHASH:
                 #    PAINHASH[r['Id']] = {}
-                POUND PAIN TECHHASH[r['Id']]['newdata'] = newdata
+                PAINHASH[r['Id']]['newdata'] = newdata
             except Exception as e:
                 print(str(e))
                 print(json.dumps(newdata,indent=4))
