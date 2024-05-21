@@ -16,10 +16,12 @@ sys.path.append(os.path.realpath(os.curdir))
 
 from util import encryption
 from util import calcdate
+from util import S3Processing
 from util.Logging import Logging
 from common import settings
 from util.DBOps import Query
 from processing.SubmitDataRequest import SubmitDataRequest
+from processing.Office import ReferrerUpdate
 from processing.Audit import Audit
 from processing import Search,Office
 from common.DataException import DataException
@@ -2056,21 +2058,65 @@ class AdminBookingRegister(AdminBase):
                         tosave['fulladdr']
                         )
                 )
-                db.update("""
-                    insert into client_intake 
-                        (user_id,date_of_accident,attny_name,languages_id,sha256,office_type_id) 
-                        values (%s,%s,%s,%s,%s,%s)
-                    """,(user_id,tosave['doa'],tosave['attny'],tosave['language'],sha256,params['office_type_id'])
-                )
-                ci = db.query("select LAST_INSERT_ID()")
-                ci = ci[0]['LAST_INSERT_ID()']
                 if 'office_id' in params:
+                    g = db.query("""
+                        select office_id from office_addresses where id=%s
+                        """,(params['office_id'],)
+                    )
+                    if len(g) < 1:
+                        return {'success': False,'message': 'OFFICE_NOT_FOUND'}
+                    office_id = g[0]['office_id']
                     db.update("""
-                        insert into client_intake_offices(client_intake_id,office_id) values (%s,%s)
-                    """,(ci,params['office_id'])
-                )
+                        insert into client_intake 
+                            (user_id,date_of_accident,attny_name,languages_id,sha256,office_type_id) 
+                            values (%s,%s,%s,%s,%s,%s)
+                        """,(user_id,tosave['doa'],tosave['attny'],tosave['language'],sha256,params['office_type_id'])
+                    )
+                    ci = db.query("select LAST_INSERT_ID()")
+                    ci = ci[0]['LAST_INSERT_ID()']
+                    if 'office_id' in params:
+                        db.update("""
+                            insert into client_intake_offices(
+                                client_intake_id,office_id,office_addresses_id
+                            ) values (%s,%s,%s)
+                        """,(ci,office_id,params['office_id'])
+                    )
+                else:
+                    ext = '.json'
+                    sha256 = encryption.getSHA256(json.dumps(tosave,sort_keys=True))
+                    have = db.query("""
+                        select id from client_intake where sha256=%s
+                        UNION ALL
+                        select id from referrer_users where sha256=%s
+                        """,(sha256,sha256)
+                    )
+                    if len(have) > 0:
+                        return {'success': False,'message': 'RECORD_ALREADY_EXISTS'}
+                    s3path = 'referrer/%s/%s' % (
+                        off_id,
+                        encryption.getSHA256("%s-%s" % (off_id,calcdate.getTimestampUTC()))
+                    )
+                    path = '%s%s' % (s3path,ext)
+                    q=db.update("""
+                        insert into referrer_documents (office_id,s3path) values 
+                            (%s,%s)
+                    """,(1,path)
+                    )
+                    insid = db.query("select LAST_INSERT_ID()");
+                    insid = insid[0]['LAST_INSERT_ID()']
+                    S3Processing.uploadS3ItemToBucket(
+                        config.getKey("document_bucket_access_key"),
+                        config.getKey("document_bucket_access_secret"),
+                        config.getKey("document_bucket"),
+                        path,
+                        "application/json",
+                        json.dumps(tosave)
+                    )
+                    r = ReferrerUpdate()
+                    r.processRow(1,tosave,insid,sha256,db)
                 db.commit()
         except Exception as e:
+            print(str(e))
             exc_type, exc_value, exc_traceback = sys.exc_info()
             traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
             return {'success': False,'message': 'Error on line %s: %s' % (line,str(e))}

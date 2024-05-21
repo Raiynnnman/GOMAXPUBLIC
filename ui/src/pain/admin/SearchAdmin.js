@@ -45,7 +45,7 @@ class SearchAdmin extends Component {
             apptBooked:false,
             error:'',
             zipchange:false,
-            zipcode:''
+            zipcode:null
         }
         this.searchOffices = this.searchOffices.bind(this);
         this.setProviderType = this.setProviderType.bind(this);
@@ -134,7 +134,7 @@ class SearchAdmin extends Component {
     cancel() { 
         this.state.selectedAppt = null;
         this.state.selectedProviderType = null;
-        this.state.provider = null;
+        this.state.zipcode = null;
         this.state.error_message = null;
         this.setState(this.state);
     } 
@@ -142,13 +142,16 @@ class SearchAdmin extends Component {
     register(e,d) { 
         var params = e;
         params.office_type_id = this.state.selectedProviderType;
-        params.office_id = this.state.selectedAppt.id;
+        if (this.state.selectedAppt && this.state.selectedAppt.id) { 
+            params.office_id = this.state.selectedAppt.id;
+        } 
         this.props.dispatch(searchRegisterAdmin(params,function(err,args) { 
               if (err && err.message) { 
                 args.state.error_message = err.message;
                 args.setState(args);
                 return;
               } 
+              args.props.dispatch(getProviderSearchAdmin({}))
               toast.success('Successfully saved user to queue.',
                 {
                     position:"top-right",
@@ -231,6 +234,8 @@ class SearchAdmin extends Component {
             width: 325
             })
         }
+        console.log("s",this.state);
+        console.log("p",this.props);
         return (
         <>
             {(this.props.providerSearchAdmin && this.props.providerSearchAdmin.isReceiving) && (
@@ -244,7 +249,7 @@ class SearchAdmin extends Component {
             )}
             {(Login.isAuthenticated()) && ( 
                 <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                    <h5>Use the zipcode box to find providers. Book an appointment in minutes.</h5>
+                    <h5>Use the zipcode box to find providers. Or enter in the form to have a provider automatically provided..</h5>
                 </div>
             )}
             {(Login.isAuthenticated() && this.state.selectedProviderType !== null) && ( 
@@ -267,23 +272,6 @@ class SearchAdmin extends Component {
             </Row>
             <hr/>
             </>
-            )}
-            {(!Login.isAuthenticated() && this.state.selectedAppt === null) && ( 
-            <Row md="12"> 
-                <Col md="12">
-                    <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        <font style={{textAlign:"center", fontSize:window.innerWidth < 1024 ? 20 : 40,fontWeight:"bold"}}>
-                            Save money on common medical procedures
-                        </font>
-                    </div>
-                    <br/>
-                    <div style={{height:50,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        <font style={{textAlign:"center", fontSize:20}}>
-                            Find the best price for the highest quality providers. Book an appointment in minutes.
-                        </font>
-                    </div>
-                </Col>
-            </Row>
             )}
             {(this.props.searchConfig && this.props.searchConfig.data && this.props.searchConfig.data.types && 
               this.state.selectedProviderType === null) && ( 
@@ -312,7 +300,7 @@ class SearchAdmin extends Component {
             )}
             {(this.props.providerSearchAdmin && this.props.providerSearchAdmin.data && 
                 this.props.providerSearchAdmin.data && this.props.providerSearchAdmin.data.providers &&
-                this.props.providerSearchAdmin.data.providers.length > 0 && this.state.provider !== null &&
+                this.props.providerSearchAdmin.data.providers.length > 0 && 
                 this.state.selectedAppt === null) && (
                 <Row md="12">
                     {this.props.providerSearchAdmin.data.providers.map((e) => { 
@@ -324,9 +312,16 @@ class SearchAdmin extends Component {
                     })} 
                 </Row>
             )}
+            {(this.state.selectedAppt === null && this.state.selectedProviderType !== null && this.state.zipcode === null) && (
+                <Row md="12">
+                    <Col md="12">
+                        <UserRegistration error_message={this.state.error_message} data={this.state.selectedAppt} onCancel={this.cancel} onRegister={this.register}/>
+                    </Col>
+                </Row>
+            )}
             {(this.props.providerSearchAdmin && this.props.providerSearchAdmin.data && 
                 this.props.providerSearchAdmin.data && this.props.providerSearchAdmin.data.providers &&
-                this.props.providerSearchAdmin.data.providers.length < 1 && this.state.provider !== null &&
+                this.props.providerSearchAdmin.data.providers.length < 1 &&
                 this.state.selectedAppt === null) && (
                 <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                     <h4>There are currently no service providers in this area.</h4>
