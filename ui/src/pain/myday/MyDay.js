@@ -950,7 +950,7 @@ class MyDay extends Component {
                                                                         <>
                                                                         {(this.props.myday.data.physicians.filter((g) => g.id === e.user_id).length > 0 &&  
                                                                             this.props.myday.data.physicians.filter((g) => g.id === e.user_id)[0].dhd === 1) && (
-                                                                            <Badge style={{marginRight:10}} color="primary">#PAIN</Badge>
+                                                                            <Badge style={{marginRight:10}} color="primary">POUND PAIN TECH</Badge>
                                                                         )}
                                                                         {
                                                                         this.props.myday.data.physicians.filter((g) => g.id === e.user_id).length > 0 ? 

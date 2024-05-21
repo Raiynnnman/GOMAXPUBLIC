@@ -98,7 +98,7 @@ class Sidebar extends React.Component {
         className={s.root}
       >
         <header className={s.logo}>
-          <a href="/index.html"><span className={s.logoStyle}>#PAIN<span className={s.logoPart}></span></span> </a>
+          <a href="/index.html"><span className={s.logoStyle}>POUND PAIN TECH<span className={s.logoPart}></span></span> </a>
         </header>
         <ul className={s.nav}>
           <LinksGroup

@@ -468,7 +468,7 @@ class RegisterProvider extends Component {
                     <>
                     {(this.state.page === 0) && (
                     <Widget className="widget-auth mx-auto" 
-                        style={{backgroundColor:"black",color:"white"}} title={<h3 style={{color:"white"}} className="mt-0">Register with #PAIN</h3>}>
+                        style={{backgroundColor:"black",color:"white"}} title={<h3 style={{color:"white"}} className="mt-0">Register with POUND PAIN TECH</h3>}>
                         <p className="widget-auth-info">
                             Please enter the information below to register
                         </p>

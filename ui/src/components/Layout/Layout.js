@@ -157,7 +157,7 @@ class Layout extends React.Component {
                 </CSSTransition>
               </TransitionGroup>
               <footer className={s.contentFooter}>
-                <small>#PAIN - {getVersion()}</small>
+                <small>POUND PAIN TECH - {getVersion()}</small>
               </footer>
             </main>
           </Hammer>

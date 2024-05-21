@@ -55,12 +55,12 @@ class OnePager extends Component {
                     Personal Injury&nbsp;
                     </font>
                     <font style={{fontWeight:600,fontSize:"5.1rem",color:"black"}}>
-                        Practice With #PAIN
+                        Practice With POUND PAIN TECH
                     </font>
                     <div style={{textAlign:'center',margin:20,display:'flex',alignContent:'center',justifyContent:'center'}}>
                         This innovative, patent pending platform links Personal Injury Law Firms & Medical Providers 
                         into one seamless network, simplifying the Business- to- Business referral process. 
-                        With #PAIN, Attorneys can quickly refer clients to Medical Providers through our HIPAA 
+                        With POUND PAIN TECH, Attorneys can quickly refer clients to Medical Providers through our HIPAA 
                         compliant case management system where both parties can communicate and transfer documents effortlessly.
                     </div>
                 </>
@@ -195,7 +195,7 @@ class OnePager extends Component {
                                             <div style={{display:'flex',alignContent:'center',justifyContent:'start'}}>
                                             <AppRegistrationIcon style={{margin:20}}/>&nbsp;
                                             <font style={{margin:20,fontSize:18}}>
-                                            Register at <a target="_blank" style={{color:"#fa6a0a"}} href={baseURLConfig() + "/#/register-legal"}>#PAIN</a>
+                                            Register at <a target="_blank" style={{color:"#fa6a0a"}} href={baseURLConfig() + "/#/register-legal"}>POUND PAIN TECH</a>
                                             </font>
                                             </div>
                                         </div>
@@ -343,7 +343,7 @@ class OnePager extends Component {
                                             <div style={{display:'flex',alignContent:'center',justifyContent:'start'}}>
                                             <AppRegistrationIcon style={{margin:20}}/>&nbsp;
                                             <font style={{margin:20,fontSize:18}}>
-                                            Register at <a target="_blank" style={{color:"#fa6a0a"}} href={baseURLConfig() + "/#/register-provider"}>#PAIN</a>
+                                            Register at <a target="_blank" style={{color:"#fa6a0a"}} href={baseURLConfig() + "/#/register-provider"}>POUND PAIN TECH</a>
                                             </font>
                                             </div>
                                         </div>

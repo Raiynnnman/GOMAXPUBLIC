@@ -317,7 +317,7 @@ class WelcomeEmailReset(SearchBase):
         if config.getKey("appt_email_override") is not None:
             email = config.getKey("appt_email_override")
         m = Mail()
-        m.defer(email,"Appointment Scheduled with #PAIN","templates/mail/welcome-reset.html",data)
+        m.defer(email,"Appointment Scheduled with POUND PAIN TECH","templates/mail/welcome-reset.html",data)
         return ret
 
 class WelcomeEmail(SearchBase):
@@ -353,7 +353,7 @@ class WelcomeEmail(SearchBase):
         if config.getKey("appt_email_override") is not None:
             email = config.getKey("appt_email_override")
         m = Mail()
-        m.defer(email,"Appointment Scheduled with #PAIN","templates/mail/appointment.html",data)
+        m.defer(email,"Appointment Scheduled with POUND PAIN TECH","templates/mail/appointment.html",data)
         return ret
 
 class OfficeAppointmentEmail(SearchBase):
@@ -378,7 +378,7 @@ class OfficeAppointmentEmail(SearchBase):
         if config.getKey("appt_email_override") is not None:
             email = config.getKey("appt_email_override")
         m = Mail()
-        m.defer(email,"Client Acquired with #PAIN","templates/mail/office-appointment.html",data)
+        m.defer(email,"Client Acquired with POUND PAIN TECH","templates/mail/office-appointment.html",data)
         return ret
 
 class ConsultantAppointmentEmail(SearchBase):
@@ -403,7 +403,7 @@ class ConsultantAppointmentEmail(SearchBase):
         if config.getKey("appt_email_override") is not None:
             email = config.getKey("appt_email_override")
         m = Mail()
-        m.defer(email,"Appointment Scheduled with #PAIN","templates/mail/consultant-appointment.html",data)
+        m.defer(email,"Appointment Scheduled with POUND PAIN TECH","templates/mail/consultant-appointment.html",data)
         return ret
 
 class SearchRegister(SearchBase):
