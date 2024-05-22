@@ -117,7 +117,7 @@ class RegistrationUpdate(RegistrationsBase):
         if config.getKey("appt_email_override") is not None:
             email = config.getKey("appt_email_override")
         m = Mail()
-        m.defer(email,"Registration with POUND PAIN TECH","templates/mail/registration-verification.html",data)
+        m.defer(email,"Registration with POUNDPAIN TECH","templates/mail/registration-verification.html",data)
         db.commit()
         return {'success': True}
 
@@ -711,7 +711,14 @@ class RegisterProvider(RegistrationsBase):
                 card_id = db.query("select LAST_INSERT_ID()");
                 card_id = card_id[0]['LAST_INSERT_ID()']
             try: 
-                if False:
+                do_billing = False
+                check = db.query("""
+                    select value from system_settings where name=%s
+                    """,('do_billing_charge',)
+                )
+                if len(check) > 0:
+                    do_billing = check[0]['value']
+                if do_billing:
                     # Create the customer
                     cust = self.createCustomer(params['name'],params['email'],off_id,db)
                     # save the card to the customer
@@ -979,7 +986,7 @@ class RegisterProvider(RegistrationsBase):
         m = Mail()
         data['__OFFICE_NAME__'] = params['name']
         data['__OFFICE_URL__'] = "%s/#/app/main/admin/office/%s" % (url,off_id)
-        m.defer(email,"Registration with POUND PAIN TECH","templates/mail/registration-verification.html",data)
+        m.defer(email,"Registration with POUNDPAIN TECH","templates/mail/registration-verification.html",data)
         m.defer(sysemail,"New Customer Signed Up","templates/mail/office-signup.html",data)
         db.commit()
         return ret
@@ -1216,7 +1223,7 @@ class RegisterReferrer(RegistrationsBase):
         data['__OFFICE_NAME__'] = params['name']
         data['__OFFICE_URL__'] = "%s/#/app/main/admin/office/%s" % (url,insid)
         sysemail = config.getKey("support_email")
-        m.defer(email,"Registration with POUND PAIN TECH","templates/mail/registration-verification.html",data)
+        m.defer(email,"Registration with POUNDPAIN TECH","templates/mail/registration-verification.html",data)
         m.defer(sysemail,"New Referrer Signed Up","templates/mail/office-signup.html",data)
         db.commit()
         return ret

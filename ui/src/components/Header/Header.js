@@ -299,7 +299,7 @@ class Header extends React.Component {
           </Form>*/}
 
           <NavLink className={`${s.navbarBrand} d-md-none ${s.headerSvgFlipColor}`}>
-            POUND PAIN TECH
+            POUNDPAIN TECH
           </NavLink>
         </div> 
 

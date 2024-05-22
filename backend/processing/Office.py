@@ -685,7 +685,7 @@ class ReferralUpdate(OfficeBase):
                 if config.getKey("appt_email_override") is not None:
                     email = config.getKey("appt_email_override")
                 m = Mail()
-                m.defer(email,"Client Acquired with POUND PAIN TECH","templates/mail/office-appointment.html",data)
+                m.defer(email,"Client Acquired with POUNDPAIN TECH","templates/mail/office-appointment.html",data)
             else:
                 db.update("""
                     update referrer_users_queue set 

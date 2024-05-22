@@ -704,7 +704,7 @@ class CustomAppointmentEmail(MyDayBase):
             '__BASE__': url
         }
         m = Mail()
-        m.defer(email, "Appointment Scheduled with POUND PAIN TECH",
+        m.defer(email, "Appointment Scheduled with POUNDPAIN TECH",
                 "templates/mail/appointment.html", data)
         return ret
 
@@ -729,7 +729,7 @@ class OfficeAppointmentEmail(MyDayBase):
             '__BASE__': url
         }
         m = Mail()
-        m.defer(email, "Appointment Scheduled with POUND PAIN TECH",
+        m.defer(email, "Appointment Scheduled with POUNDPAIN TECH",
                 "templates/mail/office-appointment.html", data)
         return ret
 

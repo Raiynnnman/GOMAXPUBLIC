@@ -36,9 +36,9 @@ class Welcome extends React.Component {
                     <div style={{backgroundColor:'black',display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                         <img width="20%" height="20%" src='/painlogo.png'/>
                     </div>
-                    <Widget style={{backgroundColor:"black"}} className="widget-auth mx-auto" title={<h3 style={{color:'white'}} className="mt-0">Welcome to POUND PAIN TECH</h3>}>
+                    <Widget style={{backgroundColor:"black"}} className="widget-auth mx-auto" title={<h3 style={{color:'white'}} className="mt-0">Welcome to POUNDPAIN TECH</h3>}>
                         <p className="widget-auth-info" style={{color:'white'}}>
-                            Welcome to POUND PAIN TECH! You will receive an email with details on how to login and get started. 
+                            Welcome to POUNDPAIN TECH! You will receive an email with details on how to login and get started. 
                         <br/>
                         </p>
                     </Widget>

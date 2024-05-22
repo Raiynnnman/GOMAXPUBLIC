@@ -244,6 +244,10 @@ class RegisterProvider extends Component {
         this.addRow()
     } 
 
+    dologin() { 
+        window.location = "/#/login";
+    } 
+
     updateVerified(e) { 
         var c = 0;
         var i = -1;
@@ -456,6 +460,14 @@ class RegisterProvider extends Component {
             {(this.props.searchProvider && this.props.searchProvider.isReceiving) && (
                 <AppSpinner/>
             )}
+            <Row md="12" style={{backgroundColor:"black"}}>
+                <Col md="8"> </Col>
+                <Col md="4"> 
+                    <div class="pull-right" style={{marginTop:20,marginRight:20}}>
+                    <Button onClick={this.dologin} style={{backgroundColor:"#fa6a0a"}}>Login</Button>
+                    </div>
+                </Col>
+            </Row>
             {(!this.props.match.path.includes("short")) && (
             <div style={{backgroundColor:'black',display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                 <img width="20%" height="20%" src='/painlogo.png'/>
@@ -468,7 +480,7 @@ class RegisterProvider extends Component {
                     <>
                     {(this.state.page === 0) && (
                     <Widget className="widget-auth mx-auto" 
-                        style={{backgroundColor:"black",color:"white"}} title={<h3 style={{color:"white"}} className="mt-0">Register with POUND PAIN TECH</h3>}>
+                        style={{backgroundColor:"black",color:"white"}} title={<h3 style={{color:"white"}} className="mt-0">Register with POUNDPAIN TECH</h3>}>
                         <p className="widget-auth-info">
                             Please enter the information below to register
                         </p>

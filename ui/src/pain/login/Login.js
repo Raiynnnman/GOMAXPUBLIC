@@ -91,10 +91,10 @@ class Login extends React.Component {
                 <Container>
                     <h5 className="auth-logo">
                         <i className="la la-circle text-primary" />
-                        POUND PAIN TECH
+                        POUNDPAIN TECH
                         <i className="la la-circle text-danger" />
                     </h5>
-                    <Widget className="widget-auth mx-auto" title={<h3 className="mt-0">Login to POUND PAIN TECH</h3>}>
+                    <Widget className="widget-auth mx-auto" title={<h3 className="mt-0">Login to POUNDPAIN TECH</h3>}>
                         <p className="widget-auth-info">
                             Use your email to sign in.
                         </p>
@@ -140,7 +140,7 @@ class Login extends React.Component {
                     </Widget>
                 </Container>
                 <footer className="auth-footer">
-                  {getVersion()} - {new Date().getFullYear()} &copy; <a rel="noopener noreferrer" target="_blank" href="https://www.poundpain.com">POUND PAIN TECH</a>
+                  {getVersion()} - {new Date().getFullYear()} &copy; <a rel="noopener noreferrer" target="_blank" href="https://www.poundpain.com">POUNDPAIN TECH</a>
                 </footer>
             </div>
         );
