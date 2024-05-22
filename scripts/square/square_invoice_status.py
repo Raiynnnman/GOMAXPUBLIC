@@ -45,6 +45,7 @@ q = """
         left outer join invoice_check ic on i.id = ic.invoices_id
     where 
         i.billing_system_id = 2 and
+        i.dont_check = 0 and
         date_add(sis.created,interval 160 day) > now() 
     """
 

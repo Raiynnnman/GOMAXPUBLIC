@@ -47,6 +47,7 @@ q = """
         invoices i
     where 
         ii.invoices_id = i.id and
+        i.dont_check = 0 and
         i.id = sis.invoices_id and
         i.billing_system_id = 2 and
         ist.id = i.invoice_status_id and
