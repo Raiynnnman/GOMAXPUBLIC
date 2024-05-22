@@ -195,7 +195,8 @@ class LocationCard extends Component {
                                 <div>
                                 Address:&nbsp;
                                 {this.props.provider.addr1 + " " + 
-                                    this.props.provider.city + " " + this.props.provider.state
+                                    this.props.provider.city + " " + this.props.provider.state + 
+                                    this.props.provider.zipcode
                                 }
                                 </div>
                             )}
@@ -215,7 +216,7 @@ class LocationCard extends Component {
                             )}
                             {(!this.props.edit) && (
                                 <div>
-                                Phone: {this.props.provider.addr2} 
+                                Address 2: {this.props.provider.addr2} 
                                 </div>
                             )}
                         </>
