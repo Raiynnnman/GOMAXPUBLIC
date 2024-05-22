@@ -10,6 +10,8 @@ import jwt
 import base64
 import traceback
 from nameparser import HumanName
+#from authorizenet import apicontractsv1
+#from authorizenet.apicontrollers import *
 
 sys.path.append(os.path.realpath(os.curdir))
 
@@ -718,7 +720,13 @@ class RegisterProvider(RegistrationsBase):
                 )
                 if len(check) > 0:
                     do_billing = check[0]['value']
-                if do_billing:
+                if do_billing and BS==3: # authorize.net
+                    merchantAuth = apicontractsv1.merchantAuthenticationType()
+                    merchantAuth.name = config.getKey("auth_net_key1")
+                    merchantAuth.transactionKey = config.getKey("auth_net_key2")
+                    refId = "ref {}".format(time.time())    
+                    pass 
+                if do_billing and BS==2: # square
                     # Create the customer
                     cust = self.createCustomer(params['name'],params['email'],off_id,db)
                     # save the card to the customer

@@ -7,7 +7,7 @@ create table system_settings(
     value int
 );
 
-insert into system_settings(name,value) values ('do_billing_charge',0);
+insert into system_settings(name,value) values ('do_billing_charge',1);
 
 create table office_phones (
     id int primary key auto_increment,
