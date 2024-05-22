@@ -214,6 +214,23 @@ class UserRegistration extends Component {
             )}
             <Row md="12" xs="12" style={{marginTop:20}}>
                 <Col md="12">
+                    Name: full name
+                    <br/>
+                    Phone: phone
+                    <br/>
+                    Email: email
+                    <br/>
+                    DOA: date of accident (5/16/24)
+                    <br/>
+                    Address: Address
+                    <br/>
+                    Attny: Attny
+                    <br/>
+                    Language: English | Spanish
+                </Col>
+            </Row>
+            <Row md="12" xs="12" style={{marginTop:20}}>
+                <Col md="12">
                     <TextareaAutosize
                       rows={5} style={{backgroundColor:'white'}}
                       placeholder=""

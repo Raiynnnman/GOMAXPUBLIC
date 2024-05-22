@@ -137,6 +137,7 @@ class SearchAdmin extends Component {
         this.state.zipcode = null;
         this.state.error_message = null;
         this.setState(this.state);
+        this.props.dispatch(getProviderSearchAdmin({}))
     } 
 
     register(e,d) { 
