@@ -55,6 +55,7 @@ class Registrations extends Component {
         }
         this.close = this.close.bind(this);
         this.search = this.search.bind(this);
+        this.donotCallChange = this.donotCallChange.bind(this);
         this.onStatusChange = this.onStatusChange.bind(this);
         this.onTypeChange = this.onTypeChange.bind(this);
         this.onLeadStrengthChange = this.onLeadStrengthChange.bind(this);
@@ -115,6 +116,11 @@ class Registrations extends Component {
                 ));
             }
         } 
+    }
+
+    donotCallChange(e,t) { 
+        this.state.selected.do_not_contact = this.state.selected.do_not_contact ? 0 : 1; 
+        this.setState(this.state);
     }
 
     sortChange(t) { 
@@ -303,6 +309,7 @@ class Registrations extends Component {
         var tosend = { 
             email:this.state.selected.email,
             name: this.state.selected.name,
+            do_not_contact: this.state.selected.do_not_contact,
             first_name:this.state.selected.first_name,
             initial_payment:this.state.selected.initial_payment,
             last_name:this.state.selected.last_name,
@@ -642,6 +649,7 @@ class Registrations extends Component {
                         {(row.lead_strength === 'Preferred Provider') && (<Badge color="primary">Preferred Provider</Badge>)}
                         {(row.lead_strength === 'In-Network Provider') && (<Badge color="secondary">In-Network Provider</Badge>)}
                         {(row.lead_strength === 'Potential Provider') && (<Badge color="danger">Potential Provider</Badge>)}
+                        {(row.lead_strength === 'Pending Provider') && (<Badge color="secondary">Pending Provider</Badge>)}
                     </div>
                 )
             },
@@ -950,7 +958,16 @@ class Registrations extends Component {
                                                     />
                                                 )}
                                             </Col>                
-                                          </FormGroup>
+                                        </FormGroup>
+                                        <FormGroup row>
+                                          <Label for="normal-field" md={1} className="text-md-right">
+                                            Do not call
+                                          </Label>
+                                          <Col md={8}>
+                                          <Input type="checkbox" id="normal-field"
+                                                  onChange={this.donotCallChange} placeholder="Email" checked={this.state.selected.do_not_contact}/>
+                                          </Col>
+                                        </FormGroup>
                                           <FormGroup row>
                                             <Label for="normal-field" md={1} className="text-md-right">
                                               Type

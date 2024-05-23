@@ -1317,6 +1317,12 @@ class RegistrationUpdate(AdminBase):
             delete from office_addresses where office_id=%s
             """,(offid,)
         )
+        print("params=%s" % params)
+        if 'do_not_contact' in params:
+            db.update("""
+                update provider_queue set do_not_contact=%s where office_id=%s
+                """,(params['do_not_contact'],offid,)
+            )
         for a in params['addr']:
             db.update(
                 """
@@ -1487,6 +1493,7 @@ class RegistrationList(AdminBase):
                 arr.append(z)
             q += ",".join(map(str,arr))
             q += ")"
+        q += " group by o.id "
         cnt = db.query("select count(id) as cnt from (" + q + ") as t", count_par)
         ret['total'] = cnt[0]['cnt']
         if 'sort' not in params or params['sort'] == None:
