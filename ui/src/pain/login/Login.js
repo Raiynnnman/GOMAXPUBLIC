@@ -117,7 +117,7 @@ class Login extends React.Component {
                             <div className="form-group mb-0">
                                 <input className="form-control no-border" value={this.state.password} onChange={this.changePassword} type="password" required name="password" placeholder="Password" />
                             </div>
-                            <Link className="d-block text-right mb-3 mt-1 fs-sm" to="forgot">Forgot password?</Link>
+                            <Link className="d-block text-right mb-3 mt-1 fs-sm" style={{color:"black"}} to="forgot">Forgot password?</Link>
                             <Button type="submit" color="primary" className="auth-btn mb-3" disabled={
                                   !this.state.isValid} size="sm">{this.props.isFetching ? 'Loading...' : 'Login'}</Button>
                             {/*<p className="widget-auth-info">or sign in with</p>
