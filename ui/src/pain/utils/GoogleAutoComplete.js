@@ -18,7 +18,7 @@ function GoogleAutoComplete({onChange}) {
                 fulladdr:value.label,
                 city:c,
                 state:s,
-                zipcode:0
+                zipcode:''
             })
         }
     },[value]);
