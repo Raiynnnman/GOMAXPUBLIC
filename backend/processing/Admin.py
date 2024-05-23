@@ -1998,6 +1998,8 @@ class AdminReportGet(AdminBase):
         for y in o:
             if y['phone'] is not None:
                 y['phone'] = json.loads(y['phone'])
+                if len(y['phone']) == 1:
+                    y['phone'] = y['phone'][0]
                 if len(y['phone']) > 1:
                     y['phone'] = json.loads(y['phone'][0])
                 if y['phone'][0] == None:
