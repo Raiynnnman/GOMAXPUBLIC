@@ -948,6 +948,10 @@ class LocationUpdate(OfficeBase):
         ret = {}
         job,user,off_id,params = self.getArgs(*args,**kwargs)
         db = Query()
+        if 'fulladdr' not in params:
+            params['fulladdr'] = ''
+        if 'addr2' not in params:
+            params['addr2'] = ''
         if 'id' in params:
             db.update("""
                 update office_addresses set name = %s,
@@ -965,8 +969,6 @@ class LocationUpdate(OfficeBase):
                      params['id'])
             )
         else:
-            if 'fulladdr' not in params:
-                params['fulladdr'] = ''
             db.update("""
                 insert into office_addresses (
                     office_id,name,addr1,addr2,city,state,zipcode,phone,full_addr)

@@ -382,9 +382,6 @@ class RegisterProvider(RegistrationsBase):
         if r.is_error():
             print(r.errors)
             raise Exception("ERROR retrieving cards")
-        if r.is_error():
-            print(r.errors)
-            raise Exception("ERROR retrieving cards")
         r = r.body
         print("card=%s" % card)
         print("r=%s" % r)

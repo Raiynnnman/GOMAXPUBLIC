@@ -195,7 +195,7 @@ class LocationCard extends Component {
                                 <div>
                                 Address:&nbsp;
                                 {this.props.provider.addr1 + " " + 
-                                    this.props.provider.city + " " + this.props.provider.state + " "
+                                    this.props.provider.city + " " + this.props.provider.state + " " + 
                                     this.props.provider.zipcode
                                 }
                                 </div>
