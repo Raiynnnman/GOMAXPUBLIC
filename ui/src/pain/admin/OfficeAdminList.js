@@ -55,6 +55,8 @@ class OfficeList extends Component {
         this.comment = this.comment.bind(this);
         this.search = this.search.bind(this);
         this.pageChange = this.pageChange.bind(this);
+        this.priorityChange = this.priorityChange.bind(this);
+        this.donotCallChange = this.donotCallChange.bind(this);
         this.sortChange = this.sortChange.bind(this);
         this.showMore = this.showMore.bind(this);
         this.showLess = this.showLess.bind(this);
@@ -150,10 +152,21 @@ class OfficeList extends Component {
         ));
     }
 
+    priorityChange(e,t) { 
+        this.state.selected.priority = e.target.value;
+        this.setState(this.state);
+    }
+
+    donotCallChange(e,t) { 
+        this.state.selected.do_not_contact = this.state.selected.do_not_contact ? 0 : 1; 
+        this.setState(this.state);
+    }
+
     activeChange(e,t) { 
         this.state.selected.active = this.state.selected.active ? 0 : 1; 
         this.setState(this.state);
     }
+
     officeReport() { 
         this.props.dispatch(officeReportDownload({report:'office_report'}));
     } 
@@ -335,7 +348,6 @@ class OfficeList extends Component {
     } 
 
     render() {
-        console.log("p",this.props);
         const pageButtonRenderer = ({
           page,
           currentPage,
@@ -873,6 +885,32 @@ class OfficeList extends Component {
                               <Col md={8}>
                               <Input type="checkbox" id="normal-field"
                                       onChange={this.activeChange} placeholder="Email" checked={this.state.selected.active}/>
+                              </Col>
+                            </FormGroup>
+                          </Col>
+                        </Row>
+                        <Row md="12">
+                          <Col md={4}>
+                            <FormGroup row>
+                              <Label for="normal-field" md={4} className="text-md-right">
+                                Do not call
+                              </Label>
+                              <Col md={8}>
+                              <Input type="checkbox" id="normal-field"
+                                      onChange={this.donotCallChange} placeholder="Email" checked={this.state.selected.do_not_contact}/>
+                              </Col>
+                            </FormGroup>
+                          </Col>
+                        </Row>
+                        <Row md="12">
+                          <Col md={4}>
+                            <FormGroup row>
+                              <Label for="normal-field" md={4} className="text-md-right">
+                                Priority
+                              </Label>
+                              <Col md={8}>
+                              <Input type="text" id="normal-field"
+                                      onChange={this.priorityChange} placeholder="Priority" value={this.state.selected.priority}/>
                               </Col>
                             </FormGroup>
                           </Col>

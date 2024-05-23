@@ -764,6 +764,7 @@ class OfficeList(AdminBase):
                             'id',oa.id,'addr1',oa.addr1,'addr2',oa.addr2,'phone',oa.phone,
                             'city',oa.city,'state',oa.state,'zipcode',oa.zipcode)
                     ) as addr,u.phone,u.first_name,u.last_name,o.stripe_cust_id,o.old_stripe_cust_id,
+                    o.priority,pq.do_not_contact,
                     ot.name as office_type,o.updated,o.commission_user_id,
                     concat(comu.first_name, ' ', comu.last_name) as commission_name
                 from 
@@ -1039,6 +1040,16 @@ class OfficeSave(AdminBase):
                         (%s,%s,%s)""",(params['id'],user['id'],"ADDED_COMMENT")
                 )
             db.commit()
+        if 'priority' in params:
+            db.update("""
+                update office set priority=%s where id=%s
+            """,(params['priority'],params['id'],)
+        )
+        if 'do_not_contact' in params:
+            db.update("""
+                update provider_queue set do_not_contact=%s where office_id=%s
+            """,(params['do_not_contact'],params['id'],)
+            )
         db.update("""
             delete from office_providers where office_addresses_id in
                 (select id from office_addresses where office_id=%s)
@@ -1215,6 +1226,11 @@ class RegistrationUpdate(AdminBase):
                 offid
                 )
         )
+        if 'do_not_contact' in params:
+            db.update("""
+                update provider_queue set do_not_contact=%s where office_id=%s
+            """,(params['do_not_contact'],off_id,)
+            )
         db.update("""
             update users set 
                 email = %s,first_name=%s,last_name=%s,phone=%s
@@ -1396,6 +1412,7 @@ class RegistrationList(AdminBase):
                 pqls.id as lead_strength_id, pq.created,pq.updated,pq.places_id,
                 pq.initial_payment,ot.id as office_type_id,
                 ot.name as office_type,op.pricing_data_id as pricing_id,
+                pq.do_not_contact,
                 o.commission_user_id,oa.state,op.start_date,
                 concat(comu.first_name, ' ', comu.last_name) as commission_name,
                 coup.id as coupon_id,coup.name as coupon_name
@@ -1930,6 +1947,7 @@ class AdminReportGet(AdminBase):
             select
                 o.id,o.name,o.email,i.id as invoice_id,
                 json_array(i4.phone) as phone,
+                pq.do_not_contact,o.priority,
                 pd.description as subscription_plan,
                 pd.duration as subscription_duration,
                 op.start_date as plan_start,
@@ -1944,6 +1962,7 @@ class AdminReportGet(AdminBase):
                 office o
                 left outer join invoices i on i.office_id=o.id
                 left outer join office_plans op on op.office_id = o.id
+                left outer join provider_queue pq on pq.office_id = o.id
                 left outer join pricing_data pd on op.pricing_data_id = pd.id
                 left outer join (
                     select i.office_id,i.total,i.id,isi.name,min(i.billing_period) as bp
