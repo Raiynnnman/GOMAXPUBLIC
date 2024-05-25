@@ -1,21 +1,23 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import Box from '@mui/material/Box';
+import FilledInput from '@mui/material/FilledInput';
+import HeroOlive from '../../components/HeroOlive';
 import { withRouter, Link } from 'react-router-dom';
-import config from '../../config';
+import Navbar from '../../components/Navbar';
 import { connect } from 'react-redux';
-import { Container, Alert, Button, FormGroup, Label, Row } from 'reactstrap';
-import Widget from '../../components/Widget';
+import FormControl from '@mui/material/FormControl';
+import FormHelperText from '@mui/material/FormHelperText';
+import Input from '@mui/material/Input';
+import InputLabel from '@mui/material/InputLabel';
+import OutlinedInput from '@mui/material/OutlinedInput';
 import { loginUser, receiveToken, doInit } from '../../actions/auth';
 import jwt from "jsonwebtoken";
-import microsoft from '../../images/microsoft.png';
+// import microsoft from '../../images/microsoft.png';
 import getVersion from '../../version.js';
 import { push } from 'connected-react-router';
 import translate from '../utils/translate';
 
 class Login extends React.Component {
-    static propTypes = {
-        dispatch: PropTypes.func.isRequired,
-    };
 
     static isAuthenticated() {
       const token = localStorage.getItem('token');
@@ -77,6 +79,7 @@ class Login extends React.Component {
     }
 
     componentDidMount() {
+        console.log("here");
         const params = new URLSearchParams(this.props.location.search);
         const token = params.get('token');
         if (token) {
@@ -85,7 +88,36 @@ class Login extends React.Component {
         }
     }
 
-    render() {
+    render() { 
+        return (
+        <>
+            <Navbar/>
+            <div className="container">
+                <div className="row align-items-center">
+                    <div className="col-lg-4 col-sm-5 col-5">
+                        <h1>TEST1</h1>
+                    </div>
+                </div>
+                <div className="row align-items-center">
+                    <div className="col-lg-4 col-sm-5 col-5">
+                        <h1>TEST2</h1>
+                    </div>
+                </div>
+                <div className="row align-items-center">
+                    <div className="col-lg-4 col-sm-5 col-5">
+                        <h1>TEST3</h1>
+                    </div>
+                </div>
+                <div className="row align-items-center">
+                    <div className="col-lg-4 col-sm-5 col-5">
+                        <h1>TEST4</h1>
+                    </div>
+                </div>
+            </div>
+        </>
+        )
+    } 
+    /*render2() {
         return (
             <div className="auth-page">
                 <Container>
@@ -120,18 +152,6 @@ class Login extends React.Component {
                             <Link className="d-block text-right mb-3 mt-1 fs-sm" style={{color:"black"}} to="forgot">Forgot password?</Link>
                             <Button type="submit" color="primary" className="auth-btn mb-3" disabled={
                                   !this.state.isValid} size="sm">{this.props.isFetching ? 'Loading...' : 'Login'}</Button>
-                            {/*<p className="widget-auth-info">or sign in with</p>
-                            <div className="social-buttons">
-                                <Button onClick={this.googleLogin} color="warning" className="social-button mb-2">
-                                    <i className="social-icon social-google"/>
-                                    <p className="social-text">GOOGLE</p>
-                                </Button>
-                                <Button onClick={this.microsoftLogin} color="danger" className="social-button">
-                                    <i className="social-icon social-microsoft"
-                                       style={{backgroundImage: `url(${microsoft})`}}/>
-                                    <p className="social-text">MICROSOFT</p>
-                                </Button>
-                            </div>*/}
                         </form>
                         <p className="widget-auth-info">
                             Don't have an account? Sign up now!
@@ -143,15 +163,16 @@ class Login extends React.Component {
                   {getVersion()} - {new Date().getFullYear()} &copy; <a rel="noopener noreferrer" target="_blank" href="https://www.poundpain.com">POUNDPAIN TECH</a>
                 </footer>
             </div>
-        );
+        ); 
     }
+    */
 }
 
 function mapStateToProps(state) {
     return {
-        isFetching: state.auth.isFetching,
-        isAuthenticated: state.auth.isAuthenticated,
-        errorMessage: state.auth.errorMessage,
+        // isFetching: state.auth.isFetching,
+        // isAuthenticated: state.auth.isAuthenticated,
+        // errorMessage: state.auth.errorMessage,
         auth: state.auth
     };
 }

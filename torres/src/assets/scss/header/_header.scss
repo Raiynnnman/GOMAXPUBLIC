@@ -12,9 +12,9 @@
 .app-header{
     &.header--transparent{
         left: 0;
-        position: absolute;
+        // position: absolute;
         right: 0;
-        top: 95px;
+        // top: 95px;
         z-index: 2;
         
         @media #{$lg-layout} {

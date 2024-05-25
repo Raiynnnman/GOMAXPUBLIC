@@ -4,7 +4,7 @@ import React, { Component } from "react";
 class HeroOlive extends Component {
     render(){
         return(
-            <div className={`slider-area bg-color ${this.props.horizontal} ${this.props.bgshape}`} id="home"  style={{background:'#2d3e50'}}>
+            <div className={`slider-area bg-color ${this.props.horizontal} ${this.props.bgshape}`} id="home"  style={{background:'#2d3e50',marginTop:0,paddingTop:0}}>
                 <div className="container h-100">
                     <div className="row">
                         <div className="col-lg-7 h-100">

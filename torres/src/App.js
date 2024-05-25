@@ -6,6 +6,7 @@ import BlogDetails from './pages/BlogDetails';
 import BlogTwoColumn from './pages/BlogTwoColumn';
 import HomeHorizontal from './pages/HomeHorizontal';
 import {BrowserRouter, Switch, Route} from 'react-router-dom';
+import Login from './pain/login/Login';
 
 const App = () => {
     return (
@@ -13,6 +14,7 @@ const App = () => {
             <BrowserRouter basename={'/'}>
                 <Switch>
                     <Route exact path='/' component={HomeHorizontal}/>
+                    <Route exact path='/login' component={Login}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/tf`} component={DemoTF}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/home-one`} component={HomeOlive}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/home-two`} component={HomeHorizontal}/>

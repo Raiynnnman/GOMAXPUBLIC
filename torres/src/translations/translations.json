@@ -1,0 +1,29 @@
+{
+    "es": {
+    },
+    "en": {
+
+        "PASSWORD_EIGHT_LENGTH_REQUIRED":"Eight characters required",
+        "ALREADY_ACCEPTED_BY_ANOTHER_PROVIDER":"This appointment has been accepted by another provider.",
+        "NO_EMAIL_FOUND_FOR_PRACTICE":"We are unable to find your email in our system. Please visit your dashboard.",
+        "INVALID_EMAIL_FOUND_FOR_PRACTICE":"We are unable to find your email in our system. Please visit your dashboard.",
+        "OFFICE_ALREADY_ACCEPTED":"Your office has already accepted this patient.",
+        "REFERRAL_DOESNT_EXIST":"This patient no longer exists. We apologize for the inconvienance",
+        "LETTERS_REQUIRED":"Letters are required",
+        "NUMBERS_REQUIRED":"Numbers are required",
+        "ONE_UPPERCASE_REQUIRED":"One Uppercase Letter Required",
+        "ONE_LOWERCASE_REQUIRED":"One Lowercase Letter Required",
+        "ONE_NUMBER_REQUIRED":"One number Required",
+        "BUNDLE_NAME_REQUIRED": "Bundle name is required",
+        "BUNDLE_ITEMS_REQUIRED": "Bundle items are required",
+        "BUNDLE_ITEM_OFFICE_REQURED": "Bundle items require an associated office",
+        "BUNDLE_OFFICE_INVALID": "Bundle assigned office isn't associated with this office",
+        "BUNDLE_ITEM_ASSIGNMENT_REQURED": "Bundle items must be assigned to a physician",
+        "BUNDLE_ITEM_DESCRIPTION_REQURED": "Bundle items must have a description",
+        "BUNDLE_ITEM_CODE_REQURED": "Bundle items must have a code",
+        "BUNDLE_ITEM_QUANTITY_REQURED":"Bundle items must have a quantity",
+        "BUNDLE_ITEM_PRICE_REQURED":"Bundle items must have a price",
+        "BUNDLE_ITEM_PRICE_INVALID":"Bundle item price is invalid",
+        "BUNDLE_ITEM_QUANTITY_INVALID":"Bundle items quantity is invalid"
+    }
+}
