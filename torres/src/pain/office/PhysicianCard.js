@@ -130,8 +130,8 @@ class PhysicianCard extends Component {
                 margin:20,
                 borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}} className="mb-xlg border-1">
                 <CardBody>
-                    <Grid md="12">
-                        <Grid item  md="12">
+                    <Grid container xs="12">
+                        <Grid item xs="12">
                             <font style={{fontSize:"14pt",fontWeight:"bold"}}>
                             {this.props.provider.title ? this.props.provider.title + " ": ''} 
                             {this.props.provider.first_name + " " + this.props.provider.last_name}
@@ -195,8 +195,8 @@ class PhysicianCard extends Component {
                             )}
                             {this.props.provider.rating.toFixed(1)}
                         </Grid>
-                        <Grid item  md="2"></Grid>
-                        <Grid item  md="4" class="pull-right">
+                        <Grid item xs="2"></Grid>
+                        <Grid item xs="4" class="pull-right">
                         </Grid>
                     </Grid>
                     <hr/>
@@ -206,37 +206,37 @@ class PhysicianCard extends Component {
                         {(!this.props.provider.headshot) && (<img style={{width:140,height:130,objectFit:"fill"}} src="/headshot.png"/>)}
                     </>
                     </div>
-                    <Grid md="12"> <Grid item  md="12">{this.props.provider.miles.toFixed(2)} miles</Grid> </Grid>
+                    <Grid container xs="12"> <Grid item xs="12">{this.props.provider.miles.toFixed(2)} miles</Grid> </Grid>
                     {(this.props.provider.locations && this.props.provider.locations.length > 0) && (
                     <>
-                        <Grid md="12"> <Grid item  md="12">{this.props.provider.locations[0][0].addr1 + " " + this.props.provider.locations[0][0].addr2 ? this.props.provider.locations[0][0].addr2 : ''}</Grid> </Grid>
-                        <Grid md="12">
-                            <Grid item  md="12">{this.props.provider.locations[0][0].city}, {this.props.provider.locations[0][0].state} {this.props.provider.locations[0][0].zipcode}
+                        <Grid container xs="12"> <Grid item xs="12">{this.props.provider.locations[0][0].addr1 + " " + this.props.provider.locations[0][0].addr2 ? this.props.provider.locations[0][0].addr2 : ''}</Grid> </Grid>
+                        <Grid container xs="12">
+                            <Grid item xs="12">{this.props.provider.locations[0][0].city}, {this.props.provider.locations[0][0].state} {this.props.provider.locations[0][0].zipcode}
                             </Grid> 
                         </Grid>
                     </>
                     )}
                     {(!this.props.provider.locations || this.props.provider.locations.length === 0) && (
                     <>
-                        <Grid md="12"> <Grid item  md="12">N/A</Grid> </Grid>
-                        <Grid md="12">
-                            <Grid item  md="12">N/A, N/A N/A
+                        <Grid container xs="12"> <Grid item xs="12">N/A</Grid> </Grid>
+                        <Grid container xs="12">
+                            <Grid item xs="12">N/A, N/A N/A
                             </Grid> 
                         </Grid>
                     </>
                     )}
-                    {(false) && ( <Grid md="12"> 
-                        <Grid item  md="4">
+                    {(false) && ( <Grid container xs="12"> 
+                        <Grid item xs="4">
                             <Button color="secondary">See Reviews</Button>
                         </Grid>
-                        <Grid item  md="4">
+                        <Grid item xs="4">
                             <Button color="secondary">See Video</Button>
                         </Grid>
                     </Grid>
                     )}
                     <hr/>
-                    <Grid md="12"> 
-                        <Grid item  md="12">
+                    <Grid container xs="12"> 
+                        <Grid item xs="12">
                             <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                 <Button color="primary" onClick={this.edit}>Edit</Button>
                             </div>

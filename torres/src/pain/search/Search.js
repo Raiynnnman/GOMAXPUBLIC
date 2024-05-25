@@ -241,7 +241,7 @@ class SearchAdmin extends Component {
             )}
             {(!Login.isAuthenticated()) && ( 
             <>
-            <Grid md="12">
+            <Grid container xs="12">
                 <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'space-evenly'}}>
                         <img src="/painlogo.png" width="200px" height="200px"/>
                         <font style={{textAlign:"center", fontSize:window.innerWidth < 1024 ? 15 : 30}}>POUNDPAIN TECH</font>
@@ -254,8 +254,8 @@ class SearchAdmin extends Component {
             </>
             )}
             {(!Login.isAuthenticated() && this.state.selectedAppt === null) && ( 
-            <Grid md="12"> 
-                <Grid item  md="12">
+            <Grid container xs="12"> 
+                <Grid item xs="12">
                     <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                         <font style={{textAlign:"center", fontSize:window.innerWidth < 1024 ? 20 : 40,fontWeight:"bold"}}>
                             Save money on common medical procedures
@@ -288,7 +288,7 @@ class SearchAdmin extends Component {
                                 <Card onClick={() => this.setProviderType(e.id)} 
                                     style={{borderRadius:"25px 25px 25px 25px",margin:20,width:400,height:300}} className="mb-xlg border-1">
                                     <CardBody>
-                                        <Grid md="12">
+                                        <Grid container xs="12">
                                             <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                             <font style={{fontSize:'24px'}}>
                                                 {e.description}
@@ -323,8 +323,8 @@ class SearchAdmin extends Component {
                 </div>
             )}
             {(this.state.selectedAppt !== null) && (
-                <Grid md="12">
-                    <Grid item  md="12">
+                <Grid container xs="12">
+                    <Grid item xs="12">
                         <UserRegistration data={this.state.selectedAppt} onCancel={this.cancel} onRegister={this.register}/>
                     </Grid>
                 </Grid>

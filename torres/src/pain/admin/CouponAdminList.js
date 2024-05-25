@@ -331,16 +331,16 @@ class CouponAdminList extends Component {
             {(this.props && this.props.coupons && this.props.coupons.data && 
               this.props.coupons.data.coupons && this.state.selected === null) && ( 
             <>
-            <Grid md="12">
-                <Grid item  md="2" style={{marginBottom:10}}>
-                    <Grid item  md="1">
+            <Grid container xs="12">
+                <Grid item xs="2" style={{marginBottom:10}}>
+                    <Grid item xs="1">
                         <Button onClick={() => this.edit({id:"new"})} style={{width:50}}
                             color="primary"><AddBoxIcon/></Button>
                     </Grid>
                 </Grid>
             </Grid>
-            <Grid md="12">
-                <Grid item  md="12">
+            <Grid container xs="12">
+                <Grid item xs="12">
                     <PainTable
                         keyField='id' 
                         data={this.props.coupons.data.coupons} 
@@ -359,13 +359,13 @@ class CouponAdminList extends Component {
             {(this.props && this.props.coupons && this.props.coupons.data && 
               this.props.coupons.data.coupons && this.state.selected !== null) && ( 
               <>
-                <Grid md="12" style={{marginTop:10}}>
-                    <Grid item  md="12">
+                <Grid container xs="12" style={{marginTop:10}}>
+                    <Grid item xs="12">
                           {this.state.selected.id && (<FormGroup row>
                             <Label for="normal-field" md={1} className="text-md-right">
                               ID 
                             </Label>
-                            <Grid item  md={5}>
+                            <Grid item xs={5}>
                                 <Input type="text" id="normal-field" readOnly 
                                 placeholder="ID" value={this.state.selected.id}/>
                             </Grid>
@@ -375,7 +375,7 @@ class CouponAdminList extends Component {
                               <Label for="normal-field" md={1} className="text-md-right">
                                 Active
                               </Label>
-                              <Grid item  md={8}>
+                              <Grid item xs={8}>
                               <Input type="checkbox" id="normal-field"
                                       onChange={this.activeChange} placeholder="Email" checked={this.state.selected.active}/>
                               </Grid>
@@ -384,7 +384,7 @@ class CouponAdminList extends Component {
                             <Label for="normal-field" md={1} className="text-md-right">
                               Name 
                             </Label>
-                            <Grid item  md={5}>
+                            <Grid item xs={5}>
                                 <Input type="text" id="normal-field" onChange={this.nameChange}
                                 placeholder="Name" value={this.state.selected.name}/>
                             </Grid>
@@ -393,7 +393,7 @@ class CouponAdminList extends Component {
                             <Label for="normal-field" md={1} className="text-md-right">
                                 Plan
                             </Label>
-                            <Grid item  md="5" style={{zIndex:9995}}>
+                            <Grid item xs="5" style={{zIndex:9995}}>
                               {(this.props.plansList && this.props.plansList.data && 
                                 this.props.plansList.data) && (
                                   <Select
@@ -423,7 +423,7 @@ class CouponAdminList extends Component {
                             <Label for="normal-field" md={1} className="text-md-right">
                               Total
                             </Label>
-                            <Grid item  md={5}>
+                            <Grid item xs={5}>
                                 <MaskedInput
                                   className="form-control" id="mask-phone" mask="$1111"
                                   disabled={this.state.selected.perc !== null || this.state.selected.reduction !== null}
@@ -437,7 +437,7 @@ class CouponAdminList extends Component {
                             <Label for="normal-field" md={1} className="text-md-right">
                               Percentage
                             </Label>
-                            <Grid item  md={5}>
+                            <Grid item xs={5}>
                                 <MaskedInput
                                   className="form-control" id="mask-perc" mask="11%"
                                   disabled={this.state.selected.total !== null || this.state.selected.reduction !== null}
@@ -452,7 +452,7 @@ class CouponAdminList extends Component {
                             <Label for="normal-field" md={1} className="text-md-right">
                               Reduction
                             </Label>
-                            <Grid item  md={5}>
+                            <Grid item xs={5}>
                                 <MaskedInput
                                   className="form-control" id="mask-reduction" mask="$1111"
                                   disabled={this.state.selected.perc !== null || this.state.selected.total !== null}
@@ -468,7 +468,7 @@ class CouponAdminList extends Component {
                             <Label for="normal-field" md={1} className="text-md-right">
                               Start Date
                             </Label>
-                            <Grid item  md={5}>
+                            <Grid item xs={5}>
                                 <MaskedInput
                                   className="form-control" id="mask-phone" mask="1111-11-11"
                                   placeholderChar=' '
@@ -481,7 +481,7 @@ class CouponAdminList extends Component {
                             <Label for="normal-field" md={1} className="text-md-right">
                               End Date
                             </Label>
-                            <Grid item  md={5}>
+                            <Grid item xs={5}>
                                 <MaskedInput
                                   placeholderChar=' '
                                   className="form-control" id="mask-phone" mask="1111-11-11"
@@ -493,9 +493,9 @@ class CouponAdminList extends Component {
                     </Grid>
                 </Grid>
                 <hr/>
-                <Grid md="12">
-                    <Grid item  md="12">
-                        <Grid item  md="6">
+                <Grid container xs="12">
+                    <Grid item xs="12">
+                        <Grid item xs="6">
                             <Button onClick={this.save} color="primary">Save</Button>
                             <Button outline style={{marginLeft:10}} onClick={this.cancel} 
                                 color="secondary">Close</Button>

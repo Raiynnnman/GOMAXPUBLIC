@@ -277,15 +277,15 @@ class UserAdminList extends Component {
             {(this.props && this.props.userAdmin && this.props.userAdmin.data && 
               this.props.userAdmin.data.users && this.state.selected === null) && ( 
             <>
-            <Grid md="12">
-                <Grid item  md="2" style={{marginBottom:10}}>
+            <Grid container xs="12">
+                <Grid item xs="2" style={{marginBottom:10}}>
                     {/*<Button onClick={() => this.edit({id:"new"})} 
                         style={{marginRight:5,height:35,width:90}} color="primary">Add</Button>
                     */}
                 </Grid>
             </Grid>
-            <Grid md="12">
-                <Grid item  md="12">
+            <Grid container xs="12">
+                <Grid item xs="12">
                       <BootstrapTable 
                           keyField="id"
                           data={ this.props.userAdmin.data.users }
@@ -299,116 +299,116 @@ class UserAdminList extends Component {
             {(this.props && this.props.userAdmin && this.props.userAdmin.data && 
               this.props.userAdmin.data.users && this.state.selected !== null) && ( 
             <>
-            <Grid md="12">
-                <Grid item  md="5">
+            <Grid container xs="12">
+                <Grid item xs="5">
                     <h5>Details</h5>
                 </Grid>
             </Grid>
-            <Grid md="12">
-                <Grid item  md="5">
-                    <Grid md="12">
-                        <Grid item  md="12">
+            <Grid container xs="12">
+                <Grid item xs="5">
+                    <Grid container xs="12">
+                        <Grid item xs="12">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               Email
                             </Label>
-                            <Grid item  md={7}>
+                            <Grid item xs={7}>
                               <Input type="text" id="normal-field" onChange={this.emailChange} placeholder="Email" value={this.state.selected.email}/>
                             </Grid>
                           </FormGroup>
                         </Grid>
                     </Grid>
-                    <Grid md="12">
-                        <Grid item  md="12">
+                    <Grid container xs="12">
+                        <Grid item xs="12">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               First Name
                             </Label>
-                            <Grid item  md={7}>
+                            <Grid item xs={7}>
                               <Input type="text" id="normal-field" onChange={this.firstChange} placeholder="First Name" value={this.state.selected.first_name}/>
                             </Grid>
                           </FormGroup>
                         </Grid>
                     </Grid>
-                    <Grid md="12">
-                        <Grid item  md="12">
+                    <Grid container xs="12">
+                        <Grid item xs="12">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               Last Name
                             </Label>
-                            <Grid item  md={7}>
+                            <Grid item xs={7}>
                               <Input type="text" id="normal-field" onChange={this.lastChange} placeholder="Last Name" value={this.state.selected.last_name}/>
                             </Grid>
                           </FormGroup>
                         </Grid>
                     </Grid>
-                    <Grid md="12">
-                        <Grid item  md="12">
+                    <Grid container xs="12">
+                        <Grid item xs="12">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               Phone
                             </Label>
-                            <Grid item  md={7}>
+                            <Grid item xs={7}>
                               <Input type="text" id="normal-field" onChange={this.phoneChange} placeholder="Phone" value={this.state.selected.phone}/>
                             </Grid>
                           </FormGroup>
                         </Grid>
                     </Grid>
-                    <Grid md="12">
-                        <Grid item  md="12">
+                    <Grid container xs="12">
+                        <Grid item xs="12">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               Address1
                             </Label>
-                            <Grid item  md={7}>
+                            <Grid item xs={7}>
                               <Input type="text" id="normal-field" onChange={this.addr1Change} placeholder="Address 1" value={this.state.selected.addr1}/>
                             </Grid>
                           </FormGroup>
                         </Grid>
                     </Grid>
-                    <Grid md="12">
-                        <Grid item  md="12">
+                    <Grid container xs="12">
+                        <Grid item xs="12">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               Address2
                             </Label>
-                            <Grid item  md={7}>
+                            <Grid item xs={7}>
                               <Input type="text" id="normal-field" onChange={this.addr2Change} placeholder="Address 1" value={this.state.selected.addr2}/>
                             </Grid>
                           </FormGroup>
                         </Grid>
                     </Grid>
-                    <Grid md="12">
-                        <Grid item  md="12">
+                    <Grid container xs="12">
+                        <Grid item xs="12">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               City
                             </Label>
-                            <Grid item  md={7}>
+                            <Grid item xs={7}>
                               <Input type="text" id="normal-field" onChange={this.cityChange} placeholder="Address 1" value={this.state.selected.city}/>
                             </Grid>
                           </FormGroup>
                         </Grid>
                     </Grid>
-                    <Grid md="12">
-                        <Grid item  md="12">
+                    <Grid container xs="12">
+                        <Grid item xs="12">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               State
                             </Label>
-                            <Grid item  md={7}>
+                            <Grid item xs={7}>
                               <Input type="text" id="normal-field" onChange={this.stateChange} placeholder="Address 1" value={this.state.selected.state}/>
                             </Grid>
                           </FormGroup>
                         </Grid>
                     </Grid>
-                    <Grid md="12">
-                        <Grid item  md="12">
+                    <Grid container xs="12">
+                        <Grid item xs="12">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               Zipcode
                             </Label>
-                            <Grid item  md={7}>
+                            <Grid item xs={7}>
                               <Input type="text" id="normal-field" onChange={this.zipcodeChange} placeholder="Zip" value={this.state.selected.zipcode}/>
                             </Grid>
                           </FormGroup>
@@ -417,9 +417,9 @@ class UserAdminList extends Component {
                 </Grid>
             </Grid>
             <hr/>
-            <Grid md="12">
+            <Grid container xs="12">
                 {(!this.state.commentAdd) && (
-                <Grid item  md="6">
+                <Grid item xs="6">
                     <Button onClick={this.save} color="primary">Save</Button>
                     <Button outline style={{marginLeft:10}} onClick={this.cancel} color="secondary">Cancel</Button>
                 </Grid>

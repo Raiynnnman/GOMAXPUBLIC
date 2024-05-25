@@ -125,28 +125,28 @@ class UserCards extends Component {
             {(this.props.saveCard && this.props.saveCard.isReceiving) && (
                 <AppSpinner/>
             )}
-            <Grid md="12" style={{marginTop:50}}>
-                <Grid item  md="5">
+            <Grid container xs="12" style={{marginTop:50}}>
+                <Grid item xs="5">
                     <h5>Cards</h5>
                 </Grid>                
             </Grid>
             {(this.state.newcard === null) && (
-            <Grid md="12">
-                <Grid item  md="12">
+            <Grid container xs="12">
+                <Grid item xs="12">
                     <Button onClick={() => this.addCard()} style={{marginBottom:10,height:35,width:90}} color="primary">Add</Button>
                 </Grid>                
             </Grid>
             )}
             {(this.props.user.data.cards.length < 1 && this.state.newcard === null) && (
-            <Grid md="12">
-                <Grid item  md="5">
+            <Grid container xs="12">
+                <Grid item xs="5">
                     <h4 style={{height:100}}>No cards to show</h4>
                 </Grid>                
             </Grid>
             )}
             {(this.props.user.data.cards.length > 0 && this.state.newcard === null) && (
-            <Grid md="12">
-                <Grid item  md="5">
+            <Grid container xs="12">
+                <Grid item xs="5">
                     <BootstrapTable 
                         keyField='id' data={this.props.user.data.cards} 
                         cellEdit={ cellEditFactory({ mode: 'click',blurToSave:true }) }
@@ -158,8 +158,8 @@ class UserCards extends Component {
             {(this.props.user && this.props.user.data && this.props.user.data.invoices &&
               this.state.newcard !== null) && (
             <>
-            <Grid md="12">
-                <Grid item  md="6">
+            <Grid container xs="12">
+                <Grid item xs="6">
                 {(this.props.setupIntent && this.props.setupIntent.data &&
                   this.props.setupIntent.data.data &&
                   this.props.setupIntent.data.data.id) && (

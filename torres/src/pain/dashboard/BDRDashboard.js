@@ -31,8 +31,8 @@ class BDRDashboard extends Component {
             )}
             {(this.props.bdrDashboard && this.props.bdrDashboard.data && 
               this.props.bdrDashboard.data.commissions) && (
-                <Grid md="12">
-                    <Grid item  md="3">
+                <Grid container xs="12">
+                    <Grid item xs="3">
                         <TrendHeroWithStats data={this.props.bdrDashboard.data.commissions}
                             title="Commissions" 
                                 num1isdollar={true} num2title="Paid" num2isdollar={true} 

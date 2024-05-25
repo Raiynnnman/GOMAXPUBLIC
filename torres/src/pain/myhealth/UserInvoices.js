@@ -160,14 +160,14 @@ class UserInvoices extends Component {
         ]
         return (
         <>
-            <Grid md="12">
-                <Grid item  md="12">
+            <Grid container xs="12">
+                <Grid item xs="12">
                     <h5>Invoices</h5>
                 </Grid>                
             </Grid>
             {(this.props.user.data.invoices.length > 0 && this.state.selected === null) && (
-            <Grid md="12">
-                <Grid item  md="12">
+            <Grid container xs="12">
+                <Grid item xs="12">
                     <BootstrapTable 
                         keyField='id' data={this.props.user.data.invoices} 
                         cellEdit={ cellEditFactory({ mode: 'click',blurToSave:true }) }
@@ -177,48 +177,48 @@ class UserInvoices extends Component {
             </Grid>
             )}
             {(this.props.user.data.invoices.length < 1 && this.state.selected === null) && (
-            <Grid md="12">
-                <Grid item  md="12">
+            <Grid container xs="12">
+                <Grid item xs="12">
                     <h4 style={{height:100}}>No invoices to show</h4>
                 </Grid>                
             </Grid>
             )}
             {(this.props.user.data.invoices.length > 0 && this.state.selected !== null) && (
             <>
-            <Grid md="12">
-                <Grid item  md="3">
+            <Grid container xs="12">
+                <Grid item xs="3">
                     Invoice ID:
                 </Grid>                
-                <Grid item  md="5">
+                <Grid item xs="5">
                     {this.state.selected.number}
                 </Grid>                
             </Grid>
-            <Grid md="12">
-                <Grid item  md="3">
+            <Grid container xs="12">
+                <Grid item xs="3">
                     Office:
                 </Grid>                
-                <Grid item  md="5">
+                <Grid item xs="5">
                     {this.state.selected.office_name}
                 </Grid>                
             </Grid>
-            <Grid md="12">
-                <Grid item  md="3">
+            <Grid container xs="12">
+                <Grid item xs="3">
                     Physician:
                 </Grid>                
-                <Grid item  md="5">
+                <Grid item xs="5">
                     {this.state.selected.title + " " + this.state.selected.first_name + " " + this.state.selected.last_name}
                 </Grid>                
             </Grid>
-            <Grid md="12">
-                <Grid item  md="3">
+            <Grid container xs="12">
+                <Grid item xs="3">
                     Date:
                 </Grid>                
-                <Grid item  md="5">
+                <Grid item xs="5">
                     {moment(this.state.selected.day + " " + this.state.selected.time).format("LLL")}
                 </Grid>                
             </Grid>
-            <Grid md="12">
-                <Grid item  md="6">
+            <Grid container xs="12">
+                <Grid item xs="6">
                     <BootstrapTable 
                         keyField='id' data={this.state.selected.items} 
                         columns={invoicedetailhead}> 
@@ -226,8 +226,8 @@ class UserInvoices extends Component {
                 </Grid>                
             </Grid>
             <hr/>
-            <Grid md="12">
-                <Grid item  md="4">
+            <Grid container xs="12">
+                <Grid item xs="4">
                 <Button outline onClick={this.cancel}>
                   Back
                 </Button>

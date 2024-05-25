@@ -139,8 +139,8 @@ class Map extends Component {
                 <AppSpinner/>
             )}
             <div style={{zIndex:512}}>
-                <Grid md="12">
-                    <Grid item  md="2" style={{zIndex:9995}}>
+                <Grid container xs="12">
+                    <Grid item xs="2" style={{zIndex:9995}}>
                       {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.config &&
                         this.props.trafficData.data.config.avail && this.state.dateSelected !== null) && (
                           <Select
@@ -162,14 +162,14 @@ class Map extends Component {
                             />
                         )}
                     </Grid>                
-                    <Grid item  md="1" style={{zIndex:9995}}>
+                    <Grid item xs="1" style={{zIndex:9995}}>
                       {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.config &&
                         this.props.trafficData.data.config.avail && this.state.dateSelected !== null) && (
                           <Input type="text" id="normal-field" 
                             onChange={this.onZipChange} placeholder="" value={this.state.zipSelected}/>
                         )}
                     </Grid>                
-                    <Grid item  md="7" style={{zIndex:9995}}>
+                    <Grid item xs="7" style={{zIndex:9995}}>
                       {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.config &&
                         this.props.trafficData.data.config.avail && this.state.dateSelected !== null) && (
                           <Select
@@ -198,8 +198,8 @@ class Map extends Component {
                     </Grid>                
                 </Grid>
             </div>
-            <Grid md="12" style={{marginTop:20}}>
-                <Grid item  md="12">
+            <Grid container xs="12" style={{marginTop:20}}>
+                <Grid item xs="12">
                     <Nav tabs  className={`${s.coloredNav}`} style={{backgroundColor:"#e8ecec"}}>
                         <NavItem>
                             <NavLink className={classnames({ active: this.state.activeTab === 'traffic' })}

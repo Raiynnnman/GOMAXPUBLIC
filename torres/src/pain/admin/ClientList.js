@@ -250,9 +250,9 @@ class ClientList extends Component {
             </Nav>
             <TabContent className='mb-lg' activeTab={this.state.activeTab}>
                 <TabPane tabId="clients">
-                    <Grid md="12">
-                        <Grid item  md="8"></Grid>
-                        <Grid item  md="4">
+                    <Grid container xs="12">
+                        <Grid item xs="8"></Grid>
+                        <Grid item xs="4">
                             <div class="pull-right">
                                 <div style={{justifyContent:'spread-evenly'}}>
                                     <Button onClick={() => this.reload()} style={{marginRight:5,height:35}} outline 
@@ -261,8 +261,8 @@ class ClientList extends Component {
                             </div>
                         </Grid>
                     </Grid>
-                    <Grid md="12" style={{marginTop:10}}>
-                        <Grid item  md="12">
+                    <Grid container xs="12" style={{marginTop:10}}>
+                        <Grid item xs="12">
                             <PainTable
                                 keyField='id' 
                                 data={this.props.customers.data.customers} 
@@ -283,39 +283,39 @@ class ClientList extends Component {
             {(this.props && this.props.customers && this.props.customers.data && 
               this.props.customers.data.customers && this.state.selected !== null) && ( 
             <>
-                <Grid md="12">
-                    <Grid item  md="12">
-                        <Grid md="12">
-                            <Grid item  md={4}>
+                <Grid container xs="12">
+                    <Grid item xs="12">
+                        <Grid container xs="12">
+                            <Grid item xs={4}>
                               <FormGroup row>
                                 <Label for="normal-field" md={4} className="text-md-right">
                                   ID
                                 </Label>
-                                <Grid item  md={8}>
+                                <Grid item xs={8}>
                                   <Input type="text" id="normal-field" readOnly placeholder="ID" value={this.state.selected.id}/>
                                 </Grid>
                               </FormGroup>
                             </Grid>
                         </Grid>
-                        <Grid md="12">
-                            <Grid item  md={4}>
+                        <Grid container xs="12">
+                            <Grid item xs={4}>
                               <FormGroup row>
                                 <Label for="normal-field" md={4} className="text-md-right">
                                   Name
                                 </Label>
-                                <Grid item  md={8}>
+                                <Grid item xs={8}>
                                   <Input type="text" id="normal-field" onChange={this.nameChange} placeholder="Name" value={this.state.selected.name}/>
                                 </Grid>
                               </FormGroup>
                             </Grid>
                         </Grid>
-                        <Grid md="12">
-                          <Grid item  md={4}>
+                        <Grid container xs="12">
+                          <Grid item xs={4}>
                             <FormGroup row>
                               <Label for="normal-field" md={4} className="text-md-right">
                                 Email
                               </Label>
-                              <Grid item  md={8}>
+                              <Grid item xs={8}>
                               <Input type="text" id="normal-field"
                                       onChange={this.emailChange} placeholder="Email" value={this.state.selected.email}/>
                                 {this.state.errorMessage &&
@@ -329,13 +329,13 @@ class ClientList extends Component {
                             </FormGroup>
                           </Grid>
                         </Grid>
-                        <Grid md="12">
-                          <Grid item  md={4}>
+                        <Grid container xs="12">
+                          <Grid item xs={4}>
                             <FormGroup row>
                               <Label for="normal-field" md={4} className="text-md-right">
                                 Phone
                               </Label>
-                              <Grid item  md={8}>
+                              <Grid item xs={8}>
                               <Input type="text" id="normal-field"
                                       onChange={this.phoneChange} placeholder="Phone" value={this.state.selected.phone}/>
                                 {this.state.errorMessage &&
@@ -349,13 +349,13 @@ class ClientList extends Component {
                             </FormGroup>
                           </Grid>
                         </Grid>
-                        <Grid md="12">
-                          <Grid item  md={4}>
+                        <Grid container xs="12">
+                          <Grid item xs={4}>
                             <FormGroup row>
                                 <Label for="normal-field" md={4} className="text-md-right">
                                     Status
                                 </Label>
-                                <Grid item  md="8" style={{zIndex:9995}}>
+                                <Grid item xs="8" style={{zIndex:9995}}>
                                   {(this.props.customers && this.props.customers.data && 
                                     this.props.customers.data.config &&
                                     this.props.customers.data.config.status) && (
@@ -378,13 +378,13 @@ class ClientList extends Component {
                             </FormGroup>
                           </Grid>
                         </Grid>
-                        <Grid md="12">
-                          <Grid item  md={4}>
+                        <Grid container xs="12">
+                          <Grid item xs={4}>
                             <FormGroup row>
                               <Label for="normal-field" md={4} className="text-md-right">
                                 Office
                               </Label>
-                              <Grid item  md={8}>
+                              <Grid item xs={8}>
                                   <Input type="text" id="normal-field" readOnly value={this.state.selected.office_name}/>
                               </Grid>
                             </FormGroup>
@@ -393,8 +393,8 @@ class ClientList extends Component {
                     </Grid>                
                 </Grid>
                 <hr/>
-                <Grid md="12">
-                    <Grid item  md="6">
+                <Grid container xs="12">
+                    <Grid item xs="6">
                         <Button onClick={this.save} color="primary" disabled={!this.state.selected.name || !this.state.selected.email || 
                           this.state.errorMessage || this.state.phoneMessage}>Save</Button>
                         <Button outline style={{marginLeft:10}} onClick={this.cancel} color="secondary">Cancel</Button>

@@ -392,8 +392,8 @@ class Referrers extends Component {
             {(this.props.referrerAdminList && this.props.referrerAdminList.isReceiving) && (
                 <AppSpinner/>
             )}
-            <Grid md="12">
-                <Grid item  md="12">
+            <Grid container xs="12">
+                <Grid item xs="12">
                     <Nav tabs  className={`${s.coloredNav}`} style={{backgroundColor:"#e8ecec"}}>
                         <NavItem>
                             <NavLink className={classnames({ active: this.state.activeTab === 'referrer' })}
@@ -407,8 +407,8 @@ class Referrers extends Component {
                             {(this.state.selected === null) && (
                             <>
                             <div style={{zIndex:512}}>
-                                <Grid md="12">
-                                    <Grid item  md="6" style={{zIndex:9995}}>
+                                <Grid container xs="12">
+                                    <Grid item xs="6" style={{zIndex:9995}}>
                                       {(this.props.referrerAdminList && this.props.referrerAdminList.data && 
                                         this.props.referrerAdminList.data.config &&
                                         this.props.referrerAdminList.data.config.status && this.state.statusSelected !== null) && (
@@ -436,11 +436,11 @@ class Referrers extends Component {
                                             />
                                         )}
                                     </Grid>                
-                                    <Grid item  md={3}>
+                                    <Grid item xs={3}>
                                         <Input type="text" id="normal-field" onChange={this.search}
                                         placeholder="Search" value={this.state.search}/>
                                     </Grid>
-                                    <Grid item  md={3}>
+                                    <Grid item xs={3}>
                                         <div class='pull-right'>
                                             <Button onClick={() => this.reload()} style={{marginRight:5,height:35}} outline 
                                                 color="primary"><AutorenewIcon/></Button>
@@ -448,8 +448,8 @@ class Referrers extends Component {
                                     </Grid>
                                 </Grid>
                             </div>
-                            <Grid md="12" style={{marginTop:10}}>
-                                <Grid item  md="12">
+                            <Grid container xs="12" style={{marginTop:10}}>
+                                <Grid item xs="12">
                                     <>
                                     {(this.props.referrerAdminList && this.props.referrerAdminList.data && 
                                       this.props.referrerAdminList.data.data && 

@@ -61,8 +61,8 @@ class Template extends Component {
             {(this.props.officeInvoices && this.props.officeInvoices.isReceiving) && (
                 <AppSpinner/>
             )}
-            <Grid md="12">
-                <Grid item  md="12">
+            <Grid container xs="12">
+                <Grid item xs="12">
                     <OfficeInvoicesList filters={this.state.filters} filterSelected={this.state.filterSelected} 
                         onFilterChange={this.onFilterChange} onSave={this.onSave} onStatusUpdate={this.onStatusUpdate}/>
                 </Grid>                

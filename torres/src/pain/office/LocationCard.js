@@ -162,8 +162,8 @@ class LocationCard extends Component {
                 margin:20,
                 borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}} className="mb-xlg border-1">
                 <CardBody>
-                    <Grid md="12">
-                        <Grid item  md="12">
+                    <Grid container xs="12">
+                        <Grid item xs="12">
                         <>
                             {(this.props.edit && this.state.selected !== null) && (
                                 <div> 
@@ -181,8 +181,8 @@ class LocationCard extends Component {
                         </Grid>
                     </Grid>
                     <hr/>
-                    <Grid md="12" style={{marginTop:20}}> 
-                        <Grid item  md="12">
+                    <Grid container xs="12" style={{marginTop:20}}> 
+                        <Grid item xs="12">
                         <>
                             {(this.props.edit && this.state.selected !== null) && (
                                 <div> 
@@ -201,8 +201,8 @@ class LocationCard extends Component {
                         </>
                         </Grid> 
                     </Grid>
-                    <Grid md="12" style={{marginTop:10}}>
-                        <Grid item  md="12">
+                    <Grid container xs="12" style={{marginTop:10}}>
+                        <Grid item xs="12">
                         <>
                             {(this.props.edit && this.state.selected !== null) && (
                                 <div> 
@@ -219,8 +219,8 @@ class LocationCard extends Component {
                         </>
                         </Grid>
                     </Grid>
-                    <Grid md="12" style={{marginTop:20}}>
-                        <Grid item  md="12">
+                    <Grid container xs="12" style={{marginTop:20}}>
+                        <Grid item xs="12">
                         <>
                             {(this.props.edit && this.state.selected !== null) && (
                                 <div> 
@@ -238,8 +238,8 @@ class LocationCard extends Component {
                         </Grid>
                     </Grid>
                     <hr/>
-                    <Grid md="12"> 
-                        <Grid item  md="12">
+                    <Grid container xs="12"> 
+                        <Grid item xs="12">
                         <>
                             {(!this.props.edit) && (
                                 <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>

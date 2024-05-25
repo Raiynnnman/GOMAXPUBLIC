@@ -105,8 +105,8 @@ class InvoiceAdmin extends Component {
             {(this.props.invoiceAdmin && this.props.invoiceAdmin.isReceiving) && (
                 <AppSpinner/>
             )}
-            <Grid md="12">
-                <Grid item  md="12">
+            <Grid container xs="12">
+                <Grid item xs="12">
                     <InvoiceAdminList filters={this.state.filters} page={this.state.page} filterSelected={this.state.filterSelected} 
                         pageChange={this.pageChange} onFilterChange={this.onFilterChange} 
                         onSave={this.onSave} onStatusUpdate={this.onStatusUpdate}/>

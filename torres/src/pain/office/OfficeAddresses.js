@@ -96,15 +96,15 @@ class OfficeAddresses extends Component {
             )}
             {(this.state.selected !== null) && (
             <>
-            <Grid md="12">
-                <Grid item  md="4">
+            <Grid container xs="12">
+                <Grid item xs="4">
                     <LocationCard provider={this.state.selected} onUpdate={this.onUpdate} edit={true}/>
                 </Grid>
             </Grid>
             <hr/>
-            <Grid md="12">
-                <Grid item  md="12">
-                    <Grid item  md="6">
+            <Grid container xs="12">
+                <Grid item xs="12">
+                    <Grid item xs="6">
                         <Button onClick={this.save} color="primary">Save</Button>
                         <Button outline style={{marginLeft:10}} onClick={this.cancel} 
                             color="secondary">Close</Button>
@@ -115,20 +115,20 @@ class OfficeAddresses extends Component {
             )}
             {(this.state.selected === null) && (
             <>
-            <Grid md="12">
-                <Grid item  md="1">
+            <Grid container xs="12">
+                <Grid item xs="1">
                     <Button onClick={() => this.edit({id:'new'})} style={{width:50}}
                         color="primary"><AddBoxIcon/></Button>
                 </Grid>
             </Grid>
-            <Grid md="12">
+            <Grid container xs="12">
                 {(this.props.officeLocations && this.props.officeLocations.data &&
                   this.props.officeLocations.data.locations && 
                   this.props.officeLocations.data.locations.length > 0) && (
                   <>
                     {this.props.officeLocations.data.locations.map((e) => {
                         return (
-                        <Grid item  md="4">
+                        <Grid item xs="4">
                             <LocationCard onEdit={this.edit} provider={e} edit={false}/>
                         </Grid>
                         )

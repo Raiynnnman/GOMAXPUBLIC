@@ -34,16 +34,16 @@ class LegalDashboard extends Component {
             )}
             {(this.props.legalDashboard && this.props.legalDashboard.data && this.props.legalDashboard.data.revenue_month) && (
             <>
-            <Grid md="12">
+            <Grid container xs="12">
                 <>
-                <Grid item  md="3">
+                <Grid item xs="3">
                     <TrendHeroWithStats data={this.props.legalDashboard.data.revenue_month}
                         title="Revenue (month)" num1isdollar={true} num2title="Consults" num2isdollar={false} num3title="Appointments" num3ispercent={false}
                         num4title="Payouts"/>
                 </Grid>
                 </>
             </Grid>
-            <Grid md="12">
+            <Grid container xs="12">
             </Grid>
             </>
             )}

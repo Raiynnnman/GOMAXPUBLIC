@@ -26,8 +26,8 @@ class AppointmentManager extends Component {
         return (
         <>
             <h1>APPT</h1>
-            <Grid md="12">
-                <Grid item  md="12">
+            <Grid container xs="12">
+                <Grid item xs="12">
                 </Grid>                
             </Grid>
         </>

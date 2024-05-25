@@ -63,45 +63,45 @@ class Join extends Component {
         ];
         return (
         <>
-            <Grid md="12">
-            <Grid item  md="12">
+            <Grid container xs="12">
+            <Grid item xs="12">
             <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                <Grid md="12" style={{marginTop:20}}>
-                    <Grid item  md="12">
+                <Grid container xs="12" style={{marginTop:20}}>
+                    <Grid item xs="12">
                         <img src="/personalinjurysimplified.webp"/>
                     </Grid>
                 </Grid>
             </div>
             </Grid>
             </Grid>
-            <Grid md="12">
-            <Grid item  md="12">
+            <Grid container xs="12">
+            <Grid item xs="12">
             <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                <Grid md="12">
-                    <Grid item  md="2"></Grid>
-                    <Grid item  md="8">
+                <Grid container xs="12">
+                    <Grid item xs="2"></Grid>
+                    <Grid item xs="8">
                         <font style={{fontSize:"19px"}}>
                         We are thrilled to invite you to become a part of our exclusive network of providers for personal injury cases. By filling out a short application, you will be taking the first step towards participating in our state-of-the-art, fully interactive personal injury network. Our network is designed to connect patients in need of specialized care with the most qualified and experienced providers in the industry.
                         </font>
                     </Grid>
-                    <Grid item  md="2"></Grid>
+                    <Grid item xs="2"></Grid>
                 </Grid>
             </div>
             </Grid>
             </Grid>
-            <Grid md="12">
-            <Grid item  md="12">
+            <Grid container xs="12">
+            <Grid item xs="12">
             <div style={{marginTop:120,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                <Grid md="12">
-                    <Grid item  md="2"></Grid>
-                    <Grid item  md="5" style={{display: 'flex', alignItems: 'center'}}>
+                <Grid container xs="12">
+                    <Grid item xs="2"></Grid>
+                    <Grid item xs="5" style={{display: 'flex', alignItems: 'center'}}>
                         <div> 
                             <font style={{fontSize:"32px"}}>
                                 Up to 3 Locations
                             </font>
                         </div>
                     </Grid>
-                    <Grid item  md="4">
+                    <Grid item xs="4">
                         {
                             (this.props.landingData && this.props.landingData.data && this.props.landingData.data.pricing) && (
                             <font style={{fontSize:"92px"}}>
@@ -115,29 +115,29 @@ class Join extends Component {
                         </font>
                         </div>
                     </Grid>
-                    <Grid item  md="2"></Grid>
+                    <Grid item xs="2"></Grid>
                 </Grid>
             </div>
             </Grid>
             </Grid>
-            <Grid md="12">
-            <Grid item  md="12">
+            <Grid container xs="12">
+            <Grid item xs="12">
             <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                <Grid md="12">
-                    <Grid item  md="6">
+                <Grid container xs="12">
+                    <Grid item xs="6">
                         <img src="/lightbulb.webp"/>
                     </Grid>
-                    <Grid item  md="6">
+                    <Grid item xs="6">
                         <Card style={{backgroundColor:"#F74301",margin:20,width:400,height:300}} className="mb-xlg border-1">
                             <CardBody>
-                                <Grid md="12">
+                                <Grid container xs="12">
                                     <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                     <font style={{fontSize:'24px'}}>
                                         10 Minute Introduction
                                     </font>
                                     </div>
                                 </Grid>
-                                <Grid md="12">
+                                <Grid container xs="12">
                                     <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                         <div style={{width:'200px',background:'black',borderRadius:"25px 25px 25px 25px"}}>
                                             <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
@@ -148,19 +148,19 @@ class Join extends Component {
                                         </div>
                                     </div>
                                 </Grid>
-                                <Grid md="12" style={{marginBottom:20}}>
+                                <Grid container xs="12" style={{marginBottom:20}}>
                                     <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                     <font style={{fontSize:'16px',textDecoration:'underline'}} >
                                         Read More
                                     </font>
                                     </div>
                                 </Grid>
-                                <Grid md="12">
+                                <Grid container xs="12">
                                     <div style={{marginLeft:5,marginRight:5}}>
                                         <div style={{borderBottom:"1px solid white",opacity:".5"}}></div>
                                     </div>
                                 </Grid>
-                                <Grid md="12" style={{marginTop:20}}>
+                                <Grid container xs="12" style={{marginTop:20}}>
                                     <div onClick={this.bookNow} style={{cursor:"pointer",marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                         <div style={{width:'200px',border:"2px solid white",borderRadius:"25px 25px 25px 25px"}}>
                                             <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
@@ -178,26 +178,26 @@ class Join extends Component {
             </div>
             </Grid>
             </Grid>
-            <Grid md="12">
-            <Grid item  md="12">
+            <Grid container xs="12">
+            <Grid item xs="12">
             <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                <Grid md="12">
-                    <Grid item  md="12">
+                <Grid container xs="12">
+                    <Grid item xs="12">
                         <div style={{border:"1px solid white"}}></div>
                     </Grid>
                 </Grid>
             </div>
             </Grid>
             </Grid>
-            <Grid md="12">
-            <Grid item  md="12">
+            <Grid container xs="12">
+            <Grid item xs="12">
             <div style={{marginBottom:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                     {
                     (this.props.landingData && this.props.landingData.data && this.props.landingData.data.pricing) && (
                     <>
                         {this.props.landingData.data.pricing.map((e) => { 
                             return (
-                            <Grid item  md="3" style={{marginRight:10}}> 
+                            <Grid item xs="3" style={{marginRight:10}}> 
                                 <Card style={{border:"1px solid white",backgroundColor:"black"}} className="mb-xlg border-1">
                                     <CardBody style={{margin:0,padding:0}}>
                                         <div style={{backgroundColor:"#F74301"}}>
@@ -324,11 +324,11 @@ class Join extends Component {
             </div>
             </Grid>
             </Grid>
-            <Grid md="12">
-            <Grid item  md="12">
+            <Grid container xs="12">
+            <Grid item xs="12">
             <div style={{marginTop:50,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                <Grid md="12">
-                    <Grid item  md="12">
+                <Grid container xs="12">
+                    <Grid item xs="12">
                         <font style={{fontSize:"24px"}}>
                             Frequently asked Questions
                         </font>
@@ -339,9 +339,9 @@ class Join extends Component {
                     return (
                     <>
                         <div style={{cursor:"pointer"}} onClick={() => this.selectFAQ(e.id)}>
-                            <Grid md="12">
-                                <Grid item  md="2"></Grid>
-                                <Grid item  md="8">
+                            <Grid container xs="12">
+                                <Grid item xs="2"></Grid>
+                                <Grid item xs="8">
                                     <div style={{display:'flex'}}>
                                         <div style={{flex:12}}>
                                             <font style={{fontSize:"18px"}}>
@@ -358,26 +358,26 @@ class Join extends Component {
                                         </div>
                                     </div>
                                 </Grid>
-                                <Grid item  md="2">
+                                <Grid item xs="2">
                                 </Grid>
                             </Grid>
                             {(this.state.selIndex === e.id) && (
-                                <Grid md="12"> 
-                                    <Grid item  md="2"></Grid>
-                                    <Grid item  md="8">
+                                <Grid container xs="12"> 
+                                    <Grid item xs="2"></Grid>
+                                    <Grid item xs="8">
                                         <font style={{fontSize:"18px"}}>
                                             {e.a}
                                         </font>
                                     </Grid>
-                                    <Grid item  md="2"></Grid>
+                                    <Grid item xs="2"></Grid>
                                 </Grid>
                             )}
-                            <Grid md="12" style={{marginBottom:20}}> 
-                                <Grid item  md="2"></Grid>
-                                <Grid item  md="8">
+                            <Grid container xs="12" style={{marginBottom:20}}> 
+                                <Grid item xs="2"></Grid>
+                                <Grid item xs="8">
                                     <div style={{borderBottom:"1px solid #F74301"}}></div>
                                 </Grid>
-                                <Grid item  md="2">
+                                <Grid item xs="2">
                                 </Grid>
                             </Grid>
                         </div>

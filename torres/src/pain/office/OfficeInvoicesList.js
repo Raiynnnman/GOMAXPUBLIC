@@ -220,8 +220,8 @@ class InvoiceAdminList extends Component {
             {(this.props && this.props.officeInvoices && this.props.officeInvoices.data && 
               this.props.officeInvoices.data.invoices && this.state.selected === null) && ( 
             <>
-            <Grid md="12">
-                <Grid item  md="12">
+            <Grid container xs="12">
+                <Grid item xs="12">
                     <BootstrapTable 
                         keyField='id' data={this.props.officeInvoices.data.invoices.filter((e) => e.invoice_status !== "CREATED")} 
                         cellEdit={ cellEditFactory({ mode: 'click',blurToSave:true })}
@@ -234,107 +234,107 @@ class InvoiceAdminList extends Component {
             {(this.props && this.props.officeInvoices && this.props.officeInvoices.data && 
               this.props.officeInvoices.data.invoices && this.state.selected !== null) && ( 
             <>
-            <Grid md="12">
-                <Grid item  md="5">
+            <Grid container xs="12">
+                <Grid item xs="5">
                     <h5>Details</h5>
                 </Grid>
-                <Grid item  md="7">
+                <Grid item xs="7">
                     <h5>Stripe Status</h5>
                 </Grid>
             </Grid>
-            <Grid md="12">
-                <Grid item  md="5">
-                    <Grid md="12">
-                        <Grid item  md="12">
+            <Grid container xs="12">
+                <Grid item xs="5">
+                    <Grid container xs="12">
+                        <Grid item xs="12">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               Email
                             </Label>
-                            <Grid item  md={7}>
+                            <Grid item xs={7}>
                               <Input type="text" id="normal-field" onChange={this.emailChange} placeholder="Email" value={this.state.selected.email}/>
                             </Grid>
                           </FormGroup>
                         </Grid>
                     </Grid>
-                    <Grid md="12">
-                        <Grid item  md="12">
+                    <Grid container xs="12">
+                        <Grid item xs="12">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               First Name
                             </Label>
-                            <Grid item  md={7}>
+                            <Grid item xs={7}>
                               <Input type="text" id="normal-field" onChange={this.firstChange} placeholder="First Name" value={this.state.selected.first_name}/>
                             </Grid>
                           </FormGroup>
                         </Grid>
                     </Grid>
-                    <Grid md="12">
-                        <Grid item  md="12">
+                    <Grid container xs="12">
+                        <Grid item xs="12">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               Last Name
                             </Label>
-                            <Grid item  md={7}>
+                            <Grid item xs={7}>
                               <Input type="text" id="normal-field" onChange={this.lastChange} placeholder="Last Name" value={this.state.selected.last_name}/>
                             </Grid>
                           </FormGroup>
                         </Grid>
                     </Grid>
-                    <Grid md="12">
-                        <Grid item  md="12">
+                    <Grid container xs="12">
+                        <Grid item xs="12">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               Phone
                             </Label>
-                            <Grid item  md={7}>
+                            <Grid item xs={7}>
                               <Input type="text" id="normal-field" onChange={this.phoneChange} placeholder="Phone" value={this.state.selected.phone}/>
                             </Grid>
                           </FormGroup>
                         </Grid>
                     </Grid>
-                    <Grid md="12">
-                        <Grid item  md="12">
+                    <Grid container xs="12">
+                        <Grid item xs="12">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               Zipcode
                             </Label>
-                            <Grid item  md={7}>
+                            <Grid item xs={7}>
                               <Input type="text" id="normal-field" onChange={this.zipcodeChange} placeholder="Zip" value={this.state.selected.zipcode}/>
                             </Grid>
                           </FormGroup>
                         </Grid>
                     </Grid>
-                    <Grid md="12">
-                        <Grid item  md="12">
+                    <Grid container xs="12">
+                        <Grid item xs="12">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               Imported description:
                             </Label>
-                            <Grid item  md={7}>
+                            <Grid item xs={7}>
                               <Input type="text" id="normal-field" readOnly placeholder="Nothing imported" value={this.state.selected.description}/>
                             </Grid>
                           </FormGroup>
                         </Grid>
                     </Grid>
                 </Grid>
-                <Grid item  md="7">
-                    <Grid md="12">
-                        <Grid item  md="12">
+                <Grid item xs="7">
+                    <Grid container xs="12">
+                        <Grid item xs="12">
                             stripe invoice status here
                         </Grid>
                     </Grid>
                 </Grid>
             </Grid>
             <hr/>
-            <Grid md="12">
+            <Grid container xs="12">
                 <>
                 {this.state.selected.comments.sort((a,b) => (a.created > b.created ? -1:1)).map((e) => { 
                     return (
-                        <Grid item  md="3" key={e.id}>
+                        <Grid item xs="3" key={e.id}>
                             <Card style={{margin:20,width:400,height:200}} className="mb-xlg border-1">
                                 <CardBody>
-                                    <Grid md="12">
-                                        <Grid item  md="6">
+                                    <Grid container xs="12">
+                                        <Grid item xs="6">
                                             <font style={{fontSize:"14pt"}}>
                                                 {
                                                 this.props.officeInvoices.data.config.assignee.filter((g) => g.id === e.user_id).length > 0 ? 
@@ -343,23 +343,23 @@ class InvoiceAdminList extends Component {
                                                 }
                                             </font>
                                         </Grid>
-                                        <Grid item  md="6">
+                                        <Grid item xs="6">
                                             {moment(e.created).format('LLL')}
                                         </Grid>
                                     </Grid>
                                     <hr/>
-                                    <Grid md="12">
+                                    <Grid container xs="12">
                                         {(!e.edit) && ( 
-                                        <Grid item  md="12">
+                                        <Grid item xs="12">
                                             <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                             {e.text}
                                             </div>
                                         </Grid>
                                         )}
                                         {(e.edit) && ( 
-                                        <Grid item  md="12">
+                                        <Grid item xs="12">
                                             <FormGroup row>
-                                              <Grid item  md={12}>
+                                              <Grid item xs={12}>
                                                 <Input value={e.text} rows="3" 
                                                     onChange={this.comment} type="textarea" 
                                                     name="text" id="default-textarea" />
@@ -368,10 +368,10 @@ class InvoiceAdminList extends Component {
                                         </Grid>
                                         )}
                                     </Grid>
-                                    <Grid md="12">
+                                    <Grid container xs="12">
                                         {(e.edit) && ( 
-                                        <Grid item  md="12">
-                                            <Grid item  md="6">
+                                        <Grid item xs="12">
+                                            <Grid item xs="6">
                                                 <Button onClick={this.saveComment} color="primary">Save</Button>
                                                 <Button outline style={{marginLeft:10}} onClick={this.cancelComment} color="secondary">Cancel</Button>
                                             </Grid>
@@ -385,9 +385,9 @@ class InvoiceAdminList extends Component {
                     </>
                 </Grid>
                 <hr/>
-                <Grid md="12">
+                <Grid container xs="12">
                     {(!this.state.commentAdd) && (
-                    <Grid item  md="6">
+                    <Grid item xs="6">
                         <Button onClick={this.save} color="primary">Save</Button>
                         <Button outline style={{marginLeft:10}} onClick={this.cancel} color="secondary">Cancel</Button>
                     </Grid>

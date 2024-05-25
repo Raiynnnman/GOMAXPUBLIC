@@ -266,19 +266,19 @@ class Appointment extends Component {
         }
         return (
         <>
-            <Grid md="12">
-                <Grid item  md="4"></Grid>
-                <Grid item  md="6">
+            <Grid container xs="12">
+                <Grid item xs="4"></Grid>
+                <Grid item xs="6">
                     <div style={{height:10,display: 'flex', alignItems: 'center', justifyContent: 'center',textAlign:"left"}}>
                         <h5>{this.state.dateSelected}</h5>
                     </div>
                 </Grid>
             </Grid>
             <hr/>
-            <Grid md="12" style={{marginTop:10}}>
-                <Grid item  md="4">
-                    <Grid md="12">
-                        <Grid item  md="12">
+            <Grid container xs="12" style={{marginTop:10}}>
+                <Grid item xs="4">
+                    <Grid container xs="12">
+                        <Grid item xs="12">
                         <Calendar
                           value={this.state.dateSelected}
                           initialDay={new Date()}
@@ -286,11 +286,11 @@ class Appointment extends Component {
                         />
                         </Grid>
                     </Grid>
-                    <Grid md="12">
-                        <Grid item  md="9">
+                    <Grid container xs="12">
+                        <Grid item xs="9">
                         {(this.props.data && this.props.data.upcoming && this.props.data.upcoming.length < 1) && (
-                            <Grid md="12" style={{marginTop:10}}>
-                                <Grid item  md="12">
+                            <Grid container xs="12" style={{marginTop:10}}>
+                                <Grid item xs="12">
                                     <h5>No future appointments scheduled.</h5>
                                 </Grid>
                             </Grid>
@@ -299,22 +299,22 @@ class Appointment extends Component {
                             <div>
                                 {this.props.data.upcoming.map((e) => { 
                                     return (
-                                    <Grid md="12" style={{marginTop:10}}>
-                                        <Grid item  md="12">
+                                    <Grid container xs="12" style={{marginTop:10}}>
+                                        <Grid item xs="12">
                                             <Card style={{height:100}} className="mb-xlg border-1">
                                                 <CardBody>
-                                                    <Grid md="12">
-                                                        <Grid item  md="12">
+                                                    <Grid container xs="12">
+                                                        <Grid item xs="12">
                                                             <h5>Upcoming Appointment</h5>
                                                         </Grid>
                                                     </Grid>
-                                                    <Grid md="12">
-                                                        <Grid item  md="12">
+                                                    <Grid container xs="12">
+                                                        <Grid item xs="12">
                                                             {e.first_name + " " + e.last_name} - {e.phone}
                                                         </Grid>
                                                     </Grid>
-                                                    <Grid md="12">
-                                                        <Grid item  md="12">
+                                                    <Grid container xs="12">
+                                                        <Grid item xs="12">
                                                             <h6>{e.schedule[0].day} @ {e.schedule[0].time}</h6>
                                                         </Grid>
                                                     </Grid>
@@ -336,10 +336,10 @@ class Appointment extends Component {
                                     >
                                         <PopoverBody>
                                             <Grid style={{'marginBottom': '5px'}}>
-                                                <Grid item  md={4}>
+                                                <Grid item xs={4}>
                                                     Physician:
                                                 </Grid>
-                                                <Grid item  md={10}>
+                                                <Grid item xs={10}>
                                                     <Select 
                                                         onChange={this.selectPhysician}
                                                         styles={styles} 
@@ -357,10 +357,10 @@ class Appointment extends Component {
                                                 </Grid>
                                             </Grid>          
                                             <Grid style={{'marginBottom': '5px'}}>
-                                                <Grid item  md={4}>
+                                                <Grid item xs={4}>
                                                     Procedures:
                                                 </Grid>
-                                                <Grid item  md={10}>
+                                                <Grid item xs={10}>
                                                     <Select 
                                                         onChange={this.changeProcedure}
                                                         styles={styles} 
@@ -372,10 +372,10 @@ class Appointment extends Component {
                                                 </Grid>
                                             </Grid>
                                             <Grid style={{'marginBottom': '5px'}}>
-                                                <Grid item  md={6}>
+                                                <Grid item xs={6}>
                                                     Sub Procedures:
                                                 </Grid>
-                                                <Grid item  md={10}>
+                                                <Grid item xs={10}>
                                                     <Select 
                                                         onChange={this.changeSubProcedure}
                                                         styles={styles} 
@@ -387,10 +387,10 @@ class Appointment extends Component {
                                                 </Grid>
                                             </Grid>
                                             <Grid style={{'marginBottom': '5px'}}>
-                                                <Grid item  md={4}>
+                                                <Grid item xs={4}>
                                                     Patient:
                                                 </Grid>
-                                                <Grid item  md={10}>
+                                                <Grid item xs={10}>
                                                     <Select 
                                                         onChange={this.changePatient}
                                                         styles={styles} 
@@ -440,7 +440,7 @@ class Appointment extends Component {
                         </Grid>
                     </Grid>
                 </Grid>                
-                <Grid item  md="6">
+                <Grid item xs="6">
                     {(this.state.items && this.state.items.length > 0) && (
                         <>
                         <Chrono activeItemIndex={this.state.items.length+1} 

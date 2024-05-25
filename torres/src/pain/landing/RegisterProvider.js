@@ -459,9 +459,9 @@ class RegisterProvider extends Component {
             {(this.props.searchProvider && this.props.searchProvider.isReceiving) && (
                 <AppSpinner/>
             )}
-            <Grid md="12" style={{backgroundColor:"black"}}>
-                <Grid item  md="8"> </Grid>
-                <Grid item  md="4"> 
+            <Grid container xs="12" style={{backgroundColor:"black"}}>
+                <Grid item xs="8"> </Grid>
+                <Grid item xs="4"> 
                     <div class="pull-right" style={{marginTop:20,marginRight:20}}>
                     <Button onClick={this.dologin} style={{backgroundColor:"#fa6a0a"}}>Login</Button>
                     </div>
@@ -474,7 +474,7 @@ class RegisterProvider extends Component {
             )}
             {(this.props.landingData && this.props.landingData.data && this.props.landingData.data.pricing) && (
             <div style={{height:this.props.match.path.includes("short") ? 620 :'',backgroundColor:"black",display: 'flex', alignItems: 'start', justifyContent: 'center'}}>
-                <Grid md="12">
+                <Grid container xs="12">
                 {(this.state.selPlan !== null) && (
                     <>
                     {(this.state.page === 0) && (
@@ -536,53 +536,53 @@ class RegisterProvider extends Component {
                     {(this.state.page === 1) && (
                         <>
                         <div style={{marginTop:20}}>
-                            <Grid md="12">
-                                <Grid item  md="12" sx="3">
+                            <Grid container xs="12">
+                                <Grid item xs="12" sx="3">
                                 <Card style={{
                                     margin:0,
                                     borderRadius:"10px",color:"white",backgroundColor:"black"}}> 
                                     <CardBody>
                                         {(this.state.error_message) && (
-                                        <Grid md="12" style={{marginBottom:10}}>
-                                            <Grid item  md="12">
+                                        <Grid container xs="12" style={{marginBottom:10}}>
+                                            <Grid item xs="12">
                                             <font style={{color:'red',alignText:'center'}}>{this.state.error_message}</font>
                                             </Grid>
                                         </Grid>
                                         )}
-                                        <Grid md="12" style={{marginBottom:10}}>
-                                            <Grid item  md="7">
+                                        <Grid container xs="12" style={{marginBottom:10}}>
+                                            <Grid item xs="7">
                                             <font style={{alignText:'left'}}>Description</font>
                                             </Grid>
-                                            <Grid item  md="5">
+                                            <Grid item xs="5">
                                             <font class="pull-right" style={{marginRight:40,alignText:'right'}}>Price</font>
                                             </Grid>
                                         </Grid>
                                         <hr/>
-                                        <Grid md="12">
-                                            <Grid item  md="7">
+                                        <Grid container xs="12">
+                                            <Grid item xs="7">
                                             <font style={{alignText:'left'}}>{this.state.selPlan.description}</font>
                                             </Grid>
-                                            <Grid item  md="5">
+                                            <Grid item xs="5">
                                             <font class='pull-right' style={{marginRight:20,alignText:'right'}}>${parseFloat(this.state.selPlan.upfront_cost * this.state.selPlan.duration).toFixed(2)}</font>
                                             </Grid>
                                         </Grid>
                                         {(this.state.selPlan.coupons.length > 0) && (
-                                        <Grid md="12">
-                                            <Grid item  md="7">
+                                        <Grid container xs="12">
+                                            <Grid item xs="7">
                                                 <input className="form-control no-border" 
                                                     style={{marginLeft:0,paddingLeft:0,backgroundColor:'black',color:"white"}} 
                                                     value={this.state.coupon} 
                                                     onInput={this.couponChange} 
                                                     onChange={this.couponChange} placeholder="Enter Coupon Code" />
                                             </Grid>
-                                            <Grid item  md="5">
+                                            <Grid item xs="5">
                                                 <font class="pull-right" style={{textAlign:"right",marginRight:20}}>{this.state.couponRed}</font>
                                             </Grid>
                                         </Grid>
                                         )}
                                         <hr/>
-                                        <Grid md="12">
-                                            <Grid item  md="7">
+                                        <Grid container xs="12">
+                                            <Grid item xs="7">
                                             {(this.state.coupon_id !== null) && (     
                                                 <font style={{alignText:'left'}}>Total:</font>
                                             )}
@@ -590,7 +590,7 @@ class RegisterProvider extends Component {
                                                 <font style={{marginRight:20,alignText:'left'}}>Total:</font>
                                             )}
                                             </Grid>
-                                            <Grid item  md="5">
+                                            <Grid item xs="5">
                                                 {(this.state.coupon_id !== null) && (     
                                                     <font class='pull-right' style={{marginRight:20,alignText:'left'}}>{this.calculatePrice()}</font>
                                                 )}
@@ -605,8 +605,8 @@ class RegisterProvider extends Component {
                             </Grid> 
                         </div>
                         <div style={{marginTop:20}}>
-                        <Grid md="12">
-                            <Grid item  md="12" sx="3">
+                        <Grid container xs="12">
+                            <Grid item xs="12" sx="3">
                                 <PaymentForm style={{margin:10,display:'grid',justifyContent:'center',alignContent:'center'}}
                                     applicationId={squareAppKey()}
                                     locationId={squareLocationKey()}
@@ -627,7 +627,7 @@ class RegisterProvider extends Component {
                 {(this.state.selPlan === null) && (
                     this.props.landingData.data.pricing.filter((g) => g.toshow === 1).map((f) => { 
                         return (
-                        <Grid item  md="4">
+                        <Grid item xs="4">
                             <Card style={{border:"1px solid white",margin:20,backgroundColor:"black",color:"white",borderRadius:"10px"}}> 
                                 <CardBody style={{margin:0,padding:0,cursor:"pointer"}}>
                                     <div style={{paddingTop:10,borderRadius:"10px 10px 0px 0px",backgroundColor:"#fa6a0a"}}>

@@ -148,15 +148,15 @@ class Register extends Component {
             )}
             {(this.state.provtype === null && this.props.landingData && 
               this.props.landingData.data && this.props.landingData.data.roles) && (
-                <Grid md="12">
+                <Grid container xs="12">
                     {this.props.landingData.data.roles.map((e) => {
                         return (
                             <>
-                            <Grid item  md="4" onClick={() => this.setSignupType(e.id)} style={{cursor:'pointer'}}>
+                            <Grid item xs="4" onClick={() => this.setSignupType(e.id)} style={{cursor:'pointer'}}>
                                 <Card 
                                     style={{borderRadius:"25px 25px 25px 25px",margin:20,width:400,height:300}} className="mb-xlg border-1">
                                     <CardBody>
-                                        <Grid md="12">
+                                        <Grid container xs="12">
                                             <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                             <font style={{fontSize:'24px'}}>
                                                 {e.signup_description}

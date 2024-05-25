@@ -257,7 +257,7 @@ class UserRegistration extends Component {
             )}
             {this.state.inputs.map((t) => {
                 return (
-                <Grid md="12" xs="12" style={{marginTop:5}}>
+                <Grid container xs="12" xs="12" style={{marginTop:5}}>
                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'spread-evenly'}}>
                           <font style={{width:25}}>{cntr++}.</font>
                           <Label style={{width:200,marginLeft:20,marginRight:20}} for="normal-field" className="text-md-right">
@@ -301,8 +301,8 @@ class UserRegistration extends Component {
                 )
             })}
             </>
-            <Grid md="12" xs="12" style={{marginTop:20}}>
-                <Grid item  md="12" xs="12">
+            <Grid container xs="12" xs="12" style={{marginTop:20}}>
+                <Grid item xs="12" xs="12">
                 <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                     <Button onClick={this.save} style={{marginRight:10}} color="primary">{translate('Save')}</Button>
                     <Button outline onClick={this.cancel} color="primary">{translate('Cancel')}</Button>

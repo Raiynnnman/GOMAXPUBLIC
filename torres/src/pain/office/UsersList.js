@@ -170,13 +170,13 @@ class UsersList extends Component {
             {(this.props && this.props.officeUsers && this.props.officeUsers.data && this.props.officeUsers.data.users &&
               this.state.selected === null) && ( 
             <>
-            <Grid md="12">
-                <Grid item  md="4" style={{marginBottom:10}}>
+            <Grid container xs="12">
+                <Grid item xs="4" style={{marginBottom:10}}>
                     <Button onClick={() => this.edit({id:"new",entitlements:[]})} style={{marginRight:5,height:35,width:90}} color="primary">Add</Button>
                 </Grid>
             </Grid>
-            <Grid md="12">
-                <Grid item  md="12">
+            <Grid container xs="12">
+                <Grid item xs="12">
                     <BootstrapTable 
                         keyField='id' data={this.props.officeUsers.data.users} 
                         columns={heads} pagination={ paginationFactory(options)}>
@@ -188,39 +188,39 @@ class UsersList extends Component {
             {(this.props && this.props.officeUsers && this.props.officeUsers.data && this.props.officeUsers.data.users &&
               this.state.selected !== null) && ( 
             <>
-            <Grid md="12">
-                <Grid item  md="12">
-                    <Grid md="12">
-                        <Grid item  md="5">
+            <Grid container xs="12">
+                <Grid item xs="12">
+                    <Grid container xs="12">
+                        <Grid item xs="5">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               First Name
                             </Label>
-                            <Grid item  md={7}>
+                            <Grid item xs={7}>
                               <Input type="text" id="normal-field" onChange={this.firstNameChange} placeholder="First Name" value={this.state.selected.first_name}/>
                             </Grid>
                           </FormGroup>
                         </Grid>
                     </Grid>
-                    <Grid md="12">
-                        <Grid item  md="5">
+                    <Grid container xs="12">
+                        <Grid item xs="5">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               Last Name
                             </Label>
-                            <Grid item  md={7}>
+                            <Grid item xs={7}>
                               <Input type="text" id="normal-field" onChange={this.lastNameChange} placeholder="Last Name" value={this.state.selected.last_name}/>
                             </Grid>
                           </FormGroup>
                         </Grid>
                     </Grid>
-                    <Grid md="12">
-                        <Grid item  md="5">
+                    <Grid container xs="12">
+                        <Grid item xs="5">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               Email
                             </Label>
-                            <Grid item  md={7}>
+                            <Grid item xs={7}>
                               <Input type="text" id="normal-field" readOnly={this.state.selected.id !== 'new'} 
                                     onChange={this.emailChange} placeholder="Email" value={this.state.selected.email}/>
                               {this.state.errorMessage &&
@@ -234,13 +234,13 @@ class UsersList extends Component {
                           </FormGroup>
                         </Grid>
                     </Grid>
-                    <Grid md="12">
-                        <Grid item  md="5">
+                    <Grid container xs="12">
+                        <Grid item xs="5">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               Permissions
                             </Label>
-                            <Grid item  md={7}>
+                            <Grid item xs={7}>
                               <>
                               {this.props.officeUsers.data.entitlements.map((e) => {
                                 return (
@@ -262,8 +262,8 @@ class UsersList extends Component {
                 </Grid>                
             </Grid>
             <hr/>
-            <Grid md="12">
-                <Grid item  md="6">
+            <Grid container xs="12">
+                <Grid item xs="6">
                     <Button onClick={this.save} color="primary">Save</Button>
                     <Button outline style={{marginLeft:10}} onClick={this.cancel} color="secondary">Cancel</Button>
                 </Grid>

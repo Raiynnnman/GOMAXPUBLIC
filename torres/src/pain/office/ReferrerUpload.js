@@ -188,8 +188,8 @@ class ReferrerUpload extends Component {
             {(this.props.referrerUpload && this.props.referrerUpload.isReceiving) && (
                 <AppSpinner/>
             )}
-            <Grid md="12">
-                <Grid item  md="12">
+            <Grid container xs="12">
+                <Grid item xs="12">
                     <Nav tabs  className={`${s.coloredNav}`} style={{backgroundColor:"#e8ecec"}}>
                         <NavItem>
                             <NavLink className={classnames({ active: this.state.activeTab === 'upload' })}
@@ -201,8 +201,8 @@ class ReferrerUpload extends Component {
                     <TabContent className='mb-lg' activeTab={this.state.activeTab}>
                         <TabPane tabId="upload">
                             {(this.state.error_message) && (
-                            <Grid md="12" xs="12" style={{marginTop:20}}>
-                                <Grid item  md="12">
+                            <Grid container xs="12" xs="12" style={{marginTop:20}}>
+                                <Grid item xs="12">
                                     <font style={{color:'red'}}>{this.state.error_message}</font>       
                                 </Grid>
                             </Grid>
@@ -223,8 +223,8 @@ class ReferrerUpload extends Component {
                                 </div>
                                 <hr/>
                             */}
-                            <Grid md="12" xs="12" style={{marginTop:20}}>
-                                <Grid item  md="12">
+                            <Grid container xs="12" xs="12" style={{marginTop:20}}>
+                                <Grid item xs="12">
                                     <TextareaAutosize
                                       rows={5} style={{backgroundColor:'white'}}
                                       placeholder=""

@@ -138,9 +138,9 @@ class LegalAppointment extends Component {
         const invoice_expand = {
             renderer: row => ( 
                 <>
-                <Grid md="12">
-                    <Grid item  md="12">
-                        <Grid md="12">
+                <Grid container xs="12">
+                    <Grid item xs="12">
+                        <Grid container xs="12">
                             <Grid item  xs="7" md="7"><div class="text-center">Description</div></Grid>
                             <Grid item  xs="2" md="2"><div class="text-center">Count</div></Grid>
                             <Grid item  xs="3" md="3"><div class="text-center">Price</div></Grid>
@@ -148,7 +148,7 @@ class LegalAppointment extends Component {
                         <hr/>
                         {row.items.map((e) => { 
                             return (
-                            <Grid md="12">
+                            <Grid container xs="12">
                                 <Grid item  xs="7" md="7">{e.desc}</Grid>
                                 <Grid item  xs="2" md="2"><div class="text-center">{e.quantity}</div></Grid>
                                 <Grid item  xs="3" md="3"><div class="pull-right">${e.price.toFixed(2)}</div></Grid>
@@ -165,8 +165,8 @@ class LegalAppointment extends Component {
             {(this.props.legals && this.props.legals.isReceiving) && (
                 <AppSpinner/>
             )}
-            <Grid md="12">
-                <Grid item  md="12">
+            <Grid container xs="12">
+                <Grid item xs="12">
                 <>
                     {(this.props.legals && this.props.legals.data && this.state.selected===null) && (
                         <Appointment data={this.props.legals.data} dateSelected={this.state.selectedDate}
@@ -174,15 +174,15 @@ class LegalAppointment extends Component {
                     )}
                     {(this.props.legals && this.props.legals.data && this.state.selected!==null) && (
                     <>
-                        <Grid md="12" style={{paddingRight:0}}>
-                            <Grid md="12" style={{paddingRight:0}}>
-                                <Grid item  md="6" style={{paddingRight:0}}>
-                                    <Grid md="12">
-                                        <Grid item  md="6"> 
+                        <Grid container xs="12" style={{paddingRight:0}}>
+                            <Grid container xs="12" style={{paddingRight:0}}>
+                                <Grid item xs="6" style={{paddingRight:0}}>
+                                    <Grid container xs="12">
+                                        <Grid item xs="6"> 
                                             <h5>Customer</h5>
                                         </Grid>
                                     </Grid>
-                                    <Grid md="12">
+                                    <Grid container xs="12">
                                         <Grid item  xs="2" xs="2" md="2">
                                             Date: 
                                         </Grid>                
@@ -190,7 +190,7 @@ class LegalAppointment extends Component {
                                             {moment(this.state.selected.thisschedule.day + " "+ this.state.selected.thisschedule.time).format('LLL')}
                                         </Grid>                
                                     </Grid>
-                                    <Grid md="12">
+                                    <Grid container xs="12">
                                         <Grid item  xs="3" md="3">
                                             Procedure:
                                         </Grid>                
@@ -198,7 +198,7 @@ class LegalAppointment extends Component {
                                             {this.state.selected.thisschedule.appt.customer.subprocedure.name} 
                                         </Grid>                
                                     </Grid>
-                                    <Grid md="12">
+                                    <Grid container xs="12">
                                         <Grid item  xs="2" md="2">
                                             Patient:    
                                         </Grid>                
@@ -209,7 +209,7 @@ class LegalAppointment extends Component {
                                             }
                                         </Grid>                
                                     </Grid>
-                                    <Grid md="12">
+                                    <Grid container xs="12">
                                         <Grid item  xs="2" md="2">
                                             Email:    
                                         </Grid>                
@@ -219,7 +219,7 @@ class LegalAppointment extends Component {
                                             }
                                         </Grid>                
                                     </Grid>
-                                    <Grid md="12">
+                                    <Grid container xs="12">
                                         <Grid item  xs="2" md="2">
                                             Phone:    
                                         </Grid>                
@@ -229,7 +229,7 @@ class LegalAppointment extends Component {
                                             }
                                         </Grid>                
                                     </Grid>
-                                    <Grid md="12">
+                                    <Grid container xs="12">
                                         <Grid item  xs="3" md="3">
                                             Physician:    
                                         </Grid>                
@@ -241,7 +241,7 @@ class LegalAppointment extends Component {
                                             }
                                         </Grid>                
                                     </Grid>
-                                    <Grid md="12" style={{paddingRight:0}}>
+                                    <Grid container xs="12" style={{paddingRight:0}}>
                                         <>
                                         <Grid item  xs="2" md="2">
                                             Address:    
@@ -254,7 +254,7 @@ class LegalAppointment extends Component {
                                         )}
                                         {(this.state.selected.thisschedule.appt.physician.addr && 
                                           this.state.selected.thisschedule.appt.physician.addr.length > 0) && (
-                                        <Grid item  md="8">
+                                        <Grid item xs="8">
                                             <>
                                             {(this.state.selected.thisschedule.appt.physician.addr[0].addr2 !== null &&
                                              this.state.selected.thisschedule.appt.physician.addr[0].addr2.length > 0) && (
@@ -281,14 +281,14 @@ class LegalAppointment extends Component {
                                         </>
                                     </Grid>
                                 </Grid>
-                                <Grid item  md="6" style={{paddingRight:0}}>
-                                    <Grid md="12">
+                                <Grid item xs="6" style={{paddingRight:0}}>
+                                    <Grid container xs="12">
                                         <h5>Invoices</h5>
                                     </Grid>
                                     {(this.state.selected.thisschedule.appt.physician && 
                                       this.state.selected.thisschedule.appt.physician.invoices && 
                                       this.state.selected.thisschedule.appt.physician.invoices.length > 0) && (
-                                    <Grid item  md="12"> 
+                                    <Grid item xs="12"> 
                                         <BootstrapTable 
                                             keyField='id' data={this.state.selected.thisschedule.appt.physician.invoices} 
                                             expandGrid={invoice_expand}
@@ -299,7 +299,7 @@ class LegalAppointment extends Component {
                                     {(this.state.selected.thisschedule.appt.physician.invoices && 
                                       this.state.selected.thisschedule.appt.physician.invoices && 
                                       this.state.selected.thisschedule.appt.physician.invoices.length < 1) && (
-                                    <Grid item  md="12">
+                                    <Grid item xs="12">
                                         <h5>No active Invoices</h5>
                                     </Grid>
                                     )}
@@ -307,19 +307,19 @@ class LegalAppointment extends Component {
                             </Grid>
                         </Grid>
                         <hr/>
-                        <Grid md="12" style={{marginTop:10}}>
+                        <Grid container xs="12" style={{marginTop:10}}>
                             <h5>Notes</h5>
                         </Grid>
-                        <Grid md="12" style={{marginTop:10}}>
+                        <Grid container xs="12" style={{marginTop:10}}>
                             <>
                             {this.state.selected.thisschedule.appt.physician.comments.sort((a,b) => (a.created > b.created ? -1:1)).map((e) => { 
                                 if (e.text === null) { return (<></>) }
                                 return (
-                                    <Grid item  md="4" key={e.id}>
+                                    <Grid item xs="4" key={e.id}>
                                         <Card style={{borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px",
                                             width:300,height:200}} className="mb-xlg border-1">
                                             <CardBody>
-                                                <Grid md="12">
+                                                <Grid container xs="12">
                                                     <Grid item  xs="6" md="6">
                                                         <font style={{fontSize:"14pt"}}>
                                                             <>
@@ -340,9 +340,9 @@ class LegalAppointment extends Component {
                                                     </Grid>
                                                 </Grid>
                                                 <hr/>
-                                                <Grid md="12">
+                                                <Grid container xs="12">
                                                     {(!e.edit) && ( 
-                                                    <Grid item  md="12">
+                                                    <Grid item xs="12">
                                                         <div style={{overflow:"auto",height:100,display: 'flex', justifyContent: 'start'}}>
                                                         {e.text}
                                                         </div>
@@ -356,9 +356,9 @@ class LegalAppointment extends Component {
                                 </>
                         </Grid>
                         <hr/>
-                        <Grid md="12">
+                        <Grid container xs="12">
                             {(!this.state.commentAdd) && (
-                            <Grid item  md="6">
+                            <Grid item xs="6">
                                 <Button outline style={{marginLeft:10}} onClick={this.cancel} color="secondary">Cancel</Button>
                             </Grid>
                             )}

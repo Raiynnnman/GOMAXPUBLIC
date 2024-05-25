@@ -125,24 +125,24 @@ class Appointment extends Component {
         }
         return (
         <>
-            <Grid md="12">
-                <Grid item  md="4"></Grid>
-                <Grid item  md="6">
+            <Grid container xs="12">
+                <Grid item xs="4"></Grid>
+                <Grid item xs="6">
                     <div style={{height:10,display: 'flex', alignItems: 'center', justifyContent: 'center',textAlign:"left"}}>
                         <h5>{this.state.dateSelected}</h5>
                     </div>
                 </Grid>
             </Grid>
             <hr/>
-            <Grid md="12" style={{marginTop:10}}>
-                <Grid item  md="4">
+            <Grid container xs="12" style={{marginTop:10}}>
+                <Grid item xs="4">
                         <Calendar
                           value={this.state.dateSelected}
                           initialDay={new Date()}
                           onChange={this.onDateChange}
                         />
                 </Grid>                
-                <Grid item  md="6">
+                <Grid item xs="6">
                     {(this.state.items && this.state.items.length > 0) && (
                         <>
                         <Chrono activeItemIndex={this.state.items.length+1} 
@@ -159,24 +159,24 @@ class Appointment extends Component {
                     )}
                 </Grid>                
             </Grid>
-            <Grid md="12">
-                <Grid item  md="4">
+            <Grid container xs="12">
+                <Grid item xs="4">
                     <>
                     {(this.props.data && this.props.data.upcoming && this.props.data.upcoming.length > 0) && (
                         <div>
                             {this.props.data.upcoming.map((e) => { 
                                 return (
-                                <Grid md="12" style={{marginTop:10}}>
-                                    <Grid item  md="12">
+                                <Grid container xs="12" style={{marginTop:10}}>
+                                    <Grid item xs="12">
                                         <Card style={{height:100}} className="mb-xlg border-1">
                                             <CardBody>
-                                                <Grid md="12">
-                                                    <Grid item  md="12">
+                                                <Grid container xs="12">
+                                                    <Grid item xs="12">
                                                         <h5>Upcoming Appointment</h5>
                                                     </Grid>
                                                 </Grid>
-                                                <Grid md="12">
-                                                    <Grid item  md="12">
+                                                <Grid container xs="12">
+                                                    <Grid item xs="12">
                                                         <h6>{e.schedule[0].day} @ {e.schedule[0].time}</h6>
                                                     </Grid>
                                                 </Grid>

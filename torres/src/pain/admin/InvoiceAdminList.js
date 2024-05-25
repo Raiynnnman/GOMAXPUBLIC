@@ -488,10 +488,10 @@ class InvoiceAdminList extends Component {
             {(this.props && this.props.invoiceAdmin && this.props.invoiceAdmin.data && 
               this.props.invoiceAdmin.data.invoices && this.state.selected === null) && ( 
             <>
-            <Grid md="12">
+            <Grid container xs="12">
                 {(this.state.statusSelected && this.state.statusSelected.length > 0) && (
                 <>
-                <Grid item  md="6" style={{marginBottom:10}}>
+                <Grid item xs="6" style={{marginBottom:10}}>
                       <Select
                           closeMenuOnSelect={true}
                           isSearchable={false}
@@ -515,11 +515,11 @@ class InvoiceAdminList extends Component {
                           })}
                         />
                 </Grid>
-                <Grid item  md={3}>
+                <Grid item xs={3}>
                     <Input type="text" id="normal-field" onChange={this.search}
                     placeholder="Search" value={this.state.search}/>
                 </Grid>
-                <Grid item  md={3}>
+                <Grid item xs={3}>
                     <div class='pull-right'>
                         <Button onClick={() => this.reload()} style={{marginRight:5,height:35}} outline 
                             color="primary"><AutorenewIcon/></Button>
@@ -528,8 +528,8 @@ class InvoiceAdminList extends Component {
                 </>
                 )}
             </Grid>
-            <Grid md="12">
-                <Grid item  md="12">
+            <Grid container xs="12">
+                <Grid item xs="12">
                     {/*<BootstrapTable 
                         keyField='id' 
                         data={this.props.invoiceAdmin.data.invoices} 
@@ -554,30 +554,30 @@ class InvoiceAdminList extends Component {
             {(this.props && this.props.invoiceAdmin && this.props.invoiceAdmin.data && 
               this.props.invoiceAdmin.data.invoices && this.state.selected !== null) && ( 
             <>
-            <Grid md="12">
-                <Grid item  md="5">
+            <Grid container xs="12">
+                <Grid item xs="5">
                     <h5>Details</h5>
                 </Grid>
-                <Grid item  md="7">
+                <Grid item xs="7">
                     <h5>Stripe Status</h5>
                 </Grid>
             </Grid>
             <hr/>
-            <Grid md="12">
-                <Grid item  md="5">
-                    <Grid md="12" style={{marginBottom: 5}}>
-                        <Grid item  md="4">
+            <Grid container xs="12">
+                <Grid item xs="5">
+                    <Grid container xs="12" style={{marginBottom: 5}}>
+                        <Grid item xs="4">
                             ID:
                         </Grid>
-                        <Grid item  md="7">
+                        <Grid item xs="7">
                             {this.state.selected.id} 
                         </Grid>
                     </Grid>
-                    <Grid md="12" style={{marginBottom: 5}}>
-                        <Grid item  md="4">
+                    <Grid container xs="12" style={{marginBottom: 5}}>
+                        <Grid item xs="4">
                             Status
                         </Grid>
-                        <Grid item  md="7">
+                        <Grid item xs="7">
                               <Select
                                   closeMenuOnSelect={true}
                                   isSearchable={false}
@@ -596,70 +596,70 @@ class InvoiceAdminList extends Component {
                                 />
                         </Grid>
                     </Grid>
-                    <Grid md="12">
-                        <Grid item  md="12">
+                    <Grid container xs="12">
+                        <Grid item xs="12">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               Email
                             </Label>
-                            <Grid item  md={7}>
+                            <Grid item xs={7}>
                               <Input type="text" id="normal-field" readOnly onChange={this.emailChange} placeholder="Email" value={this.state.selected.email}/>
                             </Grid>
                           </FormGroup>
                         </Grid>
                     </Grid>
-                    <Grid md="12">
-                        <Grid item  md="12">
+                    <Grid container xs="12">
+                        <Grid item xs="12">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               First Name
                             </Label>
-                            <Grid item  md={7}>
+                            <Grid item xs={7}>
                               <Input type="text" id="normal-field" readOnly onChange={this.firstChange} placeholder="First Name" value={this.state.selected.first_name}/>
                             </Grid>
                           </FormGroup>
                         </Grid>
                     </Grid>
-                    <Grid md="12">
-                        <Grid item  md="12">
+                    <Grid container xs="12">
+                        <Grid item xs="12">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               Last Name
                             </Label>
-                            <Grid item  md={7}>
+                            <Grid item xs={7}>
                               <Input type="text" id="normal-field" readOnly onChange={this.lastChange} placeholder="Last Name" value={this.state.selected.last_name}/>
                             </Grid>
                           </FormGroup>
                         </Grid>
                     </Grid>
-                    <Grid md="12">
-                        <Grid item  md="12">
+                    <Grid container xs="12">
+                        <Grid item xs="12">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               Phone
                             </Label>
-                            <Grid item  md={7}>
+                            <Grid item xs={7}>
                               <Input type="text" id="normal-field" readOnly onChange={this.phoneChange} placeholder="Phone" value={this.state.selected.phone}/>
                             </Grid>
                           </FormGroup>
                         </Grid>
                     </Grid>
-                    <Grid md="12">
-                        <Grid item  md="12">
+                    <Grid container xs="12">
+                        <Grid item xs="12">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               Office
                             </Label>
-                            <Grid item  md={7}>
+                            <Grid item xs={7}>
                               <Input type="text" id="normal-field" readOnly onChange={this.phoneChange} placeholder="Office" value={this.state.selected.office_name}/>
                             </Grid>
                           </FormGroup>
                         </Grid>
                     </Grid>
                 </Grid>
-                <Grid item  md="7">
-                    <Grid md="12">
-                        <Grid item  md="12">
+                <Grid item xs="7">
+                    <Grid container xs="12">
+                        <Grid item xs="12">
                             {(this.state.selected.stripe && this.state.selected.stripe.amount_due) && (
                             <>
                               {Object.entries(this.state.selected.stripe).sort((a,b) => (a[0] > b[0] ? 1:-1)).map((e) => { 
@@ -670,11 +670,11 @@ class InvoiceAdminList extends Component {
                                 if (e[0].includes('fee')) { isdollar = true }
                                 if (e[1] === null) { isnull = true;  }
                                 return (
-                                    <Grid md="12">
-                                        <Grid item  md="3">
+                                    <Grid container xs="12">
+                                        <Grid item xs="3">
                                             {e[0]}
                                         </Grid>
-                                        <Grid item  md="9">
+                                        <Grid item xs="9">
                                             <>
                                             {(isnull) && (
                                                 "N/A"
@@ -700,8 +700,8 @@ class InvoiceAdminList extends Component {
                             </>
                             )}
                             {(!this.state.selected.stripe || !this.state.selected.stripe.stripe_invoice_id) && (
-                            <Grid md="12">
-                                <Grid item  md="12"><h5>No status yet</h5></Grid>
+                            <Grid container xs="12">
+                                <Grid item xs="12"><h5>No status yet</h5></Grid>
                             </Grid>
                             )}
                         </Grid>
@@ -709,22 +709,22 @@ class InvoiceAdminList extends Component {
                 </Grid>
             </Grid>
             <hr/>
-            <Grid md="12" style={{marginTop:10}}>
-                <Grid item  md="6">
+            <Grid container xs="12" style={{marginTop:10}}>
+                <Grid item xs="6">
                     <h5>Items</h5>
                 </Grid>
-                <Grid item  md="6">
+                <Grid item xs="6">
                     <h5>History</h5>
                 </Grid>
             </Grid>
-            <Grid md="12">
-                <Grid item  md="6">
+            <Grid container xs="12">
+                <Grid item xs="6">
                     <BootstrapTable 
                         keyField='id' data={this.state.selected.items} 
                         columns={itemheads}> 
                     </BootstrapTable>
                 </Grid>
-                <Grid item  md="6">
+                <Grid item xs="6">
                     <BootstrapTable 
                         keyField='id' data={this.state.selected.history} 
                         columns={historyheads}> 
@@ -732,25 +732,25 @@ class InvoiceAdminList extends Component {
                 </Grid>
             </Grid>
             <hr/>
-            <Grid md="12">
-                <Grid item  md="4">
+            <Grid container xs="12">
+                <Grid item xs="4">
                 <h5>Comments</h5>
                 </Grid>
             </Grid>
-            <Grid md="12">
-                <Grid item  md="4">
+            <Grid container xs="12">
+                <Grid item xs="4">
                     <Button onClick={() => this.addComment({id:"new"})} color="primary">Add Comment</Button>
                 </Grid>
             </Grid>
-            <Grid md="12">
+            <Grid container xs="12">
                 <>
                 {this.state.selected.comments.sort((a,b) => (a.created > b.created ? -1:1)).map((e) => { 
                     return (
-                        <Grid item  md="3" key={e.id}>
+                        <Grid item xs="3" key={e.id}>
                             <Card style={{margin:20,width:400,height:200}} className="mb-xlg border-1">
                                 <CardBody>
-                                    <Grid md="12">
-                                        <Grid item  md="6">
+                                    <Grid container xs="12">
+                                        <Grid item xs="6">
                                             <font style={{fontSize:"14pt"}}>
                                                 {
                                                 this.state.selected.assignee.filter((g) => g.id === e.user_id).length > 0 ? 
@@ -759,14 +759,14 @@ class InvoiceAdminList extends Component {
                                                 }
                                             </font>
                                         </Grid>
-                                        <Grid item  md="6">
+                                        <Grid item xs="6">
                                             {moment(e.created).format('LLL')}
                                         </Grid>
                                     </Grid>
                                     <hr/>
-                                    <Grid md="12">
+                                    <Grid container xs="12">
                                         {(!e.edit) && ( 
-                                        <Grid item  md="12">
+                                        <Grid item xs="12">
                                             <div style={{overflow:"auto",height:100,display: 'flex', 
                                                 alignItems: 'left', justifyContent: 'left'}}>
                                             {e.text}
@@ -774,9 +774,9 @@ class InvoiceAdminList extends Component {
                                         </Grid>
                                         )}
                                         {(e.edit) && ( 
-                                        <Grid item  md="12">
+                                        <Grid item xs="12">
                                             <FormGroup row>
-                                              <Grid item  md={12}>
+                                              <Grid item xs={12}>
                                                 <Input value={e.text} rows="3" 
                                                     onChange={this.comment} type="textarea" 
                                                     name="text" id="default-textarea" />
@@ -785,10 +785,10 @@ class InvoiceAdminList extends Component {
                                         </Grid>
                                         )}
                                     </Grid>
-                                    <Grid md="12">
+                                    <Grid container xs="12">
                                         {(e.edit) && ( 
-                                        <Grid item  md="12">
-                                            <Grid item  md="6">
+                                        <Grid item xs="12">
+                                            <Grid item xs="6">
                                                 <Button onClick={this.saveComment} color="primary">Save</Button>
                                                 <Button outline style={{marginLeft:10}} onClick={this.cancelComment} color="secondary">Cancel</Button>
                                             </Grid>
@@ -802,9 +802,9 @@ class InvoiceAdminList extends Component {
                     </>
                 </Grid>
                 <hr/>
-                <Grid md="12" style={{marginTop:10}}>
+                <Grid container xs="12" style={{marginTop:10}}>
                     {(!this.state.commentAdd) && (
-                    <Grid item  md="6">
+                    <Grid item xs="6">
                         <Button onClick={this.save} color="primary">Save</Button>
                         <Button outline style={{marginLeft:10}} onClick={this.cancel} color="secondary">Cancel</Button>
                     </Grid>

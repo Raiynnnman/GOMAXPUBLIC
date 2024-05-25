@@ -83,51 +83,51 @@ class Customers extends Component {
             )}
             {(this.props.officeClients && this.props.officeClients.data &&
               this.props.officeClients.data.clients && this.state.selectedAppt === null) && (
-            <Grid md="12">
+            <Grid container xs="12">
                 {this.props.officeClients.data.clients.map((e) => { 
                     return (
                         <>
-                        <Grid item  md="4" onClick={() => this.selectAppt(e)} style={{cursor:'pointer'}}>
+                        <Grid item xs="4" onClick={() => this.selectAppt(e)} style={{cursor:'pointer'}}>
                             <Card style={{
                                 margin:20,
                                 borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}} className="mb-xlg border-1">
                                 <CardBody>
-                                    <Grid md="12">
-                                        <Grid item  md="8">
+                                    <Grid container xs="12">
+                                        <Grid item xs="8">
                                             <font style={{fontSize:"14pt",fontWeight:"bold"}}>
                                             {e.office_name}
                                             </font>
                                             <br/>
                                         </Grid>
-                                        <Grid item  md="4" class="pull-right">
+                                        <Grid item xs="4" class="pull-right">
                                             {e.status}
                                         </Grid>
                                     </Grid>
                                     <hr/>
-                                    <Grid md="12">
-                                        <Grid item  md="12">
+                                    <Grid container xs="12">
+                                        <Grid item xs="12">
                                             <font style={{fontSize:"14pt"}}>
                                             {e.client_first + " " + e.client_last}
                                             </font>
                                             <br/>
                                         </Grid>
                                     </Grid>
-                                    <Grid md="12">
-                                        <Grid item  md="12">
+                                    <Grid container xs="12">
+                                        <Grid item xs="12">
                                             <font style={{fontSize:"14pt"}}>
                                             {e.email}
                                             </font>
                                         </Grid>
                                     </Grid>
-                                    <Grid md="12">
-                                        <Grid item  md="8">
+                                    <Grid container xs="12">
+                                        <Grid item xs="8">
                                             <font style={{fontSize:"14pt"}}>
                                             {e.phone}
                                             </font>
                                         </Grid>
                                     </Grid>
-                                    <Grid md="12">
-                                        <Grid item  md="12">
+                                    <Grid container xs="12">
+                                        <Grid item xs="12">
                                             <div style={{overflow:"auto"}}>
                                                 {e.description}
                                             </div>
@@ -136,8 +136,8 @@ class Customers extends Component {
                                     <div style={{height:130,marginBottom:10,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                     </div>
                                     <hr/>
-                                    <Grid md="12"> 
-                                        <Grid item  md="12">
+                                    <Grid container xs="12"> 
+                                        <Grid item xs="12">
                                             <div style={{height:30,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                                 <Button onClick={() => this.selectAppt(e)} style={{marginRight:10}} color="primary">{translate('View')}</Button>
                                             </div>

@@ -588,8 +588,8 @@ class OfficeList extends Component {
                 <AppSpinner/>
             )}
             {(this.state.selected === null) && (
-            <Grid md="12">
-                <Grid item  md="5" style={{zIndex:9995}}>
+            <Grid container xs="12">
+                <Grid item xs="5" style={{zIndex:9995}}>
                   {(this.props.legalAdmin && this.props.legalAdmin.data && 
                     this.props.legalAdmin.data.config &&
                     this.props.legalAdmin.data.config.provider_status && this.state.statusSelected !== null) && (
@@ -617,11 +617,11 @@ class OfficeList extends Component {
                         />
                     )}
                 </Grid>                
-                <Grid item  md={3}>
+                <Grid item xs={3}>
                     <Input type="text" id="normal-field" onChange={this.search}
                     placeholder="Search" value={this.state.search}/>
                 </Grid>
-                <Grid item  md="4">
+                <Grid item xs="4">
                     <div class="pull-right">
                         <div style={{justifyContent:'spread-evenly'}}>
                             <Button onClick={() => this.reload()} style={{marginRight:5,height:35}} outline 
@@ -635,8 +635,8 @@ class OfficeList extends Component {
             {(this.props && this.props.legalAdmin && this.props.legalAdmin.data && this.props.legalAdmin.data.legalAdmin &&
               this.props.legalAdmin.data.legalAdmin.legal.length > 0 && this.state.selected === null) && ( 
             <>
-            <Grid md="12" style={{marginTop:10}}>
-                <Grid item  md="12">
+            <Grid container xs="12" style={{marginTop:10}}>
+                <Grid item xs="12">
                       {/*<BootstrapTable 
                           keyField="id"
                           data={this.props.legalAdmin.data.legalAdmin} 
@@ -661,51 +661,51 @@ class OfficeList extends Component {
             {(this.props && this.props.legalAdmin && this.props.legalAdmin.data && this.props.legalAdmin.data.legalAdmin &&
               this.props.legalAdmin.data.legalAdmin.legal.length > 0 && this.state.selected !== null) && ( 
                 <>
-                <Grid md="12">
-                    <Grid item  md="12">
-                        <Grid md="12">
-                            <Grid item  md={4}>
+                <Grid container xs="12">
+                    <Grid item xs="12">
+                        <Grid container xs="12">
+                            <Grid item xs={4}>
                               <FormGroup row>
                                 <Label for="normal-field" md={4} className="text-md-right">
                                   ID
                                 </Label>
-                                <Grid item  md={8}>
+                                <Grid item xs={8}>
                                   <Input type="text" id="normal-field" readOnly placeholder="ID" value={this.state.selected.id}/>
                                 </Grid>
                               </FormGroup>
                             </Grid>
                         </Grid>
-                        <Grid md="12">
-                            <Grid item  md={4}>
+                        <Grid container xs="12">
+                            <Grid item xs={4}>
                               <FormGroup row>
                                 <Label for="normal-field" md={4} className="text-md-right">
                                   Service Start
                                 </Label>
-                                <Grid item  md={8}>
+                                <Grid item xs={8}>
                                   <Input type="text" readOnly id="normal-field" value={this.state.selected.service_start_date}/>
                                 </Grid>
                               </FormGroup>
                             </Grid>
                         </Grid>
-                        <Grid md="12">
-                            <Grid item  md={4}>
+                        <Grid container xs="12">
+                            <Grid item xs={4}>
                               <FormGroup row>
                                 <Label for="normal-field" md={4} className="text-md-right">
                                   Name
                                 </Label>
-                                <Grid item  md={8}>
+                                <Grid item xs={8}>
                                   <Input type="text" id="normal-field" onChange={this.nameChange} placeholder="Name" value={this.state.selected.name}/>
                                 </Grid>
                               </FormGroup>
                             </Grid>
                         </Grid>
-                        <Grid md="12">
-                          <Grid item  md={4}>
+                        <Grid container xs="12">
+                          <Grid item xs={4}>
                             <FormGroup row>
                               <Label for="normal-field" md={4} className="text-md-right">
                                 Office Email
                               </Label>
-                              <Grid item  md={8}>
+                              <Grid item xs={8}>
                               <Input type="text" id="normal-field"
                                       onChange={this.emailChange} placeholder="Email" value={this.state.selected.email}/>
                                 {this.state.errorMessage &&
@@ -719,13 +719,13 @@ class OfficeList extends Component {
                             </FormGroup>
                           </Grid>
                         </Grid>
-                        <Grid md="12">
-                          <Grid item  md={4}>
+                        <Grid container xs="12">
+                          <Grid item xs={4}>
                             <FormGroup row>
                                 <Label for="normal-field" md={4} className="text-md-right">
                                     Sales Owner
                                 </Label>
-                                <Grid item  md="8" style={{zIndex:9995}}>
+                                <Grid item xs="8" style={{zIndex:9995}}>
                                   {(this.props.legalAdmin && this.props.legalAdmin.data && 
                                     this.props.legalAdmin.data.config &&
                                     this.props.legalAdmin.data.config.provider_status && this.state.statusSelected !== null) && (
@@ -748,26 +748,26 @@ class OfficeList extends Component {
                             </FormGroup>
                           </Grid>
                         </Grid>
-                        <Grid md="12">
-                          <Grid item  md={4}>
+                        <Grid container xs="12">
+                          <Grid item xs={4}>
                             <FormGroup row>
                               <Label for="normal-field" md={4} className="text-md-right">
                                 Active
                               </Label>
-                              <Grid item  md={8}>
+                              <Grid item xs={8}>
                               <Input type="checkbox" id="normal-field"
                                       onChange={this.activeChange} placeholder="Email" checked={this.state.selected.active}/>
                               </Grid>
                             </FormGroup>
                           </Grid>
                         </Grid>
-                        <Grid md="12">
-                          <Grid item  md={4}>
+                        <Grid container xs="12">
+                          <Grid item xs={4}>
                             <FormGroup row>
                               <Label for="normal-field" md={4} className="text-md-right">
                                 Provider ID
                               </Label>
-                              <Grid item  md={8}>
+                              <Grid item xs={8}>
                                   {(this.state.selected.stripe_cust_id && this.state.selected.stripe_cust_id.includes('cus_'))  && (
                                       <a href={'https://dashboard.stripe.com/customers/' + this.state.selected.stripe_cust_id}
                                         target='_blank'>{this.state.selected.stripe_cust_id}</a>
@@ -780,13 +780,13 @@ class OfficeList extends Component {
                             </FormGroup>
                           </Grid>
                         </Grid>
-                        <Grid md="12">
-                          <Grid item  md={4}>
+                        <Grid container xs="12">
+                          <Grid item xs={4}>
                             <FormGroup row>
                               <Label for="normal-field" md={4} className="text-md-right">
                                 Old Provider ID
                               </Label>
-                              <Grid item  md={8}>
+                              <Grid item xs={8}>
                                   <a href={'https://dashboard.stripe.com/customers/' + this.state.selected.stripe_cust_id}
                                     target='_blank'>{this.state.selected.old_stripe_cust_id}</a>
                               </Grid>
@@ -795,8 +795,8 @@ class OfficeList extends Component {
                         </Grid>
                     </Grid>                
                 </Grid>
-                <Grid md="12">
-                    <Grid item  md="12">
+                <Grid container xs="12">
+                    <Grid item xs="12">
                         <Nav tabs  className={`${s.coloredNav}`} style={{backgroundColor:"#e8ecec"}}>
                             <NavItem>
                                 <NavLink className={classnames({ active: this.state.subTab === 'plans' })}
@@ -847,21 +847,21 @@ class OfficeList extends Component {
                             <TabPane tabId="plans">
                                 {(this.state.selected.plans && this.state.selected.plans.items) && (
                                 <>
-                                    <Grid md="12" style={{marginBottom:20,borderBottom:"1px solid black"}}>
-                                        <Grid item  md="2">
+                                    <Grid container xs="12" style={{marginBottom:20,borderBottom:"1px solid black"}}>
+                                        <Grid item xs="2">
                                             Plan Start
                                         </Grid>
-                                        <Grid item  md="4">
+                                        <Grid item xs="4">
                                             {this.state.selected.plans.start_date}
                                         </Grid>
-                                        <Grid item  md="2">
+                                        <Grid item xs="2">
                                             Plan End
                                         </Grid>
-                                        <Grid item  md="4">
+                                        <Grid item xs="4">
                                             {this.state.selected.plans.end_date}
                                         </Grid>
                                     </Grid>
-                                    <Grid md="12" style={{marginBottom:20}}>
+                                    <Grid container xs="12" style={{marginBottom:20}}>
                                         <BootstrapTable 
                                             keyField='id' data={this.state.selected.plans.items} 
                                             cellEdit={ cellEditFactory({ mode: 'click',blurToSave:true })}
@@ -898,8 +898,8 @@ class OfficeList extends Component {
                     </Grid>
                 </Grid>
                 <hr/>
-                <Grid md="12">
-                    <Grid item  md="6">
+                <Grid container xs="12">
+                    <Grid item xs="6">
                         <Button onClick={this.save} color="primary" disabled={!this.state.selected.name || !this.state.selected.email || 
                           this.state.errorMessage || this.state.phoneMessage}>Save</Button>
                         <Button outline style={{marginLeft:10}} onClick={this.cancel} color="secondary">Cancel</Button>

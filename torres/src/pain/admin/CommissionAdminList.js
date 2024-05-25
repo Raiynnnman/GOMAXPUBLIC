@@ -400,15 +400,15 @@ class CommissionAdminList extends Component {
             {(this.props && this.props.commissionsUser && this.props.commissionsUser.data && 
               this.props.commissionsUser.data.commissions && this.state.selected === null) && ( 
             <>
-            <Grid md="12">
-                <Grid item  md="2" style={{marginBottom:10}}>
+            <Grid container xs="12">
+                <Grid item xs="2" style={{marginBottom:10}}>
                     {/*<Button onClick={() => this.edit({id:"new"})} 
                         style={{marginRight:5,height:35,width:90}} color="primary">Add</Button>
                     */}
                 </Grid>
             </Grid>
-            <Grid md="12">
-                <Grid item  md="5" style={{marginBottom:10}}>
+            <Grid container xs="12">
+                <Grid item xs="5" style={{marginBottom:10}}>
                   {(this.props.commissionsUser && this.props.commissionsUser.data && 
                     this.props.commissionsUser.data.config &&
                     this.props.commissionsUser.data.config.period && this.state.periodSelected !== null) && (
@@ -436,7 +436,7 @@ class CommissionAdminList extends Component {
                         />
                     )}
                 </Grid>
-                <Grid item  md="7">
+                <Grid item xs="7">
                     <div class="pull-right">
                         <div style={{justifyContent:'spread-evenly'}}>
                             <Button onClick={this.commissionReport} outline color="primary"><AssessmentIcon/></Button>
@@ -444,8 +444,8 @@ class CommissionAdminList extends Component {
                     </div>
                 </Grid>
             </Grid>
-            <Grid md="12">
-                <Grid item  md="12">
+            <Grid container xs="12">
+                <Grid item xs="12">
                     <PainTable
                         keyField='id' 
                         data={this.props.commissionsUser.data.commissions} 
@@ -464,15 +464,15 @@ class CommissionAdminList extends Component {
             {(this.props && this.props.commissions && this.props.commissions.data && 
               this.props.commissions.data.commissions && this.state.selected === null) && ( 
             <>
-            <Grid md="12">
-                <Grid item  md="2" style={{marginBottom:10}}>
+            <Grid container xs="12">
+                <Grid item xs="2" style={{marginBottom:10}}>
                     {/*<Button onClick={() => this.edit({id:"new"})} 
                         style={{marginRight:5,height:35,width:90}} color="primary">Add</Button>
                     */}
                 </Grid>
             </Grid>
-            <Grid md="12">
-                <Grid item  md="5" style={{marginBottom:10}}>
+            <Grid container xs="12">
+                <Grid item xs="5" style={{marginBottom:10}}>
                   {(this.props.commissions && this.props.commissions.data && 
                     this.props.commissions.data.config &&
                     this.props.commissions.data.config.period && this.state.periodSelected !== null) && (
@@ -500,7 +500,7 @@ class CommissionAdminList extends Component {
                         />
                     )}
                 </Grid>
-                <Grid item  md="7">
+                <Grid item xs="7">
                     <div class="pull-right">
                         <div style={{justifyContent:'spread-evenly'}}>
                             <Button onClick={this.commissionReport} outline color="primary"><AssessmentIcon/></Button>
@@ -508,8 +508,8 @@ class CommissionAdminList extends Component {
                     </div>
                 </Grid>
             </Grid>
-            <Grid md="12">
-                <Grid item  md="12">
+            <Grid container xs="12">
+                <Grid item xs="12">
                     <PainTable
                         keyField='id' 
                         data={this.props.commissions.data.commissions} 

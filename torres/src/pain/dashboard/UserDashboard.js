@@ -75,7 +75,7 @@ class UserDashboard extends Component {
             {(this.state.geo) && (
                 <AppSpinner/>
             )}
-            <Grid md="12">
+            <Grid container xs="12">
                 <h3>User Dashboard Here</h3>
             </Grid>
         </>

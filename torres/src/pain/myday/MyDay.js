@@ -585,8 +585,8 @@ class MyDay extends Component {
         ]
         const invoice_expand = {
             renderer: row => ( 
-                <Grid md="12">
-                    <Grid item  md="12">
+                <Grid container xs="12">
+                    <Grid item xs="12">
                         <table style={{width:"100%"}}>
                             <tr>
                             <th ><div class="text-center">Code</div></th>
@@ -634,8 +634,8 @@ class MyDay extends Component {
             {(this.props.mydayApproveInvoice && this.props.mydayApproveInvoice.isReceiving) && (
                 <AppSpinner/>
             )}
-            <Grid md="12">
-                <Grid item  md="12">
+            <Grid container xs="12">
+                <Grid item xs="12">
                     <Nav tabs  className={`${s.coloredNav}`} style={{backgroundColor:"#e8ecec"}}>
                         <NavItem>
                             <NavLink className={classnames({ active: this.state.activeTab === 'myday' })}
@@ -659,11 +659,11 @@ class MyDay extends Component {
                             {(this.props.myday && this.props.myday.data && this.state.selected!==null) && (
                                 <>
             
-                                <Grid md="12">
-                                    <Grid item  md="4">
+                                <Grid container xs="12">
+                                    <Grid item xs="4">
                                         <h5>Customer</h5>
                                     </Grid>
-                                    <Grid item  md="8">
+                                    <Grid item xs="8">
                                         {(this.state.selected.thisschedule.appt.physician.invoices && 
                                           this.state.selected.thisschedule.appt.physician.invoices.invoices && 
                                           this.state.selected.thisschedule.appt.physician.invoices.invoices.length < 1) && (
@@ -677,76 +677,76 @@ class MyDay extends Component {
                                     </Grid>
                                 </Grid>
                                 <hr/>
-                                <Grid md="12">
-                                    <Grid item  md="4">
-                                        <Grid md="12">
-                                            <Grid item  md="4">
+                                <Grid container xs="12">
+                                    <Grid item xs="4">
+                                        <Grid container xs="12">
+                                            <Grid item xs="4">
                                                 ID: 
                                             </Grid>                
-                                            <Grid item  md="8">
+                                            <Grid item xs="8">
                                                 {this.state.selected.thisschedule.id}
                                             </Grid>                
                                         </Grid>
-                                        <Grid md="12">
-                                            <Grid item  md="4">
+                                        <Grid container xs="12">
+                                            <Grid item xs="4">
                                                 Date and Time: 
                                             </Grid>                
-                                            <Grid item  md="8">
+                                            <Grid item xs="8">
                                                 {this.state.selected.thisschedule.day} @ {this.state.selected.thisschedule.time}
                                             </Grid>                
                                         </Grid>
-                                        <Grid md="12">
-                                            <Grid item  md="4">
+                                        <Grid container xs="12">
+                                            <Grid item xs="4">
                                                 Procedure:
                                             </Grid>                
-                                            <Grid item  md="8">
+                                            <Grid item xs="8">
                                                 {this.state.selected.thisschedule.appt.customer.subprocedure.name} 
                                             </Grid>                
                                         </Grid>
-                                        <Grid md="12">
-                                            <Grid item  md="4">
+                                        <Grid container xs="12">
+                                            <Grid item xs="4">
                                                 Customer:    
                                             </Grid>                
-                                            <Grid item  md="8">
+                                            <Grid item xs="8">
                                                 {
                                                  this.state.selected.thisschedule.appt.customer.first_name + " " + 
                                                  this.state.selected.thisschedule.appt.customer.last_name
                                                 }
                                             </Grid>                
                                         </Grid>
-                                        <Grid md="12">
-                                            <Grid item  md="4">
+                                        <Grid container xs="12">
+                                            <Grid item xs="4">
                                                 Email:    
                                             </Grid>                
-                                            <Grid item  md="8">
+                                            <Grid item xs="8">
                                                 {
                                                  this.state.selected.thisschedule.appt.customer.email 
                                                 }
                                             </Grid>                
                                         </Grid>
-                                        <Grid md="12">
-                                            <Grid item  md="4">
+                                        <Grid container xs="12">
+                                            <Grid item xs="4">
                                                 Phone:    
                                             </Grid>                
-                                            <Grid item  md="8">
+                                            <Grid item xs="8">
                                                 {
                                                  this.state.selected.thisschedule.appt.customer.phone
                                                 }
                                             </Grid>                
                                         </Grid>
-                                        <Grid md="12">
-                                            <Grid item  md="4">
+                                        <Grid container xs="12">
+                                            <Grid item xs="4">
                                                 Chat:
                                             </Grid>                
-                                            <Grid item  md="8">
+                                            <Grid item xs="8">
                                                 <Button onClick={this.onNewChat} color="primary">Chat with Patient</Button>
                                             </Grid>                
                                         </Grid>
-                                        <Grid md="12" style={{marginTop:5}}>
-                                            <Grid item  md="4">
+                                        <Grid container xs="12" style={{marginTop:5}}>
+                                            <Grid item xs="4">
                                                 Status:
                                             </Grid>                
-                                            <Grid item  md="8">
+                                            <Grid item xs="8">
                                               <Select
                                                   closeMenuOnSelect={true}
                                                   isSearchable={false}
@@ -767,11 +767,11 @@ class MyDay extends Component {
                                                 }
                                             </Grid>                
                                         </Grid>
-                                        <Grid md="12" style={{marginTop:5}}>
-                                            <Grid item  md="4">
+                                        <Grid container xs="12" style={{marginTop:5}}>
+                                            <Grid item xs="4">
                                                 ICD-10-CM:
                                             </Grid>                
-                                            <Grid item  md="8">
+                                            <Grid item xs="8">
                                                 <div style={{display:"flex",alignItems:'center',justifyContent:'start'}}>
                                               <Select
                                                   closeMenuOnSelect={true}
@@ -799,12 +799,12 @@ class MyDay extends Component {
                                             </Grid>                
                                         </Grid>
                                     </Grid>
-                                    <Grid item  md="8">
-                                        <Grid md="12">
+                                    <Grid item xs="8">
+                                        <Grid container xs="12">
                                             {(this.state.selected.thisschedule.appt.physician.invoices && 
                                               this.state.selected.thisschedule.appt.physician.invoices.invoices && 
                                               this.state.selected.thisschedule.appt.physician.invoices.invoices.length < 1) && (
-                                            <Grid item  md="12">
+                                            <Grid item xs="12">
                                               <Select
                                                   closeMenuOnSelect={true}
                                                   isSearchable={true}
@@ -834,7 +834,7 @@ class MyDay extends Component {
                                             {(this.state.selected.thisschedule.appt.physician.invoices && 
                                               this.state.selected.thisschedule.appt.physician.invoices.invoices && 
                                               this.state.selected.thisschedule.appt.physician.invoices.invoices.length > 0) && (
-                                            <Grid item  md="12">
+                                            <Grid item xs="12">
                                                 <BootstrapTable 
                                                     keyField='id' data={
                                                         this.state.selected.thisschedule.appt.physician.invoices.invoices
@@ -848,8 +848,8 @@ class MyDay extends Component {
                                         {(this.state.selected.thisschedule.appt.physician.invoices && 
                                           this.state.selected.thisschedule.appt.physician.invoices.invoices && 
                                           this.state.selected.thisschedule.appt.physician.invoices.invoices.length < 1) && (
-                                        <Grid md="12" style={{marginTop:10}}>
-                                            <Grid item  md="12">
+                                        <Grid container xs="12" style={{marginTop:10}}>
+                                            <Grid item xs="12">
                                                 <BootstrapTable 
                                                     keyField='id' data={
                                                         this.state.selected.thisschedule.appt.physician.bundles
@@ -887,15 +887,15 @@ class MyDay extends Component {
                                           this.state.selected.thisschedule.appt.physician.invoices.documents && 
                                           this.state.selected.thisschedule.appt.physician.invoices.documents.length > 0) && (
                                         <>
-                                        <Grid md="12" style={{marginTop:10}}>
-                                            <Grid item  md="12">
+                                        <Grid container xs="12" style={{marginTop:10}}>
+                                            <Grid item xs="12">
                                                 <h5>Documents</h5>
                                             </Grid>
                                         </Grid>
-                                        <Grid md="12" style={{marginTop:10}}>
+                                        <Grid container xs="12" style={{marginTop:10}}>
                                             {this.state.selected.thisschedule.appt.physician.invoices.documents.map((e) => {
                                                 return (
-                                                    <Grid item  md="2">
+                                                    <Grid item xs="2">
                                                     <Button outline style={{marginTop:5}} color="primary" 
                                                         onClick={() => this.onDownload(e)}>{e.description} <DownloadIcon/></Button>
                                                     </Grid>
@@ -907,14 +907,14 @@ class MyDay extends Component {
                                     </Grid>
                                 </Grid>
                                 <hr/>
-                                <Grid md="12" style={{marginBottom:10}}>
+                                <Grid container xs="12" style={{marginBottom:10}}>
                                     {(this.state.selected.thisschedule.appt.physician.invoices && this.state.selected.thisschedule.appt.physician.invoices.length >0) && (
                                     <>
-                                    <Grid md="12">
+                                    <Grid container xs="12">
                                         <h4>Invoices</h4>
                                     </Grid>
-                                    <Grid md="12">
-                                        <Grid item  md="6">
+                                    <Grid container xs="12">
+                                        <Grid item xs="6">
                                             <BootstrapTable 
                                                 keyField='id' data={this.state.selected.thisschedule.appt.physician.invoices} 
                                                 cellEdit={ cellEditFactory({ mode: 'click',blurToSave:true })}
@@ -925,26 +925,26 @@ class MyDay extends Component {
                                     </>
                                     )}
                                 </Grid>
-                                <Grid md="12" style={{marginBottom:10}}>
-                                    <Grid md="12">
+                                <Grid container xs="12" style={{marginBottom:10}}>
+                                    <Grid container xs="12">
                                     <h4>Notes</h4>
                                     </Grid>
-                                    <Grid md="12">
-                                        <Grid item  md="4">
+                                    <Grid container xs="12">
+                                        <Grid item xs="4">
                                             <Button onClick={this.onAddComment} color="primary">Add Notes</Button>
                                         </Grid>
                                     </Grid>
-                                    <Grid md="12" style={{marginTop:10}}>
+                                    <Grid container xs="12" style={{marginTop:10}}>
                                         <>
                                         {this.state.selected.thisschedule.appt.physician.comments.sort((a,b) => (a.created > b.created ? -1:1)).map((e) => { 
                                             if (e.text === null) { return (<></>) }
                                             return (
-                                                <Grid item  md="4" key={e.id}>
+                                                <Grid item xs="4" key={e.id}>
                                                     <Card style={{borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px",
                                                         width:400,height:200}} className="mb-xlg border-1">
                                                         <CardBody>
-                                                            <Grid md="12">
-                                                                <Grid item  md="6">
+                                                            <Grid container xs="12">
+                                                                <Grid item xs="6">
                                                                     <font style={{fontSize:"14pt"}}>
                                                                         <>
                                                                         {(this.props.myday.data.physicians.filter((g) => g.id === e.user_id).length > 0 &&  
@@ -959,23 +959,23 @@ class MyDay extends Component {
                                                                         </>
                                                                     </font>
                                                                 </Grid>
-                                                                <Grid item  md="6">
+                                                                <Grid item xs="6">
                                                                     {moment(e.created).format('LLL')}
                                                                 </Grid>
                                                             </Grid>
                                                             <hr/>
-                                                            <Grid md="12">
+                                                            <Grid container xs="12">
                                                                 {(!e.edit) && ( 
-                                                                <Grid item  md="12">
+                                                                <Grid item xs="12">
                                                                     <div style={{overflow:"auto",height:100,display: 'flex', alignItems: 'start', justifyContent: 'start'}}>
                                                                     {e.text}
                                                                     </div>
                                                                 </Grid>
                                                                 )}
                                                                 {(e.edit) && ( 
-                                                                <Grid item  md="12">
+                                                                <Grid item xs="12">
                                                                     <FormGroup row>
-                                                                      <Grid item  md={12}>
+                                                                      <Grid item xs={12}>
                                                                         <Input value={e.text} rows="3" 
                                                                             onChange={this.comment} type="textarea" 
                                                                             name="text" id="default-textarea" />
@@ -984,10 +984,10 @@ class MyDay extends Component {
                                                                 </Grid>
                                                                 )}
                                                             </Grid>
-                                                            <Grid md="12">
+                                                            <Grid container xs="12">
                                                                 {(e.edit) && ( 
-                                                                <Grid item  md="12">
-                                                                    <Grid item  md="6">
+                                                                <Grid item xs="12">
+                                                                    <Grid item xs="6">
                                                                         <Button onClick={this.saveComment} color="primary">Save</Button>
                                                                         <Button outline style={{marginLeft:10}} onClick={this.cancelComment} color="secondary">Cancel</Button>
                                                                     </Grid>
@@ -1001,9 +1001,9 @@ class MyDay extends Component {
                                             </>
                                     </Grid>
                                     <hr/>
-                                    <Grid md="12">
+                                    <Grid container xs="12">
                                         {(!this.state.commentAdd) && (
-                                        <Grid item  md="6">
+                                        <Grid item xs="6">
                                             <Button onClick={this.save} color="primary">Save</Button>
                                             <Button outline style={{marginLeft:10}} onClick={this.cancel} color="secondary">Cancel</Button>
                                         </Grid>

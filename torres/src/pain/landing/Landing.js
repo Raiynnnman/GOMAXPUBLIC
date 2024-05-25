@@ -228,8 +228,8 @@ class Landing extends Component {
             <div style={{height:800,backgroundColor:"black"}}>
                 <div style={{backgroundColor:"black",display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                     <>
-                    <Grid md="12">
-                        {/*<Grid item  md="6" sx="6" style={{paddingLeft:0,marginLeft:0}}>
+                    <Grid container xs="12">
+                        {/*<Grid item xs="6" sx="6" style={{paddingLeft:0,marginLeft:0}}>
                             <div style={{backgroundColor:"black",display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                 <iframe 
                                     src={
@@ -245,7 +245,7 @@ class Landing extends Component {
                                 </iframe>
                             </div>
                         </Grid>*/}
-                        <Grid item  md="12" sx="12" style={{marginTop:10,paddingRight:0,marginRight:0}}>
+                        <Grid item xs="12" sx="12" style={{marginTop:10,paddingRight:0,marginRight:0}}>
                             <div style={{backgroundColor:"black",display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                 <iframe 
                                     src={

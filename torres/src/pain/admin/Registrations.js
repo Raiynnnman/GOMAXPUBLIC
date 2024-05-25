@@ -723,8 +723,8 @@ class Registrations extends Component {
             {(this.props.registrationsAdminList && this.props.registrationsAdminList.isReceiving) && (
                 <AppSpinner/>
             )}
-            <Grid md="12">
-                <Grid item  md="12">
+            <Grid container xs="12">
+                <Grid item xs="12">
                     <Nav tabs  className={`${s.coloredNav}`} style={{backgroundColor:"#e8ecec"}}>
                         <NavItem>
                             <NavLink className={classnames({ active: this.state.activeTab === 'registrations' })}
@@ -738,12 +738,12 @@ class Registrations extends Component {
                             {(this.state.selected === null) && (
                             <>
                             <div style={{zIndex:512}}>
-                                <Grid md="12">
-                                    <Grid item  md="1">
+                                <Grid container xs="12">
+                                    <Grid item xs="1">
                                         <Button onClick={this.add} style={{width:50}}
                                             color="primary"><AddBoxIcon/></Button>
                                     </Grid>
-                                    <Grid item  md="4" style={{zIndex:9995}}>
+                                    <Grid item xs="4" style={{zIndex:9995}}>
                                       {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
                                         this.props.registrationsAdminList.data.config &&
                                         this.props.registrationsAdminList.data.config.status && this.state.statusSelected !== null) && (
@@ -771,7 +771,7 @@ class Registrations extends Component {
                                             />
                                         )}
                                     </Grid>                
-                                    <Grid item  md="4" style={{zIndex:9995}}>
+                                    <Grid item xs="4" style={{zIndex:9995}}>
                                       {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
                                         this.props.registrationsAdminList.data.config &&
                                         this.props.registrationsAdminList.data.config.type && this.state.statusSelected !== null) && (
@@ -799,11 +799,11 @@ class Registrations extends Component {
                                             />
                                         )}
                                     </Grid>                
-                                    <Grid item  md={2}>
+                                    <Grid item xs={2}>
                                         <Input type="text" id="normal-field" onChange={this.search}
                                         placeholder="Search" value={this.state.search}/>
                                     </Grid>
-                                    <Grid item  md={1}>
+                                    <Grid item xs={1}>
                                         <div class='pull-right'>
                                             <div style={{display:'flex',justifyContent:"spread-evenly"}}>
                                                 <Button onClick={this.providerReport} outline color="primary"><AssessmentIcon/></Button>
@@ -814,8 +814,8 @@ class Registrations extends Component {
                                     </Grid>
                                 </Grid>
                             </div>
-                            <Grid md="12" style={{marginTop:10}}>
-                                <Grid item  md="12">
+                            <Grid container xs="12" style={{marginTop:10}}>
+                                <Grid item xs="12">
                                     <>
                                     {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
                                       this.props.registrationsAdminList.data.registrations && 
@@ -843,15 +843,15 @@ class Registrations extends Component {
                             </>
                             )}
                             {(this.state.selected !== null ) && (
-                            <Grid md="12" style={{marginTop:10}}>
-                                <Grid item  md="12">
-                                    <Grid md="12">
-                                        <Grid item  md="12" style={{zIndex:9999}}>
+                            <Grid container xs="12" style={{marginTop:10}}>
+                                <Grid item xs="12">
+                                    <Grid container xs="12">
+                                        <Grid item xs="12" style={{zIndex:9999}}>
                                           {this.state.selected.id && (<FormGroup row>
                                             <Label for="normal-field" md={1} className="text-md-right">
                                               ID 
                                             </Label>
-                                            <Grid item  md={5}>
+                                            <Grid item xs={5}>
                                                 <Input type="text" id="normal-field" readOnly 
                                                 placeholder="ID" value={this.state.selected.id}/>
                                             </Grid>
@@ -861,7 +861,7 @@ class Registrations extends Component {
                                             <Label for="normal-field" md={1} className="text-md-right">
                                               Office ID 
                                             </Label>
-                                            <Grid item  md={5}>
+                                            <Grid item xs={5}>
                                                 <Input type="text" id="normal-field" readOnly 
                                                 placeholder="Office ID" value={this.state.selected.office_id}/>
                                             </Grid>
@@ -871,7 +871,7 @@ class Registrations extends Component {
                                             <Label for="normal-field" md={1} className="text-md-right">
                                               Practice
                                             </Label>
-                                            <Grid item  md={5}>
+                                            <Grid item xs={5}>
                                                 <Input type="text" id="normal-field" onChange={this.updateName}
                                                 placeholder="Name" value={this.state.selected.name}/>
                                             </Grid>
@@ -880,7 +880,7 @@ class Registrations extends Component {
                                             <Label for="normal-field" md={1} className="text-md-right">
                                               Email
                                             </Label>
-                                            <Grid item  md={5}>
+                                            <Grid item xs={5}>
                                                 <Input type="text" id="normal-field" onChange={this.updateEmail}
                                                 placeholder="Email" value={this.state.selected.email}/>
                                             </Grid>
@@ -889,7 +889,7 @@ class Registrations extends Component {
                                             <Label for="normal-field" md={1} className="text-md-right">
                                               First
                                             </Label>
-                                            <Grid item  md={5}>
+                                            <Grid item xs={5}>
                                                 <Input type="text" id="normal-field" onChange={this.updateFirst}
                                                 placeholder="First" value={this.state.selected.first_name}/>
                                             </Grid>
@@ -898,7 +898,7 @@ class Registrations extends Component {
                                             <Label for="normal-field" md={1} className="text-md-right">
                                               Last
                                             </Label>
-                                            <Grid item  md={5}>
+                                            <Grid item xs={5}>
                                                 <Input type="text" id="normal-field" onChange={this.updateLast}
                                                 placeholder="Last" value={this.state.selected.last_name}/>
                                             </Grid>
@@ -907,7 +907,7 @@ class Registrations extends Component {
                                             <Label for="normal-field" md={1} className="text-md-right">
                                               Phone
                                             </Label>
-                                            <Grid item  md={5}>
+                                            <Grid item xs={5}>
                                                 <MaskedInput
                                                   className="form-control" id="mask-phone" mask="(111) 111-1111"
                                                   onChange={this.updatePhone} value={this.state.selected.phone}
@@ -919,7 +919,7 @@ class Registrations extends Component {
                                             <Label for="normal-field" md={1} className="text-md-right">
                                               Initial Payment
                                             </Label>
-                                            <Grid item  md={5}>
+                                            <Grid item xs={5}>
                                                 <Input type="text" id="normal-field" onChange={this.updateInitial}
                                                 placeholder='$' value={this.state.selected.initial_payment}/>
                                             </Grid>
@@ -928,7 +928,7 @@ class Registrations extends Component {
                                             <Label for="normal-field" md={1} className="text-md-right">
                                               Places ID
                                             </Label>
-                                            <Grid item  md={5}>
+                                            <Grid item xs={5}>
                                                 <Input type="text" id="normal-field" readOnly
                                                 value={this.state.selected.places_id}/>
                                             </Grid>
@@ -937,7 +937,7 @@ class Registrations extends Component {
                                             <Label for="normal-field" md={1} className="text-md-right">
                                                 Sales Owner
                                             </Label>
-                                            <Grid item  md="5" style={{zIndex:9995}}>
+                                            <Grid item xs="5" style={{zIndex:9995}}>
                                               {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
                                                 this.props.registrationsAdminList.data.config &&
                                                 this.props.registrationsAdminList.data.config.status && this.state.statusSelected !== null) && (
@@ -962,7 +962,7 @@ class Registrations extends Component {
                                           <Label for="normal-field" md={1} className="text-md-right">
                                             Do not call
                                           </Label>
-                                          <Grid item  md={8}>
+                                          <Grid item xs={8}>
                                           <Input type="checkbox" id="normal-field"
                                                   onChange={this.donotCallChange} placeholder="Email" checked={this.state.selected.do_not_contact}/>
                                           </Grid>
@@ -971,7 +971,7 @@ class Registrations extends Component {
                                             <Label for="normal-field" md={1} className="text-md-right">
                                               Type
                                             </Label>
-                                            <Grid item  md={5}>
+                                            <Grid item xs={5}>
                                               {(this.props.registrationsAdminList && this.props.registrationsAdminList.data &&
                                                 this.props.registrationsAdminList.data.config && 
                                                 this.props.registrationsAdminList.data.config.status) && (
@@ -1003,7 +1003,7 @@ class Registrations extends Component {
                                             <Label for="normal-field" md={1} className="text-md-right">
                                               Status
                                             </Label>
-                                            <Grid item  md={5}>
+                                            <Grid item xs={5}>
                                               {(this.props.registrationsAdminList && this.props.registrationsAdminList.data &&
                                                 this.props.registrationsAdminList.data.config && 
                                                 this.props.registrationsAdminList.data.config.status) && (
@@ -1035,7 +1035,7 @@ class Registrations extends Component {
                                             <Label for="normal-field" md={1} className="text-md-right">
                                               Strength
                                             </Label>
-                                            <Grid item  md={5}>
+                                            <Grid item xs={5}>
                                               <Select
                                                   closeMenuOnSelect={true}
                                                   isSearchable={false}
@@ -1059,9 +1059,9 @@ class Registrations extends Component {
                                           </FormGroup>
                                         </Grid>
                                     </Grid>
-                                    <Grid md="12">
+                                    <Grid container xs="12">
                                         {this.state.selected.office_type !== 'Referrer' && (
-                                        <Grid item  md="12">
+                                        <Grid item xs="12">
                                             <Nav tabs  className={`${s.coloredNav}`} style={{backgroundColor:"#e8ecec"}}>
                                                 <NavItem>
                                                     <NavLink className={classnames({ active: this.state.subTab === 'plans' })}
@@ -1090,8 +1090,8 @@ class Registrations extends Component {
                                             </Nav>
                                             <TabContent className='mb-lg' activeTab={this.state.subTab}>
                                                 <TabPane tabId="plans">
-                                                    <Grid md="12" style={{marginBottom:20}}>
-                                                        <Grid item  md="5">
+                                                    <Grid container xs="12" style={{marginBottom:20}}>
+                                                        <Grid item xs="5">
                                                           <Select
                                                               closeMenuOnSelect={true}
                                                               isSearchable={false}
@@ -1110,7 +1110,7 @@ class Registrations extends Component {
                                                                 }
                                                             />
                                                         </Grid>
-                                                        <Grid item  md="5">
+                                                        <Grid item xs="5">
                                                           <Select
                                                               closeMenuOnSelect={true}
                                                               isSearchable={false}
@@ -1178,9 +1178,9 @@ class Registrations extends Component {
                                         </Grid>
                                         )}
                                     </Grid>
-                                    <Grid md="12">
-                                        <Grid item  md="12">
-                                            <Grid item  md="6">
+                                    <Grid container xs="12">
+                                        <Grid item xs="12">
+                                            <Grid item xs="6">
                                                 <Button onClick={this.save} color="primary">Save</Button>
                                                 <Button outline style={{marginLeft:10}} onClick={this.close} 
                                                     color="secondary">Close</Button>

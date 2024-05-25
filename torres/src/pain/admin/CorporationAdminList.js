@@ -150,13 +150,13 @@ class CorporationList extends Component {
             {(this.props && this.props.corporationAdmin && this.props.corporationAdmin.data && this.props.corporationAdmin.data.length > 0 &&
               this.state.selected === null) && ( 
             <>
-            <Grid md="12">
-                <Grid item  md="4" style={{marginBottom:10}}>
+            <Grid container xs="12">
+                <Grid item xs="4" style={{marginBottom:10}}>
                     <Button onClick={() => this.edit({id:"new",addr:[]})} style={{marginRight:5,height:35,width:90}} color="primary">Add</Button>
                 </Grid>
             </Grid>
-            <Grid md="12">
-                <Grid item  md="12">
+            <Grid container xs="12">
+                <Grid item xs="12">
                     <BootstrapTable 
                         keyField='id' data={this.props.corporationAdmin.data} 
                         columns={heads} pagination={ paginationFactory(options)}>
@@ -168,22 +168,22 @@ class CorporationList extends Component {
             {(this.props && this.props.corporationAdmin && this.props.corporationAdmin.data && this.props.corporationAdmin.data.length > 0 &&
               this.state.selected !== null) && ( 
                 <>
-                <Grid md="12">
-                    <Grid item  md="12">
-                        <Grid md="12">
-                            <Grid item  md="5">
+                <Grid container xs="12">
+                    <Grid item xs="12">
+                        <Grid container xs="12">
+                            <Grid item xs="5">
                               <FormGroup row>
                                 <Label for="normal-field" md={4} className="text-md-right">
                                   Name
                                 </Label>
-                                <Grid item  md={7}>
+                                <Grid item xs={7}>
                                   <Input type="text" id="normal-field" onChange={this.nameChange} placeholder="Name" value={this.state.selected.name}/>
                                 </Grid>
                               </FormGroup>
                             </Grid>
                         </Grid>
-                        <Grid md="12">
-                            <Grid item  md="10">
+                        <Grid container xs="12">
+                            <Grid item xs="10">
                                 <h5>Addresses</h5>
                                 {(this.state.selected && this.state.selected.addr && this.state.selected.addr.length < 1) && (
                                     <Button onClick={() => this.addGrid()} style={{marginBottom:10,height:35,width:90}} color="primary">Add</Button>
@@ -199,13 +199,13 @@ class CorporationList extends Component {
                                     <h5>No addresses registered</h5>
                                 )}
                             </Grid>
-                            <Grid item  md="1"></Grid>
+                            <Grid item xs="1"></Grid>
                         </Grid>
                     </Grid>                
                 </Grid>
                 <hr/>
-                <Grid md="12">
-                    <Grid item  md="6">
+                <Grid container xs="12">
+                    <Grid item xs="6">
                         <Button onClick={this.save} color="primary">Save</Button>
                         <Button outline style={{marginLeft:10}} onClick={this.cancel} color="secondary">Cancel</Button>
                     </Grid>

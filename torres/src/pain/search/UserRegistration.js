@@ -113,94 +113,94 @@ class UserRegistration extends Component {
                 <AppSpinner/>
             )}
             {(false) && ( 
-            <Grid md="12" xs="12">
-                <Grid item  md="12" xs="12">
+            <Grid container xs="12" xs="12">
+                <Grid item xs="12" xs="12">
                     <div style={{border:"1px solid black",height:150,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                     <h1>Physician Video Here</h1>
                     </div>
                 </Grid>
             </Grid>
             )}
-            <Grid md="12" xs="12" style={{marginTop:20,marginLeft:10}}>
-                <Grid item  md="12" xs="12">
+            <Grid container xs="12" xs="12" style={{marginTop:20,marginLeft:10}}>
+                <Grid item xs="12" xs="12">
                 <>
                 {(!this.props.currentUser) && (
                     <>
                     <div style={{height:300,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                         <div>
-                        <Grid md="12" xs="12">
+                        <Grid container xs="12" xs="12">
                           <FormGroup row>
                             <Label for="normal-field" md="3" xs="3" className="text-md-right">
                               {translate('Email')}:
                             </Label>
-                            <Grid item  md="9" xs="9" style={{marginLeft:0}}>
+                            <Grid item xs="9" xs="9" style={{marginLeft:0}}>
                               <Input type="text" id="normal-field" 
                                 onChange={this.setEmail} value={this.state.register.email} 
                                 placeholder="Email" />
                             </Grid>
                           </FormGroup>
                         </Grid>
-                        <Grid md="12" xs="12">
+                        <Grid container xs="12" xs="12">
                           <FormGroup row>
                             <Label for="normal-field" md="3" xs="3" className="text-md-right">
                               {translate('First')}:
                             </Label>
-                            <Grid item  md="9" xs="9" style={{marginLeft:0}}>
+                            <Grid item xs="9" xs="9" style={{marginLeft:0}}>
                               <Input type="text" id="normal-field" 
                                 onChange={this.setFirst} value={this.state.register.first_name} 
                                 placeholder="First Name" />
                             </Grid>
                           </FormGroup>
                         </Grid>
-                        <Grid md="12" xs="12">
+                        <Grid container xs="12" xs="12">
                           <FormGroup row>
                             <Label for="normal-field" md="3" xs="3" className="text-md-right">
                               {translate('Last')}:
                             </Label>
-                            <Grid item  md="9" xs="9" style={{marginLeft:0}}>
+                            <Grid item xs="9" xs="9" style={{marginLeft:0}}>
                               <Input type="text" id="normal-field" 
                                 onChange={this.setLast} value={this.state.register.last_name} 
                                 placeholder="Last Name" />
                             </Grid>
                           </FormGroup>
                         </Grid>
-                        <Grid md="12" xs="12">
+                        <Grid container xs="12" xs="12">
                           <FormGroup row>
                             <Label for="normal-field" md="3" xs="3" className="text-md-right">
                               {translate('Phone')}:
                             </Label>
-                            <Grid item  md="9" xs="9" style={{marginLeft:0}}>
+                            <Grid item xs="9" xs="9" style={{marginLeft:0}}>
                               <Input type="text" id="normal-field" 
                                 onChange={this.setPhone} value={this.state.register.phone} 
                                 placeholder="Phone" />
                             </Grid>
                           </FormGroup>
                         </Grid>
-                        {/*<Grid md="12" xs="12">
+                        {/*<Grid container xs="12" xs="12">
                           <FormGroup row>
                             <Label for="normal-field" md="3" xs="3" className="text-md-right">
                               Password:
                             </Label>
-                            <Grid item  md="9" xs="9" style={{marginLeft:0}}>
+                            <Grid item xs="9" xs="9" style={{marginLeft:0}}>
                               <Input type="password" id="normal-field" 
                                 onChange={this.setPassword} value={this.state.register.password} 
                                 placeholder="Password" />
                             </Grid>
                           </FormGroup>
                         </Grid>
-                        <Grid md="12" xs="12">
+                        <Grid container xs="12" xs="12">
                           <FormGroup row>
                             <Label for="normal-field" md="3" xs="3" className="text-md-right">
                               Verify:
                             </Label>
-                            <Grid item  md="9" xs="9" style={{marginLeft:0}}>
+                            <Grid item xs="9" xs="9" style={{marginLeft:0}}>
                               <Input type="password" id="normal-field" 
                                 onChange={this.setVPassword} value={this.state.register.verify} 
                                 placeholder="Verify" />
                             </Grid>
                           </FormGroup>
                         </Grid>*/}
-                        <Grid md="12" xs="12">
+                        <Grid container xs="12" xs="12">
                           <FormGroup row>
                             <Label for="normal-field" md={12} className="text-md-right">
                               <font style={{color:"red"}}>
@@ -211,8 +211,8 @@ class UserRegistration extends Component {
                             </Label>
                           </FormGroup>
                         </Grid>
-                        <Grid md="12" xs="12">
-                            <Grid item  md="12" xs="12">
+                        <Grid container xs="12" xs="12">
+                            <Grid item xs="12" xs="12">
                                 <Button onClick={this.schedule} style={{marginRight:10}} color="primary" 
                                 disabled={
                                   !this.state.isValid ||

@@ -48,8 +48,8 @@ class UserAdmin extends Component {
             {(this.props.userAdmin && this.props.userAdmin.isReceiving) && (
                 <AppSpinner/>
             )}
-            <Grid md="12">
-                <Grid item  md="12">
+            <Grid container xs="12">
+                <Grid item xs="12">
                     <UserAdminList onSave={this.onSave}/> 
                 </Grid>                
             </Grid>

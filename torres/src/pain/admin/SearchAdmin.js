@@ -259,7 +259,7 @@ class SearchAdmin extends Component {
             )}
             {(!Login.isAuthenticated()) && ( 
             <>
-            <Grid md="12">
+            <Grid container xs="12">
                 <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'space-evenly'}}>
                         <img src="/painlogo.png" width="200px" height="200px"/>
                         <font style={{textAlign:"center", fontSize:window.innerWidth < 1024 ? 15 : 30}}>POUNDPAIN TECH</font>
@@ -273,15 +273,15 @@ class SearchAdmin extends Component {
             )}
             {(this.props.searchConfig && this.props.searchConfig.data && this.props.searchConfig.data.types && 
               this.state.selectedProviderType === null) && ( 
-                <Grid md="12" style={{marginTop:20}}>
+                <Grid container xs="12" style={{marginTop:20}}>
                     {this.props.searchConfig.data.types.map((e) => { 
                         return (
                             <>
-                            <Grid item  md="4" onClick={() => this.setProviderType(e.id)} style={{cursor:'pointer'}}>
+                            <Grid item xs="4" onClick={() => this.setProviderType(e.id)} style={{cursor:'pointer'}}>
                                 <Card 
                                     style={{borderRadius:"25px 25px 25px 25px",margin:20,width:400,height:300}} className="mb-xlg border-1">
                                     <CardBody>
-                                        <Grid md="12">
+                                        <Grid container xs="12">
                                             <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                             <font style={{fontSize:'24px'}}>
                                                 {e.description}
@@ -300,10 +300,10 @@ class SearchAdmin extends Component {
                 this.props.providerSearchAdmin.data && this.props.providerSearchAdmin.data.providers &&
                 this.props.providerSearchAdmin.data.providers.length > 0 && 
                 this.state.selectedAppt === null) && (
-                <Grid md="12">
+                <Grid container xs="12">
                     {this.props.providerSearchAdmin.data.providers.map((e) => { 
                         return (
-                            <Grid item  md="3">
+                            <Grid item xs="3">
                                 <PhysicianCard onScheduleAppt={this.scheduleAppt} provider={e}/>
                             </Grid>
                         )
@@ -311,8 +311,8 @@ class SearchAdmin extends Component {
                 </Grid>
             )}
             {(this.state.selectedAppt === null && this.state.selectedProviderType !== null && this.state.zipcode === null) && (
-                <Grid md="12">
-                    <Grid item  md="12">
+                <Grid container xs="12">
+                    <Grid item xs="12">
                         <UserRegistration error_message={this.state.error_message} data={this.state.selectedAppt} onCancel={this.cancel} onRegister={this.register}/>
                     </Grid>
                 </Grid>
@@ -326,8 +326,8 @@ class SearchAdmin extends Component {
                 </div>
             )}
             {(this.state.selectedAppt !== null) && (
-                <Grid md="12">
-                    <Grid item  md="12">
+                <Grid container xs="12">
+                    <Grid item xs="12">
                         <UserRegistration error_message={this.state.error_message} data={this.state.selectedAppt} onCancel={this.cancel} onRegister={this.register}/>
                     </Grid>
                 </Grid>

@@ -72,26 +72,26 @@ class UserAppointments extends Component {
             {(this.props.createRoom && this.props.createRoom.isReceiving) && (
                 <AppSpinner/>
             )}
-            <Grid md="12">
+            <Grid container xs="12">
                 {(this.state.selected !== null) && ( 
-                    <Grid item  md="6">
+                    <Grid item xs="6">
                     <h3>Detail</h3>
                     </Grid>
                 )}
                 {(this.state.selected === null) && ( 
-                    <Grid item  md="6">
+                    <Grid item xs="6">
                     <h3>Appointments</h3>
                     </Grid>
                 )}
             </Grid>
-            <Grid md="12">
+            <Grid container xs="12">
                 <>
                 {(this.props.user && this.props.user.data && this.props.user.data.appt && 
                   this.props.user.data.appt.length > 0 && this.state.selected === null) && (
                     <>
                     {this.props.user.data.appt.sort((a,b) => (a.created > b.created ? -1:1)).map((e) => {
                         return (
-                        <Grid item  md={window.innerWidth <= 1024 ? "8" : "6"}>
+                        <Grid item xs={window.innerWidth <= 1024 ? "8" : "6"}>
                             <Appointment viewAppt={true} onViewAppt={() => this.viewAppointment(e)} 
                                 onNewChat={() => this.onNewChat(e)} chat={true} data={e}/>
                         </Grid>
@@ -105,7 +105,7 @@ class UserAppointments extends Component {
                     disableSlideInfo={false}
                     mouseTracking items={this.props.user.data.appt.sort((a,b) => (a.created > b.created ? 1:-1)).map((e) => { 
                         return (
-                            <Grid item  md="12">
+                            <Grid item xs="12">
                                 <Appointment chat={true} data={e}/>
                             </Grid>                
                         )
@@ -115,7 +115,7 @@ class UserAppointments extends Component {
                 )*/}
                 {(this.props.user && this.props.user.data && this.props.user.data.appt && 
                   this.props.user.data.appt.length < 1 && this.state.selected === null) && (
-                    <Grid item  md="12">
+                    <Grid item xs="12">
                         <div>
                             <h4>No appointments scheduled</h4>
                         </div>
@@ -123,22 +123,22 @@ class UserAppointments extends Component {
                 )}
                 {(this.props.user && this.props.user.data && this.props.user.data.appt && 
                   this.props.user.data.appt.length > 1 && this.state.selected !== null) && (
-                    <Grid item  md="12">
-                        <Grid md="12">
-                            <Grid item  md="6">
-                                <Grid md="12">
-                                    <Grid item  md="3">
+                    <Grid item xs="12">
+                        <Grid container xs="12">
+                            <Grid item xs="6">
+                                <Grid container xs="12">
+                                    <Grid item xs="3">
                                         detail here
                                     </Grid>
                                 </Grid>
                             </Grid>
-                            <Grid item  md="6">
+                            <Grid item xs="6">
                                 stuff here
                             </Grid>
                         </Grid>
                         <hr/>
-                        <Grid md="12">
-                            <Grid item  md="3">
+                        <Grid container xs="12">
+                            <Grid item xs="3">
                                 <Button outline style={{marginLeft:0}} onClick={this.cancel} color="secondary">Cancel</Button>
                             </Grid>
                         </Grid>

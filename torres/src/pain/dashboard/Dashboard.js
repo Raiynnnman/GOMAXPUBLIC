@@ -30,8 +30,8 @@ class Dashboard extends Component {
         console.log("p",this.props);
         return (
         <>
-            <Grid md="12">
-                <Grid item  md="12">
+            <Grid container xs="12">
+                <Grid item xs="12">
                 <>
                 {(this.props.currentUser && this.props.currentUser.entitlements && this.props.currentUser.entitlements.includes('Customer')) && (
                     <UserDashboard/>

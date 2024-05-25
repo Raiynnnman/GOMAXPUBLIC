@@ -118,13 +118,13 @@ class OfficeAssociationList extends Component {
             {(this.props && this.props.officeAssociation && this.props.officeAssociation.data &&
               this.props.officeAssociation.data.assigned && this.state.selected === null) && ( 
             <>
-            <Grid md="12">
-                <Grid item  md="4" style={{marginBottom:10}}>
+            <Grid container xs="12">
+                <Grid item xs="4" style={{marginBottom:10}}>
                     <Button onClick={() => this.edit({id:"new",office_id:0})} style={{marginRight:5,height:35,width:90}} color="primary">Add</Button>
                 </Grid>
             </Grid>
-            <Grid md="12">
-                <Grid item  md="12">
+            <Grid container xs="12">
+                <Grid item xs="12">
                     <BootstrapTable 
                         keyField='id' data={this.props.officeAssociation.data.assigned} 
                         columns={heads} pagination={ paginationFactory()}>
@@ -136,22 +136,22 @@ class OfficeAssociationList extends Component {
             {(this.props && this.props.officeAssociation && this.props.officeAssociation.data && 
               this.props.officeAssociation.data.assigned && this.state.selected !== null) && ( 
             <>
-            <Grid md="12">
-                <Grid item  md="12">
-                    <Grid md="12">
-                        <Grid item  md="5">
+            <Grid container xs="12">
+                <Grid item xs="12">
+                    <Grid container xs="12">
+                        <Grid item xs="5">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               Name
                             </Label>
-                            <Grid item  md={7}>
+                            <Grid item xs={7}>
                               <Input type="text" id="normal-field" onChange={this.nameChange} placeholder="Name" value={this.state.selected.name}/>
                             </Grid>
                           </FormGroup>
                         </Grid>
                     </Grid>
-                    <Grid md="12">
-                        <Grid item  md="5">
+                    <Grid container xs="12">
+                        <Grid item xs="5">
                             <h5>Pick office</h5>
                             <Select 
                               onChange={this.officeChange}
@@ -175,8 +175,8 @@ class OfficeAssociationList extends Component {
                 </Grid>                
             </Grid>
             <hr/>
-            <Grid md="12">
-                <Grid item  md="6">
+            <Grid container xs="12">
+                <Grid item xs="6">
                     <Button onClick={this.save} color="primary">Save</Button>
                     <Button outline style={{marginLeft:10}} onClick={this.cancel} color="secondary">Cancel</Button>
                 </Grid>

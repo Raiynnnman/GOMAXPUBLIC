@@ -75,10 +75,10 @@ class LegalBilling extends Component {
             {(this.props.legalBilling && this.props.legalBilling.isReceiving) && (
                 <AppSpinner/>
             )}
-            <Grid md="12">
+            <Grid container xs="12">
                 {(this.props.legalBilling && this.props.legalBilling.data  &&
                   this.props.legalBilling.data.length > 0) && (
-                <Grid item  md="12">
+                <Grid item xs="12">
                     <BootstrapTable 
                         keyField='id' data={this.props.legalBilling.data} 
                         columns={head}> 
@@ -87,7 +87,7 @@ class LegalBilling extends Component {
                 )}
                 {(this.props.legalBilling && this.props.legalBilling.data  &&
                   this.props.legalBilling.data.length < 1) && (
-                <Grid item  md="12">
+                <Grid item xs="12">
                     <h5>Currently no invoices are available.</h5>
                 </Grid>
                 )}

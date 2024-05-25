@@ -124,8 +124,8 @@ class PhysicianCard extends Component {
                 margin:20,
                 borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}} className="mb-xlg border-1">
                 <CardBody>
-                    <Grid md="12">
-                        <Grid item  md="12">
+                    <Grid container xs="12">
+                        <Grid item xs="12">
                             <font style={{fontSize:"14pt",fontWeight:"bold"}}>
                             {this.props.provider.office_name} 
                             </font>
@@ -194,8 +194,8 @@ class PhysicianCard extends Component {
                             )}
                             {this.props.provider.rating.toFixed(1)}
                         </Grid>
-                        <Grid item  md="2"></Grid>
-                        <Grid item  md="4" class="pull-right">
+                        <Grid item xs="2"></Grid>
+                        <Grid item xs="4" class="pull-right">
                         </Grid>
                     </Grid>
                     <hr/>
@@ -205,19 +205,19 @@ class PhysicianCard extends Component {
                         {(!this.props.provider.headshot) && (<img style={{width:140,height:130,objectFit:"fill"}} src="/headshot.png"/>)}
                     </>
                     </div>
-                    <Grid md="12"> <Grid item  md="12">{this.props.provider.miles.toFixed(2)} miles</Grid> </Grid>
-                    {(false) && ( <Grid md="12"> 
-                        <Grid item  md="4">
+                    <Grid container xs="12"> <Grid item xs="12">{this.props.provider.miles.toFixed(2)} miles</Grid> </Grid>
+                    {(false) && ( <Grid container xs="12"> 
+                        <Grid item xs="4">
                             <Button color="secondary">See Reviews</Button>
                         </Grid>
-                        <Grid item  md="4">
+                        <Grid item xs="4">
                             <Button color="secondary">See Video</Button>
                         </Grid>
                     </Grid>
                     )}
                     <hr/>
-                    <Grid md="12"> 
-                        <Grid item  md="12">
+                    <Grid container xs="12"> 
+                        <Grid item xs="12">
                             <div style={{height:30,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                 <Button color="primary" onClick={this.scheduleAppt}>Book</Button>
                             </div>

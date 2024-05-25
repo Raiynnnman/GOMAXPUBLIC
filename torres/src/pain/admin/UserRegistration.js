@@ -205,14 +205,14 @@ class UserRegistration extends Component {
             )}
             </>
             {(this.props.error_message) && (
-            <Grid md="12" xs="12" style={{marginTop:20}}>
-                <Grid item  md="12">
+            <Grid container xs="12" xs="12" style={{marginTop:20}}>
+                <Grid item xs="12">
                     <font style={{color:'red'}}>{this.props.error_message}</font>       
                 </Grid>
             </Grid>
             )}
-            <Grid md="12" xs="12" style={{marginTop:20}}>
-                <Grid item  md="12">
+            <Grid container xs="12" xs="12" style={{marginTop:20}}>
+                <Grid item xs="12">
                     Name: full name
                     <br/>
                     Phone: phone
@@ -228,8 +228,8 @@ class UserRegistration extends Component {
                     Language: English | Spanish
                 </Grid>
             </Grid>
-            <Grid md="12" xs="12" style={{marginTop:20}}>
-                <Grid item  md="12">
+            <Grid container xs="12" xs="12" style={{marginTop:20}}>
+                <Grid item xs="12">
                     <TextareaAutosize
                       rows={5} style={{backgroundColor:'white'}}
                       placeholder=""
@@ -238,8 +238,8 @@ class UserRegistration extends Component {
                     />
                 </Grid>
             </Grid>
-            <Grid md="12" xs="12" style={{marginTop:20}}>
-                <Grid item  md="12" xs="12">
+            <Grid container xs="12" xs="12" style={{marginTop:20}}>
+                <Grid item xs="12" xs="12">
                 <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                     <Button onClick={this.save} style={{marginRight:10}} color="primary">{translate('Save')}</Button>
                     <Button outline onClick={this.cancel} color="primary">{translate('Cancel')}</Button>

@@ -40,13 +40,13 @@ class Appointment extends Component {
             <Card style={{borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px",
                 margin:20}} className="mb-xlg border-1">
                 <CardBody>
-                    <Grid md="12">
-                        <Grid item  md="7">
+                    <Grid container xs="12">
+                        <Grid item xs="7">
                             <font style={{fontSize:"14pt",fontWeight:"bold"}}>
                             {this.props.data.title + " " + this.props.data.first_name + " " + this.props.data.last_name}
                             </font>
                         </Grid>
-                        <Grid item  md="5" class="pull-right">
+                        <Grid item xs="5" class="pull-right">
                             {(this.props.data.rating === 5) && (
                             <>
                                 <i style={{color:"gold"}} className="fa fa-star me-2" />
@@ -107,73 +107,73 @@ class Appointment extends Component {
                         </Grid>
                     </Grid>
                     <hr/>
-                    <Grid md="12">
-                        <Grid item  md="3">
+                    <Grid container xs="12">
+                        <Grid item xs="3">
                             {(this.props.data.headshot) && (<img style={{width:140,height:130,objectFit:"fill"}} src={this.props.data.headshot}/>)}
                             {(!this.props.data.headshot) && (<img style={{width:140,height:130,objectFit:"fill"}} src="/headshot.png"/>)}
                         </Grid>
-                        <Grid item  md="1">
+                        <Grid item xs="1">
                         </Grid>
-                        <Grid item  md="8">
-                            <Grid md="12">
-                                <Grid item  md="12">
+                        <Grid item xs="8">
+                            <Grid container xs="12">
+                                <Grid item xs="12">
                                     Distance: {this.props.data.miles.toFixed(2)} miles
                                 </Grid>
                             </Grid>
-                            <Grid md="12">
-                                <Grid item  md="12">
+                            <Grid container xs="12">
+                                <Grid item xs="12">
                                     On: {this.props.data.schedule[0].day} @ {this.props.data.schedule[0].time}
                                 </Grid>
                             </Grid>
-                            <Grid md="12">
-                                <Grid item  md="12">
+                            <Grid container xs="12">
+                                <Grid item xs="12">
                                     Procedure: {this.props.data.subproc}
                                 </Grid>
                             </Grid>
                             {(this.props.chat) && (
-                                <Grid md="12" style={{marginTop:10}}>
-                                    <Grid item  md="8">
+                                <Grid container xs="12" style={{marginTop:10}}>
+                                    <Grid item xs="8">
                                         <Button onClick={this.props.onNewChat} color="primary">Chat with Doctor</Button>
                                     </Grid>
                                 </Grid>
                             )}
                             {(this.props.viewAppt) && (
-                                <Grid md="12" style={{marginTop:10}}>
-                                    <Grid item  md="8">
+                                <Grid container xs="12" style={{marginTop:10}}>
+                                    <Grid item xs="8">
                                         <Button style={{width:147}} onClick={this.props.onViewAppt} color="primary">Details</Button>
                                     </Grid>
                                 </Grid>
                             )}
                             {(this.props.documents) && (
-                                <Grid md="12" style={{marginTop:5}}>
-                                    <Grid item  md="8">
+                                <Grid container xs="12" style={{marginTop:5}}>
+                                    <Grid item xs="8">
                                         <Button onClick={this.onDocumentUpload} color="primary">Documents</Button>
                                     </Grid>
                                 </Grid>
                             )}
                             {(this.props.consent) && (
-                                <Grid md="12" style={{marginTop:5}}>
-                                    <Grid item  md="8">
+                                <Grid container xs="12" style={{marginTop:5}}>
+                                    <Grid item xs="8">
                                         <Button onClick={this.onGetConsent} color="primary">Consent Form</Button>
                                     </Grid>
                                 </Grid>
                             )}
                         </Grid>
                     </Grid>
-                    <Grid md="12"> 
-                        <Grid item  md="12">
+                    <Grid container xs="12"> 
+                        <Grid item xs="12">
                             {this.props.data.name}
                         </Grid> 
                     </Grid>
-                    <Grid md="12"> 
-                        <Grid item  md="8">{this.props.data.addr[0][0].addr1}</Grid> 
+                    <Grid container xs="12"> 
+                        <Grid item xs="8">{this.props.data.addr[0][0].addr1}</Grid> 
                     </Grid>
-                    <Grid md="12"> <Grid item  md="8">{this.props.data.addr[0][0].addr2}</Grid> </Grid>
-                    <Grid md="12"> 
-                        <Grid item  md="4">
+                    <Grid container xs="12"> <Grid item xs="8">{this.props.data.addr[0][0].addr2}</Grid> </Grid>
+                    <Grid container xs="12"> 
+                        <Grid item xs="4">
                             {this.props.data.addr[0][0].city},{this.props.data.addr[0][0].state} {this.props.data.addr[0][0].zipcode}
                         </Grid> 
-                        <Grid item  md="4"></Grid> 
+                        <Grid item xs="4"></Grid> 
                     </Grid>
                     <hr/>
                 </CardBody>

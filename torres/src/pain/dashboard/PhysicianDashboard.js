@@ -31,8 +31,8 @@ class Template extends Component {
             )}
             {(this.props.providerDashboard && this.props.providerDashboard.data && 
               this.props.providerDashboard.data.customers) && (
-                <Grid md="12">
-                    <Grid item  md="3">
+                <Grid container xs="12">
+                    <Grid item xs="3">
                         <TrendHeroWithStats data={this.props.providerDashboard.data.customers}
                             title="Clients Gained" num2title="Month" num3title="Year" 
                             num4title="Converted"/>

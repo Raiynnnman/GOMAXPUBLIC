@@ -73,8 +73,8 @@ class MyHealthInfo extends Component {
                 <AppSpinner/>
             )}
             {(this.props.user && this.props.user.data && this.props.user.data.invoices && 
-            <Grid md="12">
-                <Grid item  md="12">
+            <Grid container xs="12">
+                <Grid item xs="12">
                     <Nav tabs  className={`${s.coloredNav}`} style={{backgroundColor:"#e8ecec"}}>
                         <NavItem>
                             <NavLink className={classnames({ active: this.state.activeTab === 'appointments' })}

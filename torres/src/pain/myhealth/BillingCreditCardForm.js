@@ -245,7 +245,7 @@ function BillingCreditCardForm({ intentid, onCancel, onSave }) {
     <div style={{ margin: 20 }}>
       <Form>
         <Grid>
-          <Grid item  md={6}>
+          <Grid item xs={6}>
             <FormGroup>
               <Label for="name">Name</Label>
               <Input
@@ -258,7 +258,7 @@ function BillingCreditCardForm({ intentid, onCancel, onSave }) {
               />
             </FormGroup>
           </Grid>
-          <Grid item  md={6}>
+          <Grid item xs={6}>
             <FormGroup>
               <Label for="phone">Phone</Label>
               <Input
@@ -293,7 +293,7 @@ function BillingCreditCardForm({ intentid, onCancel, onSave }) {
           />
         </FormGroup>
         <Grid>
-          <Grid item  md={6}>
+          <Grid item xs={6}>
             <FormGroup>
               <Label for="city">City</Label>
               <Dropdown
@@ -320,7 +320,7 @@ function BillingCreditCardForm({ intentid, onCancel, onSave }) {
               </Dropdown>
             </FormGroup>
           </Grid>
-          <Grid item  md={4}>
+          <Grid item xs={4}>
             <FormGroup>
               <Label for="state">State</Label>
               <Dropdown
@@ -347,7 +347,7 @@ function BillingCreditCardForm({ intentid, onCancel, onSave }) {
               </Dropdown>
             </FormGroup>
           </Grid>
-          <Grid item  md={2}>
+          <Grid item xs={2}>
             <FormGroup>
               <Label for="zip">Zip</Label>
               <Input
@@ -360,7 +360,7 @@ function BillingCreditCardForm({ intentid, onCancel, onSave }) {
           </Grid>
         </Grid>
         <Grid>
-          <Grid item  md={6}>
+          <Grid item xs={6}>
             <FormGroup>
               <Label for="country">Country</Label>
               <Dropdown

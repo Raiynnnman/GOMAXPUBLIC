@@ -223,19 +223,19 @@ class MyHealthDocuments extends Component {
             {(this.state.geo) && (
                 <AppSpinner/>
             )}
-            <Grid md="12">
+            <Grid container xs="12">
                 {(this.props.user && this.props.user.data && this.props.user.data.appt && 
                   this.props.user.data.appt.length < 1 && this.state.selected === null) && (
                     <h2>No appointments scheduled</h2>
                 )}
             </Grid>
-            <Grid md="12">
+            <Grid container xs="12">
                 {(this.props.user && this.props.user.data && this.props.user.data.appt && 
                   this.props.user.data.appt.length > 0 && this.state.selected === null) && (
                     <>
                     {this.props.user.data.appt.sort((a,b) => (a.created > b.created ? -1:1)).map((e) => {
                         return (
-                            <Grid item  md={window.innerWidth <= 1024 ? "8" : "6"}>
+                            <Grid item xs={window.innerWidth <= 1024 ? "8" : "6"}>
                             <Appointment onDocumentUpload={this.onDocumentUpload} consent={true} 
                                 onConsent={this.onConsent}
                                 documents={true} chat={false} data={e}/>
@@ -255,13 +255,13 @@ class MyHealthDocuments extends Component {
                   this.props.user.data.appt.length > 0 && this.state.selected !== null &&
                   !this.state.consent) && (
                 <>
-                    <Grid md="12">
-                        <Grid item  md="3">
+                    <Grid container xs="12">
+                        <Grid item xs="3">
                             <Button onClick={() => this.addGrid()} style={{marginBottom:10,height:35,width:90}} color="primary">Add</Button>
                         </Grid>
                     </Grid>
-                    <Grid md="12">
-                        <Grid item  md="8">
+                    <Grid container xs="12">
+                        <Grid item xs="8">
                             <BootstrapTable 
                                 keyField='id' data={this.state.selected.documents} 
                                 cellEdit={ cellEditFactory({ mode: 'click',blurToSave:true }) }
@@ -270,8 +270,8 @@ class MyHealthDocuments extends Component {
                         </Grid>
                     </Grid>
                     <hr/>
-                    <Grid md="12">
-                        <Grid item  md="6">
+                    <Grid container xs="12">
+                        <Grid item xs="6">
                             <Button onClick={this.save} color="primary">Save</Button>
                             <Button outline style={{marginLeft:10}} onClick={this.cancel} color="secondary">Cancel</Button>
                         </Grid>

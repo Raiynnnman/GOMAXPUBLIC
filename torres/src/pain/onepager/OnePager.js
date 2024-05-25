@@ -41,8 +41,8 @@ class OnePager extends Component {
     render() {
         return (
         <>
-            <Grid md="12" style={{margin:0,height:400}}>
-                <Grid item  md="6">
+            <Grid container xs="12" style={{margin:0,height:400}}>
+                <Grid item xs="6">
                 <>
                     <font style={{fontWeight:600,fontSize:"5.1rem",color:"#fa6a0a"}}>
                         Expand&nbsp;
@@ -65,48 +65,48 @@ class OnePager extends Component {
                 </>
                 </Grid>                
                 {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.center) && (
-                <Grid item  md="6">
+                <Grid item xs="6">
                     <ProviderMap data={this.props.trafficData} centerPoint={this.props.trafficData.data.center}/>
                 </Grid>                
                 )}
             </Grid>
-            <Grid md="12" style={{marginTop:100}}>
-                <Grid item  md="12">
+            <Grid container xs="12" style={{marginTop:100}}>
+                <Grid item xs="12">
                     <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                         <Card style={{
                             margin:20,
                             borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}} className="mb-xlg border-1">
                             <CardBody>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                                         <img src='/lawyers.png'/>
                                         </div>
                                     </Grid>
                                 </Grid>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                                         <h3>Lawyers</h3>
                                         </div>
                                     </Grid>
                                 </Grid>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{textAlign:'center',display:'flex',alignContent:'center',justifyContent:'center'}}>
                                         <h4>Have a client in need of medical treatment? </h4>
                                         </div>
                                     </Grid>
                                 </Grid>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{textAlign:'center',display:'flex',alignContent:'center',justifyContent:'center'}}>
                                         <h4>Search for provider options based on specialty and location.</h4>
                                         </div>
                                     </Grid>
                                 </Grid>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                                         <Button outline onClick={this.lawyerMore} color="primary">Learn More</Button>
                                         </div>
@@ -118,43 +118,43 @@ class OnePager extends Component {
                             margin:20,
                             borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}} className="mb-xlg border-1">
                             <CardBody>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                                         <img src='/providers.png'/>
                                         </div>
                                     </Grid>
                                 </Grid>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                                         <h3>Medical Providers</h3>
                                         </div>
                                     </Grid>
                                 </Grid>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{textAlign:'center',display:'flex',alignContent:'center',justifyContent:'center'}}>
                                         <h4>Looking to grow your practice?</h4> 
                                         </div>
                                     </Grid>
                                 </Grid>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{textAlign:'center',display:'flex',alignContent:'center',justifyContent:'center'}}>
                                         <h4>Enable your office to receive seamless referrals</h4>
                                         </div>
                                     </Grid>
                                 </Grid>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{textAlign:'center',display:'flex',alignContent:'center',justifyContent:'center'}}>
                                         <h4>from our entire network of Personal Injury attorneys.</h4>
                                         </div>
                                     </Grid>
                                 </Grid>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                                         <Button outline onClick={this.lawyerMore} color="primary">Learn More</Button>
                                         </div>
@@ -166,29 +166,29 @@ class OnePager extends Component {
                     </div>
                 </Grid>
             </Grid>
-            <Grid md="12" style={{marginTop:40}}>
-                <Grid item  md="12">
+            <Grid container xs="12" style={{marginTop:40}}>
+                <Grid item xs="12">
                     <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                         <Card style={{
                             margin:20,
                             borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}} className="mb-xlg border-1">
                             <CardBody>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                                         <img width="50%" height="50%" src='/lawyers-img.webp'/>
                                         </div>
                                     </Grid>
                                 </Grid>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                                             <div style={{height:20,width:5,backgroundColor:"#fa6a0a"}}></div>
                                         </div>
                                     </Grid>
                                 </Grid>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{backgroundColor:"#F9FBFD",borderRadius:"10px",
                                                 boxShadow:"rgba(0, 0, 0, 0.30) 0px 5px 15px 0px"}}>
                                             <div style={{display:'flex',alignContent:'center',justifyContent:'start'}}>
@@ -200,15 +200,15 @@ class OnePager extends Component {
                                         </div>
                                     </Grid>
                                 </Grid>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                                             <div style={{height:20,width:5,backgroundColor:"#fa6a0a"}}></div>
                                         </div>
                                     </Grid>
                                 </Grid>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{backgroundColor:"#F9FBFD",borderRadius:"10px",
                                                 boxShadow:"rgba(0, 0, 0, 0.30) 0px 5px 15px 0px"}}>
                                             <div style={{display:'flex',alignContent:'center',justifyContent:'start'}}>
@@ -220,15 +220,15 @@ class OnePager extends Component {
                                         </div>
                                     </Grid>
                                 </Grid>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                                             <div style={{height:20,width:5,backgroundColor:"#fa6a0a"}}></div>
                                         </div>
                                     </Grid>
                                 </Grid>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{backgroundColor:"#F9FBFD",borderRadius:"10px",
                                                 boxShadow:"rgba(0, 0, 0, 0.30) 0px 5px 15px 0px"}}>
                                             <div style={{display:'flex',alignContent:'center',justifyContent:'start'}}>
@@ -240,15 +240,15 @@ class OnePager extends Component {
                                         </div>
                                     </Grid>
                                 </Grid>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                                             <div style={{height:20,width:5,backgroundColor:"#fa6a0a"}}></div>
                                         </div>
                                     </Grid>
                                 </Grid>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{backgroundColor:"#F9FBFD",borderRadius:"10px",
                                                 boxShadow:"rgba(0, 0, 0, 0.30) 0px 5px 15px 0px"}}>
                                             <div style={{display:'flex',alignContent:'center',justifyContent:'start'}}>
@@ -260,15 +260,15 @@ class OnePager extends Component {
                                         </div>
                                     </Grid>
                                 </Grid>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                                             <div style={{height:20,width:5,backgroundColor:"#fa6a0a"}}></div>
                                         </div>
                                     </Grid>
                                 </Grid>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{backgroundColor:"#F9FBFD",borderRadius:"10px",
                                                 boxShadow:"rgba(0, 0, 0, 0.30) 0px 5px 15px 0px"}}>
                                             <div style={{display:'flex',alignContent:'center',justifyContent:'start'}}>
@@ -280,15 +280,15 @@ class OnePager extends Component {
                                         </div>
                                     </Grid>
                                 </Grid>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                                             <div style={{height:20,width:5,backgroundColor:"#fa6a0a"}}></div>
                                         </div>
                                     </Grid>
                                 </Grid>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{backgroundColor:"#F9FBFD",borderRadius:"10px",
                                                 boxShadow:"rgba(0, 0, 0, 0.30) 0px 5px 15px 0px"}}>
                                             <div style={{display:'flex',alignContent:'center',justifyContent:'start'}}>
@@ -300,15 +300,15 @@ class OnePager extends Component {
                                         </div>
                                     </Grid>
                                 </Grid>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                                             <div style={{height:20,width:5,backgroundColor:"#fa6a0a"}}></div>
                                         </div>
                                     </Grid>
                                 </Grid>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                                         <Button outline style={{margin:20,borderRadius:"10px"}} 
                                             onClick={() => { window.location.href='/#/landing'}} color="primary">Schedule a Demo</Button>
@@ -321,22 +321,22 @@ class OnePager extends Component {
                             margin:20,
                             borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}} className="mb-xlg border-1">
                             <CardBody>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                                         <img width="50%" height="50%" src='/medical-img.webp'/>
                                         </div>
                                     </Grid>
                                 </Grid>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                                             <div style={{height:20,width:5,backgroundColor:"#fa6a0a"}}></div>
                                         </div>
                                     </Grid>
                                 </Grid>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{backgroundColor:"#F9FBFD",borderRadius:"10px",
                                                 boxShadow:"rgba(0, 0, 0, 0.30) 0px 5px 15px 0px"}}>
                                             <div style={{display:'flex',alignContent:'center',justifyContent:'start'}}>
@@ -348,15 +348,15 @@ class OnePager extends Component {
                                         </div>
                                     </Grid>
                                 </Grid>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                                             <div style={{height:20,width:5,backgroundColor:"#fa6a0a"}}></div>
                                         </div>
                                     </Grid>
                                 </Grid>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{backgroundColor:"#F9FBFD",borderRadius:"10px",
                                                 boxShadow:"rgba(0, 0, 0, 0.30) 0px 5px 15px 0px"}}>
                                             <div style={{display:'flex',alignContent:'center',justifyContent:'start'}}>
@@ -368,15 +368,15 @@ class OnePager extends Component {
                                         </div>
                                     </Grid>
                                 </Grid>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                                             <div style={{height:20,width:5,backgroundColor:"#fa6a0a"}}></div>
                                         </div>
                                     </Grid>
                                 </Grid>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{backgroundColor:"#F9FBFD",borderRadius:"10px",
                                                 boxShadow:"rgba(0, 0, 0, 0.30) 0px 5px 15px 0px"}}>
                                             <div style={{display:'flex',alignContent:'center',justifyContent:'start'}}>
@@ -388,15 +388,15 @@ class OnePager extends Component {
                                         </div>
                                     </Grid>
                                 </Grid>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                                             <div style={{height:20,width:5,backgroundColor:"#fa6a0a"}}></div>
                                         </div>
                                     </Grid>
                                 </Grid>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{backgroundColor:"#F9FBFD",borderRadius:"10px",
                                                 boxShadow:"rgba(0, 0, 0, 0.30) 0px 5px 15px 0px"}}>
                                             <div style={{display:'flex',alignContent:'center',justifyContent:'start'}}>
@@ -408,15 +408,15 @@ class OnePager extends Component {
                                         </div>
                                     </Grid>
                                 </Grid>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                                             <div style={{height:20,width:5,backgroundColor:"#fa6a0a"}}></div>
                                         </div>
                                     </Grid>
                                 </Grid>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{backgroundColor:"#F9FBFD",borderRadius:"10px",
                                                 boxShadow:"rgba(0, 0, 0, 0.30) 0px 5px 15px 0px"}}>
                                             <div style={{display:'flex',alignContent:'center',justifyContent:'start'}}>
@@ -428,15 +428,15 @@ class OnePager extends Component {
                                         </div>
                                     </Grid>
                                 </Grid>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                                             <div style={{height:20,width:5,backgroundColor:"#fa6a0a"}}></div>
                                         </div>
                                     </Grid>
                                 </Grid>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{backgroundColor:"#F9FBFD",borderRadius:"10px",
                                                 boxShadow:"rgba(0, 0, 0, 0.30) 0px 5px 15px 0px"}}>
                                             <div style={{display:'flex',alignContent:'center',justifyContent:'start'}}>
@@ -448,15 +448,15 @@ class OnePager extends Component {
                                         </div>
                                     </Grid>
                                 </Grid>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                                             <div style={{height:20,width:5,backgroundColor:"#fa6a0a"}}></div>
                                         </div>
                                     </Grid>
                                 </Grid>
-                                <Grid md="12">
-                                    <Grid item  md="12">
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
                                         <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                                         <Button outline style={{margin:20,borderRadius:"10px"}} 
                                             onClick={() => { window.location.href='/#/landing'}} color="primary">Schedule a Demo</Button>

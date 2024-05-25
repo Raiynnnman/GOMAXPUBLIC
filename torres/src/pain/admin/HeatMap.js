@@ -287,8 +287,8 @@ class MapContainer extends React.Component {
 
   render() {
     return (
-        <Grid md="12">
-            <Grid item  md="12" style={{margin:0,padding:0}}>
+        <Grid container xs="12">
+            <Grid item xs="12" style={{margin:0,padding:0}}>
                 <Map
                   google={this.props.google}
                   zoom={4}

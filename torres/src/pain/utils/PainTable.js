@@ -115,8 +115,8 @@ class PainTable extends Component {
     render() {
         return (
         <>
-            <Grid md="12">
-                <Grid item  md="12">
+            <Grid container xs="12">
+                <Grid item xs="12">
                     <TableContainer component={Paper}>
                       <Table sx={{ minWidth: 650 }} size="small" aria-label="">
                         <TableHead>
