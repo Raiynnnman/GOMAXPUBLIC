@@ -1,6 +1,10 @@
 import React ,  { Component } from "react";
 
 class Navbar extends Component {
+    componentDidMount() { 
+    } 
+    componentWillMount() { 
+    } 
     render(){
         return(
             <div className="app-header header--transparent sticker" id="main-menu">

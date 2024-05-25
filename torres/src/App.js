@@ -12,7 +12,7 @@ const App = () => {
         <div className="App">
             <BrowserRouter basename={'/'}>
                 <Switch>
-                    <Route exact path={`${process.env.PUBLIC_URL}/`} component={Demo}/>
+                    <Route exact path='/' component={HomeHorizontal}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/tf`} component={DemoTF}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/home-one`} component={HomeOlive}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/home-two`} component={HomeHorizontal}/>
