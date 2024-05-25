@@ -1950,12 +1950,84 @@ class AdminReportGet(AdminBase):
         return False
 
     def OfficeReport(self):
+        PQ = self.getProviderQueueStatus()
+        INV = self.getInvoiceIDs()
+        db = Query()
+        o = db.query(
+            """
+            select 
+                o.id,o.name,o.email,
+                concat(oa.addr1,' ',oa.addr2),
+                oa.city,oa.state,oa.zipcode,oa.phone,
+                pd.description as subscription_plan,
+                pd.duration as subscription_duration,
+                op.start_date as plan_start,
+                op.end_date as plan_end
+            from
+                office o
+                left outer join office_addresses oa on oa.office_id=o.id
+                left join provider_queue pq on pq.office_id=o.id
+                left join office_plans op on op.office_id=o.id
+                left join pricing_data pd on op.pricing_data_id=pd.id
+            where
+                pq.provider_queue_status_id=%s
+            """,(PQ['INVITED'],)
+        )
+        ret = []
+        for y in o:
+            y['next_invoice'] = db.query("""
+                select 
+                date_add(max(i.billing_period),INTERVAL 1 MONTH) as next_invoice
+                from invoices i where office_id=%s
+                """,(y['id'],)
+            )
+            if len(y['next_invoice']) > 0:
+                y['next_invoice'] = y['next_invoice'][0]['next_invoice']
+            else:
+                y['next_invoice'] = ''
+            y['last_paid'] = db.query("""
+                select 
+                date_add(max(i.billing_period),INTERVAL 1 MONTH) as last_paid
+                from invoices i where office_id=%s and invoice_status_id=%s
+                """,(y['id'],INV['PAID'])
+            )
+            if len(y['last_paid']) > 0:
+                y['last_paid'] = y['last_paid'][0]['last_paid']
+            else:
+                y['last_paid'] = ''
+            y['customers_referred'] = db.query("""
+                select 
+                count(cio.id) as cnt from client_intake_offices cio, client_intake ci
+                where cio.client_intake_id = ci.id and office_id=%s and hidden=0 group by office_id 
+                """,(y['id'],)
+            )
+            print("ref=%s" % y['customers_referred'])
+            if len(y['customers_referred']) > 0:
+                y['customers_referred'] = y['customers_referred'][0]['cnt']
+            else:
+                y['customers_referred'] = 0
+            y['customers_referred_hidden'] = db.query("""
+                select 
+                count(cio.id) as cnt from client_intake_offices cio,client_intake ci
+                where cio.client_intake_id = ci.id and office_id=%s and hidden=1 group by office_id 
+                """,(y['id'],)
+            )
+            if len(y['customers_referred_hidden']) > 0:
+                y['customers_referred_hidden'] = y['customers_referred_hidden'][0]['cnt']
+            else:
+                y['customers_referred_hidden'] = 0
+            ret.append(y)
+
+        ret = pd.DataFrame.from_dict(ret)
+        return ret
+
+    def OfficeReport2(self):
         q = """
             select
                 o.id,o.name,o.email,i.id as invoice_id,
-                json_array(i4.phone) as phone,
                 pq.do_not_contact,o.priority,
                 i5.addr1,i5.city,i5.state,i5.zipcode,
+                i5.phone,
                 pd.description as subscription_plan,
                 pd.duration as subscription_duration,
                 op.start_date as plan_start,
@@ -1991,31 +2063,20 @@ class AdminReportGet(AdminBase):
                         order by max(i.billing_period) desc
                 ) i3 on i3.office_id = o.id
                 left outer join (
-                    select oa.office_id,oa.phone as phone
-                        from office_addresses oa 
-                ) i4 on i4.office_id = o.id
-                left outer join (
                     select oa.office_id,
                         concat(oa.addr1, ' ', oa.addr2) as addr1,
                         oa.city,
-                        oa.state,oa.zipcode 
+                        oa.state,oa.zipcode,oa.phone
                         from office_addresses oa 
                 ) i5 on i5.office_id = o.id
             where
                 o.active = 1 
-            group by
-                o.id
+            group by o.id
             """
         db = Query()
         o = db.query(q)
         ret = []
         for y in o:
-            if y['phone'] is not None:
-                y['phone'] = json.loads(y['phone'])
-                if y['phone'] is not None and len(y['phone']) == 1:
-                    y['phone'] = y['phone'][0]
-                elif y['phone'] is not None and len(y['phone']) > 1:
-                    y['phone'] = json.loads(y['phone'][0])
             ret.append(y)
 
         ret = pd.DataFrame.from_dict(ret)
