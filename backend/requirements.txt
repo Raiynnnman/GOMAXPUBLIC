@@ -17,7 +17,7 @@ click-didyoumean==0.3.1
 click-plugins==1.1.1
 click-repl==0.2.0
 coverage==7.2.5
-docutils==0.21.1
+docutils
 et-xmlfile==1.1.0
 expiringdict==1.2.1
 flake8==3.8.4

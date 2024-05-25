@@ -1955,6 +1955,7 @@ class AdminReportGet(AdminBase):
                 o.id,o.name,o.email,i.id as invoice_id,
                 json_array(i4.phone) as phone,
                 pq.do_not_contact,o.priority,
+                i5.addr1,i5.city,i5.state,i5.zipcode,
                 pd.description as subscription_plan,
                 pd.duration as subscription_duration,
                 op.start_date as plan_start,
@@ -1993,9 +1994,15 @@ class AdminReportGet(AdminBase):
                     select oa.office_id,oa.phone as phone
                         from office_addresses oa 
                 ) i4 on i4.office_id = o.id
+                left outer join (
+                    select oa.office_id,
+                        concat(oa.addr1, ' ', oa.addr2) as addr1,
+                        oa.city,
+                        oa.state,oa.zipcode 
+                        from office_addresses oa 
+                ) i5 on i5.office_id = o.id
             where
-                o.active = 1 and
-                o.office_type_id=1 
+                o.active = 1 
             group by
                 o.id
             """
