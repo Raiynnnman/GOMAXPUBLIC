@@ -48,17 +48,9 @@ export function authError(payload) {
 }
 
 export function doInit() {
+  console.log("di");
   return async (dispatch) => {
-    let currentUser = null;
-    if (!config.isBackend) {
-      currentUser = {};
-      dispatch({
-        type: AUTH_INIT_SUCCESS,
-        payload: {
-          currentUser,
-        },
-      });
-    } else {
+      let currentUser = null;
       try {
         let token = localStorage.getItem('token');
         if (token) {
@@ -77,7 +69,6 @@ export function doInit() {
           payload: error,
         });
       }
-    }
   }
 }
 

@@ -7,12 +7,22 @@ import { doInit } from './actions/auth';
 import { routerMiddleware } from 'connected-react-router';
 import { createStore, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux'
-import ReduxThunk from 'redux-thunk'
+// import { ReduxThunk { from 'redux-thunk'
 import * as serviceWorker from './serviceWorker';
 import axios from 'axios';
 import config from './config';
 import baseURLConfig from './baseURLConfig';
-import store from './reducers/index';
+import rootReducer from './reducers/index';
+import { thunk } from 'redux-thunk';
+
+const middlewareEnhancer = applyMiddleware(thunk)
+
+const composeWithDevTools =
+  window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
+
+const composedEnhancers = composeWithDevTools(middlewareEnhancer)
+
+const store = createStore(rootReducer, composedEnhancers)
 
 axios.defaults.baseURL = baseURLConfig();
 axios.defaults.headers.common['Content-Type'] = "application/json";
@@ -31,6 +41,8 @@ if (token) {
   )
 );*/
 
+
+// export const store = createStore(rootReducer);
 store.dispatch(doInit());
 
 ReactDOM.render(

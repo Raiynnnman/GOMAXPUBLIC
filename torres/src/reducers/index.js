@@ -57,7 +57,7 @@ import navigation from './navigation';
 import officeInvoices from './officeInvoices';
 import alerts from './alerts';
 import invoiceAdmin from './invoiceAdmin';
-import layout from './layout';
+// import layout from './layout';
 import chat from './chat';
 import offices from './offices';
 import legal from './legal';
@@ -100,7 +100,7 @@ import registerProvider from './registerProvider';
 
 export default (history) =>
   combineReducers({
-    router: connectRouter(history),
+    // router: connectRouter(history),
     adminDashboard,
     chatDownloadDoc,
     registerProvider,
@@ -125,7 +125,7 @@ export default (history) =>
     context,
     invoiceAdmin,
     invoiceAdminUpdate,
-    layout,
+    // layout,
     leads,
     leadsSave,
     moreSchedules,
