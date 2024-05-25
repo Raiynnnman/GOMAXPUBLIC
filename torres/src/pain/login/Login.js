@@ -5,17 +5,14 @@ import HeroOlive from '../../components/HeroOlive';
 import { withRouter, Link } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
 import { connect } from 'react-redux';
-import FormControl from '@mui/material/FormControl';
-import FormHelperText from '@mui/material/FormHelperText';
-import Input from '@mui/material/Input';
-import InputLabel from '@mui/material/InputLabel';
-import OutlinedInput from '@mui/material/OutlinedInput';
 import { loginUser, receiveToken, doInit } from '../../actions/auth';
 import jwt from "jsonwebtoken";
 // import microsoft from '../../images/microsoft.png';
 import getVersion from '../../version.js';
 import { push } from 'connected-react-router';
 import translate from '../utils/translate';
+import TemplateTextField from '../utils/TemplateTextField';
+import TemplateButton from '../utils/TemplateButton';
 
 class Login extends React.Component {
 
@@ -46,7 +43,7 @@ class Login extends React.Component {
         this.changePassword = this.changePassword.bind(this);
     }
 
-    changeEmail(event) {
+    changeEmail(event,t) {
         this.setState({ email: event.target.value });
         const emailRegex = /^[A-Za-z0-9._-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/;
         this.state.isValid = emailRegex.test(event.target.value);
@@ -66,6 +63,7 @@ class Login extends React.Component {
     }
 
     doLogin(e) {
+        console.log("login");
         e.preventDefault();
         this.props.dispatch(loginUser({ email: this.state.email, password: this.state.password }));
     }
@@ -79,7 +77,6 @@ class Login extends React.Component {
     }
 
     componentDidMount() {
-        console.log("here");
         const params = new URLSearchParams(this.props.location.search);
         const token = params.get('token');
         if (token) {
@@ -94,23 +91,18 @@ class Login extends React.Component {
             <Navbar/>
             <div className="container">
                 <div className="row align-items-center">
-                    <div className="col-lg-4 col-sm-5 col-5">
-                        <h1>TEST1</h1>
+                    <div style={{display:'flex',alignItems:'center',justifyContent:'center'}}> 
+                        <TemplateTextField label='Email' helpText='Email' onChange={this.changeEmail}/>
                     </div>
                 </div>
                 <div className="row align-items-center">
-                    <div className="col-lg-4 col-sm-5 col-5">
-                        <h1>TEST2</h1>
+                    <div style={{display:'flex',alignItems:'center',justifyContent:'center'}}> 
+                        <TemplateTextField label='Password' helpText='Password' onChange={this.changePassword}/>
                     </div>
                 </div>
                 <div className="row align-items-center">
-                    <div className="col-lg-4 col-sm-5 col-5">
-                        <h1>TEST3</h1>
-                    </div>
-                </div>
-                <div className="row align-items-center">
-                    <div className="col-lg-4 col-sm-5 col-5">
-                        <h1>TEST4</h1>
+                    <div style={{display:'flex',alignItems:'center',justifyContent:'center'}}> 
+                        <TemplateButton onClick={this.doLogin} label='Login' disable={false}/>
                     </div>
                 </div>
             </div>

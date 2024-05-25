@@ -1,0 +1,17 @@
+import React, { useState, Component, useEffect } from 'react';
+import Button from '@mui/material/Button';
+
+
+function TemplateButton({label,onClick,disabled}) {
+
+    const doClick = function(e) { 
+        console.log("clickme",e)
+        onClick(e);
+    } 
+
+    return (
+        <Button variant="contained" onClick={doClick} disabled={disabled}>{label}</Button>
+    )
+}
+
+export default TemplateButton;
