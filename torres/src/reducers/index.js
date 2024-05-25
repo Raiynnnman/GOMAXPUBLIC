@@ -98,8 +98,7 @@ import mydayGetOfficePatients from './mydayGetOfficePatients';
 import mydayCustomAppt from './mydayCustomAppt'; 
 import registerProvider from './registerProvider';
 
-export default (history) =>
-  combineReducers({
+export default combineReducers({
     // router: connectRouter(history),
     adminDashboard,
     chatDownloadDoc,

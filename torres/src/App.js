@@ -37,7 +37,7 @@ class App extends React.PureComponent {
 }
 
 const mapStateToProps = store => ({
-  // currentUser: store.auth.currentUser
+  currentUser: store.auth
 });
 
 export default connect(mapStateToProps)(App);

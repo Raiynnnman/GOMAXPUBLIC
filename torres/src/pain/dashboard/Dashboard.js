@@ -27,6 +27,7 @@ class Dashboard extends Component {
     }
 
     render() {
+        console.log("p",this.props);
         return (
         <>
             <Grid md="12">
@@ -66,7 +67,7 @@ class Dashboard extends Component {
 
 function mapStateToProps(store) {
     return {
-        currentUser: store.auth.currentUser,
+        currentUser: store.auth.currentUser
     }
 }
 

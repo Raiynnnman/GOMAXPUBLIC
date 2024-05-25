@@ -21,7 +21,6 @@ export const REGISTER_REQUEST = 'REGISTER_REQUEST';
 export const REGISTER_SUCCESS = 'REGISTER_SUCCESS';
 
 async function findMe() {
-  if (config.isBackend) {
     const response = await axios.create({
             baseURL: apiBaseUrl(),
             withCredentials: true,
@@ -36,8 +35,6 @@ async function findMe() {
             } 
         });
         return response.data.data;
-  } 
-  
 }
 
 export function authError(payload) {
@@ -57,9 +54,10 @@ export function doInit() {
         if (token) {
           currentUser = await findMe();
         }
-        console.log("auth_init",currentUser);
+        console.log("auth_init",currentUser,AUTH_INIT_SUCCESS);
         dispatch({
           type: AUTH_INIT_SUCCESS,
+          goo:1,
           payload: {
             currentUser,
           },
