@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
+import CardContent from '@mui/material/CardContent';
 import cx from 'classnames';
 import classnames from 'classnames';
 import translate from '../../utils/translate';
@@ -26,10 +27,12 @@ class TrendHeroWithStats extends Component {
             <div className="pb-xlg h-100">
               <Card
                 className="mb-0 h-100"
-                style={{border:"1px solid #e3e3e3",borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}}
+                style={{margin:10,border:"1px solid #e3e3e3",borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}}
                 bodyClass="mt-lg"
-                title={<h5>{translate(this.props.title)}</h5>}
               >
+                <CardHeader title={<h5>{translate(this.props.title)}</h5>}></CardHeader>
+                <hr/>
+                <CardContent>
                   <div style={{marginBottom:10}}> 
                     <div style={{height:30,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                       <font style={{fontSize: '40px',fontWeight:"bold"}}>
@@ -64,6 +67,7 @@ class TrendHeroWithStats extends Component {
                           </p>
                       </div>
                   </div>
+                </CardContent>
               </Card>
             </div>
         </>
