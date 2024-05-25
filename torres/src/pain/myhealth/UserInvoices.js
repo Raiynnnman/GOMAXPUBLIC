@@ -8,7 +8,6 @@ import { Nav, NavItem, NavLink } from 'reactstrap';
 import { TabContent, TabPane } from 'reactstrap';
 import cx from 'classnames';
 import classnames from 'classnames';
-import s from './default.module.scss';
 import translate from '../utils/translate';
 import BootstrapTable from 'react-bootstrap-table-next';
 import AppSpinner from '../utils/Spinner';

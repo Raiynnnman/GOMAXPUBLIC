@@ -14,7 +14,6 @@ import cx from 'classnames';
 import classnames from 'classnames';
 import { referrerSave } from '../../actions/referrerUpload';
 
-import s from './default.module.scss';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 

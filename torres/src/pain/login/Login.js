@@ -12,6 +12,7 @@ import getVersion from '../../version.js';
 import { push } from 'connected-react-router';
 import translate from '../utils/translate';
 import TemplateTextField from '../utils/TemplateTextField';
+import TemplateTextFieldPassword from '../utils/TemplateTextFieldPassword';
 import TemplateButton from '../utils/TemplateButton';
 
 class Login extends React.Component {
@@ -89,15 +90,15 @@ class Login extends React.Component {
         return (
         <>
             <Navbar/>
-            <div className="container">
+            <div className="container" style={{marginTop:20}}>
                 <div className="row align-items-center">
                     <div style={{display:'flex',alignItems:'center',justifyContent:'center'}}> 
-                        <TemplateTextField label='Email' helpText='Email' onChange={this.changeEmail}/>
+                        <TemplateTextField width="200px" label='Email' helpText='Email' onChange={this.changeEmail}/>
                     </div>
                 </div>
                 <div className="row align-items-center">
                     <div style={{display:'flex',alignItems:'center',justifyContent:'center'}}> 
-                        <TemplateTextField label='Password' helpText='Password' onChange={this.changePassword}/>
+                        <TemplateTextFieldPassword width="200px" label='Password' helpText='Password' onChange={this.changePassword}/>
                     </div>
                 </div>
                 <div className="row align-items-center">

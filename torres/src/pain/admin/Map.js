@@ -8,7 +8,6 @@ import cx from 'classnames';
 import classnames from 'classnames';
 import Select from 'react-select';
 
-import s from '../utils/default.module.scss';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import { getTraffic } from '../../actions/trafficGet';

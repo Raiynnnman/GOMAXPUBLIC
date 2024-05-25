@@ -19,7 +19,6 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import cellEditFactory from 'react-bootstrap-table2-editor';
 import Widget from '../../components/Widget';
 import { registerProvider } from '../../actions/registerProvider';
-import s from '../utils/default.module.scss';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import {loadStripe} from '@stripe/stripe-js';

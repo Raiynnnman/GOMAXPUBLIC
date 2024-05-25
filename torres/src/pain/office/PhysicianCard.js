@@ -10,7 +10,6 @@ import classnames from 'classnames';
 import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
 import { Badge,Button } from 'reactstrap';
 import { Popover, PopoverHeader, PopoverBody } from 'reactstrap';
-import s from './default.module.scss';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import AppSpinnerInternal from '../utils/SpinnerInternal';

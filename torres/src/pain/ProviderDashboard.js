@@ -7,7 +7,6 @@ import cx from 'classnames';
 import classnames from 'classnames';
 import Widget from '../../components/Widget';
 
-import s from './default.module.scss';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import { getLegalDashboard } from '../../actions/legalDashboard';

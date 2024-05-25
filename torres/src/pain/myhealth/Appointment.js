@@ -10,7 +10,6 @@ import classnames from 'classnames';
 import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
 import AliceCarousel from 'react-alice-carousel';
 
-import s from './default.module.scss';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 

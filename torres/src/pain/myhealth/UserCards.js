@@ -17,7 +17,6 @@ import cx from 'classnames';
 import classnames from 'classnames';
 import {CardElement,ElementsConsumer,Elements} from '@stripe/react-stripe-js';
 import BillingCreditCardForm from './BillingCreditCardForm';
-import s from './default.module.scss';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import {loadStripe} from '@stripe/stripe-js';

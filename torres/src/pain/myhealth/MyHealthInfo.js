@@ -11,7 +11,6 @@ import cx from 'classnames';
 import classnames from 'classnames';
 
 import Calendar from '../dashboard/components/calendar/Calendar';
-import s from './default.module.scss';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import UserAppointments from './UserAppointments';

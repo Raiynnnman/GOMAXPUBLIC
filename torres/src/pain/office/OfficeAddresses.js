@@ -10,7 +10,6 @@ import AddBoxIcon from '@mui/icons-material/AddBox';
 import { Badge } from 'reactstrap';
 import { Button } from 'reactstrap'; 
 
-import s from './default.module.scss';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import {getOfficeLocations} from '../../actions/officeLocations';

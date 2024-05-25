@@ -15,7 +15,7 @@ function TextField({label,onChange,helpText,initialValue,width}) {
     return (
         <FormControl style={{width:width,marginTop:20}}>
           <InputLabel htmlFor="my-input">{label}</InputLabel>
-          <Input id="my-input" onChange={onChange} aria-describedby={helpText} />
+          <Input id="my-input" type="password" onChange={onChange} aria-describedby={helpText} />
           <FormHelperText></FormHelperText>
         </FormControl>
     )

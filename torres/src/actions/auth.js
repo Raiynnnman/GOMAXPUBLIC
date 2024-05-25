@@ -53,9 +53,11 @@ export function doInit() {
       let currentUser = null;
       try {
         let token = localStorage.getItem('token');
+        console.log("tok",token);
         if (token) {
           currentUser = await findMe();
         }
+        console.log("auth_init",currentUser);
         dispatch({
           type: AUTH_INIT_SUCCESS,
           payload: {
@@ -64,6 +66,7 @@ export function doInit() {
         });
       } catch (error) {
         // Errors.handle(error);
+        console.log("error",error);
         dispatch({
           type: AUTH_INIT_ERROR,
           payload: error,
@@ -91,19 +94,7 @@ export function logoutUser() {
 export function receiveToken(token) {
     return (dispatch) => {
         let user;
-
-        if (config.isBackend) {
-          user = jwt.decode(token)
-        } else {
-          user = {
-            email: config.auth.email,
-            user: {
-              id: 'default_no_connection_id_444'
-            }
-          }
-        }
         localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(user));
         axios.defaults.headers.common['Authorization'] = "Bearer " + token;
         dispatch({
           type: LOGIN_SUCCESS
@@ -115,13 +106,10 @@ export function receiveToken(token) {
 export function loginUser(creds) {
     return (dispatch) => {
       const cookies = new Cookies();
-      localStorage.setItem("dashboardTheme", 'dark')
-      localStorage.setItem('navbarColor', '#F74301')
-      localStorage.setItem('navbarType', 'static')
       if (false && !config.isBackend) {
         dispatch(receiveToken('token'));
         dispatch(doInit());
-        dispatch(push('/app'));
+        // dispatch(push('/app'));
       } else {
         dispatch({
           type: LOGIN_REQUEST,
@@ -138,11 +126,14 @@ export function loginUser(creds) {
             },
           }) 
           api.post("/login", creds).then(res => {
+                console.log("res",res);
                 const token = res.data.data.token;
                 dispatch(receiveToken(token));
                 dispatch(doInit());
-                dispatch(push('/app'));
+                // dispatch(push('/app'));
+                window.location = "/app";
               }).catch(err => {
+                console.log("err",err);
                 if (err && err.response && err.response.status) { 
                     if (err.response.status === 401) { 
                         dispatch(authError("Login Failed. Please try again."));
@@ -152,6 +143,7 @@ export function loginUser(creds) {
                         dispatch(authError("Something has gone wrong."));
                     } 
                 } else { 
+                    console.log("err2",err);
                     dispatch(authError(err.response.data));
                 } 
               })

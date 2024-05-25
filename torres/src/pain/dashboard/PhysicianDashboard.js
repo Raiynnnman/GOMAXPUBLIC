@@ -7,7 +7,6 @@ import cx from 'classnames';
 import classnames from 'classnames';
 import TrendHeroWithStats from './components/TrendHeroWithStats';
 
-import s from './default.module.scss';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import {getProviderDashboard} from '../../actions/providerDashboard';

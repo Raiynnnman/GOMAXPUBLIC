@@ -1,4 +1,5 @@
 import React ,  { Component } from "react";
+import { connect } from 'react-redux';
 
 class Navbar extends Component {
     constructor(props) { 
@@ -74,6 +75,10 @@ class Navbar extends Component {
     }
 }
 
-export default Navbar;
+const mapStateToProps = store => ({
+  currentUser: store.auth.currentUser
+});
+
+export default connect(mapStateToProps)(Navbar);
 
 

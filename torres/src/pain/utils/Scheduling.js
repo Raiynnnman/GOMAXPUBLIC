@@ -11,7 +11,6 @@ import classnames from 'classnames';
 import { Button } from 'reactstrap'; 
 import { Badge } from 'reactstrap';
 import { Search } from 'react-bootstrap-table2-toolkit';
-import s from './default.module.scss';
 import Datetime from 'react-datetime';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';

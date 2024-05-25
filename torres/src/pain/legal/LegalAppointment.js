@@ -11,7 +11,6 @@ import cx from 'classnames';
 import classnames from 'classnames';
 
 import BootstrapTable from 'react-bootstrap-table-next';
-import s from '../office/default.module.scss';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import Appointment from './Appointment';

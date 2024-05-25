@@ -8,7 +8,6 @@ import classnames from 'classnames';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import s from '../office/default.module.scss';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import { getUserAdmin } from '../../actions/userAdmin';

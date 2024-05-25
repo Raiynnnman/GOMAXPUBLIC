@@ -13,7 +13,6 @@ import Select from 'react-select';
 import { Button } from 'reactstrap'; 
 import { Form, FormGroup, Label, Input } from 'reactstrap';
 import { InputGroup, InputGroupText } from 'reactstrap';
-import s from '../utils/default.module.scss';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import { getProviderSearchAdmin } from '../../actions/providerSearchAdmin';

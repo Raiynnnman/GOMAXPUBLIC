@@ -12,7 +12,6 @@ import { Button } from 'reactstrap';
 import { Badge } from 'reactstrap';
 import Select from 'react-select';
 import { Search } from 'react-bootstrap-table2-toolkit';
-import s from './default.module.scss';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import { getPhysicians } from '../../actions/phy';

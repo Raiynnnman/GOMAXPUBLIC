@@ -15,7 +15,6 @@ import classnames from 'classnames';
 import { Button } from 'reactstrap'; 
 import { Badge } from 'reactstrap';
 import { Search } from 'react-bootstrap-table2-toolkit';
-import s from '../office/default.module.scss';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import { getContext } from '../../actions/context';

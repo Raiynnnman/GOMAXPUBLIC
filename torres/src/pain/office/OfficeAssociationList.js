@@ -15,7 +15,6 @@ import { Badge } from 'reactstrap';
 import { Search } from 'react-bootstrap-table2-toolkit';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import s from './default.module.scss';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import { getOfficeAssociations } from '../../actions/officeAssociation';

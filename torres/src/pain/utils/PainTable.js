@@ -10,7 +10,6 @@ import cx from 'classnames';
 import Box from '@mui/material/Box';
 import TablePagination from '@mui/material/TablePagination';
 import classnames from 'classnames';
-import s from './default.module.scss';
 import translate from '../utils/translate';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';

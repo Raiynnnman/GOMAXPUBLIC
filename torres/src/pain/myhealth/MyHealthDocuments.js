@@ -8,7 +8,6 @@ import cx from 'classnames';
 import classnames from 'classnames';
 import { FormGroup, Label, Input, InputGroup } from 'reactstrap';
 import moment from 'moment/moment'
-import s from './default.module.scss';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import {getUser} from '../../actions/user';
