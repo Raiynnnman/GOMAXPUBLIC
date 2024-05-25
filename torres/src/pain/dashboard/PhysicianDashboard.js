@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Col, Row } from 'reactstrap';
-import { Nav, NavItem, NavLink } from 'reactstrap';
-import { TabContent, TabPane } from 'reactstrap';
+import Grid from '@mui/material/Grid';
 import cx from 'classnames';
 import classnames from 'classnames';
 import TrendHeroWithStats from './components/TrendHeroWithStats';
@@ -33,13 +31,13 @@ class Template extends Component {
             )}
             {(this.props.providerDashboard && this.props.providerDashboard.data && 
               this.props.providerDashboard.data.customers) && (
-                <Row md="12">
-                    <Col md="3">
+                <Grid md="12">
+                    <Grid item  md="3">
                         <TrendHeroWithStats data={this.props.providerDashboard.data.customers}
                             title="Clients Gained" num2title="Month" num3title="Year" 
                             num4title="Converted"/>
-                    </Col>
-                </Row>
+                    </Grid>
+                </Grid>
             )}
         </>
         )

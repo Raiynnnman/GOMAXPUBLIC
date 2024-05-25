@@ -7,7 +7,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import TextareaAutosize from 'react-autosize-textarea';
 import MaskedInput from 'react-maskedinput';
 import { toast } from 'react-toastify';
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { TabContent, TabPane } from 'reactstrap';
 import cx from 'classnames';
@@ -39,7 +39,7 @@ class ReferrerUpload extends Component {
         this.setValue = this.setValue.bind(this);
         this.cancel = this.cancel.bind(this);
         this.valueChange = this.valueChange.bind(this);
-        this.addRow = this.addRow.bind(this);
+        this.addGrid = this.addGrid.bind(this);
         this.save = this.save.bind(this);
         this.onChangeInputFiles = this.onChangeInputFiles.bind(this);
     } 
@@ -52,7 +52,7 @@ class ReferrerUpload extends Component {
         this.setState(this.state)
     } 
 
-    addRow() { 
+    addGrid() { 
         this.state.clients.push(this.state.current);
         this.state.current={
                 'name':'',
@@ -188,8 +188,8 @@ class ReferrerUpload extends Component {
             {(this.props.referrerUpload && this.props.referrerUpload.isReceiving) && (
                 <AppSpinner/>
             )}
-            <Row md="12">
-                <Col md="12">
+            <Grid md="12">
+                <Grid item  md="12">
                     <Nav tabs  className={`${s.coloredNav}`} style={{backgroundColor:"#e8ecec"}}>
                         <NavItem>
                             <NavLink className={classnames({ active: this.state.activeTab === 'upload' })}
@@ -201,11 +201,11 @@ class ReferrerUpload extends Component {
                     <TabContent className='mb-lg' activeTab={this.state.activeTab}>
                         <TabPane tabId="upload">
                             {(this.state.error_message) && (
-                            <Row md="12" xs="12" style={{marginTop:20}}>
-                                <Col md="12">
+                            <Grid md="12" xs="12" style={{marginTop:20}}>
+                                <Grid item  md="12">
                                     <font style={{color:'red'}}>{this.state.error_message}</font>       
-                                </Col>
-                            </Row>
+                                </Grid>
+                            </Grid>
                             )}
                             <>
                             {/*
@@ -223,24 +223,24 @@ class ReferrerUpload extends Component {
                                 </div>
                                 <hr/>
                             */}
-                            <Row md="12" xs="12" style={{marginTop:20}}>
-                                <Col md="12">
+                            <Grid md="12" xs="12" style={{marginTop:20}}>
+                                <Grid item  md="12">
                                     <TextareaAutosize
                                       rows={5} style={{backgroundColor:'white'}}
                                       placeholder=""
                                       onChange={this.setValue} value={this.state.tarea}
                                       className={`form-control ${s.autogrow} transition-height`}
                                     />
-                                </Col>
-                            </Row>
+                                </Grid>
+                            </Grid>
                             </>
                             <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'start'}}>
                                 <Button disabled={this.state.disabled} color="primary" onClick={this.save}>Save</Button>
                             </div>
                         </TabPane>
                     </TabContent>
-                </Col>                
-            </Row>
+                </Grid>                
+            </Grid>
         </>
         )
     }

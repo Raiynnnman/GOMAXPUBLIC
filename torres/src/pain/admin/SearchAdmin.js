@@ -4,7 +4,7 @@ import SavedSearchIcon from '@mui/icons-material/SavedSearch';
 import { toast } from 'react-toastify';
 import { push } from 'connected-react-router';
 import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { TabContent, TabPane } from 'reactstrap';
 import cx from 'classnames';
@@ -259,7 +259,7 @@ class SearchAdmin extends Component {
             )}
             {(!Login.isAuthenticated()) && ( 
             <>
-            <Row md="12">
+            <Grid md="12">
                 <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'space-evenly'}}>
                         <img src="/painlogo.png" width="200px" height="200px"/>
                         <font style={{textAlign:"center", fontSize:window.innerWidth < 1024 ? 15 : 30}}>POUNDPAIN TECH</font>
@@ -267,55 +267,55 @@ class SearchAdmin extends Component {
                         <Button color="primary"onClick={this.login}>Login</Button>
                         </div>
                 </div>
-            </Row>
+            </Grid>
             <hr/>
             </>
             )}
             {(this.props.searchConfig && this.props.searchConfig.data && this.props.searchConfig.data.types && 
               this.state.selectedProviderType === null) && ( 
-                <Row md="12" style={{marginTop:20}}>
+                <Grid md="12" style={{marginTop:20}}>
                     {this.props.searchConfig.data.types.map((e) => { 
                         return (
                             <>
-                            <Col md="4" onClick={() => this.setProviderType(e.id)} style={{cursor:'pointer'}}>
+                            <Grid item  md="4" onClick={() => this.setProviderType(e.id)} style={{cursor:'pointer'}}>
                                 <Card 
                                     style={{borderRadius:"25px 25px 25px 25px",margin:20,width:400,height:300}} className="mb-xlg border-1">
                                     <CardBody>
-                                        <Row md="12">
+                                        <Grid md="12">
                                             <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                             <font style={{fontSize:'24px'}}>
                                                 {e.description}
                                             </font>
                                             </div>
-                                        </Row>
+                                        </Grid>
                                     </CardBody>
                                 </Card>
-                            </Col>
+                            </Grid>
                             </>
                         )
                     })}
-                </Row>
+                </Grid>
             )}
             {(this.props.providerSearchAdmin && this.props.providerSearchAdmin.data && 
                 this.props.providerSearchAdmin.data && this.props.providerSearchAdmin.data.providers &&
                 this.props.providerSearchAdmin.data.providers.length > 0 && 
                 this.state.selectedAppt === null) && (
-                <Row md="12">
+                <Grid md="12">
                     {this.props.providerSearchAdmin.data.providers.map((e) => { 
                         return (
-                            <Col md="3">
+                            <Grid item  md="3">
                                 <PhysicianCard onScheduleAppt={this.scheduleAppt} provider={e}/>
-                            </Col>
+                            </Grid>
                         )
                     })} 
-                </Row>
+                </Grid>
             )}
             {(this.state.selectedAppt === null && this.state.selectedProviderType !== null && this.state.zipcode === null) && (
-                <Row md="12">
-                    <Col md="12">
+                <Grid md="12">
+                    <Grid item  md="12">
                         <UserRegistration error_message={this.state.error_message} data={this.state.selectedAppt} onCancel={this.cancel} onRegister={this.register}/>
-                    </Col>
-                </Row>
+                    </Grid>
+                </Grid>
             )}
             {(this.props.providerSearchAdmin && this.props.providerSearchAdmin.data && 
                 this.props.providerSearchAdmin.data && this.props.providerSearchAdmin.data.providers &&
@@ -326,11 +326,11 @@ class SearchAdmin extends Component {
                 </div>
             )}
             {(this.state.selectedAppt !== null) && (
-                <Row md="12">
-                    <Col md="12">
+                <Grid md="12">
+                    <Grid item  md="12">
                         <UserRegistration error_message={this.state.error_message} data={this.state.selectedAppt} onCancel={this.cancel} onRegister={this.register}/>
-                    </Col>
-                </Row>
+                    </Grid>
+                </Grid>
             )}
         </>
         )

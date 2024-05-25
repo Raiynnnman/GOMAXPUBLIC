@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import cellEditFactory from 'react-bootstrap-table2-editor';
 import moment from 'moment';
 import { Button } from 'reactstrap';
@@ -160,79 +160,79 @@ class UserInvoices extends Component {
         ]
         return (
         <>
-            <Row md="12">
-                <Col md="12">
+            <Grid md="12">
+                <Grid item  md="12">
                     <h5>Invoices</h5>
-                </Col>                
-            </Row>
+                </Grid>                
+            </Grid>
             {(this.props.user.data.invoices.length > 0 && this.state.selected === null) && (
-            <Row md="12">
-                <Col md="12">
+            <Grid md="12">
+                <Grid item  md="12">
                     <BootstrapTable 
                         keyField='id' data={this.props.user.data.invoices} 
                         cellEdit={ cellEditFactory({ mode: 'click',blurToSave:true }) }
                         columns={invoice_head}> 
                     </BootstrapTable>
-                </Col>                
-            </Row>
+                </Grid>                
+            </Grid>
             )}
             {(this.props.user.data.invoices.length < 1 && this.state.selected === null) && (
-            <Row md="12">
-                <Col md="12">
+            <Grid md="12">
+                <Grid item  md="12">
                     <h4 style={{height:100}}>No invoices to show</h4>
-                </Col>                
-            </Row>
+                </Grid>                
+            </Grid>
             )}
             {(this.props.user.data.invoices.length > 0 && this.state.selected !== null) && (
             <>
-            <Row md="12">
-                <Col md="3">
+            <Grid md="12">
+                <Grid item  md="3">
                     Invoice ID:
-                </Col>                
-                <Col md="5">
+                </Grid>                
+                <Grid item  md="5">
                     {this.state.selected.number}
-                </Col>                
-            </Row>
-            <Row md="12">
-                <Col md="3">
+                </Grid>                
+            </Grid>
+            <Grid md="12">
+                <Grid item  md="3">
                     Office:
-                </Col>                
-                <Col md="5">
+                </Grid>                
+                <Grid item  md="5">
                     {this.state.selected.office_name}
-                </Col>                
-            </Row>
-            <Row md="12">
-                <Col md="3">
+                </Grid>                
+            </Grid>
+            <Grid md="12">
+                <Grid item  md="3">
                     Physician:
-                </Col>                
-                <Col md="5">
+                </Grid>                
+                <Grid item  md="5">
                     {this.state.selected.title + " " + this.state.selected.first_name + " " + this.state.selected.last_name}
-                </Col>                
-            </Row>
-            <Row md="12">
-                <Col md="3">
+                </Grid>                
+            </Grid>
+            <Grid md="12">
+                <Grid item  md="3">
                     Date:
-                </Col>                
-                <Col md="5">
+                </Grid>                
+                <Grid item  md="5">
                     {moment(this.state.selected.day + " " + this.state.selected.time).format("LLL")}
-                </Col>                
-            </Row>
-            <Row md="12">
-                <Col md="6">
+                </Grid>                
+            </Grid>
+            <Grid md="12">
+                <Grid item  md="6">
                     <BootstrapTable 
                         keyField='id' data={this.state.selected.items} 
                         columns={invoicedetailhead}> 
                     </BootstrapTable>
-                </Col>                
-            </Row>
+                </Grid>                
+            </Grid>
             <hr/>
-            <Row md="12">
-                <Col md="4">
+            <Grid md="12">
+                <Grid item  md="4">
                 <Button outline onClick={this.cancel}>
                   Back
                 </Button>
-                </Col>
-            </Row>
+                </Grid>
+            </Grid>
             </>
             )}
         </>

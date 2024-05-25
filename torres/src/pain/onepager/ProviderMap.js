@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Map, Circle, Marker, GoogleApiWrapper } from "google-maps-react";
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 
 class MapContainer extends React.Component {
   constructor(props) {
@@ -321,8 +321,8 @@ class MapContainer extends React.Component {
   render() {
     return (
     <>
-        <Row md="12">
-            <Col md="12">
+        <Grid md="12">
+            <Grid item  md="12">
                 <Map
                   google={this.props.google}
                   zoom={4}
@@ -349,8 +349,8 @@ class MapContainer extends React.Component {
                     }
                 })}
                 </Map>
-            </Col>
-        </Row>
+            </Grid>
+        </Grid>
     </>
     );
   }

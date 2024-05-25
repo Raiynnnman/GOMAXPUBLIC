@@ -4,7 +4,7 @@ import s from './Calendar.module.scss'
 class DayNames extends Component {
   render() {
     return (
-      <div className={`${s.calendarRow} ${s.daysHeader}`}>
+      <div className={`${s.calendarGrid} ${s.daysHeader}`}>
         <span className={`${s.calendarItemContainer} ${s.dayName}`}>S</span>
         <span className={`${s.calendarItemContainer} ${s.dayName}`}>M</span>
         <span className={`${s.calendarItemContainer} ${s.dayName}`}>T</span>

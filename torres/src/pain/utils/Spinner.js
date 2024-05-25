@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Spinner from 'react-bootstrap/Spinner';
+//import Spinner from 'react-bootstrap/Spinner';
 
 import './Spinner.scss';
 

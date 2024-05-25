@@ -1,6 +1,6 @@
 import React, { Component, useEffect  } from 'react';
 import { connect } from 'react-redux';
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import moment from 'moment';
 import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
 import { Nav, NavItem, NavLink } from 'reactstrap';
@@ -266,62 +266,62 @@ class Appointment extends Component {
         }
         return (
         <>
-            <Row md="12">
-                <Col md="4"></Col>
-                <Col md="6">
+            <Grid md="12">
+                <Grid item  md="4"></Grid>
+                <Grid item  md="6">
                     <div style={{height:10,display: 'flex', alignItems: 'center', justifyContent: 'center',textAlign:"left"}}>
                         <h5>{this.state.dateSelected}</h5>
                     </div>
-                </Col>
-            </Row>
+                </Grid>
+            </Grid>
             <hr/>
-            <Row md="12" style={{marginTop:10}}>
-                <Col md="4">
-                    <Row md="12">
-                        <Col md="12">
+            <Grid md="12" style={{marginTop:10}}>
+                <Grid item  md="4">
+                    <Grid md="12">
+                        <Grid item  md="12">
                         <Calendar
                           value={this.state.dateSelected}
                           initialDay={new Date()}
                           onChange={this.onDateChange}
                         />
-                        </Col>
-                    </Row>
-                    <Row md="12">
-                        <Col md="9">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12">
+                        <Grid item  md="9">
                         {(this.props.data && this.props.data.upcoming && this.props.data.upcoming.length < 1) && (
-                            <Row md="12" style={{marginTop:10}}>
-                                <Col md="12">
+                            <Grid md="12" style={{marginTop:10}}>
+                                <Grid item  md="12">
                                     <h5>No future appointments scheduled.</h5>
-                                </Col>
-                            </Row>
+                                </Grid>
+                            </Grid>
                         )}
                         {(this.props.data && this.props.data.upcoming && this.props.data.upcoming.length > 0) && (
                             <div>
                                 {this.props.data.upcoming.map((e) => { 
                                     return (
-                                    <Row md="12" style={{marginTop:10}}>
-                                        <Col md="12">
+                                    <Grid md="12" style={{marginTop:10}}>
+                                        <Grid item  md="12">
                                             <Card style={{height:100}} className="mb-xlg border-1">
                                                 <CardBody>
-                                                    <Row md="12">
-                                                        <Col md="12">
+                                                    <Grid md="12">
+                                                        <Grid item  md="12">
                                                             <h5>Upcoming Appointment</h5>
-                                                        </Col>
-                                                    </Row>
-                                                    <Row md="12">
-                                                        <Col md="12">
+                                                        </Grid>
+                                                    </Grid>
+                                                    <Grid md="12">
+                                                        <Grid item  md="12">
                                                             {e.first_name + " " + e.last_name} - {e.phone}
-                                                        </Col>
-                                                    </Row>
-                                                    <Row md="12">
-                                                        <Col md="12">
+                                                        </Grid>
+                                                    </Grid>
+                                                    <Grid md="12">
+                                                        <Grid item  md="12">
                                                             <h6>{e.schedule[0].day} @ {e.schedule[0].time}</h6>
-                                                        </Col>
-                                                    </Row>
+                                                        </Grid>
+                                                    </Grid>
                                                 </CardBody>
                                             </Card>
-                                        </Col>
-                                    </Row>
+                                        </Grid>
+                                    </Grid>
                                     )
                                 })}
                             </div>
@@ -335,11 +335,11 @@ class Appointment extends Component {
                                     trigger="legacy"
                                     >
                                         <PopoverBody>
-                                            <Row style={{'marginBottom': '5px'}}>
-                                                <Col md={4}>
+                                            <Grid style={{'marginBottom': '5px'}}>
+                                                <Grid item  md={4}>
                                                     Physician:
-                                                </Col>
-                                                <Col md={10}>
+                                                </Grid>
+                                                <Grid item  md={10}>
                                                     <Select 
                                                         onChange={this.selectPhysician}
                                                         styles={styles} 
@@ -354,13 +354,13 @@ class Appointment extends Component {
                                                             })
                                                           })}
                                                     />
-                                                </Col>
-                                            </Row>          
-                                            <Row style={{'marginBottom': '5px'}}>
-                                                <Col md={4}>
+                                                </Grid>
+                                            </Grid>          
+                                            <Grid style={{'marginBottom': '5px'}}>
+                                                <Grid item  md={4}>
                                                     Procedures:
-                                                </Col>
-                                                <Col md={10}>
+                                                </Grid>
+                                                <Grid item  md={10}>
                                                     <Select 
                                                         onChange={this.changeProcedure}
                                                         styles={styles} 
@@ -369,13 +369,13 @@ class Appointment extends Component {
                                                         options={this.state.phyProcedures}
                                                         value={this.state.procedure}
                                                     />
-                                                </Col>
-                                            </Row>
-                                            <Row style={{'marginBottom': '5px'}}>
-                                                <Col md={6}>
+                                                </Grid>
+                                            </Grid>
+                                            <Grid style={{'marginBottom': '5px'}}>
+                                                <Grid item  md={6}>
                                                     Sub Procedures:
-                                                </Col>
-                                                <Col md={10}>
+                                                </Grid>
+                                                <Grid item  md={10}>
                                                     <Select 
                                                         onChange={this.changeSubProcedure}
                                                         styles={styles} 
@@ -384,13 +384,13 @@ class Appointment extends Component {
                                                         value={this.state.subprocedure}
                                                         options={this.state.subproceduresList}
                                                     />
-                                                </Col>
-                                            </Row>
-                                            <Row style={{'marginBottom': '5px'}}>
-                                                <Col md={4}>
+                                                </Grid>
+                                            </Grid>
+                                            <Grid style={{'marginBottom': '5px'}}>
+                                                <Grid item  md={4}>
                                                     Patient:
-                                                </Col>
-                                                <Col md={10}>
+                                                </Grid>
+                                                <Grid item  md={10}>
                                                     <Select 
                                                         onChange={this.changePatient}
                                                         styles={styles} 
@@ -407,9 +407,9 @@ class Appointment extends Component {
                                                         }
                                                         
                                                     />
-                                                </Col>
-                                            </Row>
-                                            <Row>
+                                                </Grid>
+                                            </Grid>
+                                            <Grid>
                                                 <div>
                                                     {this.state.physician &&
                                                     this.state.procedure &&
@@ -432,15 +432,15 @@ class Appointment extends Component {
                                                     ))
                                                     }
                                                 </div>
-                                            </Row>
+                                            </Grid>
                                         </PopoverBody>
                                 </UncontrolledPopover>
                             </div>
                         )}
-                        </Col>
-                    </Row>
-                </Col>                
-                <Col md="6">
+                        </Grid>
+                    </Grid>
+                </Grid>                
+                <Grid item  md="6">
                     {(this.state.items && this.state.items.length > 0) && (
                         <>
                         <Chrono activeItemIndex={this.state.items.length+1} 
@@ -484,8 +484,8 @@ class Appointment extends Component {
                             <h4>No appointments scheduled for this time</h4>
                         </div>
                     )}
-                </Col>                
-            </Row>
+                </Grid>                
+            </Grid>
         </>
         )
     }

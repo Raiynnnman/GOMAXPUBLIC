@@ -7,7 +7,7 @@ import { Container, Alert, Button } from 'reactstrap';
 import getVersion from '../../version.js';
 import { connect } from 'react-redux';
 import { getLandingData } from '../../actions/landingData';
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { TabContent, TabPane } from 'reactstrap';
 import cx from 'classnames';

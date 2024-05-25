@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import EditIcon from '@mui/icons-material/Edit';
 import Select from 'react-select';
 import { push } from 'connected-react-router';
@@ -276,50 +276,50 @@ class Scheduling extends Component {
         return (
         <>
             {(this.state.selected === null) && (
-            <Row md="12">
-                <Col md="4" style={{marginBottom:10}}>
+            <Grid md="12">
+                <Grid item  md="4" style={{marginBottom:10}}>
                     <Button onClick={() => this.edit({id:"new"})} style={{marginRight:5,height:35,width:90}} color="primary">Add</Button>
-                </Col>
-            </Row>
+                </Grid>
+            </Grid>
             )}
             {(this.props && this.props.data && this.props.data.length > 0 && this.state.selected === null) && ( 
             <>
-            <Row md="12">
+            <Grid md="12">
                 <BootstrapTable 
                     keyField='id' data={this.props.data} 
                     columns={heads} pagination={paginationFactory()}>
                 </BootstrapTable>
-            </Row>
+            </Grid>
             </>
             )}
             {(this.props && this.props.data && this.props.data.length < 1 && this.state.selected === null) && ( 
             <>
-            <Row md="12">
-                <Col md="12">
+            <Grid md="12">
+                <Grid item  md="12">
                     <h5>No schedules configured. Select "Add" to create new schedules.</h5>
-                </Col>
-            </Row>
+                </Grid>
+            </Grid>
             </>
             )}
             {(this.props && this.props.data && this.state.selected !== null) && ( 
-            <Row md="12">
-                <Col md="12">
+            <Grid md="12">
+                <Grid item  md="12">
                   {(this.props && this.props.assignee && this.props.assignee.length < 1) && (
-                  <Row md="12">
-                    <Col md="1">
+                  <Grid md="12">
+                    <Grid item  md="1">
                         Physician:
-                    </Col>
-                    <Col md="6">
+                    </Grid>
+                    <Grid item  md="6">
                         <h6>No physicians configured.  Please add physicians first</h6>
-                    </Col>
-                  </Row>
+                    </Grid>
+                  </Grid>
                   )}
                   {(this.props && this.props.assignee && this.props.assignee.length > 0) && (
-                  <Row md="12">
-                    <Col md="1">
+                  <Grid md="12">
+                    <Grid item  md="1">
                         Physician:
-                    </Col>
-                    <Col md="6">
+                    </Grid>
+                    <Grid item  md="6">
                         <Select 
                           className="selectCustomization"
                           onChange={this.selectPhysician}
@@ -331,14 +331,14 @@ class Scheduling extends Component {
                             })
                           })}
                         />
-                    </Col>
-                  </Row>
+                    </Grid>
+                  </Grid>
                   )}
-                  <Row md="12" style={{marginTop:10}}>
-                    <Col md="1">
+                  <Grid md="12" style={{marginTop:10}}>
+                    <Grid item  md="1">
                         Start Time:
-                    </Col>
-                    <Col md="6">
+                    </Grid>
+                    <Grid item  md="6">
                       <div className="datepicker" style={{display: 'flex'}}>
                         <Datetime
                           open={this.state.isStartTimePickerOpen} id="timepicker"
@@ -353,13 +353,13 @@ class Scheduling extends Component {
                           <span className="input-group-text" onClick={this.toggleStartTime} >
                             <i className="glyphicon glyphicon-time" /></span>
                       </div>
-                    </Col>
-                  </Row>
-                  <Row md="12" style={{marginTop:10}}>
-                    <Col md="1">
+                    </Grid>
+                  </Grid>
+                  <Grid md="12" style={{marginTop:10}}>
+                    <Grid item  md="1">
                         End Time:
-                    </Col>
-                    <Col md="6">
+                    </Grid>
+                    <Grid item  md="6">
                       <div className="datepicker" style={{display: 'flex'}}>
                         <Datetime
                           open={this.state.isEndTimePickerOpen} id="timepicker"
@@ -374,76 +374,76 @@ class Scheduling extends Component {
                           <span className="input-group-text" onClick={this.toggleEndTime} >
                             <i className="glyphicon glyphicon-time" /></span>
                       </div>
-                    </Col>
-                  </Row>
-                  <Row md="12" style={{marginTop:1}}>
-                    <Col md="1">
+                    </Grid>
+                  </Grid>
+                  <Grid md="12" style={{marginTop:1}}>
+                    <Grid item  md="1">
                         Weekdays:
-                    </Col>
-                    <Col md="11">
-                        <Row md="12">
-                            <Col md="1">
+                    </Grid>
+                    <Grid item  md="11">
+                        <Grid md="12">
+                            <Grid item  md="1">
                               <div onClick={() => this.setDays(0)}>
                                   <Input id="mon" checked={this.state.selected.days.includes(0)} type="checkbox" />{' '}
                                   <Label for="mon"> 
                                     Mon
                                   </Label>
                               </div>
-                            </Col>
-                            <Col md="1">
+                            </Grid>
+                            <Grid item  md="1">
                               <div onClick={() => this.setDays(1)}>
                                   <Input id="tue" checked={this.state.selected.days.includes(1)} type="checkbox" />{' '}
                                   <Label for="tue"> 
                                     Tue
                                   </Label>
                               </div>
-                            </Col>
-                            <Col md="1">
+                            </Grid>
+                            <Grid item  md="1">
                               <div onClick={() => this.setDays(2)}>
                                   <Input id="wed" checked={this.state.selected.days.includes(2)} type="checkbox" />{' '}
                                   <Label for="wed">
                                     Wed
                                   </Label>
                               </div>
-                            </Col>
-                            <Col md="1">
+                            </Grid>
+                            <Grid item  md="1">
                               <div onClick={() => this.setDays(3)}>
                                   <Input id="thu" checked={this.state.selected.days.includes(3)} type="checkbox" />{' '}
                                   <Label for="thu">
                                     Thu
                                   </Label>
                               </div>
-                            </Col>
-                            <Col md="1">
+                            </Grid>
+                            <Grid item  md="1">
                               <div onClick={() => this.setDays(4)}>
                                   <Input id="fri" checked={this.state.selected.days.includes(4)}type="checkbox" />{' '}
                                   <Label for="fri">
                                     Fri
                                   </Label>
                               </div>
-                            </Col>
-                            <Col md="1">
+                            </Grid>
+                            <Grid item  md="1">
                               <div onClick={() => this.setDays(5)}>
                                   <Input id="sat" checked={this.state.selected.days.includes(5)} type="checkbox" />{' '}
                                   <Label for="sat">
                                     Sat
                                   </Label>
                               </div>
-                            </Col>
-                            <Col md="1">
+                            </Grid>
+                            <Grid item  md="1">
                               <div onClick={() => this.setDays(6)}>
                                   <Input id="sun" checked={this.state.selected.days.includes(6)} type="checkbox" />{' '}
                                   <Label for="sun">
                                     Sun
                                   </Label>
                               </div>
-                            </Col>
-                        </Row>
-                    </Col>
-                  </Row>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                  </Grid>
                   {(false) && ( 
-                  <Row md="12" style={{marginTop:10}}>
-                    <Col md="6">
+                  <Grid md="12" style={{marginTop:10}}>
+                    <Grid item  md="6">
                         <FormGroup className="checkbox abc-checkbox" check>
                               <Input id="recurring" 
                                  onClick={this.setRecurring}
@@ -452,28 +452,28 @@ class Scheduling extends Component {
                                 Recurring?
                               </Label>
                         </FormGroup>
-                    </Col>
-                  </Row>
+                    </Grid>
+                  </Grid>
                   )}
-                  <Row md="12" style={{marginTop:10}}>
+                  <Grid md="12" style={{marginTop:10}}>
                       <FormGroup row>
                         <Label for="normal-field" md={1} className="text-md-right">
                           Interval:
                         </Label>
-                        <Col md={3}>
+                        <Grid item  md={3}>
                           <Input type="text" id="normal-field" 
                             onChange={this.setInterval} value={this.state.selected.inter} 
                             placeholder="Interval in minutes" />
-                        </Col>
+                        </Grid>
                       </FormGroup>
-                  </Row>
-                </Col> 
+                  </Grid>
+                </Grid> 
                 <hr/>
-                <Col md="6" style={{marginTop:10}}>
+                <Grid item  md="6" style={{marginTop:10}}>
                     <Button onClick={() => this.save()} style={{marginRight:5,height:35,width:90}} color="primary">Save</Button>
                     <Button onClick={() => this.cancel()} style={{marginRight:5,height:35,width:90}} outline color="primary">Cancel</Button>
-                </Col>
-            </Row>
+                </Grid>
+            </Grid>
             )}
         </>
         )

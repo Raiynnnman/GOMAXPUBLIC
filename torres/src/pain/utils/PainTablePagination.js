@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { TabContent, TabPane } from 'reactstrap';
 import cx from 'classnames';
@@ -36,10 +36,10 @@ class Template extends Component {
             {(this.props.offices && this.props.offices.isReceiving) && (
                 <AppSpinner/>
             )}
-            <Row md="12">
-                <Col md="12">
-                </Col>                
-            </Row>
+            <Grid md="12">
+                <Grid item  md="12">
+                </Grid>                
+            </Grid>
         </>
         )
     }

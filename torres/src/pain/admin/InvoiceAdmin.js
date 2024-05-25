@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { TabContent, TabPane } from 'reactstrap';
 import cx from 'classnames';
@@ -105,13 +105,13 @@ class InvoiceAdmin extends Component {
             {(this.props.invoiceAdmin && this.props.invoiceAdmin.isReceiving) && (
                 <AppSpinner/>
             )}
-            <Row md="12">
-                <Col md="12">
+            <Grid md="12">
+                <Grid item  md="12">
                     <InvoiceAdminList filters={this.state.filters} page={this.state.page} filterSelected={this.state.filterSelected} 
                         pageChange={this.pageChange} onFilterChange={this.onFilterChange} 
                         onSave={this.onSave} onStatusUpdate={this.onStatusUpdate}/>
-                </Col>                
-            </Row>
+                </Grid>                
+            </Grid>
         </>
         )
     }

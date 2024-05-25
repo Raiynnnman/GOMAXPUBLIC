@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Select from 'react-select';
 import TextareaAutosize from 'react-autosize-textarea';
 import { connect } from 'react-redux';
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
 import googleKey from '../../googleConfig';
 import { push } from 'connected-react-router';
@@ -205,14 +205,14 @@ class UserRegistration extends Component {
             )}
             </>
             {(this.props.error_message) && (
-            <Row md="12" xs="12" style={{marginTop:20}}>
-                <Col md="12">
+            <Grid md="12" xs="12" style={{marginTop:20}}>
+                <Grid item  md="12">
                     <font style={{color:'red'}}>{this.props.error_message}</font>       
-                </Col>
-            </Row>
+                </Grid>
+            </Grid>
             )}
-            <Row md="12" xs="12" style={{marginTop:20}}>
-                <Col md="12">
+            <Grid md="12" xs="12" style={{marginTop:20}}>
+                <Grid item  md="12">
                     Name: full name
                     <br/>
                     Phone: phone
@@ -226,26 +226,26 @@ class UserRegistration extends Component {
                     Attny: Attny
                     <br/>
                     Language: English | Spanish
-                </Col>
-            </Row>
-            <Row md="12" xs="12" style={{marginTop:20}}>
-                <Col md="12">
+                </Grid>
+            </Grid>
+            <Grid md="12" xs="12" style={{marginTop:20}}>
+                <Grid item  md="12">
                     <TextareaAutosize
                       rows={5} style={{backgroundColor:'white'}}
                       placeholder=""
                       onChange={this.setValue} value={this.state.tarea}
                       className={`form-control ${s.autogrow} transition-height`}
                     />
-                </Col>
-            </Row>
-            <Row md="12" xs="12" style={{marginTop:20}}>
-                <Col md="12" xs="12">
+                </Grid>
+            </Grid>
+            <Grid md="12" xs="12" style={{marginTop:20}}>
+                <Grid item  md="12" xs="12">
                 <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                     <Button onClick={this.save} style={{marginRight:10}} color="primary">{translate('Save')}</Button>
                     <Button outline onClick={this.cancel} color="primary">{translate('Cancel')}</Button>
                 </div>
-                </Col>
-            </Row>
+                </Grid>
+            </Grid>
         </>
         )
     }

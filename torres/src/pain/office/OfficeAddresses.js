@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { TabContent, TabPane } from 'reactstrap';
@@ -96,46 +96,46 @@ class OfficeAddresses extends Component {
             )}
             {(this.state.selected !== null) && (
             <>
-            <Row md="12">
-                <Col md="4">
+            <Grid md="12">
+                <Grid item  md="4">
                     <LocationCard provider={this.state.selected} onUpdate={this.onUpdate} edit={true}/>
-                </Col>
-            </Row>
+                </Grid>
+            </Grid>
             <hr/>
-            <Row md="12">
-                <Col md="12">
-                    <Col md="6">
+            <Grid md="12">
+                <Grid item  md="12">
+                    <Grid item  md="6">
                         <Button onClick={this.save} color="primary">Save</Button>
                         <Button outline style={{marginLeft:10}} onClick={this.cancel} 
                             color="secondary">Close</Button>
-                    </Col>
-                </Col>
-            </Row>
+                    </Grid>
+                </Grid>
+            </Grid>
             </>
             )}
             {(this.state.selected === null) && (
             <>
-            <Row md="12">
-                <Col md="1">
+            <Grid md="12">
+                <Grid item  md="1">
                     <Button onClick={() => this.edit({id:'new'})} style={{width:50}}
                         color="primary"><AddBoxIcon/></Button>
-                </Col>
-            </Row>
-            <Row md="12">
+                </Grid>
+            </Grid>
+            <Grid md="12">
                 {(this.props.officeLocations && this.props.officeLocations.data &&
                   this.props.officeLocations.data.locations && 
                   this.props.officeLocations.data.locations.length > 0) && (
                   <>
                     {this.props.officeLocations.data.locations.map((e) => {
                         return (
-                        <Col md="4">
+                        <Grid item  md="4">
                             <LocationCard onEdit={this.edit} provider={e} edit={false}/>
-                        </Col>
+                        </Grid>
                         )
                     })}
                   </>
                 )}
-            </Row>
+            </Grid>
             </>
             )}
         </>

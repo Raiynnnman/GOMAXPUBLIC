@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Badge } from 'reactstrap';
 import { connect } from 'react-redux';
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { FormGroup, Label, Input } from 'reactstrap';
 import { toast } from 'react-toastify';
@@ -125,41 +125,41 @@ class UserCards extends Component {
             {(this.props.saveCard && this.props.saveCard.isReceiving) && (
                 <AppSpinner/>
             )}
-            <Row md="12" style={{marginTop:50}}>
-                <Col md="5">
+            <Grid md="12" style={{marginTop:50}}>
+                <Grid item  md="5">
                     <h5>Cards</h5>
-                </Col>                
-            </Row>
+                </Grid>                
+            </Grid>
             {(this.state.newcard === null) && (
-            <Row md="12">
-                <Col md="12">
+            <Grid md="12">
+                <Grid item  md="12">
                     <Button onClick={() => this.addCard()} style={{marginBottom:10,height:35,width:90}} color="primary">Add</Button>
-                </Col>                
-            </Row>
+                </Grid>                
+            </Grid>
             )}
             {(this.props.user.data.cards.length < 1 && this.state.newcard === null) && (
-            <Row md="12">
-                <Col md="5">
+            <Grid md="12">
+                <Grid item  md="5">
                     <h4 style={{height:100}}>No cards to show</h4>
-                </Col>                
-            </Row>
+                </Grid>                
+            </Grid>
             )}
             {(this.props.user.data.cards.length > 0 && this.state.newcard === null) && (
-            <Row md="12">
-                <Col md="5">
+            <Grid md="12">
+                <Grid item  md="5">
                     <BootstrapTable 
                         keyField='id' data={this.props.user.data.cards} 
                         cellEdit={ cellEditFactory({ mode: 'click',blurToSave:true }) }
                         columns={card_head}> 
                     </BootstrapTable>
-                </Col>                
-            </Row>
+                </Grid>                
+            </Grid>
             )}
             {(this.props.user && this.props.user.data && this.props.user.data.invoices &&
               this.state.newcard !== null) && (
             <>
-            <Row md="12">
-                <Col md="6">
+            <Grid md="12">
+                <Grid item  md="6">
                 {(this.props.setupIntent && this.props.setupIntent.data &&
                   this.props.setupIntent.data.data &&
                   this.props.setupIntent.data.data.id) && (
@@ -170,8 +170,8 @@ class UserCards extends Component {
                         </ElementsConsumer>
                     </Elements>
                 )}
-                </Col>
-            </Row>
+                </Grid>
+            </Grid>
             </>
             )}
         </>

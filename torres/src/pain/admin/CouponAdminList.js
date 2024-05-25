@@ -5,7 +5,7 @@ import AddBoxIcon from '@mui/icons-material/AddBox';
 import MaskedInput from 'react-maskedinput';
 import { connect } from 'react-redux';
 import { getPlansList } from '../../actions/plansList';
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
 import { FormGroup, Label, Input } from 'reactstrap';
 import ToolkitProvider from 'react-bootstrap-table2-toolkit';
@@ -58,7 +58,7 @@ class CouponAdminList extends Component {
         this.nameChange = this.nameChange.bind(this);
         this.percChange = this.percChange.bind(this);
         this.pageChange = this.pageChange.bind(this);
-        this.pageRowsChange = this.pageRowsChange.bind(this);
+        this.pageGridsChange = this.pageGridsChange.bind(this);
     } 
 
     componentWillReceiveProps(p) { 
@@ -110,7 +110,7 @@ class CouponAdminList extends Component {
         this.setState(this.state)
     } 
 
-    pageRowsChange(t) { 
+    pageGridsChange(t) { 
         this.state.pageSize = t
         this.state.page = 0
         this.props.dispatch(getCouponAdmin(
@@ -331,16 +331,16 @@ class CouponAdminList extends Component {
             {(this.props && this.props.coupons && this.props.coupons.data && 
               this.props.coupons.data.coupons && this.state.selected === null) && ( 
             <>
-            <Row md="12">
-                <Col md="2" style={{marginBottom:10}}>
-                    <Col md="1">
+            <Grid md="12">
+                <Grid item  md="2" style={{marginBottom:10}}>
+                    <Grid item  md="1">
                         <Button onClick={() => this.edit({id:"new"})} style={{width:50}}
                             color="primary"><AddBoxIcon/></Button>
-                    </Col>
-                </Col>
-            </Row>
-            <Row md="12">
-                <Col md="12">
+                    </Grid>
+                </Grid>
+            </Grid>
+            <Grid md="12">
+                <Grid item  md="12">
                     <PainTable
                         keyField='id' 
                         data={this.props.coupons.data.coupons} 
@@ -349,51 +349,51 @@ class CouponAdminList extends Component {
                         pageSize={this.state.pageSize}
                         onPageChange={this.pageChange}
                         onSort={this.sortChange}
-                        onPageRowsPerPageChange={this.pageRowsChange}
+                        onPageGridsPerPageChange={this.pageGridsChange}
                         columns={heads}>
                     </PainTable> 
-                </Col>                
-            </Row>
+                </Grid>                
+            </Grid>
             </>
             )}
             {(this.props && this.props.coupons && this.props.coupons.data && 
               this.props.coupons.data.coupons && this.state.selected !== null) && ( 
               <>
-                <Row md="12" style={{marginTop:10}}>
-                    <Col md="12">
+                <Grid md="12" style={{marginTop:10}}>
+                    <Grid item  md="12">
                           {this.state.selected.id && (<FormGroup row>
                             <Label for="normal-field" md={1} className="text-md-right">
                               ID 
                             </Label>
-                            <Col md={5}>
+                            <Grid item  md={5}>
                                 <Input type="text" id="normal-field" readOnly 
                                 placeholder="ID" value={this.state.selected.id}/>
-                            </Col>
+                            </Grid>
                           </FormGroup>
                           )}
                           <FormGroup row>
                               <Label for="normal-field" md={1} className="text-md-right">
                                 Active
                               </Label>
-                              <Col md={8}>
+                              <Grid item  md={8}>
                               <Input type="checkbox" id="normal-field"
                                       onChange={this.activeChange} placeholder="Email" checked={this.state.selected.active}/>
-                              </Col>
+                              </Grid>
                           </FormGroup>
                           <FormGroup row>
                             <Label for="normal-field" md={1} className="text-md-right">
                               Name 
                             </Label>
-                            <Col md={5}>
+                            <Grid item  md={5}>
                                 <Input type="text" id="normal-field" onChange={this.nameChange}
                                 placeholder="Name" value={this.state.selected.name}/>
-                            </Col>
+                            </Grid>
                           </FormGroup>
                           <FormGroup row>
                             <Label for="normal-field" md={1} className="text-md-right">
                                 Plan
                             </Label>
-                            <Col md="5" style={{zIndex:9995}}>
+                            <Grid item  md="5" style={{zIndex:9995}}>
                               {(this.props.plansList && this.props.plansList.data && 
                                 this.props.plansList.data) && (
                                   <Select
@@ -417,13 +417,13 @@ class CouponAdminList extends Component {
                                       })}
                                     />
                                 )}
-                            </Col>                
+                            </Grid>                
                           </FormGroup>
                           <FormGroup row>
                             <Label for="normal-field" md={1} className="text-md-right">
                               Total
                             </Label>
-                            <Col md={5}>
+                            <Grid item  md={5}>
                                 <MaskedInput
                                   className="form-control" id="mask-phone" mask="$1111"
                                   disabled={this.state.selected.perc !== null || this.state.selected.reduction !== null}
@@ -431,13 +431,13 @@ class CouponAdminList extends Component {
                                   onChange={this.totalChange} value={this.state.selected.total ? "" + this.state.selected.total : ""}
                                   size="10"
                                 />
-                            </Col>
+                            </Grid>
                           </FormGroup>
                           <FormGroup row>
                             <Label for="normal-field" md={1} className="text-md-right">
                               Percentage
                             </Label>
-                            <Col md={5}>
+                            <Grid item  md={5}>
                                 <MaskedInput
                                   className="form-control" id="mask-perc" mask="11%"
                                   disabled={this.state.selected.total !== null || this.state.selected.reduction !== null}
@@ -446,13 +446,13 @@ class CouponAdminList extends Component {
                                     this.state.selected.perc ? "" + this.state.selected.perc * 100 : ""}
                                   size="10"
                                 />
-                            </Col>
+                            </Grid>
                           </FormGroup>
                           <FormGroup row>
                             <Label for="normal-field" md={1} className="text-md-right">
                               Reduction
                             </Label>
-                            <Col md={5}>
+                            <Grid item  md={5}>
                                 <MaskedInput
                                   className="form-control" id="mask-reduction" mask="$1111"
                                   disabled={this.state.selected.perc !== null || this.state.selected.total !== null}
@@ -462,46 +462,46 @@ class CouponAdminList extends Component {
                                     }
                                   size="10"
                                 />
-                            </Col>
+                            </Grid>
                           </FormGroup>
                           <FormGroup row>
                             <Label for="normal-field" md={1} className="text-md-right">
                               Start Date
                             </Label>
-                            <Col md={5}>
+                            <Grid item  md={5}>
                                 <MaskedInput
                                   className="form-control" id="mask-phone" mask="1111-11-11"
                                   placeholderChar=' '
                                   onChange={this.startChange} value={this.state.selected.start_date}
                                   size="10"
                                 />
-                            </Col>
+                            </Grid>
                           </FormGroup>
                           <FormGroup row>
                             <Label for="normal-field" md={1} className="text-md-right">
                               End Date
                             </Label>
-                            <Col md={5}>
+                            <Grid item  md={5}>
                                 <MaskedInput
                                   placeholderChar=' '
                                   className="form-control" id="mask-phone" mask="1111-11-11"
                                   onChange={this.endChange} value={this.state.selected.end_date}
                                   size="10"
                                 />
-                            </Col>
+                            </Grid>
                           </FormGroup>
-                    </Col>
-                </Row>
+                    </Grid>
+                </Grid>
                 <hr/>
-                <Row md="12">
-                    <Col md="12">
-                        <Col md="6">
+                <Grid md="12">
+                    <Grid item  md="12">
+                        <Grid item  md="6">
                             <Button onClick={this.save} color="primary">Save</Button>
                             <Button outline style={{marginLeft:10}} onClick={this.cancel} 
                                 color="secondary">Close</Button>
-                        </Col>
-                    </Col>
-                </Row>
+                        </Grid>
+                    </Grid>
+                </Grid>
                 </>
             )}
         </>

@@ -12,7 +12,7 @@ import salesforceURL from '../../salesforceConfig';
 
 import { Type } from 'react-bootstrap-table2-editor';
 import { connect } from 'react-redux';
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { FormGroup, Label, InputGroup, Input } from 'reactstrap';
 import { TabContent, TabPane } from 'reactstrap';
@@ -50,7 +50,7 @@ class Referrers extends Component {
         this.pageChange = this.pageChange.bind(this);
         this.sortChange = this.sortChange.bind(this);
         this.renderTotalLabel = this.renderTotalLabel.bind(this);
-        this.pageRowsChange = this.pageRowsChange.bind(this);
+        this.pageGridsChange = this.pageGridsChange.bind(this);
         this.save = this.save.bind(this);
         this.reload = this.reload.bind(this);
         this.edit = this.edit.bind(this);
@@ -114,7 +114,7 @@ class Referrers extends Component {
         this.setState(this.state);
     } 
 
-    pageRowsChange(t) { 
+    pageGridsChange(t) { 
         this.state.pageSize = t
         this.state.page = 0
         this.props.dispatch(getReferrers(
@@ -392,8 +392,8 @@ class Referrers extends Component {
             {(this.props.referrerAdminList && this.props.referrerAdminList.isReceiving) && (
                 <AppSpinner/>
             )}
-            <Row md="12">
-                <Col md="12">
+            <Grid md="12">
+                <Grid item  md="12">
                     <Nav tabs  className={`${s.coloredNav}`} style={{backgroundColor:"#e8ecec"}}>
                         <NavItem>
                             <NavLink className={classnames({ active: this.state.activeTab === 'referrer' })}
@@ -407,8 +407,8 @@ class Referrers extends Component {
                             {(this.state.selected === null) && (
                             <>
                             <div style={{zIndex:512}}>
-                                <Row md="12">
-                                    <Col md="6" style={{zIndex:9995}}>
+                                <Grid md="12">
+                                    <Grid item  md="6" style={{zIndex:9995}}>
                                       {(this.props.referrerAdminList && this.props.referrerAdminList.data && 
                                         this.props.referrerAdminList.data.config &&
                                         this.props.referrerAdminList.data.config.status && this.state.statusSelected !== null) && (
@@ -435,21 +435,21 @@ class Referrers extends Component {
                                               })}
                                             />
                                         )}
-                                    </Col>                
-                                    <Col md={3}>
+                                    </Grid>                
+                                    <Grid item  md={3}>
                                         <Input type="text" id="normal-field" onChange={this.search}
                                         placeholder="Search" value={this.state.search}/>
-                                    </Col>
-                                    <Col md={3}>
+                                    </Grid>
+                                    <Grid item  md={3}>
                                         <div class='pull-right'>
                                             <Button onClick={() => this.reload()} style={{marginRight:5,height:35}} outline 
                                                 color="primary"><AutorenewIcon/></Button>
                                         </div>
-                                    </Col>
-                                </Row>
+                                    </Grid>
+                                </Grid>
                             </div>
-                            <Row md="12" style={{marginTop:10}}>
-                                <Col md="12">
+                            <Grid md="12" style={{marginTop:10}}>
+                                <Grid item  md="12">
                                     <>
                                     {(this.props.referrerAdminList && this.props.referrerAdminList.data && 
                                       this.props.referrerAdminList.data.data && 
@@ -469,7 +469,7 @@ class Referrers extends Component {
                                                 pageSize={this.state.pageSize}
                                                 onPageChange={this.pageChange}
                                                 onSort={this.sortChange}
-                                                onPageRowsPerPageChange={this.pageRowsChange}
+                                                onPageGridsPerPageChange={this.pageGridsChange}
                                                 columns={regheads}>
                                         </PainTable> 
                                     </>
@@ -480,14 +480,14 @@ class Referrers extends Component {
                                       <h3>No referrer yet!</h3>
                                     )}
                                     </>
-                                </Col>
-                            </Row>
+                                </Grid>
+                            </Grid>
                             </>
                             )}
                         </TabPane>
                     </TabContent>
-                </Col>                
-            </Row>
+                </Grid>                
+            </Grid>
         </>
         )
     }

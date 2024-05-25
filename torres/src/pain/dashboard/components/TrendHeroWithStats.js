@@ -1,13 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Col, Row } from 'reactstrap';
-import { Nav, NavItem, NavLink } from 'reactstrap';
-import { TabContent, TabPane } from 'reactstrap';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
 import cx from 'classnames';
 import classnames from 'classnames';
-import Widget from '../../../components/Widget';
 import translate from '../../utils/translate';
-import s from './Analytics.module.scss';
 import convertToFormat from '../../utils/convertToFormat';
 
 class TrendHeroWithStats extends Component {
@@ -27,7 +24,7 @@ class TrendHeroWithStats extends Component {
         return (
         <>
             <div className="pb-xlg h-100">
-              <Widget
+              <Card
                 className="mb-0 h-100"
                 style={{border:"1px solid #e3e3e3",borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}}
                 bodyClass="mt-lg"
@@ -67,7 +64,7 @@ class TrendHeroWithStats extends Component {
                           </p>
                       </div>
                   </div>
-              </Widget>
+              </Card>
             </div>
         </>
         )

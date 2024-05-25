@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Button } from 'reactstrap'; 
 import { push } from 'connected-react-router';
 import { connect } from 'react-redux';
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { TabContent, TabPane } from 'reactstrap';
 import cx from 'classnames';
@@ -72,29 +72,29 @@ class UserAppointments extends Component {
             {(this.props.createRoom && this.props.createRoom.isReceiving) && (
                 <AppSpinner/>
             )}
-            <Row md="12">
+            <Grid md="12">
                 {(this.state.selected !== null) && ( 
-                    <Col md="6">
+                    <Grid item  md="6">
                     <h3>Detail</h3>
-                    </Col>
+                    </Grid>
                 )}
                 {(this.state.selected === null) && ( 
-                    <Col md="6">
+                    <Grid item  md="6">
                     <h3>Appointments</h3>
-                    </Col>
+                    </Grid>
                 )}
-            </Row>
-            <Row md="12">
+            </Grid>
+            <Grid md="12">
                 <>
                 {(this.props.user && this.props.user.data && this.props.user.data.appt && 
                   this.props.user.data.appt.length > 0 && this.state.selected === null) && (
                     <>
                     {this.props.user.data.appt.sort((a,b) => (a.created > b.created ? -1:1)).map((e) => {
                         return (
-                        <Col md={window.innerWidth <= 1024 ? "8" : "6"}>
+                        <Grid item  md={window.innerWidth <= 1024 ? "8" : "6"}>
                             <Appointment viewAppt={true} onViewAppt={() => this.viewAppointment(e)} 
                                 onNewChat={() => this.onNewChat(e)} chat={true} data={e}/>
-                        </Col>
+                        </Grid>
                         )
                     })}
                     </>
@@ -105,9 +105,9 @@ class UserAppointments extends Component {
                     disableSlideInfo={false}
                     mouseTracking items={this.props.user.data.appt.sort((a,b) => (a.created > b.created ? 1:-1)).map((e) => { 
                         return (
-                            <Col md="12">
+                            <Grid item  md="12">
                                 <Appointment chat={true} data={e}/>
-                            </Col>                
+                            </Grid>                
                         )
                         })}
                     />
@@ -115,37 +115,37 @@ class UserAppointments extends Component {
                 )*/}
                 {(this.props.user && this.props.user.data && this.props.user.data.appt && 
                   this.props.user.data.appt.length < 1 && this.state.selected === null) && (
-                    <Col md="12">
+                    <Grid item  md="12">
                         <div>
                             <h4>No appointments scheduled</h4>
                         </div>
-                    </Col>
+                    </Grid>
                 )}
                 {(this.props.user && this.props.user.data && this.props.user.data.appt && 
                   this.props.user.data.appt.length > 1 && this.state.selected !== null) && (
-                    <Col md="12">
-                        <Row md="12">
-                            <Col md="6">
-                                <Row md="12">
-                                    <Col md="3">
+                    <Grid item  md="12">
+                        <Grid md="12">
+                            <Grid item  md="6">
+                                <Grid md="12">
+                                    <Grid item  md="3">
                                         detail here
-                                    </Col>
-                                </Row>
-                            </Col>
-                            <Col md="6">
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                            <Grid item  md="6">
                                 stuff here
-                            </Col>
-                        </Row>
+                            </Grid>
+                        </Grid>
                         <hr/>
-                        <Row md="12">
-                            <Col md="3">
+                        <Grid md="12">
+                            <Grid item  md="3">
                                 <Button outline style={{marginLeft:0}} onClick={this.cancel} color="secondary">Cancel</Button>
-                            </Col>
-                        </Row>
-                    </Col>
+                            </Grid>
+                        </Grid>
+                    </Grid>
                 )}
                 </>
-            </Row>
+            </Grid>
         </>
         )
     }

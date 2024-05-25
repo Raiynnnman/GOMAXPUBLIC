@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import moment from 'moment';
 import { connect } from 'react-redux';
 import { Button } from 'reactstrap';
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { TabContent, TabPane } from 'reactstrap';
 import cx from 'classnames';
@@ -75,23 +75,23 @@ class LegalBilling extends Component {
             {(this.props.legalBilling && this.props.legalBilling.isReceiving) && (
                 <AppSpinner/>
             )}
-            <Row md="12">
+            <Grid md="12">
                 {(this.props.legalBilling && this.props.legalBilling.data  &&
                   this.props.legalBilling.data.length > 0) && (
-                <Col md="12">
+                <Grid item  md="12">
                     <BootstrapTable 
                         keyField='id' data={this.props.legalBilling.data} 
                         columns={head}> 
                     </BootstrapTable>
-                </Col>                
+                </Grid>                
                 )}
                 {(this.props.legalBilling && this.props.legalBilling.data  &&
                   this.props.legalBilling.data.length < 1) && (
-                <Col md="12">
+                <Grid item  md="12">
                     <h5>Currently no invoices are available.</h5>
-                </Col>
+                </Grid>
                 )}
-            </Row>
+            </Grid>
         </>
         )
     }

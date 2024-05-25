@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { TabContent, TabPane } from 'reactstrap';
 import cx from 'classnames';
@@ -82,8 +82,8 @@ class PricingList extends Component {
             {(this.props.plansList && this.props.plansList.isReceiving) && (
                 <AppSpinner/>
             )}
-            <Row md="12">
-                <Col md="12">
+            <Grid md="12">
+                <Grid item  md="12">
                     <Nav tabs  className={`${s.coloredNav}`} style={{backgroundColor:"#e8ecec"}}>
                         <NavItem>
                             <NavLink className={classnames({ active: this.state.activeTab === 'pricing' })}
@@ -104,8 +104,8 @@ class PricingList extends Component {
                         </TabPane>
                         )}
                     </TabContent>
-                </Col>                
-            </Row>
+                </Grid>                
+            </Grid>
         </>
         )
     }

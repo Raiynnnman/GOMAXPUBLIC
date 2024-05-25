@@ -3,7 +3,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import { useDispatch, useSelector } from "react-redux";
 import { CardElement, Elements, useElements, useStripe, } from "@stripe/react-stripe-js";
 import { ElementsConsumer } from "@stripe/react-stripe-js";
-import { Button, Form, FormGroup, Label, Input, Row, Col, Dropdown, DropdownToggle, DropdownItem, DropdownMenu } from "reactstrap";
+import { Button, Form, FormGroup, Label, Input, Grid, Col, Dropdown, DropdownToggle, DropdownItem, DropdownMenu } from "reactstrap";
 import { PaymentElement } from "@stripe/react-stripe-js";
 import { saveCard } from "../../actions/saveCard";
 import { State, City } from "country-state-city";
@@ -179,8 +179,8 @@ function BillingCreditCardForm({ intentid, onCancel, onSave }) {
   return (
     <div style={{ margin: 20 }}>
       <Form>
-        <Row>
-          <Col md={6}>
+        <Grid>
+          <Grid item  md={6}>
             <FormGroup>
               <Label for="name">Name</Label>
               <Input
@@ -192,8 +192,8 @@ function BillingCreditCardForm({ intentid, onCancel, onSave }) {
                 onChange={handleChangeName}
               />
             </FormGroup>
-          </Col>
-          <Col md={6}>
+          </Grid>
+          <Grid item  md={6}>
             <FormGroup>
               <Label for="phone">Phone</Label>
               <Input
@@ -205,8 +205,8 @@ function BillingCreditCardForm({ intentid, onCancel, onSave }) {
                 onChange={handleChangePhone}
               />
             </FormGroup>
-          </Col>
-        </Row>
+          </Grid>
+        </Grid>
         <FormGroup>
           <Label for="address1">Address</Label>
           <Input
@@ -227,8 +227,8 @@ function BillingCreditCardForm({ intentid, onCancel, onSave }) {
             onChange={handleChangeAddress2}
           />
         </FormGroup>
-        <Row>
-          <Col md={6}>
+        <Grid>
+          <Grid item  md={6}>
             <FormGroup>
               <Label for="city">City</Label>
               <Dropdown
@@ -254,8 +254,8 @@ function BillingCreditCardForm({ intentid, onCancel, onSave }) {
                 </DropdownMenu>
               </Dropdown>
             </FormGroup>
-          </Col>
-          <Col md={4}>
+          </Grid>
+          <Grid item  md={4}>
             <FormGroup>
               <Label for="state">State</Label>
               <Dropdown
@@ -281,8 +281,8 @@ function BillingCreditCardForm({ intentid, onCancel, onSave }) {
                 </DropdownMenu>
               </Dropdown>
             </FormGroup>
-          </Col>
-          <Col md={2}>
+          </Grid>
+          <Grid item  md={2}>
             <FormGroup>
               <Label for="zip">Zip</Label>
               <Input
@@ -292,14 +292,14 @@ function BillingCreditCardForm({ intentid, onCancel, onSave }) {
                 onChange={handleChangeZip}
               />
             </FormGroup>
-          </Col>
-        </Row>
-        <Row>
+          </Grid>
+        </Grid>
+        <Grid>
           <FormGroup>
             <CardElement elements={elements}/>
           </FormGroup>
-        </Row>
-        <Row style={{marginTop:10}}>
+        </Grid>
+        <Grid style={{marginTop:10}}>
             {!addedCard && ( 
                 <FormGroup>
                 <Button color="primary" onClick={handlePaymentAdd} disabled={disableSaveButton} >
@@ -307,7 +307,7 @@ function BillingCreditCardForm({ intentid, onCancel, onSave }) {
                 </Button>
               </FormGroup>
             )}
-        </Row>
+        </Grid>
       </Form>
     </div>
   );

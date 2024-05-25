@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Button } from 'reactstrap';
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { TabContent, TabPane } from 'reactstrap';
 import cx from 'classnames';
@@ -36,7 +36,7 @@ class MyHealthDocuments extends Component {
         this.onDocumentUpload = this.onDocumentUpload.bind(this);
         this.cancel = this.cancel.bind(this);
         this.authorize = this.authorize.bind(this);
-        this.addRow = this.addRow.bind(this);
+        this.addGrid = this.addGrid.bind(this);
         this.addDocument = this.addDocument.bind(this);
         this.save = this.save.bind(this);
         this.onConsent = this.onConsent.bind(this);
@@ -141,7 +141,7 @@ class MyHealthDocuments extends Component {
         this.setState(this.state);
     
     } 
-    addRow() { 
+    addGrid() { 
         this.state.selected.documents.push({
             id:0,description:'',upload:'', email: ''
         })
@@ -223,23 +223,23 @@ class MyHealthDocuments extends Component {
             {(this.state.geo) && (
                 <AppSpinner/>
             )}
-            <Row md="12">
+            <Grid md="12">
                 {(this.props.user && this.props.user.data && this.props.user.data.appt && 
                   this.props.user.data.appt.length < 1 && this.state.selected === null) && (
                     <h2>No appointments scheduled</h2>
                 )}
-            </Row>
-            <Row md="12">
+            </Grid>
+            <Grid md="12">
                 {(this.props.user && this.props.user.data && this.props.user.data.appt && 
                   this.props.user.data.appt.length > 0 && this.state.selected === null) && (
                     <>
                     {this.props.user.data.appt.sort((a,b) => (a.created > b.created ? -1:1)).map((e) => {
                         return (
-                            <Col md={window.innerWidth <= 1024 ? "8" : "6"}>
+                            <Grid item  md={window.innerWidth <= 1024 ? "8" : "6"}>
                             <Appointment onDocumentUpload={this.onDocumentUpload} consent={true} 
                                 onConsent={this.onConsent}
                                 documents={true} chat={false} data={e}/>
-                            </Col>
+                            </Grid>
                         )
                     })}
                     </>
@@ -255,30 +255,30 @@ class MyHealthDocuments extends Component {
                   this.props.user.data.appt.length > 0 && this.state.selected !== null &&
                   !this.state.consent) && (
                 <>
-                    <Row md="12">
-                        <Col md="3">
-                            <Button onClick={() => this.addRow()} style={{marginBottom:10,height:35,width:90}} color="primary">Add</Button>
-                        </Col>
-                    </Row>
-                    <Row md="12">
-                        <Col md="8">
+                    <Grid md="12">
+                        <Grid item  md="3">
+                            <Button onClick={() => this.addGrid()} style={{marginBottom:10,height:35,width:90}} color="primary">Add</Button>
+                        </Grid>
+                    </Grid>
+                    <Grid md="12">
+                        <Grid item  md="8">
                             <BootstrapTable 
                                 keyField='id' data={this.state.selected.documents} 
                                 cellEdit={ cellEditFactory({ mode: 'click',blurToSave:true }) }
                                 columns={heads}> 
                             </BootstrapTable>
-                        </Col>
-                    </Row>
+                        </Grid>
+                    </Grid>
                     <hr/>
-                    <Row md="12">
-                        <Col md="6">
+                    <Grid md="12">
+                        <Grid item  md="6">
                             <Button onClick={this.save} color="primary">Save</Button>
                             <Button outline style={{marginLeft:10}} onClick={this.cancel} color="secondary">Cancel</Button>
-                        </Col>
-                    </Row>
+                        </Grid>
+                    </Grid>
                 </>
                 )}
-            </Row>
+            </Grid>
         </>
         )
     }

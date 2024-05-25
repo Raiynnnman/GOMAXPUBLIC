@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import SavedSearchIcon from '@mui/icons-material/SavedSearch';
 import { push } from 'connected-react-router';
 import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { TabContent, TabPane } from 'reactstrap';
 import cx from 'classnames';
@@ -241,7 +241,7 @@ class SearchAdmin extends Component {
             )}
             {(!Login.isAuthenticated()) && ( 
             <>
-            <Row md="12">
+            <Grid md="12">
                 <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'space-evenly'}}>
                         <img src="/painlogo.png" width="200px" height="200px"/>
                         <font style={{textAlign:"center", fontSize:window.innerWidth < 1024 ? 15 : 30}}>POUNDPAIN TECH</font>
@@ -249,13 +249,13 @@ class SearchAdmin extends Component {
                         <Button color="primary"onClick={this.login}>Login</Button>
                         </div>
                 </div>
-            </Row>
+            </Grid>
             <hr/>
             </>
             )}
             {(!Login.isAuthenticated() && this.state.selectedAppt === null) && ( 
-            <Row md="12"> 
-                <Col md="12">
+            <Grid md="12"> 
+                <Grid item  md="12">
                     <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                         <font style={{textAlign:"center", fontSize:window.innerWidth < 1024 ? 20 : 40,fontWeight:"bold"}}>
                             Save money on common medical procedures
@@ -276,8 +276,8 @@ class SearchAdmin extends Component {
                             </div>
                         )}
                     </div>
-                </Col>
-            </Row>
+                </Grid>
+            </Grid>
             )}
             {(this.props.searchConfig && this.props.searchConfig.data && this.props.searchConfig.data.types && 
               this.state.selectedProvider === null) && ( 
@@ -288,13 +288,13 @@ class SearchAdmin extends Component {
                                 <Card onClick={() => this.setProviderType(e.id)} 
                                     style={{borderRadius:"25px 25px 25px 25px",margin:20,width:400,height:300}} className="mb-xlg border-1">
                                     <CardBody>
-                                        <Row md="12">
+                                        <Grid md="12">
                                             <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                             <font style={{fontSize:'24px'}}>
                                                 {e.description}
                                             </font>
                                             </div>
-                                        </Row>
+                                        </Grid>
                                     </CardBody>
                                 </Card>
                             </>
@@ -323,11 +323,11 @@ class SearchAdmin extends Component {
                 </div>
             )}
             {(this.state.selectedAppt !== null) && (
-                <Row md="12">
-                    <Col md="12">
+                <Grid md="12">
+                    <Grid item  md="12">
                         <UserRegistration data={this.state.selectedAppt} onCancel={this.cancel} onRegister={this.register}/>
-                    </Col>
-                </Row>
+                    </Grid>
+                </Grid>
             )}
         </>
         )

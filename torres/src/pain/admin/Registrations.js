@@ -15,7 +15,7 @@ import squareLocationKey from '../../squareConfig';
 
 import { Type } from 'react-bootstrap-table2-editor';
 import { connect } from 'react-redux';
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { FormGroup, Label, InputGroup, Input } from 'reactstrap';
 import { TabContent, TabPane } from 'reactstrap';
@@ -70,10 +70,10 @@ class Registrations extends Component {
         this.edit = this.edit.bind(this);
         this.add = this.add.bind(this);
         this.onCommissionChange = this.onCommissionChange.bind(this);
-        this.addInvoiceRow = this.addInvoiceRow.bind(this);
+        this.addInvoiceGrid = this.addInvoiceGrid.bind(this);
         this.pageChange = this.pageChange.bind(this);
         this.sortChange = this.sortChange.bind(this);
-        this.pageRowsChange = this.pageRowsChange.bind(this);
+        this.pageGridsChange = this.pageGridsChange.bind(this);
         this.toggleTab = this.toggleTab.bind(this);
         this.toggleSubTab = this.toggleSubTab.bind(this);
         this.updatePhone = this.updatePhone.bind(this);
@@ -135,7 +135,7 @@ class Registrations extends Component {
         } 
     } 
 
-    pageRowsChange(t) { 
+    pageGridsChange(t) { 
         this.state.pageSize = t
         this.state.page = 0
         this.props.dispatch(getRegistrations(
@@ -262,7 +262,7 @@ class Registrations extends Component {
         this.props.dispatch(getPlansList({}));
     }
 
-    addInvoiceRow() { 
+    addInvoiceGrid() { 
         this.state.selected.invoice.items.push({
             price:0,
             quantity:1,
@@ -723,8 +723,8 @@ class Registrations extends Component {
             {(this.props.registrationsAdminList && this.props.registrationsAdminList.isReceiving) && (
                 <AppSpinner/>
             )}
-            <Row md="12">
-                <Col md="12">
+            <Grid md="12">
+                <Grid item  md="12">
                     <Nav tabs  className={`${s.coloredNav}`} style={{backgroundColor:"#e8ecec"}}>
                         <NavItem>
                             <NavLink className={classnames({ active: this.state.activeTab === 'registrations' })}
@@ -738,12 +738,12 @@ class Registrations extends Component {
                             {(this.state.selected === null) && (
                             <>
                             <div style={{zIndex:512}}>
-                                <Row md="12">
-                                    <Col md="1">
+                                <Grid md="12">
+                                    <Grid item  md="1">
                                         <Button onClick={this.add} style={{width:50}}
                                             color="primary"><AddBoxIcon/></Button>
-                                    </Col>
-                                    <Col md="4" style={{zIndex:9995}}>
+                                    </Grid>
+                                    <Grid item  md="4" style={{zIndex:9995}}>
                                       {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
                                         this.props.registrationsAdminList.data.config &&
                                         this.props.registrationsAdminList.data.config.status && this.state.statusSelected !== null) && (
@@ -770,8 +770,8 @@ class Registrations extends Component {
                                               })}
                                             />
                                         )}
-                                    </Col>                
-                                    <Col md="4" style={{zIndex:9995}}>
+                                    </Grid>                
+                                    <Grid item  md="4" style={{zIndex:9995}}>
                                       {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
                                         this.props.registrationsAdminList.data.config &&
                                         this.props.registrationsAdminList.data.config.type && this.state.statusSelected !== null) && (
@@ -798,12 +798,12 @@ class Registrations extends Component {
                                               })}
                                             />
                                         )}
-                                    </Col>                
-                                    <Col md={2}>
+                                    </Grid>                
+                                    <Grid item  md={2}>
                                         <Input type="text" id="normal-field" onChange={this.search}
                                         placeholder="Search" value={this.state.search}/>
-                                    </Col>
-                                    <Col md={1}>
+                                    </Grid>
+                                    <Grid item  md={1}>
                                         <div class='pull-right'>
                                             <div style={{display:'flex',justifyContent:"spread-evenly"}}>
                                                 <Button onClick={this.providerReport} outline color="primary"><AssessmentIcon/></Button>
@@ -811,11 +811,11 @@ class Registrations extends Component {
                                                     color="primary"><AutorenewIcon/></Button>
                                             </div>
                                         </div>
-                                    </Col>
-                                </Row>
+                                    </Grid>
+                                </Grid>
                             </div>
-                            <Row md="12" style={{marginTop:10}}>
-                                <Col md="12">
+                            <Grid md="12" style={{marginTop:10}}>
+                                <Grid item  md="12">
                                     <>
                                     {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
                                       this.props.registrationsAdminList.data.registrations && 
@@ -828,7 +828,7 @@ class Registrations extends Component {
                                             pageSize={this.state.pageSize}
                                             onPageChange={this.pageChange}
                                             onSort={this.sortChange}
-                                            onPageRowsPerPageChange={this.pageRowsChange}
+                                            onPageGridsPerPageChange={this.pageGridsChange}
                                             columns={regheads}>
                                         </PainTable> 
                                     )}
@@ -838,106 +838,106 @@ class Registrations extends Component {
                                       <h3>No registrations yet!</h3>
                                     )}
                                     </>
-                                </Col>
-                            </Row>
+                                </Grid>
+                            </Grid>
                             </>
                             )}
                             {(this.state.selected !== null ) && (
-                            <Row md="12" style={{marginTop:10}}>
-                                <Col md="12">
-                                    <Row md="12">
-                                        <Col md="12" style={{zIndex:9999}}>
+                            <Grid md="12" style={{marginTop:10}}>
+                                <Grid item  md="12">
+                                    <Grid md="12">
+                                        <Grid item  md="12" style={{zIndex:9999}}>
                                           {this.state.selected.id && (<FormGroup row>
                                             <Label for="normal-field" md={1} className="text-md-right">
                                               ID 
                                             </Label>
-                                            <Col md={5}>
+                                            <Grid item  md={5}>
                                                 <Input type="text" id="normal-field" readOnly 
                                                 placeholder="ID" value={this.state.selected.id}/>
-                                            </Col>
+                                            </Grid>
                                           </FormGroup>
                                           )}
                                           {this.state.selected.office_id && (<FormGroup row>
                                             <Label for="normal-field" md={1} className="text-md-right">
                                               Office ID 
                                             </Label>
-                                            <Col md={5}>
+                                            <Grid item  md={5}>
                                                 <Input type="text" id="normal-field" readOnly 
                                                 placeholder="Office ID" value={this.state.selected.office_id}/>
-                                            </Col>
+                                            </Grid>
                                           </FormGroup>
                                           )}
                                           <FormGroup row>
                                             <Label for="normal-field" md={1} className="text-md-right">
                                               Practice
                                             </Label>
-                                            <Col md={5}>
+                                            <Grid item  md={5}>
                                                 <Input type="text" id="normal-field" onChange={this.updateName}
                                                 placeholder="Name" value={this.state.selected.name}/>
-                                            </Col>
+                                            </Grid>
                                           </FormGroup>
                                           <FormGroup row>
                                             <Label for="normal-field" md={1} className="text-md-right">
                                               Email
                                             </Label>
-                                            <Col md={5}>
+                                            <Grid item  md={5}>
                                                 <Input type="text" id="normal-field" onChange={this.updateEmail}
                                                 placeholder="Email" value={this.state.selected.email}/>
-                                            </Col>
+                                            </Grid>
                                           </FormGroup>
                                           <FormGroup row>
                                             <Label for="normal-field" md={1} className="text-md-right">
                                               First
                                             </Label>
-                                            <Col md={5}>
+                                            <Grid item  md={5}>
                                                 <Input type="text" id="normal-field" onChange={this.updateFirst}
                                                 placeholder="First" value={this.state.selected.first_name}/>
-                                            </Col>
+                                            </Grid>
                                           </FormGroup>
                                           <FormGroup row>
                                             <Label for="normal-field" md={1} className="text-md-right">
                                               Last
                                             </Label>
-                                            <Col md={5}>
+                                            <Grid item  md={5}>
                                                 <Input type="text" id="normal-field" onChange={this.updateLast}
                                                 placeholder="Last" value={this.state.selected.last_name}/>
-                                            </Col>
+                                            </Grid>
                                           </FormGroup>
                                           <FormGroup row>
                                             <Label for="normal-field" md={1} className="text-md-right">
                                               Phone
                                             </Label>
-                                            <Col md={5}>
+                                            <Grid item  md={5}>
                                                 <MaskedInput
                                                   className="form-control" id="mask-phone" mask="(111) 111-1111"
                                                   onChange={this.updatePhone} value={this.state.selected.phone}
                                                   size="10"
                                                 />
-                                            </Col>
+                                            </Grid>
                                           </FormGroup>
                                           {/*<FormGroup row>
                                             <Label for="normal-field" md={1} className="text-md-right">
                                               Initial Payment
                                             </Label>
-                                            <Col md={5}>
+                                            <Grid item  md={5}>
                                                 <Input type="text" id="normal-field" onChange={this.updateInitial}
                                                 placeholder='$' value={this.state.selected.initial_payment}/>
-                                            </Col>
+                                            </Grid>
                                           </FormGroup>*/}
                                           <FormGroup row>
                                             <Label for="normal-field" md={1} className="text-md-right">
                                               Places ID
                                             </Label>
-                                            <Col md={5}>
+                                            <Grid item  md={5}>
                                                 <Input type="text" id="normal-field" readOnly
                                                 value={this.state.selected.places_id}/>
-                                            </Col>
+                                            </Grid>
                                           </FormGroup>
                                           <FormGroup row>
                                             <Label for="normal-field" md={1} className="text-md-right">
                                                 Sales Owner
                                             </Label>
-                                            <Col md="5" style={{zIndex:9995}}>
+                                            <Grid item  md="5" style={{zIndex:9995}}>
                                               {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
                                                 this.props.registrationsAdminList.data.config &&
                                                 this.props.registrationsAdminList.data.config.status && this.state.statusSelected !== null) && (
@@ -956,22 +956,22 @@ class Registrations extends Component {
                                                       })}
                                                     />
                                                 )}
-                                            </Col>                
+                                            </Grid>                
                                         </FormGroup>
                                         <FormGroup row>
                                           <Label for="normal-field" md={1} className="text-md-right">
                                             Do not call
                                           </Label>
-                                          <Col md={8}>
+                                          <Grid item  md={8}>
                                           <Input type="checkbox" id="normal-field"
                                                   onChange={this.donotCallChange} placeholder="Email" checked={this.state.selected.do_not_contact}/>
-                                          </Col>
+                                          </Grid>
                                         </FormGroup>
                                           <FormGroup row>
                                             <Label for="normal-field" md={1} className="text-md-right">
                                               Type
                                             </Label>
-                                            <Col md={5}>
+                                            <Grid item  md={5}>
                                               {(this.props.registrationsAdminList && this.props.registrationsAdminList.data &&
                                                 this.props.registrationsAdminList.data.config && 
                                                 this.props.registrationsAdminList.data.config.status) && (
@@ -997,13 +997,13 @@ class Registrations extends Component {
                                                   })}
                                                 />
                                                 )}
-                                            </Col>
+                                            </Grid>
                                           </FormGroup>
                                           <FormGroup row>
                                             <Label for="normal-field" md={1} className="text-md-right">
                                               Status
                                             </Label>
-                                            <Col md={5}>
+                                            <Grid item  md={5}>
                                               {(this.props.registrationsAdminList && this.props.registrationsAdminList.data &&
                                                 this.props.registrationsAdminList.data.config && 
                                                 this.props.registrationsAdminList.data.config.status) && (
@@ -1029,13 +1029,13 @@ class Registrations extends Component {
                                                   })}
                                                 />
                                                 )}
-                                            </Col>
+                                            </Grid>
                                           </FormGroup>
                                           <FormGroup row>
                                             <Label for="normal-field" md={1} className="text-md-right">
                                               Strength
                                             </Label>
-                                            <Col md={5}>
+                                            <Grid item  md={5}>
                                               <Select
                                                   closeMenuOnSelect={true}
                                                   isSearchable={false}
@@ -1055,13 +1055,13 @@ class Registrations extends Component {
                                                     )
                                                   })}
                                                 />
-                                            </Col>
+                                            </Grid>
                                           </FormGroup>
-                                        </Col>
-                                    </Row>
-                                    <Row md="12">
+                                        </Grid>
+                                    </Grid>
+                                    <Grid md="12">
                                         {this.state.selected.office_type !== 'Referrer' && (
-                                        <Col md="12">
+                                        <Grid item  md="12">
                                             <Nav tabs  className={`${s.coloredNav}`} style={{backgroundColor:"#e8ecec"}}>
                                                 <NavItem>
                                                     <NavLink className={classnames({ active: this.state.subTab === 'plans' })}
@@ -1090,8 +1090,8 @@ class Registrations extends Component {
                                             </Nav>
                                             <TabContent className='mb-lg' activeTab={this.state.subTab}>
                                                 <TabPane tabId="plans">
-                                                    <Row md="12" style={{marginBottom:20}}>
-                                                        <Col md="5">
+                                                    <Grid md="12" style={{marginBottom:20}}>
+                                                        <Grid item  md="5">
                                                           <Select
                                                               closeMenuOnSelect={true}
                                                               isSearchable={false}
@@ -1109,8 +1109,8 @@ class Registrations extends Component {
                                                                     })
                                                                 }
                                                             />
-                                                        </Col>
-                                                        <Col md="5">
+                                                        </Grid>
+                                                        <Grid item  md="5">
                                                           <Select
                                                               closeMenuOnSelect={true}
                                                               isSearchable={false}
@@ -1128,8 +1128,8 @@ class Registrations extends Component {
                                                                     })
                                                                 }
                                                             />
-                                                        </Col>
-                                                    </Row>
+                                                        </Grid>
+                                                    </Grid>
                                                     {(this.state.selected.plans && this.state.selected.plans.items) && (
                                                     <>
                                                     <BootstrapTable 
@@ -1164,7 +1164,7 @@ class Registrations extends Component {
                                                     )}
                                                 </TabPane>
                                                 <TabPane tabId="invoices">
-                                                    <Button onClick={() => this.addInvoiceRow({id:"new"})} 
+                                                    <Button onClick={() => this.addInvoiceGrid({id:"new"})} 
                                                         style={{marginRight:5,marginBottom:10,height:35,width:90}} color="primary">Add</Button>
                                                     {(this.state.selected.invoice && this.state.selected.invoice.items) && (
                                                         <BootstrapTable 
@@ -1175,25 +1175,25 @@ class Registrations extends Component {
                                                     )}
                                                 </TabPane>
                                             </TabContent>
-                                        </Col>
+                                        </Grid>
                                         )}
-                                    </Row>
-                                    <Row md="12">
-                                        <Col md="12">
-                                            <Col md="6">
+                                    </Grid>
+                                    <Grid md="12">
+                                        <Grid item  md="12">
+                                            <Grid item  md="6">
                                                 <Button onClick={this.save} color="primary">Save</Button>
                                                 <Button outline style={{marginLeft:10}} onClick={this.close} 
                                                     color="secondary">Close</Button>
-                                            </Col>
-                                        </Col>
-                                    </Row>
-                                </Col>
-                            </Row>
+                                            </Grid>
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
                             )}
                         </TabPane>
                     </TabContent>
-                </Col>                
-            </Row>
+                </Grid>                
+            </Grid>
         </>
         )
     }

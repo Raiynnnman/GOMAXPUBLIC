@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { TabContent, TabPane } from 'reactstrap';
 import cx from 'classnames';
@@ -35,64 +35,64 @@ class Home extends Component {
         return (
         <>
             <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                <Row md="12">
-                    <Col md="12">
+                <Grid md="12">
+                    <Grid item  md="12">
                         <img src="/home_top.webp"/>
-                    </Col>
-                </Row>
+                    </Grid>
+                </Grid>
             </div>
             <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                <Row md="12">
-                    <Col md="12">
+                <Grid md="12">
+                    <Grid item  md="12">
                         <img src="/LogoDarkBGwithNumber_4x.webp"/>
-                    </Col>
-                </Row>
+                    </Grid>
+                </Grid>
             </div>
             <div style={{marginTop:120,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                <Row md="12">
-                    <Col md="12">
+                <Grid md="12">
+                    <Grid item  md="12">
                         <img src="/first_interactive.webp"/>
-                    </Col>
-                </Row>
+                    </Grid>
+                </Grid>
             </div>
             <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                <Row md="12">
-                    <Col md="12">
+                <Grid md="12">
+                    <Grid item  md="12">
                         <img src="/home_speedometers.webp"/>
-                    </Col>
-                </Row>
+                    </Grid>
+                </Grid>
             </div>
             <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                <Row md="12">
-                    <Col md="12">
+                <Grid md="12">
+                    <Grid item  md="12">
                         <img src="/injured_in_a_car.webp"/>
-                    </Col>
-                </Row>
+                    </Grid>
+                </Grid>
             </div>
             <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                <Row md="12">
-                    <Col md="6" style={{marginTop:0}}>
+                <Grid md="12">
+                    <Grid item  md="6" style={{marginTop:0}}>
                         <img src="/yes.webp"/>
-                    </Col>
-                    <Col md="6" style={{marginTop:50}}>
+                    </Grid>
+                    <Grid item  md="6" style={{marginTop:50}}>
                         <img src="/no.webp"/>
-                    </Col>
-                </Row>
+                    </Grid>
+                </Grid>
             </div>
             <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                <Row md="12">
-                    <Col md="2"></Col>
-                    <Col md="8">
+                <Grid md="12">
+                    <Grid item  md="2"></Grid>
+                    <Grid item  md="8">
                         <AliceCarousel animationType="slide" autoPlay="true" 
                             disableDotsControls="true" animationDuration="8000" autoplayInterval="3000"
                             infinite="true" mouseTracking items={items} />
-                    </Col>
-                    <Col md="2"></Col>
-                </Row>
+                    </Grid>
+                    <Grid item  md="2"></Grid>
+                </Grid>
             </div>
             <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                <Row md="12">
-                    <Col md="6">
+                <Grid md="12">
+                    <Grid item  md="6">
                         <div class="quote-container">
                             <img src="/circlequote.png"/>
                             <img class="quote-top-left" src="/quote.png"/>
@@ -100,8 +100,8 @@ class Home extends Component {
                                 "I am writing to express my gratitude from my family for the care given to my mother. There was care, compassion, and respect. A special thank you to your staff as well; they provided professional guidance, comfort, and strength to make our own decisions. Finally, I cannot praise the #Pain and team enough. They were patient and helpful. All our hope that you continue along this path."
                             </font>
                         </div>
-                    </Col>
-                    <Col md="6">
+                    </Grid>
+                    <Grid item  md="6">
                         <div class="quote-container">
                             <img src="/circlequote.png"/>
                             <img class="quote-top-left" src="/quote.png"/>
@@ -109,27 +109,27 @@ class Home extends Component {
                             "I humbly submit my sincere gratitude to the management and staff of #Pain. They have been outstandingly helpful and provided a high quality of service, care and comfort to our lives. Thank you."
                             </font>
                         </div>
-                    </Col>
-                </Row>
+                    </Grid>
+                </Grid>
             </div>
             <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                <Row md="12">
-                    <Col md="1"></Col>
-                    <Col md="4" style={{display: 'flex', alignItems: 'center', justifyContent: 'right'}}>
+                <Grid md="12">
+                    <Grid item  md="1"></Grid>
+                    <Grid item  md="4" style={{display: 'flex', alignItems: 'center', justifyContent: 'right'}}>
                         <img src="/14day.webp"/>
-                    </Col>
-                    <Col md="4" style={{borderLeft:"3px solid white"}}>
-                        <Row>
+                    </Grid>
+                    <Grid item  md="4" style={{borderLeft:"3px solid white"}}>
+                        <Grid>
                             <img src="/14count.gif" style={{width:151,height:150}}/>
-                        </Row>
-                        <Row>
+                        </Grid>
+                        <Grid>
                         <font>
                         The 14-day rule is a requirement that you seek medical attention within 14 days after a car accident in Florida. If you don't go to a doctor or otherwise get medical care within two weeks of the accident, you can't file a PIP insurance claim.
                         </font>
-                        </Row>
-                    </Col>
-                    <Col md="2"></Col>
-                </Row>
+                        </Grid>
+                    </Grid>
+                    <Grid item  md="2"></Grid>
+                </Grid>
             </div>
         </>
         )

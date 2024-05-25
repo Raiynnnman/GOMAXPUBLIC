@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { InfoWindow, Map, Circle, Marker, GoogleApiWrapper } from "google-maps-react";
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import PushPinIcon from '@mui/icons-material/PushPin';
 import './Map.scss';
 import moment from 'moment';
@@ -361,8 +361,8 @@ class MapContainer extends React.Component {
      };
     return (
       <div style={{zIndex:1,borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}} className="map-container">
-        <Row md="12">
-            <Col md="7" style={{position:"relative"}}>
+        <Grid md="12">
+            <Grid item  md="7" style={{position:"relative"}}>
                 <Map
                   google={this.props.google}
                   style={{margin:10,position:"relative",width:"100%",height:"600px"}}
@@ -451,11 +451,11 @@ class MapContainer extends React.Component {
                         }
                 })}
                 </Map>
-            </Col>
-            <Col md="5" style={{borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}}>
+            </Grid>
+            <Grid item  md="5" style={{borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}}>
                 <div style={{height:600,overflow:"auto"}}>
-                    <Row md="12" style={{margin:20}}>
-                        <Col md="12">
+                    <Grid md="12" style={{margin:20}}>
+                        <Grid item  md="12">
                         <>
                             {(this.state.sticky) && (
                                 <PushPinIcon style={{color:"red"}}/>
@@ -464,28 +464,28 @@ class MapContainer extends React.Component {
                                 <PushPinIcon style={{color:"black"}}/>
                             )}
                         </>
-                        </Col>
-                    </Row>
+                        </Grid>
+                    </Grid>
                     {(this.state.selected === null) && (
-                    <Row md="12" style={{margin:20}}>
-                        <Col md="12">
+                    <Grid md="12" style={{margin:20}}>
+                        <Grid item  md="12">
                             <h4>No marker selected!</h4>
-                        </Col>
-                    </Row>
+                        </Grid>
+                    </Grid>
                     )}
                     {(this.state.selected !== null) && (
                     <>
-                    <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                        <Col md="4">
+                    <Grid md="12" style={{margin:10, borderBottom:"1px solid black"}}>
+                        <Grid item  md="4">
                             Metadata
-                        </Col>
-                    </Row>
+                        </Grid>
+                    </Grid>
                     {(this.state.selected.category_id) === 99 && (
-                        <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                            <Col md="4">
+                        <Grid md="12" style={{margin:10, borderBottom:"1px solid black"}}>
+                            <Grid item  md="4">
                                 Name
-                            </Col>
-                            <Col md="8">
+                            </Grid>
+                            <Grid item  md="8">
                                 {this.state.selected.providers.map((g) => { 
                                     return (
                                     <>
@@ -496,200 +496,200 @@ class MapContainer extends React.Component {
                                     </>
                                     )
                                 })}
-                            </Col>
-                        </Row>
+                            </Grid>
+                        </Grid>
                     )}
                     {(this.state.selected.category_id === 101) && (
-                        <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                            <Col md="4">
+                        <Grid md="12" style={{margin:10, borderBottom:"1px solid black"}}>
+                            <Grid item  md="4">
                                 Office
-                            </Col>
-                            <Col md="8">
+                            </Grid>
+                            <Grid item  md="8">
                                 {this.state.selected.name}
-                            </Col>
-                        </Row>
+                            </Grid>
+                        </Grid>
                     )}
                     {(this.state.selected.category_id) === 104 && (
-                        <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                            <Col md="4">
+                        <Grid md="12" style={{margin:10, borderBottom:"1px solid black"}}>
+                            <Grid item  md="4">
                                 Office
-                            </Col>
-                            <Col md="8">
+                            </Grid>
+                            <Grid item  md="8">
                                 {this.state.selected.name}
-                            </Col>
-                        </Row>
+                            </Grid>
+                        </Grid>
                     )}
                     {(this.state.selected.category_id) === 99 && (
-                        <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                            <Col md="4">
+                        <Grid md="12" style={{margin:10, borderBottom:"1px solid black"}}>
+                            <Grid item  md="4">
                                 Office
-                            </Col>
-                            <Col md="8">
+                            </Grid>
+                            <Grid item  md="8">
                                 {this.state.selected.name}
-                            </Col>
-                        </Row>
+                            </Grid>
+                        </Grid>
                     )}
                     {(this.state.selected.category_id === 104) && (
-                        <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                            <Col md="4">
+                        <Grid md="12" style={{margin:10, borderBottom:"1px solid black"}}>
+                            <Grid item  md="4">
                                 Website    
-                            </Col>
-                            <Col md="8">
+                            </Grid>
+                            <Grid item  md="8">
                                 {this.state.selected.website}
-                            </Col>
-                        </Row>
+                            </Grid>
+                        </Grid>
                     )}
                     {(this.state.selected.category_id === 99) && (
-                        <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                            <Col md="4">
+                        <Grid md="12" style={{margin:10, borderBottom:"1px solid black"}}>
+                            <Grid item  md="4">
                                 Website    
-                            </Col>
-                            <Col md="8">
+                            </Grid>
+                            <Grid item  md="8">
                                 {this.state.selected.website}
-                            </Col>
-                        </Row>
+                            </Grid>
+                        </Grid>
                     )}
                     {(this.state.selected.category_id !== 99) && (
-                        <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                            <Col md="4">
+                        <Grid md="12" style={{margin:10, borderBottom:"1px solid black"}}>
+                            <Grid item  md="4">
                                 UUID 
-                            </Col>
-                            <Col md="8">
+                            </Grid>
+                            <Grid item  md="8">
                                 {this.state.selected.uuid.substring(0,10)}
-                            </Col>
-                        </Row>
+                            </Grid>
+                        </Grid>
                     )}
-                    <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                        <Col md="4">
+                    <Grid md="12" style={{margin:10, borderBottom:"1px solid black"}}>
+                        <Grid item  md="4">
                             Type
-                        </Col>
-                        <Col md="8">
+                        </Grid>
+                        <Grid item  md="8">
                             {this.state.selected.category}
-                        </Col>
-                    </Row>
-                    <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                        <Col md="4">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12" style={{margin:10, borderBottom:"1px solid black"}}>
+                        <Grid item  md="4">
                             Address
-                        </Col>
-                        <Col md="8">
+                        </Grid>
+                        <Grid item  md="8">
                             {this.state.selected.addr1}
-                        </Col>
-                    </Row>
-                    <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                        <Col md="4">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12" style={{margin:10, borderBottom:"1px solid black"}}>
+                        <Grid item  md="4">
                             City
-                        </Col>
-                        <Col md="8">
+                        </Grid>
+                        <Grid item  md="8">
                             {this.state.selected.city}
-                        </Col>
-                    </Row>
-                    <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                        <Col md="4">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12" style={{margin:10, borderBottom:"1px solid black"}}>
+                        <Grid item  md="4">
                             State
-                        </Col>
-                        <Col md="8">
+                        </Grid>
+                        <Grid item  md="8">
                             {this.state.selected.state}
-                        </Col>
-                    </Row>
-                    <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                        <Col md="4">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12" style={{margin:10, borderBottom:"1px solid black"}}>
+                        <Grid item  md="4">
                             Zipcode
-                        </Col>
-                        <Col md="8">
+                        </Grid>
+                        <Grid item  md="8">
                             {this.state.selected.zipcode}
-                        </Col>
-                    </Row>
-                    <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                        <Col md="4">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12" style={{margin:10, borderBottom:"1px solid black"}}>
+                        <Grid item  md="4">
                             Phone
-                        </Col>
-                        <Col md="8">
+                        </Grid>
+                        <Grid item  md="8">
                             {formatPhoneNumber(this.state.selected.phone)}
-                        </Col>
-                    </Row>
-                    <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                        <Col md="4">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12" style={{margin:10, borderBottom:"1px solid black"}}>
+                        <Grid item  md="4">
                             Latitude
-                        </Col>
-                        <Col md="8">
+                        </Grid>
+                        <Grid item  md="8">
                             {this.state.selected.lat}
-                        </Col>
-                    </Row>
-                    <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                        <Col md="4">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12" style={{margin:10, borderBottom:"1px solid black"}}>
+                        <Grid item  md="4">
                             Longitude
-                        </Col>
-                        <Col md="8">
+                        </Grid>
+                        <Grid item  md="8">
                             {this.state.selected.lng}
-                        </Col>
-                    </Row>
-                    <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                        <Col md="4">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12" style={{margin:10, borderBottom:"1px solid black"}}>
+                        <Grid item  md="4">
                             Delay
-                        </Col>
-                        <Col md="8">
+                        </Grid>
+                        <Grid item  md="8">
                             {!this.state.selected.traf_delay ? "N/A" : this.state.selected.traf_delay}
-                        </Col>
-                    </Row>
+                        </Grid>
+                    </Grid>
                     {(this.state.selected.category_id === 99) && (
-                    <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                        <Col md="4">
+                    <Grid md="12" style={{margin:10, borderBottom:"1px solid black"}}>
+                        <Grid item  md="4">
                             Lead Strength
-                        </Col>
-                        <Col md="8">
+                        </Grid>
+                        <Grid item  md="8">
                             {!this.state.selected.lead_strength ? "N/A" : this.state.selected.lead_strength}
-                        </Col>
-                    </Row>
+                        </Grid>
+                    </Grid>
                     )}
                     {(this.state.selected.category_id === 1) && (
                         <>
-                        <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                            <Col md="4">
+                        <Grid md="12" style={{margin:10, borderBottom:"1px solid black"}}>
+                            <Grid item  md="4">
                                 Start
-                            </Col>
-                            <Col md="8">
+                            </Grid>
+                            <Grid item  md="8">
                                 {moment(this.state.selected.traf_start_time).format('LLL')} (UTC)
-                            </Col>
-                        </Row>
-                        <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                            <Col md="4">
+                            </Grid>
+                        </Grid>
+                        <Grid md="12" style={{margin:10, borderBottom:"1px solid black"}}>
+                            <Grid item  md="4">
                                 End
-                            </Col>
-                            <Col md="8">
+                            </Grid>
+                            <Grid item  md="8">
                                 {moment(this.state.selected.traf_end_time).format('LLL')} (UTC)
-                            </Col>
-                        </Row>
-                        <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                            <Col md="4">
+                            </Grid>
+                        </Grid>
+                        <Grid md="12" style={{margin:10, borderBottom:"1px solid black"}}>
+                            <Grid item  md="4">
                                 Magnitude
-                            </Col>
-                            <Col md="8">
+                            </Grid>
+                            <Grid item  md="8">
                                 {this.state.selected.traf_magnitude}
-                            </Col>
-                        </Row>
-                        <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                            <Col md="4">
+                            </Grid>
+                        </Grid>
+                        <Grid md="12" style={{margin:10, borderBottom:"1px solid black"}}>
+                            <Grid item  md="4">
                                 # Reports
-                            </Col>
-                            <Col md="8">
+                            </Grid>
+                            <Grid item  md="8">
                                 {this.state.selected.traf_num_reports}
-                            </Col>
-                        </Row>
-                        <Row md="12" style={{margin:10, borderBottom:"1px solid black"}}>
-                            <Col md="4">
+                            </Grid>
+                        </Grid>
+                        <Grid md="12" style={{margin:10, borderBottom:"1px solid black"}}>
+                            <Grid item  md="4">
                                 Client Data
-                            </Col>
-                            <Col md="8">
+                            </Grid>
+                            <Grid item  md="8">
                                 Pending
-                            </Col>
-                        </Row>
+                            </Grid>
+                        </Grid>
                     </>
                     )}
                     </>
                     )}
                 </div>
-            </Col>
-        </Row>
+            </Grid>
+        </Grid>
       </div>
     );
   }

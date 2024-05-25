@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { TabContent, TabPane } from 'reactstrap';
@@ -31,11 +31,11 @@ class MyHealth extends Component {
             {(this.props.offices && this.props.offices.isReceiving) && (
                 <AppSpinner/>
             )}
-            <Row md="12">
-                <Col md="12">
+            <Grid md="12">
+                <Grid item  md="12">
                     <MyHealthInfo/>
-                </Col>
-            </Row>
+                </Grid>
+            </Grid>
         </>
         )
     }

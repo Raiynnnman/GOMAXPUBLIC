@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Col, Row } from 'reactstrap';
-import { Nav, NavItem, NavLink } from 'reactstrap';
-import { TabContent, TabPane } from 'reactstrap';
+import Grid from '@mui/material/Grid';
 import cx from 'classnames';
 import classnames from 'classnames';
 
@@ -31,8 +29,8 @@ class Dashboard extends Component {
     render() {
         return (
         <>
-            <Row md="12">
-                <Col md="12">
+            <Grid md="12">
+                <Grid item  md="12">
                 <>
                 {(this.props.currentUser && this.props.currentUser.entitlements && this.props.currentUser.entitlements.includes('Customer')) && (
                     <UserDashboard/>
@@ -59,8 +57,8 @@ class Dashboard extends Component {
                     <ReferrerDashboard/>
                 )}
                 </>
-                </Col>                
-            </Row>
+                </Grid>                
+            </Grid>
         </>
         )
     }

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Select from 'react-select';
 import TextareaAutosize from 'react-autosize-textarea';
 import { connect } from 'react-redux';
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
 import googleKey from '../../googleConfig';
 import { push } from 'connected-react-router';
@@ -257,7 +257,7 @@ class UserRegistration extends Component {
             )}
             {this.state.inputs.map((t) => {
                 return (
-                <Row md="12" xs="12" style={{marginTop:5}}>
+                <Grid md="12" xs="12" style={{marginTop:5}}>
                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'spread-evenly'}}>
                           <font style={{width:25}}>{cntr++}.</font>
                           <Label style={{width:200,marginLeft:20,marginRight:20}} for="normal-field" className="text-md-right">
@@ -297,18 +297,18 @@ class UserRegistration extends Component {
                           </>
                         )}
                     </div>
-                </Row>
+                </Grid>
                 )
             })}
             </>
-            <Row md="12" xs="12" style={{marginTop:20}}>
-                <Col md="12" xs="12">
+            <Grid md="12" xs="12" style={{marginTop:20}}>
+                <Grid item  md="12" xs="12">
                 <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                     <Button onClick={this.save} style={{marginRight:10}} color="primary">{translate('Save')}</Button>
                     <Button outline onClick={this.cancel} color="primary">{translate('Cancel')}</Button>
                 </div>
-                </Col>
-            </Row>
+                </Grid>
+            </Grid>
         </>
         )
     }

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { push } from 'connected-react-router';
 import { connect } from 'react-redux';
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { Badge,Button } from 'reactstrap';
 import { TabContent, TabPane } from 'reactstrap';
@@ -40,13 +40,13 @@ class Appointment extends Component {
             <Card style={{borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px",
                 margin:20}} className="mb-xlg border-1">
                 <CardBody>
-                    <Row md="12">
-                        <Col md="7">
+                    <Grid md="12">
+                        <Grid item  md="7">
                             <font style={{fontSize:"14pt",fontWeight:"bold"}}>
                             {this.props.data.title + " " + this.props.data.first_name + " " + this.props.data.last_name}
                             </font>
-                        </Col>
-                        <Col md="5" class="pull-right">
+                        </Grid>
+                        <Grid item  md="5" class="pull-right">
                             {(this.props.data.rating === 5) && (
                             <>
                                 <i style={{color:"gold"}} className="fa fa-star me-2" />
@@ -104,77 +104,77 @@ class Appointment extends Component {
                             </>
                             )}
                             {this.props.data.rating.toFixed(1)}
-                        </Col>
-                    </Row>
+                        </Grid>
+                    </Grid>
                     <hr/>
-                    <Row md="12">
-                        <Col md="3">
+                    <Grid md="12">
+                        <Grid item  md="3">
                             {(this.props.data.headshot) && (<img style={{width:140,height:130,objectFit:"fill"}} src={this.props.data.headshot}/>)}
                             {(!this.props.data.headshot) && (<img style={{width:140,height:130,objectFit:"fill"}} src="/headshot.png"/>)}
-                        </Col>
-                        <Col md="1">
-                        </Col>
-                        <Col md="8">
-                            <Row md="12">
-                                <Col md="12">
+                        </Grid>
+                        <Grid item  md="1">
+                        </Grid>
+                        <Grid item  md="8">
+                            <Grid md="12">
+                                <Grid item  md="12">
                                     Distance: {this.props.data.miles.toFixed(2)} miles
-                                </Col>
-                            </Row>
-                            <Row md="12">
-                                <Col md="12">
+                                </Grid>
+                            </Grid>
+                            <Grid md="12">
+                                <Grid item  md="12">
                                     On: {this.props.data.schedule[0].day} @ {this.props.data.schedule[0].time}
-                                </Col>
-                            </Row>
-                            <Row md="12">
-                                <Col md="12">
+                                </Grid>
+                            </Grid>
+                            <Grid md="12">
+                                <Grid item  md="12">
                                     Procedure: {this.props.data.subproc}
-                                </Col>
-                            </Row>
+                                </Grid>
+                            </Grid>
                             {(this.props.chat) && (
-                                <Row md="12" style={{marginTop:10}}>
-                                    <Col md="8">
+                                <Grid md="12" style={{marginTop:10}}>
+                                    <Grid item  md="8">
                                         <Button onClick={this.props.onNewChat} color="primary">Chat with Doctor</Button>
-                                    </Col>
-                                </Row>
+                                    </Grid>
+                                </Grid>
                             )}
                             {(this.props.viewAppt) && (
-                                <Row md="12" style={{marginTop:10}}>
-                                    <Col md="8">
+                                <Grid md="12" style={{marginTop:10}}>
+                                    <Grid item  md="8">
                                         <Button style={{width:147}} onClick={this.props.onViewAppt} color="primary">Details</Button>
-                                    </Col>
-                                </Row>
+                                    </Grid>
+                                </Grid>
                             )}
                             {(this.props.documents) && (
-                                <Row md="12" style={{marginTop:5}}>
-                                    <Col md="8">
+                                <Grid md="12" style={{marginTop:5}}>
+                                    <Grid item  md="8">
                                         <Button onClick={this.onDocumentUpload} color="primary">Documents</Button>
-                                    </Col>
-                                </Row>
+                                    </Grid>
+                                </Grid>
                             )}
                             {(this.props.consent) && (
-                                <Row md="12" style={{marginTop:5}}>
-                                    <Col md="8">
+                                <Grid md="12" style={{marginTop:5}}>
+                                    <Grid item  md="8">
                                         <Button onClick={this.onGetConsent} color="primary">Consent Form</Button>
-                                    </Col>
-                                </Row>
+                                    </Grid>
+                                </Grid>
                             )}
-                        </Col>
-                    </Row>
-                    <Row md="12"> 
-                        <Col md="12">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12"> 
+                        <Grid item  md="12">
                             {this.props.data.name}
-                        </Col> 
-                    </Row>
-                    <Row md="12"> 
-                        <Col md="8">{this.props.data.addr[0][0].addr1}</Col> 
-                    </Row>
-                    <Row md="12"> <Col md="8">{this.props.data.addr[0][0].addr2}</Col> </Row>
-                    <Row md="12"> 
-                        <Col md="4">
+                        </Grid> 
+                    </Grid>
+                    <Grid md="12"> 
+                        <Grid item  md="8">{this.props.data.addr[0][0].addr1}</Grid> 
+                    </Grid>
+                    <Grid md="12"> <Grid item  md="8">{this.props.data.addr[0][0].addr2}</Grid> </Grid>
+                    <Grid md="12"> 
+                        <Grid item  md="4">
                             {this.props.data.addr[0][0].city},{this.props.data.addr[0][0].state} {this.props.data.addr[0][0].zipcode}
-                        </Col> 
-                        <Col md="4"></Col> 
-                    </Row>
+                        </Grid> 
+                        <Grid item  md="4"></Grid> 
+                    </Grid>
                     <hr/>
                 </CardBody>
             </Card>

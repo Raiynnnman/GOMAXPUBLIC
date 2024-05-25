@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { FormGroup, Label, Input } from 'reactstrap';
 import Select from 'react-select';
 import { connect } from 'react-redux';
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import { bundleSave } from '../../actions/bundleSave';
 import { push } from 'connected-react-router';
 import { Nav, NavItem, NavLink } from 'reactstrap';
@@ -85,7 +85,7 @@ class OfficeAssociationList extends Component {
         },this));
     } 
 
-    addRow() { 
+    addGrid() { 
         this.state.selected.items.push({
             id:"new",
             office_id:0
@@ -118,40 +118,40 @@ class OfficeAssociationList extends Component {
             {(this.props && this.props.officeAssociation && this.props.officeAssociation.data &&
               this.props.officeAssociation.data.assigned && this.state.selected === null) && ( 
             <>
-            <Row md="12">
-                <Col md="4" style={{marginBottom:10}}>
+            <Grid md="12">
+                <Grid item  md="4" style={{marginBottom:10}}>
                     <Button onClick={() => this.edit({id:"new",office_id:0})} style={{marginRight:5,height:35,width:90}} color="primary">Add</Button>
-                </Col>
-            </Row>
-            <Row md="12">
-                <Col md="12">
+                </Grid>
+            </Grid>
+            <Grid md="12">
+                <Grid item  md="12">
                     <BootstrapTable 
                         keyField='id' data={this.props.officeAssociation.data.assigned} 
                         columns={heads} pagination={ paginationFactory()}>
                     </BootstrapTable>
-                </Col>                
-            </Row>
+                </Grid>                
+            </Grid>
             </>
             )}
             {(this.props && this.props.officeAssociation && this.props.officeAssociation.data && 
               this.props.officeAssociation.data.assigned && this.state.selected !== null) && ( 
             <>
-            <Row md="12">
-                <Col md="12">
-                    <Row md="12">
-                        <Col md="5">
+            <Grid md="12">
+                <Grid item  md="12">
+                    <Grid md="12">
+                        <Grid item  md="5">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               Name
                             </Label>
-                            <Col md={7}>
+                            <Grid item  md={7}>
                               <Input type="text" id="normal-field" onChange={this.nameChange} placeholder="Name" value={this.state.selected.name}/>
-                            </Col>
+                            </Grid>
                           </FormGroup>
-                        </Col>
-                    </Row>
-                    <Row md="12">
-                        <Col md="5">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12">
+                        <Grid item  md="5">
                             <h5>Pick office</h5>
                             <Select 
                               onChange={this.officeChange}
@@ -170,17 +170,17 @@ class OfficeAssociationList extends Component {
                                     this.props.officeAssociation.data.offices.filter((g) => g.id === this.state.selected.office_id)[0].name  : ""
                               }}
                             />
-                        </Col>
-                    </Row>
-                </Col>                
-            </Row>
+                        </Grid>
+                    </Grid>
+                </Grid>                
+            </Grid>
             <hr/>
-            <Row md="12">
-                <Col md="6">
+            <Grid md="12">
+                <Grid item  md="6">
                     <Button onClick={this.save} color="primary">Save</Button>
                     <Button outline style={{marginLeft:10}} onClick={this.cancel} color="secondary">Cancel</Button>
-                </Col>
-            </Row>
+                </Grid>
+            </Grid>
             </>
             )}
         </>

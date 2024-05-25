@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 import { FormGroup, Label, Input } from 'reactstrap';
 import { toast } from 'react-toastify';
@@ -36,7 +36,7 @@ class ClientList extends Component {
         this.emailChange = this.emailChange.bind(this);
         this.phoneChange = this.phoneChange.bind(this);
         this.save = this.save.bind(this);
-        this.pageRowsChange = this.pageRowsChange.bind(this);
+        this.pageGridsChange = this.pageGridsChange.bind(this);
         this.pageChange = this.pageChange.bind(this);
     } 
 
@@ -135,7 +135,7 @@ class ClientList extends Component {
         ));
         setTimeout((e) => { e.reload() }, 300000,this)
     }
-    pageRowsChange(t) { 
+    pageGridsChange(t) { 
         this.state.pageSize = t
         this.state.page = 0
         if (this.props.currentUser.entitlements && 
@@ -250,19 +250,19 @@ class ClientList extends Component {
             </Nav>
             <TabContent className='mb-lg' activeTab={this.state.activeTab}>
                 <TabPane tabId="clients">
-                    <Row md="12">
-                        <Col md="8"></Col>
-                        <Col md="4">
+                    <Grid md="12">
+                        <Grid item  md="8"></Grid>
+                        <Grid item  md="4">
                             <div class="pull-right">
                                 <div style={{justifyContent:'spread-evenly'}}>
                                     <Button onClick={() => this.reload()} style={{marginRight:5,height:35}} outline 
                                         color="primary"><AutorenewIcon/></Button>
                                 </div>
                             </div>
-                        </Col>
-                    </Row>
-                    <Row md="12" style={{marginTop:10}}>
-                        <Col md="12">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12" style={{marginTop:10}}>
+                        <Grid item  md="12">
                             <PainTable
                                 keyField='id' 
                                 data={this.props.customers.data.customers} 
@@ -271,11 +271,11 @@ class ClientList extends Component {
                                 pageSize={this.state.pageSize}
                                 onPageChange={this.pageChange}
                                 onSort={this.sortChange}
-                                onPageRowsPerPageChange={this.pageRowsChange}
+                                onPageGridsPerPageChange={this.pageGridsChange}
                                 columns={heads}>
                             </PainTable> 
-                        </Col>                
-                    </Row>
+                        </Grid>                
+                    </Grid>
                 </TabPane>
             </TabContent>
             </>
@@ -283,39 +283,39 @@ class ClientList extends Component {
             {(this.props && this.props.customers && this.props.customers.data && 
               this.props.customers.data.customers && this.state.selected !== null) && ( 
             <>
-                <Row md="12">
-                    <Col md="12">
-                        <Row md="12">
-                            <Col md={4}>
+                <Grid md="12">
+                    <Grid item  md="12">
+                        <Grid md="12">
+                            <Grid item  md={4}>
                               <FormGroup row>
                                 <Label for="normal-field" md={4} className="text-md-right">
                                   ID
                                 </Label>
-                                <Col md={8}>
+                                <Grid item  md={8}>
                                   <Input type="text" id="normal-field" readOnly placeholder="ID" value={this.state.selected.id}/>
-                                </Col>
+                                </Grid>
                               </FormGroup>
-                            </Col>
-                        </Row>
-                        <Row md="12">
-                            <Col md={4}>
+                            </Grid>
+                        </Grid>
+                        <Grid md="12">
+                            <Grid item  md={4}>
                               <FormGroup row>
                                 <Label for="normal-field" md={4} className="text-md-right">
                                   Name
                                 </Label>
-                                <Col md={8}>
+                                <Grid item  md={8}>
                                   <Input type="text" id="normal-field" onChange={this.nameChange} placeholder="Name" value={this.state.selected.name}/>
-                                </Col>
+                                </Grid>
                               </FormGroup>
-                            </Col>
-                        </Row>
-                        <Row md="12">
-                          <Col md={4}>
+                            </Grid>
+                        </Grid>
+                        <Grid md="12">
+                          <Grid item  md={4}>
                             <FormGroup row>
                               <Label for="normal-field" md={4} className="text-md-right">
                                 Email
                               </Label>
-                              <Col md={8}>
+                              <Grid item  md={8}>
                               <Input type="text" id="normal-field"
                                       onChange={this.emailChange} placeholder="Email" value={this.state.selected.email}/>
                                 {this.state.errorMessage &&
@@ -325,17 +325,17 @@ class ClientList extends Component {
                                       </font>
                                   </p>
                                 }
-                              </Col>
+                              </Grid>
                             </FormGroup>
-                          </Col>
-                        </Row>
-                        <Row md="12">
-                          <Col md={4}>
+                          </Grid>
+                        </Grid>
+                        <Grid md="12">
+                          <Grid item  md={4}>
                             <FormGroup row>
                               <Label for="normal-field" md={4} className="text-md-right">
                                 Phone
                               </Label>
-                              <Col md={8}>
+                              <Grid item  md={8}>
                               <Input type="text" id="normal-field"
                                       onChange={this.phoneChange} placeholder="Phone" value={this.state.selected.phone}/>
                                 {this.state.errorMessage &&
@@ -345,17 +345,17 @@ class ClientList extends Component {
                                       </font>
                                   </p>
                                 }
-                              </Col>
+                              </Grid>
                             </FormGroup>
-                          </Col>
-                        </Row>
-                        <Row md="12">
-                          <Col md={4}>
+                          </Grid>
+                        </Grid>
+                        <Grid md="12">
+                          <Grid item  md={4}>
                             <FormGroup row>
                                 <Label for="normal-field" md={4} className="text-md-right">
                                     Status
                                 </Label>
-                                <Col md="8" style={{zIndex:9995}}>
+                                <Grid item  md="8" style={{zIndex:9995}}>
                                   {(this.props.customers && this.props.customers.data && 
                                     this.props.customers.data.config &&
                                     this.props.customers.data.config.status) && (
@@ -374,32 +374,32 @@ class ClientList extends Component {
                                           })}
                                         />
                                     )}
-                                </Col>                
+                                </Grid>                
                             </FormGroup>
-                          </Col>
-                        </Row>
-                        <Row md="12">
-                          <Col md={4}>
+                          </Grid>
+                        </Grid>
+                        <Grid md="12">
+                          <Grid item  md={4}>
                             <FormGroup row>
                               <Label for="normal-field" md={4} className="text-md-right">
                                 Office
                               </Label>
-                              <Col md={8}>
+                              <Grid item  md={8}>
                                   <Input type="text" id="normal-field" readOnly value={this.state.selected.office_name}/>
-                              </Col>
+                              </Grid>
                             </FormGroup>
-                          </Col>
-                        </Row>
-                    </Col>                
-                </Row>
+                          </Grid>
+                        </Grid>
+                    </Grid>                
+                </Grid>
                 <hr/>
-                <Row md="12">
-                    <Col md="6">
+                <Grid md="12">
+                    <Grid item  md="6">
                         <Button onClick={this.save} color="primary" disabled={!this.state.selected.name || !this.state.selected.email || 
                           this.state.errorMessage || this.state.phoneMessage}>Save</Button>
                         <Button outline style={{marginLeft:10}} onClick={this.cancel} color="secondary">Cancel</Button>
-                    </Col>
-                </Row>
+                    </Grid>
+                </Grid>
             </>
             )}
         </>

@@ -103,7 +103,7 @@ class Calendar extends Component {
         <div>
         <section className={`${s.mainCalendar}`}>
           <header className={`${s.calendarHeader}`}>
-            <div className={`${s.calendarRow} ${s.titleHeader}`}>
+            <div className={`${s.calendarGrid} ${s.titleHeader}`}>
               <i
                 className={`${s.calendarItemContainer} ${s.arrow} la la-arrow-left`}
                 onClick={this.previous}

@@ -1,9 +1,7 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { Row, Col } from "reactstrap";
-import Widget from "../../../../components/Widget";
 import HighchartsReact from 'highcharts-react-official'
-import Highcharts from 'highcharts';
+// import Highcharts from 'highcharts';
 
 import config from '../../../../config'
 
@@ -117,27 +115,8 @@ export default class RevenueChart extends PureComponent {
     const { isReceiving } = this.props;
 
     return (
-      <Widget
-        bodyClass="mt"
-        className="mb-xlg"
-        fetchingData={isReceiving}
-        collapse
-        close
-        title={
-          <Row>
-            <Col xs={12} sm={5}>
-              <h5>
-                Daily <span className="fw-semi-bold">Line Chart</span>
-              </h5>
-            </Col>
-            <Col xs={12} sm={7}>
-              <div className="chart-legend"/>
-            </Col>
-          </Row>
-        }
-      >
-       <HighchartsReact highcharts={Highcharts} options={this.chartData()} />
-      </Widget>
+    <>
+    </>
     );
   }
 }

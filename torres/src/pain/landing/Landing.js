@@ -5,7 +5,7 @@ import { Button } from 'reactstrap';
 import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
 import { connect } from 'react-redux';
 import SearchIcon from '@mui/icons-material/Search';
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import { TabContent, TabPane } from 'reactstrap';
 import cx from 'classnames';
 import classnames from 'classnames';
@@ -228,8 +228,8 @@ class Landing extends Component {
             <div style={{height:800,backgroundColor:"black"}}>
                 <div style={{backgroundColor:"black",display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                     <>
-                    <Row md="12">
-                        {/*<Col md="6" sx="6" style={{paddingLeft:0,marginLeft:0}}>
+                    <Grid md="12">
+                        {/*<Grid item  md="6" sx="6" style={{paddingLeft:0,marginLeft:0}}>
                             <div style={{backgroundColor:"black",display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                 <iframe 
                                     src={
@@ -244,8 +244,8 @@ class Landing extends Component {
                                     title="PoundPain Sample">
                                 </iframe>
                             </div>
-                        </Col>*/}
-                        <Col md="12" sx="12" style={{marginTop:10,paddingRight:0,marginRight:0}}>
+                        </Grid>*/}
+                        <Grid item  md="12" sx="12" style={{marginTop:10,paddingRight:0,marginRight:0}}>
                             <div style={{backgroundColor:"black",display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                 <iframe 
                                     src={
@@ -259,8 +259,8 @@ class Landing extends Component {
                                     title="PoundPain Invite">
                                 </iframe>
                             </div>
-                        </Col>
-                    </Row>
+                        </Grid>
+                    </Grid>
                     </>
                 </div>
             </div>

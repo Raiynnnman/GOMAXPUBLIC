@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import moment from 'moment';
 import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
 import { Nav, NavItem, NavLink } from 'reactstrap';
@@ -125,24 +125,24 @@ class Appointment extends Component {
         }
         return (
         <>
-            <Row md="12">
-                <Col md="4"></Col>
-                <Col md="6">
+            <Grid md="12">
+                <Grid item  md="4"></Grid>
+                <Grid item  md="6">
                     <div style={{height:10,display: 'flex', alignItems: 'center', justifyContent: 'center',textAlign:"left"}}>
                         <h5>{this.state.dateSelected}</h5>
                     </div>
-                </Col>
-            </Row>
+                </Grid>
+            </Grid>
             <hr/>
-            <Row md="12" style={{marginTop:10}}>
-                <Col md="4">
+            <Grid md="12" style={{marginTop:10}}>
+                <Grid item  md="4">
                         <Calendar
                           value={this.state.dateSelected}
                           initialDay={new Date()}
                           onChange={this.onDateChange}
                         />
-                </Col>                
-                <Col md="6">
+                </Grid>                
+                <Grid item  md="6">
                     {(this.state.items && this.state.items.length > 0) && (
                         <>
                         <Chrono activeItemIndex={this.state.items.length+1} 
@@ -157,40 +157,40 @@ class Appointment extends Component {
                             <h4>No appointments scheduled for this time</h4>
                         </div>
                     )}
-                </Col>                
-            </Row>
-            <Row md="12">
-                <Col md="4">
+                </Grid>                
+            </Grid>
+            <Grid md="12">
+                <Grid item  md="4">
                     <>
                     {(this.props.data && this.props.data.upcoming && this.props.data.upcoming.length > 0) && (
                         <div>
                             {this.props.data.upcoming.map((e) => { 
                                 return (
-                                <Row md="12" style={{marginTop:10}}>
-                                    <Col md="12">
+                                <Grid md="12" style={{marginTop:10}}>
+                                    <Grid item  md="12">
                                         <Card style={{height:100}} className="mb-xlg border-1">
                                             <CardBody>
-                                                <Row md="12">
-                                                    <Col md="12">
+                                                <Grid md="12">
+                                                    <Grid item  md="12">
                                                         <h5>Upcoming Appointment</h5>
-                                                    </Col>
-                                                </Row>
-                                                <Row md="12">
-                                                    <Col md="12">
+                                                    </Grid>
+                                                </Grid>
+                                                <Grid md="12">
+                                                    <Grid item  md="12">
                                                         <h6>{e.schedule[0].day} @ {e.schedule[0].time}</h6>
-                                                    </Col>
-                                                </Row>
+                                                    </Grid>
+                                                </Grid>
                                             </CardBody>
                                         </Card>
-                                    </Col>
-                                </Row>
+                                    </Grid>
+                                </Grid>
                                 )
                             })}
                         </div>
                     )}
                     </>
-                </Col>
-            </Row>
+                </Grid>
+            </Grid>
         </>
         )
     }

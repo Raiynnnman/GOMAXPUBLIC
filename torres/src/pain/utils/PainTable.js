@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import TableFooter from '@mui/material/TableFooter';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import { styled } from '@mui/material/styles';
@@ -16,7 +16,7 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
+import TableGrid from '@mui/material/TableGrid';
 import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
 import FirstPageIcon from '@mui/icons-material/FirstPage';
@@ -88,7 +88,7 @@ class PainTable extends Component {
         }
         this.handleChangePage = this.handleChangePage.bind(this);
         this.handleChangeSort = this.handleChangeSort.bind(this);
-        this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
+        this.handleChangeGridsPerPage = this.handleChangeGridsPerPage.bind(this);
     } 
 
     componentWillReceiveProps(p) { 
@@ -105,22 +105,22 @@ class PainTable extends Component {
         this.props.onPageChange(t)
     } 
 
-    handleChangeRowsPerPage(e,t) { 
+    handleChangeGridsPerPage(e,t) { 
         var v = t.key;
         v = v.replace("$","")
         v = v.replace(".","")
-        this.props.onPageRowsPerPageChange(v)
+        this.props.onPageGridsPerPageChange(v)
     } 
 
     render() {
         return (
         <>
-            <Row md="12">
-                <Col md="12">
+            <Grid md="12">
+                <Grid item  md="12">
                     <TableContainer component={Paper}>
                       <Table sx={{ minWidth: 650 }} size="small" aria-label="">
                         <TableHead>
-                          <TableRow>
+                          <TableGrid>
                             {this.props.columns.map((e) => { 
                                 if (!e.hidden) { 
                                 return(
@@ -144,11 +144,11 @@ class PainTable extends Component {
                                 </TableCell>
                                 )
                             }})}
-                          </TableRow>
+                          </TableGrid>
                         </TableHead>
                         <TableBody>
                           {this.props.data.map((row) => (
-                            <TableRow
+                            <TableGrid
                               key={row.id}
                               sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
@@ -162,7 +162,7 @@ class PainTable extends Component {
                                         )
                                     }
                                 })}
-                            </TableRow>
+                            </TableGrid>
                           ))}
                         </TableBody>
                         <TableFooter>
@@ -180,14 +180,14 @@ class PainTable extends Component {
                                 },
                               }}
                               onPageChange={this.handleChangePage}
-                              onRowsPerPageChange={this.handleChangeRowsPerPage}
+                              onGridsPerPageChange={this.handleChangeGridsPerPage}
                               ActionsComponent={TablePaginationActions}
                           />
                       </TableFooter>
                       </Table>
                     </TableContainer>
-                </Col>                
-            </Row>
+                </Grid>                
+            </Grid>
         </>
         )
     }

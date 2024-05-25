@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { FormGroup, Label, Input } from 'reactstrap';
 import { connect } from 'react-redux';
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { TabContent, TabPane } from 'reactstrap';
 import cx from 'classnames';
@@ -139,8 +139,8 @@ class Map extends Component {
                 <AppSpinner/>
             )}
             <div style={{zIndex:512}}>
-                <Row md="12">
-                    <Col md="2" style={{zIndex:9995}}>
+                <Grid md="12">
+                    <Grid item  md="2" style={{zIndex:9995}}>
                       {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.config &&
                         this.props.trafficData.data.config.avail && this.state.dateSelected !== null) && (
                           <Select
@@ -161,15 +161,15 @@ class Map extends Component {
                               })}
                             />
                         )}
-                    </Col>                
-                    <Col md="1" style={{zIndex:9995}}>
+                    </Grid>                
+                    <Grid item  md="1" style={{zIndex:9995}}>
                       {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.config &&
                         this.props.trafficData.data.config.avail && this.state.dateSelected !== null) && (
                           <Input type="text" id="normal-field" 
                             onChange={this.onZipChange} placeholder="" value={this.state.zipSelected}/>
                         )}
-                    </Col>                
-                    <Col md="7" style={{zIndex:9995}}>
+                    </Grid>                
+                    <Grid item  md="7" style={{zIndex:9995}}>
                       {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.config &&
                         this.props.trafficData.data.config.avail && this.state.dateSelected !== null) && (
                           <Select
@@ -195,11 +195,11 @@ class Map extends Component {
                               })}
                             />
                         )}
-                    </Col>                
-                </Row>
+                    </Grid>                
+                </Grid>
             </div>
-            <Row md="12" style={{marginTop:20}}>
-                <Col md="12">
+            <Grid md="12" style={{marginTop:20}}>
+                <Grid item  md="12">
                     <Nav tabs  className={`${s.coloredNav}`} style={{backgroundColor:"#e8ecec"}}>
                         <NavItem>
                             <NavLink className={classnames({ active: this.state.activeTab === 'traffic' })}
@@ -226,8 +226,8 @@ class Map extends Component {
                         </TabContent>
                         </>
                     )}
-                </Col>                
-            </Row>
+                </Grid>                
+            </Grid>
         </>
         )
     }

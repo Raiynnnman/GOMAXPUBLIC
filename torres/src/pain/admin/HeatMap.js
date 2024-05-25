@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { HeatMap, Map, Circle, Marker, GoogleApiWrapper } from "google-maps-react";
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import './Map.scss';
 import moment from 'moment';
 
@@ -287,8 +287,8 @@ class MapContainer extends React.Component {
 
   render() {
     return (
-        <Row md="12">
-            <Col md="12" style={{margin:0,padding:0}}>
+        <Grid md="12">
+            <Grid item  md="12" style={{margin:0,padding:0}}>
                 <Map
                   google={this.props.google}
                   zoom={4}
@@ -306,8 +306,8 @@ class MapContainer extends React.Component {
                 >
                     <HeatMap positions={this.props.data.data.heatmap}/>
                 </Map>
-            </Col>
-        </Row>
+            </Grid>
+        </Grid>
     );
   }
 }

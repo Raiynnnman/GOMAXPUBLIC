@@ -6,7 +6,7 @@ import { Container, Alert, Button } from 'reactstrap';
 import getVersion from '../../version.js';
 import { connect } from 'react-redux';
 import { getLandingData } from '../../actions/landingData';
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { TabContent, TabPane } from 'reactstrap';
 import cx from 'classnames';
@@ -148,28 +148,28 @@ class Register extends Component {
             )}
             {(this.state.provtype === null && this.props.landingData && 
               this.props.landingData.data && this.props.landingData.data.roles) && (
-                <Row md="12">
+                <Grid md="12">
                     {this.props.landingData.data.roles.map((e) => {
                         return (
                             <>
-                            <Col md="4" onClick={() => this.setSignupType(e.id)} style={{cursor:'pointer'}}>
+                            <Grid item  md="4" onClick={() => this.setSignupType(e.id)} style={{cursor:'pointer'}}>
                                 <Card 
                                     style={{borderRadius:"25px 25px 25px 25px",margin:20,width:400,height:300}} className="mb-xlg border-1">
                                     <CardBody>
-                                        <Row md="12">
+                                        <Grid md="12">
                                             <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                             <font style={{fontSize:'24px'}}>
                                                 {e.signup_description}
                                             </font>
                                             </div>
-                                        </Row>
+                                        </Grid>
                                     </CardBody>
                                 </Card>
-                            </Col>
+                            </Grid>
                             </>
                         )
                     })}
-                </Row>
+                </Grid>
             )}
             {(this.state.provtype === 'Customer') && (
             <div className="auth-page">

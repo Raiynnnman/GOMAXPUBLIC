@@ -7,7 +7,7 @@ import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
 import SaveIcon from '@mui/icons-material/Save';
 import {CardElement,ElementsConsumer,Elements} from '@stripe/react-stripe-js';
 import { toast } from 'react-toastify';
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { TabContent, TabPane } from 'reactstrap';
 import cx from 'classnames';
@@ -73,8 +73,8 @@ class RegisterProvider extends Component {
         this.officePhoneChange = this.officePhoneChange.bind(this);
         this.officeAddr1Change = this.officeAddr1Change.bind(this);
         this.provtypeChange = this.provtypeChange.bind(this);
-        this.addRow = this.addRow.bind(this);
-        this.saveRow = this.saveRow.bind(this);
+        this.addGrid = this.addGrid.bind(this);
+        this.saveGrid = this.saveGrid.bind(this);
         this.checkValid = this.checkValid.bind(this);
         this.register = this.register.bind(this);
         this.saveCard= this.saveCard.bind(this);
@@ -158,7 +158,7 @@ class RegisterProvider extends Component {
         this.state.currentName = ''
         this.state.currentPhone = ''
         this.setState(this.state);
-        this.addRow()
+        this.addGrid()
     } 
 
     updateVerified(e) { 
@@ -299,12 +299,12 @@ class RegisterProvider extends Component {
 
     } 
 
-    saveRow(e) { 
+    saveGrid(e) { 
         this.state.selectedAddrId = null
         this.setState(this.state);
     }
 
-    addRow(e) { 
+    addGrid(e) { 
         this.state.selectedAddrId = this.state.addresses.length 
         this.state.addresses.push({
             id: this.state.selectedAddrId,

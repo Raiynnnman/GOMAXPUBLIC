@@ -1,19 +1,13 @@
 import React, { Component } from 'react';
 import { push } from 'connected-react-router';
-import { Button } from 'reactstrap'; 
 import moment from 'moment';
 import { connect } from 'react-redux';
-import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
-import { Col, Row } from 'reactstrap';
-import { Nav, NavItem, NavLink } from 'reactstrap';
-import { TabContent, TabPane } from 'reactstrap';
 import cx from 'classnames';
 import classnames from 'classnames';
-import BootstrapTable from 'react-bootstrap-table-next';
+import Grid from '@mui/material/Grid';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import {getUserDashboard} from '../../actions/userDashboard';
-import Appointment from '../myhealth/Appointment.js';
 import AliceCarousel from 'react-alice-carousel';
 
 class UserDashboard extends Component {
@@ -81,9 +75,9 @@ class UserDashboard extends Component {
             {(this.state.geo) && (
                 <AppSpinner/>
             )}
-            <Row md="12">
+            <Grid md="12">
                 <h3>User Dashboard Here</h3>
-            </Row>
+            </Grid>
         </>
         )
     }

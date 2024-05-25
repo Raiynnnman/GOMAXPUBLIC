@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import EditIcon from '@mui/icons-material/Edit';
 import { phySave } from '../../actions/phySave';
 import { FormGroup, Label, Input } from 'reactstrap';
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { TabContent, TabPane } from 'reactstrap';
 import cx from 'classnames';
@@ -122,7 +122,7 @@ class PhysicianList extends Component {
         },this));
     } 
 
-    addRow() { 
+    addGrid() { 
         this.state.selected.addr.push({
             id:0,phone:'',first_name:'',last_name:'',title:'',email:''
         })
@@ -190,42 +190,42 @@ class PhysicianList extends Component {
             {(this.props && this.props.phy && this.props.phy.data && this.props.phy.data.physicians &&
               this.state.selected === null) && ( 
             <>
-            <Row md="12">
-                <Col md="4" style={{marginBottom:10}}>
+            <Grid md="12">
+                <Grid item  md="4" style={{marginBottom:10}}>
                     <Button onClick={() => this.edit({id:"new",procs:[]})} style={{marginRight:5,height:35,width:90}} color="primary">Add</Button>
-                </Col>
-            </Row>
-            <Row md="12">
+                </Grid>
+            </Grid>
+            <Grid md="12">
             <>
                 {this.props.phy.data.physicians.map((e) => {         
                     return (
-                    <Col md="3">
+                    <Grid item  md="3">
                     <PhysicianCard onEdit={this.edit} provider={e}/>
-                    </Col>
+                    </Grid>
                     )
                 })}
             </>
-            </Row>
+            </Grid>
             </>
             )}
             {(this.props && this.props.phy && this.props.phy.data && 
               this.state.selected !== null) && ( 
             <>
-            <Row md="12">
-                <Col md="4">
+            <Grid md="12">
+                <Grid item  md="4">
                     <h5>Information</h5>
-                </Col>
-            </Row>
+                </Grid>
+            </Grid>
             <hr/>
-            <Row md="12">
-                <Col md="4">
-                    <Row md="12">
-                        <Col md="12">
+            <Grid md="12">
+                <Grid item  md="4">
+                    <Grid md="12">
+                        <Grid item  md="12">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               Email
                             </Label>
-                            <Col md={7}>
+                            <Grid item  md={7}>
                               <Input type="text" id="normal-field" onChange={this.emailChange} placeholder="Email" value={this.state.selected.email}/>
                               {this.state.errorMessage &&
                                 <p for="normal-field" md={12} className="text-md-right">
@@ -234,53 +234,53 @@ class PhysicianList extends Component {
                                     </font>
                                 </p>
                               }
-                            </Col>
+                            </Grid>
                           </FormGroup>
-                        </Col>
-                    </Row>
-                    <Row md="12">
-                        <Col md="12">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12">
+                        <Grid item  md="12">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               Title 
                             </Label>
-                            <Col md={7}>
+                            <Grid item  md={7}>
                               <Input type="text" id="normal-field" onChange={this.titleChange} placeholder="Title" value={this.state.selected.title}/>
-                            </Col>
+                            </Grid>
                           </FormGroup>
-                        </Col>
-                    </Row>
-                    <Row md="12">
-                        <Col md="12">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12">
+                        <Grid item  md="12">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               First
                             </Label>
-                            <Col md={7}>
+                            <Grid item  md={7}>
                               <Input type="text" id="normal-field" onChange={this.firstChange} placeholder="First Name" value={this.state.selected.first_name}/>
-                            </Col>
+                            </Grid>
                           </FormGroup>
-                        </Col>
-                    </Row>
-                    <Row md="12">
-                        <Col md="12">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12">
+                        <Grid item  md="12">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               Last
                             </Label>
-                            <Col md={7}>
+                            <Grid item  md={7}>
                               <Input type="text" id="normal-field" onChange={this.lastChange} placeholder="Last Name" value={this.state.selected.last_name}/>
-                            </Col>
+                            </Grid>
                           </FormGroup>
-                        </Col>
-                    </Row>
-                    <Row md="12">
-                        <Col md="12">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12">
+                        <Grid item  md="12">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                                 Phone                              
                             </Label>
-                            <Col md={7}>
+                            <Grid item  md={7}>
                               <Input type="text" id="normal-field" onChange={this.phoneChange} placeholder="Phone" value={this.state.selected.phone}/>
                               {this.state.phoneMessage &&
                                 <p for="normal-field" md={12} className="text-md-right">
@@ -289,20 +289,20 @@ class PhysicianList extends Component {
                                     </font>
                                 </p>
                               }
-                            </Col>
+                            </Grid>
                           </FormGroup>
-                        </Col>
-                    </Row>
-                </Col>
-            </Row>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Grid>
             <hr/>
-            <Row md="12">
-                <Col md="6">
+            <Grid md="12">
+                <Grid item  md="6">
                     <Button onClick={this.save} color="primary" disabled={this.state.errorMessage || this.state.phoneMessage || this.state.selected.procs === '' ||
                         !this.state.selected.title || !this.state.selected.first_name || !this.state.selected.last_name || !this.state.selected.phone }>Save</Button>
                     <Button outline style={{marginLeft:10}} onClick={this.cancel} color="secondary">Cancel</Button>
-                </Col>
-            </Row>
+                </Grid>
+            </Grid>
             </>
             )}
         </>

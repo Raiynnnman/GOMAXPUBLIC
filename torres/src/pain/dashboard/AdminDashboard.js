@@ -1,10 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Nav, NavItem, NavLink } from 'reactstrap';
-import { TabContent, TabPane } from 'reactstrap';
 import cx from 'classnames';
 import classnames from 'classnames';
-import Widget from '../../components/Widget';
 import Grid from '@mui/material/Grid';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';

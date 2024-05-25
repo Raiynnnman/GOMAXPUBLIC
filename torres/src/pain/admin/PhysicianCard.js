@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { Nav, NavItem, NavLink } from 'reactstrap';
@@ -124,8 +124,8 @@ class PhysicianCard extends Component {
                 margin:20,height:410,
                 borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}} className="mb-xlg border-1">
                 <CardBody>
-                    <Row md="12">
-                        <Col md="12">
+                    <Grid md="12">
+                        <Grid item  md="12">
                             <font style={{fontSize:"12pt",fontWeight:"bold"}}>
                             {this.props.provider.office_name} 
                             </font>
@@ -193,11 +193,11 @@ class PhysicianCard extends Component {
                             </>
                             )}
                             {this.props.provider.rating.toFixed(1)}
-                        </Col>
-                        <Col md="2"></Col>
-                        <Col md="4" class="pull-right">
-                        </Col>
-                    </Row>
+                        </Grid>
+                        <Grid item  md="2"></Grid>
+                        <Grid item  md="4" class="pull-right">
+                        </Grid>
+                    </Grid>
                     <hr/>
                     <div style={{height:130,marginBottom:10,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                     <>
@@ -205,42 +205,42 @@ class PhysicianCard extends Component {
                         {(!this.props.provider.headshot) && (<img style={{width:140,height:130,objectFit:"fill"}} src="/headshot.png"/>)}
                     </>
                     </div>
-                    <Row md="12"> <Col md="12">{this.props.provider.miles.toFixed(2)} miles</Col> </Row>
-                    <Row md="12"> <Col md="12">
+                    <Grid md="12"> <Grid item  md="12">{this.props.provider.miles.toFixed(2)} miles</Grid> </Grid>
+                    <Grid md="12"> <Grid item  md="12">
                             {this.props.provider.addr.addr1}
-                        </Col> 
-                    </Row>
-                    <Row md="12">
-                        <Col md="12">
+                        </Grid> 
+                    </Grid>
+                    <Grid md="12">
+                        <Grid item  md="12">
                             <div style={{display:'flex',alignContent:'center',justifyContent:'start'}}>
                                 {this.props.provider.addr.city ? this.props.provider.addr.city : ''},&nbsp;
                                 {this.props.provider.addr.state? this.props.provider.addr.state:''}&nbsp;
                                 {this.props.provider.addr.zipcode ? this.props.provider.addr.zipcode : ''}
                             </div>
-                        </Col> 
-                    </Row>
-                    <Row md="12">
-                        <Col md="12">
+                        </Grid> 
+                    </Grid>
+                    <Grid md="12">
+                        <Grid item  md="12">
                             {formatPhoneNumber(this.props.provider.profile.phone)}
-                        </Col> 
-                    </Row>
-                    {(false) && ( <Row md="12"> 
-                        <Col md="4">
+                        </Grid> 
+                    </Grid>
+                    {(false) && ( <Grid md="12"> 
+                        <Grid item  md="4">
                             <Button color="secondary">See Reviews</Button>
-                        </Col>
-                        <Col md="4">
+                        </Grid>
+                        <Grid item  md="4">
                             <Button color="secondary">See Video</Button>
-                        </Col>
-                    </Row>
+                        </Grid>
+                    </Grid>
                     )}
                     <hr/>
-                    <Row md="12"> 
-                        <Col md="12">
+                    <Grid md="12"> 
+                        <Grid item  md="12">
                             <div style={{height:30,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                 <Button color="primary" onClick={this.scheduleAppt}>Book</Button>
                             </div>
-                        </Col>
-                    </Row>
+                        </Grid>
+                    </Grid>
                 </CardBody>
             </Card>
         )}

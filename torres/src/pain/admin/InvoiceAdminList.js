@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
 import { getInvoiceAdmin } from '../../actions/invoiceAdmin';
@@ -51,7 +51,7 @@ class InvoiceAdminList extends Component {
         this.addComment = this.addComment.bind(this);
         this.comment = this.comment.bind(this);
         this.sortChange = this.sortChange.bind(this);
-        this.pageRowsChange = this.pageRowsChange.bind(this);
+        this.pageGridsChange = this.pageGridsChange.bind(this);
         this.sortChange = this.sortChange.bind(this);
         this.showMore = this.showMore.bind(this);
         this.showLess = this.showLess.bind(this);
@@ -137,7 +137,7 @@ class InvoiceAdminList extends Component {
         } 
     } 
 
-    pageRowsChange(t) { 
+    pageGridsChange(t) { 
         this.state.pageSize = t
         this.state.page = 0
         this.props.dispatch(getInvoiceAdmin(
@@ -488,10 +488,10 @@ class InvoiceAdminList extends Component {
             {(this.props && this.props.invoiceAdmin && this.props.invoiceAdmin.data && 
               this.props.invoiceAdmin.data.invoices && this.state.selected === null) && ( 
             <>
-            <Row md="12">
+            <Grid md="12">
                 {(this.state.statusSelected && this.state.statusSelected.length > 0) && (
                 <>
-                <Col md="6" style={{marginBottom:10}}>
+                <Grid item  md="6" style={{marginBottom:10}}>
                       <Select
                           closeMenuOnSelect={true}
                           isSearchable={false}
@@ -514,22 +514,22 @@ class InvoiceAdminList extends Component {
                             )
                           })}
                         />
-                </Col>
-                <Col md={3}>
+                </Grid>
+                <Grid item  md={3}>
                     <Input type="text" id="normal-field" onChange={this.search}
                     placeholder="Search" value={this.state.search}/>
-                </Col>
-                <Col md={3}>
+                </Grid>
+                <Grid item  md={3}>
                     <div class='pull-right'>
                         <Button onClick={() => this.reload()} style={{marginRight:5,height:35}} outline 
                             color="primary"><AutorenewIcon/></Button>
                     </div>
-                </Col>
+                </Grid>
                 </>
                 )}
-            </Row>
-            <Row md="12">
-                <Col md="12">
+            </Grid>
+            <Grid md="12">
+                <Grid item  md="12">
                     {/*<BootstrapTable 
                         keyField='id' 
                         data={this.props.invoiceAdmin.data.invoices} 
@@ -544,40 +544,40 @@ class InvoiceAdminList extends Component {
                         pageSize={this.state.pageSize}
                         onPageChange={this.pageChange}
                         onSort={this.sortChange}
-                        onPageRowsPerPageChange={this.pageRowsChange}
+                        onPageGridsPerPageChange={this.pageGridsChange}
                         columns={heads}>
                     </PainTable> 
-                </Col>                
-            </Row>
+                </Grid>                
+            </Grid>
             </>
             )}
             {(this.props && this.props.invoiceAdmin && this.props.invoiceAdmin.data && 
               this.props.invoiceAdmin.data.invoices && this.state.selected !== null) && ( 
             <>
-            <Row md="12">
-                <Col md="5">
+            <Grid md="12">
+                <Grid item  md="5">
                     <h5>Details</h5>
-                </Col>
-                <Col md="7">
+                </Grid>
+                <Grid item  md="7">
                     <h5>Stripe Status</h5>
-                </Col>
-            </Row>
+                </Grid>
+            </Grid>
             <hr/>
-            <Row md="12">
-                <Col md="5">
-                    <Row md="12" style={{marginBottom: 5}}>
-                        <Col md="4">
+            <Grid md="12">
+                <Grid item  md="5">
+                    <Grid md="12" style={{marginBottom: 5}}>
+                        <Grid item  md="4">
                             ID:
-                        </Col>
-                        <Col md="7">
+                        </Grid>
+                        <Grid item  md="7">
                             {this.state.selected.id} 
-                        </Col>
-                    </Row>
-                    <Row md="12" style={{marginBottom: 5}}>
-                        <Col md="4">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12" style={{marginBottom: 5}}>
+                        <Grid item  md="4">
                             Status
-                        </Col>
-                        <Col md="7">
+                        </Grid>
+                        <Grid item  md="7">
                               <Select
                                   closeMenuOnSelect={true}
                                   isSearchable={false}
@@ -594,72 +594,72 @@ class InvoiceAdminList extends Component {
                                     )
                                   })}
                                 />
-                        </Col>
-                    </Row>
-                    <Row md="12">
-                        <Col md="12">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12">
+                        <Grid item  md="12">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               Email
                             </Label>
-                            <Col md={7}>
+                            <Grid item  md={7}>
                               <Input type="text" id="normal-field" readOnly onChange={this.emailChange} placeholder="Email" value={this.state.selected.email}/>
-                            </Col>
+                            </Grid>
                           </FormGroup>
-                        </Col>
-                    </Row>
-                    <Row md="12">
-                        <Col md="12">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12">
+                        <Grid item  md="12">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               First Name
                             </Label>
-                            <Col md={7}>
+                            <Grid item  md={7}>
                               <Input type="text" id="normal-field" readOnly onChange={this.firstChange} placeholder="First Name" value={this.state.selected.first_name}/>
-                            </Col>
+                            </Grid>
                           </FormGroup>
-                        </Col>
-                    </Row>
-                    <Row md="12">
-                        <Col md="12">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12">
+                        <Grid item  md="12">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               Last Name
                             </Label>
-                            <Col md={7}>
+                            <Grid item  md={7}>
                               <Input type="text" id="normal-field" readOnly onChange={this.lastChange} placeholder="Last Name" value={this.state.selected.last_name}/>
-                            </Col>
+                            </Grid>
                           </FormGroup>
-                        </Col>
-                    </Row>
-                    <Row md="12">
-                        <Col md="12">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12">
+                        <Grid item  md="12">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               Phone
                             </Label>
-                            <Col md={7}>
+                            <Grid item  md={7}>
                               <Input type="text" id="normal-field" readOnly onChange={this.phoneChange} placeholder="Phone" value={this.state.selected.phone}/>
-                            </Col>
+                            </Grid>
                           </FormGroup>
-                        </Col>
-                    </Row>
-                    <Row md="12">
-                        <Col md="12">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12">
+                        <Grid item  md="12">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               Office
                             </Label>
-                            <Col md={7}>
+                            <Grid item  md={7}>
                               <Input type="text" id="normal-field" readOnly onChange={this.phoneChange} placeholder="Office" value={this.state.selected.office_name}/>
-                            </Col>
+                            </Grid>
                           </FormGroup>
-                        </Col>
-                    </Row>
-                </Col>
-                <Col md="7">
-                    <Row md="12">
-                        <Col md="12">
+                        </Grid>
+                    </Grid>
+                </Grid>
+                <Grid item  md="7">
+                    <Grid md="12">
+                        <Grid item  md="12">
                             {(this.state.selected.stripe && this.state.selected.stripe.amount_due) && (
                             <>
                               {Object.entries(this.state.selected.stripe).sort((a,b) => (a[0] > b[0] ? 1:-1)).map((e) => { 
@@ -670,11 +670,11 @@ class InvoiceAdminList extends Component {
                                 if (e[0].includes('fee')) { isdollar = true }
                                 if (e[1] === null) { isnull = true;  }
                                 return (
-                                    <Row md="12">
-                                        <Col md="3">
+                                    <Grid md="12">
+                                        <Grid item  md="3">
                                             {e[0]}
-                                        </Col>
-                                        <Col md="9">
+                                        </Grid>
+                                        <Grid item  md="9">
                                             <>
                                             {(isnull) && (
                                                 "N/A"
@@ -693,64 +693,64 @@ class InvoiceAdminList extends Component {
                                             </>
                                             )}
                                             </>
-                                        </Col>
-                                    </Row>
+                                        </Grid>
+                                    </Grid>
                                 )
                               })}
                             </>
                             )}
                             {(!this.state.selected.stripe || !this.state.selected.stripe.stripe_invoice_id) && (
-                            <Row md="12">
-                                <Col md="12"><h5>No status yet</h5></Col>
-                            </Row>
+                            <Grid md="12">
+                                <Grid item  md="12"><h5>No status yet</h5></Grid>
+                            </Grid>
                             )}
-                        </Col>
-                    </Row>
-                </Col>
-            </Row>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Grid>
             <hr/>
-            <Row md="12" style={{marginTop:10}}>
-                <Col md="6">
+            <Grid md="12" style={{marginTop:10}}>
+                <Grid item  md="6">
                     <h5>Items</h5>
-                </Col>
-                <Col md="6">
+                </Grid>
+                <Grid item  md="6">
                     <h5>History</h5>
-                </Col>
-            </Row>
-            <Row md="12">
-                <Col md="6">
+                </Grid>
+            </Grid>
+            <Grid md="12">
+                <Grid item  md="6">
                     <BootstrapTable 
                         keyField='id' data={this.state.selected.items} 
                         columns={itemheads}> 
                     </BootstrapTable>
-                </Col>
-                <Col md="6">
+                </Grid>
+                <Grid item  md="6">
                     <BootstrapTable 
                         keyField='id' data={this.state.selected.history} 
                         columns={historyheads}> 
                     </BootstrapTable>
-                </Col>
-            </Row>
+                </Grid>
+            </Grid>
             <hr/>
-            <Row md="12">
-                <Col md="4">
+            <Grid md="12">
+                <Grid item  md="4">
                 <h5>Comments</h5>
-                </Col>
-            </Row>
-            <Row md="12">
-                <Col md="4">
+                </Grid>
+            </Grid>
+            <Grid md="12">
+                <Grid item  md="4">
                     <Button onClick={() => this.addComment({id:"new"})} color="primary">Add Comment</Button>
-                </Col>
-            </Row>
-            <Row md="12">
+                </Grid>
+            </Grid>
+            <Grid md="12">
                 <>
                 {this.state.selected.comments.sort((a,b) => (a.created > b.created ? -1:1)).map((e) => { 
                     return (
-                        <Col md="3" key={e.id}>
+                        <Grid item  md="3" key={e.id}>
                             <Card style={{margin:20,width:400,height:200}} className="mb-xlg border-1">
                                 <CardBody>
-                                    <Row md="12">
-                                        <Col md="6">
+                                    <Grid md="12">
+                                        <Grid item  md="6">
                                             <font style={{fontSize:"14pt"}}>
                                                 {
                                                 this.state.selected.assignee.filter((g) => g.id === e.user_id).length > 0 ? 
@@ -758,58 +758,58 @@ class InvoiceAdminList extends Component {
                                                 this.state.selected.assignee.filter((g) => g.id === e.user_id)[0].last_name + " " : ""
                                                 }
                                             </font>
-                                        </Col>
-                                        <Col md="6">
+                                        </Grid>
+                                        <Grid item  md="6">
                                             {moment(e.created).format('LLL')}
-                                        </Col>
-                                    </Row>
+                                        </Grid>
+                                    </Grid>
                                     <hr/>
-                                    <Row md="12">
+                                    <Grid md="12">
                                         {(!e.edit) && ( 
-                                        <Col md="12">
+                                        <Grid item  md="12">
                                             <div style={{overflow:"auto",height:100,display: 'flex', 
                                                 alignItems: 'left', justifyContent: 'left'}}>
                                             {e.text}
                                             </div>
-                                        </Col>
+                                        </Grid>
                                         )}
                                         {(e.edit) && ( 
-                                        <Col md="12">
+                                        <Grid item  md="12">
                                             <FormGroup row>
-                                              <Col md={12}>
+                                              <Grid item  md={12}>
                                                 <Input value={e.text} rows="3" 
                                                     onChange={this.comment} type="textarea" 
                                                     name="text" id="default-textarea" />
-                                              </Col>
+                                              </Grid>
                                             </FormGroup>
-                                        </Col>
+                                        </Grid>
                                         )}
-                                    </Row>
-                                    <Row md="12">
+                                    </Grid>
+                                    <Grid md="12">
                                         {(e.edit) && ( 
-                                        <Col md="12">
-                                            <Col md="6">
+                                        <Grid item  md="12">
+                                            <Grid item  md="6">
                                                 <Button onClick={this.saveComment} color="primary">Save</Button>
                                                 <Button outline style={{marginLeft:10}} onClick={this.cancelComment} color="secondary">Cancel</Button>
-                                            </Col>
-                                        </Col>
+                                            </Grid>
+                                        </Grid>
                                         )}
-                                    </Row>
+                                    </Grid>
                                 </CardBody>
                             </Card>
-                        </Col>
+                        </Grid>
                     )})}
                     </>
-                </Row>
+                </Grid>
                 <hr/>
-                <Row md="12" style={{marginTop:10}}>
+                <Grid md="12" style={{marginTop:10}}>
                     {(!this.state.commentAdd) && (
-                    <Col md="6">
+                    <Grid item  md="6">
                         <Button onClick={this.save} color="primary">Save</Button>
                         <Button outline style={{marginLeft:10}} onClick={this.cancel} color="secondary">Cancel</Button>
-                    </Col>
+                    </Grid>
                     )}
-                </Row>
+                </Grid>
             </>
             )}
         </>

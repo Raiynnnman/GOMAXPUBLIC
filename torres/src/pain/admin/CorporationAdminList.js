@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import { push } from 'connected-react-router';
 import cellEditFactory from 'react-bootstrap-table2-editor';
 import EditIcon from '@mui/icons-material/Edit';
@@ -81,7 +81,7 @@ class CorporationList extends Component {
         },this));
     } 
 
-    addRow() { 
+    addGrid() { 
         this.state.selected.addr.push({
             id:0,phone:'',addr1:'',addr2:'',city:'',state:'',zipcode:''
         })
@@ -150,43 +150,43 @@ class CorporationList extends Component {
             {(this.props && this.props.corporationAdmin && this.props.corporationAdmin.data && this.props.corporationAdmin.data.length > 0 &&
               this.state.selected === null) && ( 
             <>
-            <Row md="12">
-                <Col md="4" style={{marginBottom:10}}>
+            <Grid md="12">
+                <Grid item  md="4" style={{marginBottom:10}}>
                     <Button onClick={() => this.edit({id:"new",addr:[]})} style={{marginRight:5,height:35,width:90}} color="primary">Add</Button>
-                </Col>
-            </Row>
-            <Row md="12">
-                <Col md="12">
+                </Grid>
+            </Grid>
+            <Grid md="12">
+                <Grid item  md="12">
                     <BootstrapTable 
                         keyField='id' data={this.props.corporationAdmin.data} 
                         columns={heads} pagination={ paginationFactory(options)}>
                     </BootstrapTable>
-                </Col>                
-            </Row>
+                </Grid>                
+            </Grid>
             </>
             )}
             {(this.props && this.props.corporationAdmin && this.props.corporationAdmin.data && this.props.corporationAdmin.data.length > 0 &&
               this.state.selected !== null) && ( 
                 <>
-                <Row md="12">
-                    <Col md="12">
-                        <Row md="12">
-                            <Col md="5">
+                <Grid md="12">
+                    <Grid item  md="12">
+                        <Grid md="12">
+                            <Grid item  md="5">
                               <FormGroup row>
                                 <Label for="normal-field" md={4} className="text-md-right">
                                   Name
                                 </Label>
-                                <Col md={7}>
+                                <Grid item  md={7}>
                                   <Input type="text" id="normal-field" onChange={this.nameChange} placeholder="Name" value={this.state.selected.name}/>
-                                </Col>
+                                </Grid>
                               </FormGroup>
-                            </Col>
-                        </Row>
-                        <Row md="12">
-                            <Col md="10">
+                            </Grid>
+                        </Grid>
+                        <Grid md="12">
+                            <Grid item  md="10">
                                 <h5>Addresses</h5>
                                 {(this.state.selected && this.state.selected.addr && this.state.selected.addr.length < 1) && (
-                                    <Button onClick={() => this.addRow()} style={{marginBottom:10,height:35,width:90}} color="primary">Add</Button>
+                                    <Button onClick={() => this.addGrid()} style={{marginBottom:10,height:35,width:90}} color="primary">Add</Button>
                                 )}
                                 {(this.state.selected && this.state.selected.addr && this.state.selected.addr.length > 0) && (
                                 <BootstrapTable 
@@ -198,18 +198,18 @@ class CorporationList extends Component {
                                 {(this.state.selected && this.state.selected.addr && this.state.selected.addr.length < 1) && (
                                     <h5>No addresses registered</h5>
                                 )}
-                            </Col>
-                            <Col md="1"></Col>
-                        </Row>
-                    </Col>                
-                </Row>
+                            </Grid>
+                            <Grid item  md="1"></Grid>
+                        </Grid>
+                    </Grid>                
+                </Grid>
                 <hr/>
-                <Row md="12">
-                    <Col md="6">
+                <Grid md="12">
+                    <Grid item  md="6">
                         <Button onClick={this.save} color="primary">Save</Button>
                         <Button outline style={{marginLeft:10}} onClick={this.cancel} color="secondary">Cancel</Button>
-                    </Col>
-                </Row>
+                    </Grid>
+                </Grid>
             </>
             )}
         </>

@@ -4,7 +4,7 @@ import Datetime from 'react-datetime';
 import { connect } from 'react-redux';
 import { Button } from 'reactstrap';
 import TextareaAutosize from 'react-autosize-textarea';
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { TabContent, TabPane } from 'reactstrap';
 import cx from 'classnames';
@@ -79,7 +79,7 @@ class MyHealthDocuments extends Component {
         this.setState(this.state);
         this.props.onCancel(); 
     } 
-    addRow() { 
+    addGrid() { 
         this.state.selected.documents.push({
             id:0,description:'',upload:'', email: ''
         })
@@ -161,41 +161,41 @@ class MyHealthDocuments extends Component {
     render() {
         return (
         <>
-            <Row md="12">
+            <Grid md="12">
                 {(this.props.user && this.props.user.data && this.props.user.data.appt && 
                   this.props.user.data.appt.length > 0 && this.state.selected !== null) && (
                     <>
-                    <Row md="12">
-                        <Col md="1">
+                    <Grid md="12">
+                        <Grid item  md="1">
                             Office:
-                        </Col>
-                        <Col md="6">
+                        </Grid>
+                        <Grid item  md="6">
                             {this.state.selected.name}
-                        </Col>
-                    </Row>
-                    <Row md="12" style={{marginTop:5}}>
-                        <Col md="1">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12" style={{marginTop:5}}>
+                        <Grid item  md="1">
                             Physician:
-                        </Col>
-                        <Col md="6">
+                        </Grid>
+                        <Grid item  md="6">
                             {this.state.selected.title + " " + this.state.selected.first_name + " " + this.state.selected.last_name}
-                        </Col>
-                    </Row>
-                    <Row md="12" style={{marginTop:5}}>
-                        <Col md="12">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12" style={{marginTop:5}}>
+                        <Grid item  md="12">
                             <font style={{height:30,display:"flex",fontSize:40,alignItems: 'center', justifyContent: 'center',
                                 fontWeight:"bold",fontSize:16}}>
                             HIPAA AUTHORIZATION FOR USE OR DISCLOSURE OF HEALTH INFORMATION
                             </font>
-                        </Col>
-                    </Row>
-                    <Row md="12" style={{marginTop:5}}>
-                        <Col md="12">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12" style={{marginTop:5}}>
+                        <Grid item  md="12">
                             Date: {moment().format('LLL')}
-                        </Col>
-                    </Row>
-                    <Row md="12" style={{marginTop:5}}>
-                        <Col md="12">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12" style={{marginTop:5}}>
+                        <Grid item  md="12">
                             <div style={{display:"flex"}} >
                                 <div>
                                 I.	
@@ -205,54 +205,54 @@ class MyHealthDocuments extends Component {
                                     This form is for use when such authorization is required and complies with the Health Insurance Portability and Accountability Act of 1996 (HIPAA) Privacy Standards. 
                                 </div>
                             </div>
-                        </Col>
-                    </Row>
-                    <Row md="12" style={{marginTop:10}}>
-                        <Col md="1"></Col>
-                        <Col md="8">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12" style={{marginTop:10}}>
+                        <Grid item  md="1"></Grid>
+                        <Grid item  md="8">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               Patient's Name
                             </Label>
-                            <Col md={7}>
+                            <Grid item  md={7}>
                               <Input type="text" name="user_patient_name" id="normal-field" 
                                 onChange={this.updateItem} placeholder="Name" value={this.state.form.patient_name}/>
-                            </Col>
+                            </Grid>
                           </FormGroup>
-                        </Col>
-                    </Row>
-                    <Row md="12">
-                        <Col md="1"></Col>
-                        <Col md="8">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12">
+                        <Grid item  md="1"></Grid>
+                        <Grid item  md="8">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                                 Date of Birth:  
                             </Label>
-                            <Col md={7}>
+                            <Grid item  md={7}>
                                 <MaskedInput name="user_dob" value={this.state.form.user_dob} 
                                     onChange={this.updateItem}
                                     className="form-control" id="mask-date" mask="1111/11/11" />
-                            </Col>
+                            </Grid>
                           </FormGroup>
-                        </Col>
-                    </Row>
-                    <Row md="12">
-                        <Col md="1"></Col>
-                        <Col md="8">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12">
+                        <Grid item  md="1"></Grid>
+                        <Grid item  md="8">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                                 Social Security Number:  
                             </Label>
-                            <Col md={7}>
+                            <Grid item  md={7}>
                                 <MaskedInput name="user_ssn" value={this.state.form.user_ssn} 
                                     onChange={this.updateItem}
                                     className="form-control" id="mask-date" mask="111-11-1111" />
-                            </Col>
+                            </Grid>
                           </FormGroup>
-                        </Col>
-                    </Row>
-                    <Row md="12" style={{marginTop:5}}>
-                        <Col md="12">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12" style={{marginTop:5}}>
+                        <Grid item  md="12">
                             <div style={{display:"flex"}} >
                                 <div >
                                 II.	
@@ -262,11 +262,11 @@ class MyHealthDocuments extends Component {
                                 I authorize {this.state.selected.name} ("Authorized Party") to use or disclose the following: (check one)
                                 </div>
                             </div>
-                        </Col>
-                    </Row>
-                    <Row md="12">
-                        <Col md="1"></Col>
-                        <Col md="11">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12">
+                        <Grid item  md="1"></Grid>
+                        <Grid item  md="11">
                             <div style={{display:"flex"}} >
                               <Input name="authorization_all_medical" checked={this.state.form.authorization_all_medical} 
                                     onClick={this.updateItemCheckbox}  type="checkbox" />{' '}
@@ -274,11 +274,11 @@ class MyHealthDocuments extends Component {
                                 - All of my medical-related information
                             </Label>
                             </div>
-                        </Col>
-                    </Row>
-                    <Row md="12">
-                        <Col md="1"></Col>
-                        <Col md="11">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12">
+                        <Grid item  md="1"></Grid>
+                        <Grid item  md="11">
                             <div style={{display:"flex"}} >
                               <Input name="authorization_only_related" checked={this.state.form.authorization_only_related} 
                                     onClick={this.updateItemCheckbox}  type="checkbox" />{' '}
@@ -286,17 +286,17 @@ class MyHealthDocuments extends Component {
                                 - My medical information ONLY related to: {this.state.selected.proc}
                             </Label>
                             </div>
-                        </Col>
-                    </Row>
-                    <Row md="12">
-                        <Col md="1"></Col>
-                        <Col md="11">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12">
+                        <Grid item  md="1"></Grid>
+                        <Grid item  md="11">
                             <div style={{display:"flex"}} >
                               <Input name="authorization_medical_date" checked={this.state.form.authorization_medical_date} 
                                     onClick={this.updateItemCheckbox}  type="checkbox" />{' '} 
                             <Label for="normal-field" style={{marginLeft:5}} className="text-md-right">
                                 - My medical-related information from: 
-                                <Row md="12">
+                                <Grid md="12">
                                     {(this.state.selected.authorization_medical_date) && (
                                     <div className="datepicker" style={{display: 'flex'}}>
                                         <Datetime
@@ -320,23 +320,23 @@ class MyHealthDocuments extends Component {
                                         />
                                     </div>
                                    )}
-                                </Row>
+                                </Grid>
                             </Label>
                             </div>
-                        </Col>
-                    </Row>
-                    <Row md="12">
-                        <Col md="1"></Col>
-                        <Col md="11">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12">
+                        <Grid item  md="1"></Grid>
+                        <Grid item  md="11">
                             <div style={{display:"flex"}} >
                                   <Input name="authorization_other" checked={this.state.form.authorization_other} 
                                         onClick={this.updateItemCheckbox}  type="checkbox" />{' '} 
                                 <Label for="normal-field" md="6" style={{marginLeft:5}} className="text-md-right">
                                 - Other: 
-                                    <Row md="12">
+                                    <Grid md="12">
                                     {(this.state.form.authorization_other) && ( 
                                       <FormGroup row>
-                                        <Col md={9}>
+                                        <Grid item  md={9}>
                                           <TextareaAutosize
                                               rows={3} 
                                               placeholder="Other"
@@ -345,16 +345,16 @@ class MyHealthDocuments extends Component {
                                               value={this.state.form.authorization_other_value}
                                               className={`form-control ${s.autogrow} transition-height`}
                                           />
-                                        </Col>
+                                        </Grid>
                                       </FormGroup>
                                     )}
-                                    </Row>
+                                    </Grid>
                                 </Label>
                             </div>
-                        </Col>
-                    </Row>
-                    <Row md="12" style={{marginTop:5}}>
-                        <Col md="12">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12" style={{marginTop:5}}>
+                        <Grid item  md="12">
                             <div style={{display:"flex"}} >
                                 <div>
                                 III.	
@@ -364,11 +364,11 @@ class MyHealthDocuments extends Component {
                                 The Authorized Party has my authorization to disclose Medical Records to: (check one)
                                 </div>
                             </div>
-                        </Col>
-                    </Row>
-                    <Row md="12">
-                        <Col md="1"></Col>
-                        <Col md="11">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12">
+                        <Grid item  md="1"></Grid>
+                        <Grid item  md="11">
                             <div style={{display:"flex"}} >
                               <Input name="disclosure_any_authorized_party" checked={this.state.form.disclosure_any_authorized_party} 
                                     onClick={this.updateItemCheckbox}  type="checkbox" />{' '}
@@ -376,11 +376,11 @@ class MyHealthDocuments extends Component {
                                 - Any party that is approved by the Authorized Party.
                             </Label>
                             </div>
-                        </Col>
-                    </Row>
-                    <Row md="12">
-                        <Col md="1"></Col>
-                        <Col md="11">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12">
+                        <Grid item  md="1"></Grid>
+                        <Grid item  md="11">
                             <div style={{display:"flex"}} >
                                 <Input name="disclosure_only_authorized_party" checked={this.state.form.disclosure_only_authorized_party} 
                                     onClick={this.updateItemCheckbox}  type="checkbox" />{' '}
@@ -388,24 +388,24 @@ class MyHealthDocuments extends Component {
                                     - ONLY the following party:
                                     {(this.state.form.disclosure_only_authorized_party) && ( 
                                     <>
-                                    <Row md="12" style={{marginTop:5}}>
+                                    <Grid md="12" style={{marginTop:5}}>
                                       <FormGroup row>
                                         <Label for="normal-field" md={4} className="text-md-right">
                                             Name:
                                         </Label>
-                                        <Col md={7}>
+                                        <Grid item  md={7}>
                                           <Input type="text" name="disclosure_only_authorized_name" id="normal-field" 
                                             onChange={this.updateItem} placeholder="Name" 
                                             value={this.state.form.disclosure_only_authorized_name}/>
-                                        </Col>
+                                        </Grid>
                                       </FormGroup>
-                                    </Row>
-                                    <Row md="12">
+                                    </Grid>
+                                    <Grid md="12">
                                       <FormGroup row>
                                         <Label for="normal-field" md={4} className="text-md-right">
                                             Address:
                                         </Label>
-                                        <Col md={7}>
+                                        <Grid item  md={7}>
                                           <TextareaAutosize
                                               name="disclosure_only_authorized_address"
                                               rows={3} id="elastic-textarea"
@@ -413,53 +413,53 @@ class MyHealthDocuments extends Component {
                                               value={this.state.form.disclosure_only_authorized_address}
                                               className={`form-control ${s.autogrow} transition-height`}
                                           />
-                                        </Col>
+                                        </Grid>
                                       </FormGroup>
-                                    </Row>
-                                    <Row md="12">
+                                    </Grid>
+                                    <Grid md="12">
                                       <FormGroup row>
                                         <Label for="normal-field" md={4} className="text-md-right">
                                             Phone:
                                         </Label>
-                                        <Col md={7}>
+                                        <Grid item  md={7}>
                                           <Input type="text" name="disclosure_only_authorized_phone" id="normal-field" 
                                             onChange={this.updateItem} placeholder="Phone" 
                                             value={this.state.form.disclosure_only_authorized_phone}/>
-                                        </Col>
+                                        </Grid>
                                       </FormGroup>
-                                    </Row>
-                                    <Row md="12">
+                                    </Grid>
+                                    <Grid md="12">
                                       <FormGroup row>
                                         <Label for="normal-field" md={4} className="text-md-right">
                                             Fax:
                                         </Label>
-                                        <Col md={7}>
+                                        <Grid item  md={7}>
                                           <Input type="text" name="disclosure_only_authorized_fax" id="normal-field" 
                                             onChange={this.updateItem} placeholder="Fax" 
                                             value={this.state.form.disclosure_only_authorized_fax}/>
-                                        </Col>
+                                        </Grid>
                                       </FormGroup>
-                                    </Row>
-                                    <Row md="12">
+                                    </Grid>
+                                    <Grid md="12">
                                       <FormGroup row>
                                         <Label for="normal-field" md={4} className="text-md-right">
                                             Email:
                                         </Label>
-                                        <Col md={7}>
+                                        <Grid item  md={7}>
                                           <Input type="text" name="disclosure_only_authorized_email" id="normal-field" 
                                             onChange={this.updateItem} placeholder="Email" 
                                             value={this.state.form.disclosure_only_authorized_email}/>
-                                        </Col>
+                                        </Grid>
                                       </FormGroup>
-                                    </Row>
+                                    </Grid>
                                     </>
                                     )}
                                 </Label>
                             </div>
-                        </Col>
-                    </Row>
-                    <Row md="12" style={{marginTop:5}}>
-                        <Col md="12">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12" style={{marginTop:5}}>
+                        <Grid item  md="12">
                             <div style={{display:"flex"}} >
                                 <div >
                                 IV.	
@@ -469,11 +469,11 @@ class MyHealthDocuments extends Component {
                                 The reason for this authorization is: (check one)
                                 </div>
                             </div>
-                        </Col>
-                    </Row>
-                    <Row md="12">
-                        <Col md="1"></Col>
-                        <Col md="11">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12">
+                        <Grid item  md="1"></Grid>
+                        <Grid item  md="11">
                             <div style={{display:"flex"}} >
                               <Input name="purpose_general_purpose" checked={this.state.form.purpose_general_purpose} 
                                     onClick={this.updateItemCheckbox}  type="checkbox" />{' '} 
@@ -481,11 +481,11 @@ class MyHealthDocuments extends Component {
                                 - General Purpose. At my request (general).
                             </Label>
                             </div>
-                        </Col>
-                    </Row>
-                    <Row md="12">
-                        <Col md="1"></Col>
-                        <Col md="11">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12">
+                        <Grid item  md="1"></Grid>
+                        <Grid item  md="11">
                             <div style={{display:"flex"}} >
                               <Input name="purpose_to_receive_payment" checked={this.state.form.purpose_to_receive_payment} 
                                     onClick={this.updateItemCheckbox}  type="checkbox" />{' '} 
@@ -493,11 +493,11 @@ class MyHealthDocuments extends Component {
                                 - To Receive Payment. To allow the Authorized Party to communicate with me for marketing purposes when they receive payment from a third party.
                             </Label>
                             </div>
-                        </Col>
-                    </Row>
-                    <Row md="12">
-                        <Col md="1"></Col>
-                        <Col md="11">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12">
+                        <Grid item  md="1"></Grid>
+                        <Grid item  md="11">
                             <div style={{display:"flex"}} >
                               <Input name="purpose_to_sell_medical" checked={this.state.form.purpose_to_sell_medical} 
                                     onClick={this.updateItemCheckbox}  type="checkbox" />{' '} 
@@ -505,20 +505,20 @@ class MyHealthDocuments extends Component {
                                 - To Sell Medical Records. To allow the Authorized Party to sell my Medical Records. I understand that the Authorized Party will receive compensation for the disclosure of my Medical Records and will stop any future sales if I revoke this authorization.
                             </Label>
                             </div>
-                        </Col>
-                    </Row>
-                    <Row md="12">
-                        <Col md="1"></Col>
-                        <Col md="11">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12">
+                        <Grid item  md="1"></Grid>
+                        <Grid item  md="11">
                             <div style={{display:"flex"}} >
                               <Input name="purpose_other" checked={this.state.form.purpose_other} 
                                     onClick={this.updateItemCheckbox}  type="checkbox" />{' '} 
                             <Label for="normal-field" md={8} style={{marginLeft:5}} className="text-md-right">
                                 - Other: 
-                                    <Row md="12">
+                                    <Grid md="12">
                                     {(this.state.form.purpose_other) && ( 
                                       <FormGroup row>
-                                        <Col md={7}>
+                                        <Grid item  md={7}>
                                           <TextareaAutosize
                                               rows={3} id="elastic-textarea"
                                               placeholder="Other"
@@ -527,16 +527,16 @@ class MyHealthDocuments extends Component {
                                               value={this.state.form.purpose_other_value}
                                               className={`form-control ${s.autogrow} transition-height`}
                                           />
-                                        </Col>
+                                        </Grid>
                                       </FormGroup>
                                     )}
-                                    </Row>
+                                    </Grid>
                             </Label>
                             </div>
-                        </Col>
-                    </Row>
-                    <Row md="12" style={{marginTop:5}}>
-                        <Col md="12">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12" style={{marginTop:5}}>
+                        <Grid item  md="12">
                             <div style={{display:"flex"}} >
                                 <div >
                                 V.	
@@ -546,11 +546,11 @@ class MyHealthDocuments extends Component {
                                 This authorization will terminate: (check one)
                                 </div>
                             </div>
-                        </Col>
-                    </Row>
-                    <Row md="12">
-                        <Col md="1"></Col>
-                        <Col md="11">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12">
+                        <Grid item  md="1"></Grid>
+                        <Grid item  md="11">
                             <div style={{display:"flex"}} >
                               <Input name="termination_written_rev" checked={this.state.form.termination_written_rev} 
                                     onClick={this.updateItemCheckbox}  type="checkbox" />{' '} 
@@ -558,11 +558,11 @@ class MyHealthDocuments extends Component {
                                 - Upon sending a written revocation to the Authorization Party.
                             </Label>
                             </div>
-                        </Col>
-                    </Row>
-                    <Row md="12">
-                        <Col md="1"></Col>
-                        <Col md="11">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12">
+                        <Grid item  md="1"></Grid>
+                        <Grid item  md="11">
                             <div style={{display:"flex"}} >
                               <Input name="termination_on_date" checked={this.state.form.termination_on_date} 
                                     onClick={this.updateItemCheckbox}  type="checkbox" />{' '} 
@@ -581,20 +581,20 @@ class MyHealthDocuments extends Component {
                                     )}
                             </Label>
                             </div>
-                        </Col>
-                    </Row>
-                    <Row md="12">
-                        <Col md="1"></Col>
-                        <Col md="11">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12">
+                        <Grid item  md="1"></Grid>
+                        <Grid item  md="11">
                             <div style={{display:"flex"}} >
                               <Input name="termination_other" checked={this.state.form.termination_other} 
                                     onClick={this.updateItemCheckbox}  type="checkbox" />{' '} 
                             <Label for="normal-field" md={8} style={{marginLeft:5}} className="text-md-right">
                                 - Other: 
-                                    <Row md="12">
+                                    <Grid md="12">
                                     {(this.state.form.termination_other) && (
                                       <FormGroup row>
-                                        <Col md={7}>
+                                        <Grid item  md={7}>
                                           <TextareaAutosize
                                               rows={3} id="elastic-textarea"
                                               placeholder="Other"
@@ -603,16 +603,16 @@ class MyHealthDocuments extends Component {
                                               value={this.state.form.purpose_other_value}
                                               className={`form-control ${s.autogrow} transition-height`}
                                           />
-                                        </Col>
+                                        </Grid>
                                       </FormGroup>
                                     )}
-                                    </Row>
+                                    </Grid>
                             </Label>
                             </div>
-                        </Col>
-                    </Row>
-                    <Row md="12" style={{marginTop:5}}>
-                        <Col md="12">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12" style={{marginTop:5}}>
+                        <Grid item  md="12">
                             <div style={{display:"flex"}} >
                                 <div >
                                 VI.	
@@ -621,47 +621,47 @@ class MyHealthDocuments extends Component {
                                 <font style={{fontWeight:"bold"}}>ACKNOWLEDGMENT OF RIGHTS.</font>&nbsp;
                                 </div>
                             </div>
-                        </Col>
-                    </Row>
-                    <Row md="12" style={{marginTop:5}}>
-                        <Col md="12" style={{marginBottom:10}}>
+                        </Grid>
+                    </Grid>
+                    <Grid md="12" style={{marginTop:5}}>
+                        <Grid item  md="12" style={{marginBottom:10}}>
                             I understand that I have the right to revoke this authorization, in writing and at any time, except where uses or disclosures have already been made based upon my original permission. I might not be able to revoke this authorization if its purpose was to obtain insurance.
-                        </Col>
-                        <Col md="12" style={{marginBottom:10}}>
+                        </Grid>
+                        <Grid item  md="12" style={{marginBottom:10}}>
                             I understand that uses and disclosures already made based upon my original permission cannot be taken back. 
-                        </Col>
-                        <Col md="12" style={{marginBottom:10}}>
+                        </Grid>
+                        <Grid item  md="12" style={{marginBottom:10}}>
                             I understand that it is possible that Medical Records and information used or disclosed with my permission may be re-disclosed by a recipient and no longer protected by the HIPAA Privacy Standards. 
-                        </Col>
-                        <Col md="12" style={{marginBottom:10}}>
+                        </Grid>
+                        <Grid item  md="12" style={{marginBottom:10}}>
                             I understand that treatment by any party may not be conditioned upon my signing of this authorization (unless treatment is sought only to create Medical Records for a third party or to take part in a research study) and that I may have the right to refuse to sign this authorization.
-                        </Col>
-                        <Col md="12" style={{marginBottom:10}}>
+                        </Grid>
+                        <Grid item  md="12" style={{marginBottom:10}}>
                             I will receive a copy of this authorization after I have signed it. A copy of this authorization is as valid as the original.
-                        </Col>
-                    </Row>
-                    <Row md="12">
-                        <Col md="1"></Col>
-                        <Col md="8">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12">
+                        <Grid item  md="1"></Grid>
+                        <Grid item  md="8">
                           <FormGroup row>
                             <Label for="normal-field" md={2} className="text-md-right">
                                 Signature:  
                             </Label>
-                            <Col md={7}>
+                            <Grid item  md={7}>
                               <Input type="text" name="acknowledge_signature" id="normal-field" 
                                 onChange={this.updateItem} placeholder="Name" value={this.state.form.acknowledge_signature}/>
-                            </Col>
+                            </Grid>
                           </FormGroup>
-                        </Col>
-                    </Row>
-                    <Row md="12">
-                        <Col md="1"></Col>
-                        <Col md="8">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12">
+                        <Grid item  md="1"></Grid>
+                        <Grid item  md="8">
                           <FormGroup row>
                             <Label for="normal-field" md={2} className="text-md-right">
                                 Date:  
                             </Label>
-                            <Col md={7}>
+                            <Grid item  md={7}>
                                 <Datetime
                                   name="acknowledge_date"
                                   isValidDate={this.validDate}
@@ -671,26 +671,26 @@ class MyHealthDocuments extends Component {
                                   value={this.state.form.acknowledge_date}
                                   viewMode="days" timeFormat={false}
                                 />
-                            </Col>
+                            </Grid>
                           </FormGroup>
-                        </Col>
-                    </Row>
-                    <Row md="12" style={{marginTop:5}}>
-                        <Col md="12">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12" style={{marginTop:5}}>
+                        <Grid item  md="12">
                             <font style={{height:30,display:"flex",fontSize:40,alignItems: 'center', justifyContent: 'center',
                                 fontWeight:"bold",fontSize:16}}>
                             (IF THE PATIENT IS UNABLE TO SIGN, USE THE SIGNATURE AREA BELOW)
                             </font>
-                        </Col>
-                    </Row>
-                    <Row md="12" style={{marginTop:5}}>
-                        <Col md="12">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12" style={{marginTop:5}}>
+                        <Grid item  md="12">
                             The patient is unable to sign due to: (check one)
-                        </Col>
-                    </Row>
-                    <Row md="12" style={{marginTop:5}}>
-                        <Col md="1"></Col>
-                        <Col md="6">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12" style={{marginTop:5}}>
+                        <Grid item  md="1"></Grid>
+                        <Grid item  md="6">
                             <div style={{display:"flex"}} >
                               <Input name="patient_unable_minor" checked={this.state.form.patient_unable_minor} 
                                     onClick={this.updateItemCheckbox}  type="checkbox" />{' '} 
@@ -703,11 +703,11 @@ class MyHealthDocuments extends Component {
                                 )}
                               </Label>
                             </div>
-                        </Col>
-                    </Row>
-                    <Row md="12" style={{marginTop:5}}>
-                        <Col md="1"></Col>
-                        <Col md="6">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12" style={{marginTop:5}}>
+                        <Grid item  md="1"></Grid>
+                        <Grid item  md="6">
                             <div style={{display:"flex"}} >
                               <Input name="patient_unable_incapacitated_condition" 
                                     checked={this.state.form.patient_unable_incapacitated_condition} 
@@ -721,11 +721,11 @@ class MyHealthDocuments extends Component {
                                 )}
                               </Label>
                             </div>
-                        </Col>
-                    </Row>
-                    <Row md="12" style={{marginTop:5}}>
-                        <Col md="1"></Col>
-                        <Col md="6">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12" style={{marginTop:5}}>
+                        <Grid item  md="1"></Grid>
+                        <Grid item  md="6">
                             <div style={{display:"flex"}} >
                               <Input name="patient_unable_incapacitated_other" 
                                     checked={this.state.form.patient_unable_incapacitated_other} 
@@ -744,18 +744,18 @@ class MyHealthDocuments extends Component {
                                     )}
                               </Label>
                             </div>
-                        </Col>
-                    </Row>
+                        </Grid>
+                    </Grid>
                     {(this.state.form.patient_unable_incapacitated_other || 
                       this.state.form.patient_unable_incapacitated_condition ||
                       this.state.form.patient_unable_minor) && (
-                    <Row md="12">
-                        <Col md="11">
+                    <Grid md="12">
+                        <Grid item  md="11">
                           <FormGroup row>
                             <Label for="normal-field" md={3} className="text-md-right">
                                 Representative Signature:  
                             </Label>
-                            <Col md={8}>
+                            <Grid item  md={8}>
                                 <div style={{display:"flex"}} >
                                   <Input type="text" name="patient_unable_signature" id="normal-field" 
                                     onChange={this.updateItem} placeholder="Name" value={this.state.form.patient_unable_signature}/>
@@ -771,13 +771,13 @@ class MyHealthDocuments extends Component {
                                     <Input type="text" name="patient_unable_relation" id="normal-field" 
                                         onChange={this.updateItem} placeholder="RelationShip" value={this.state.form.patient_unable_relation}/>
                                 </div>
-                            </Col>
+                            </Grid>
                           </FormGroup>
-                        </Col>
-                    </Row>
+                        </Grid>
+                    </Grid>
                     )}
-                    <Row md="12" style={{marginTop:5}}>
-                        <Col md="12">
+                    <Grid md="12" style={{marginTop:5}}>
+                        <Grid item  md="12">
                             <div style={{display:"flex"}} >
                               <Input name="authorized" checked={this.state.form.authorized} 
                                     onClick={this.updateItemCheckbox}  type="checkbox" />{' '}
@@ -785,18 +785,18 @@ class MyHealthDocuments extends Component {
                                 I authorize {this.state.selected.name} to use my medical information for this purpose
                               </Label>
                             </div>
-                        </Col>
-                    </Row>
-                    <Row md="12" style={{marginTop:5}}>
-                        <Col md="12">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12" style={{marginTop:5}}>
+                        <Grid item  md="12">
                             <font style={{height:30,display:"flex",fontSize:40,alignItems: 'center', justifyContent: 'center',
                                 fontWeight:"bold",fontSize:16}}>
                             ADDITIONAL CONSENT FOR CERTAIN CONDITIONS
                             </font>
-                        </Col>
-                    </Row>
-                    <Row md="12" style={{marginTop:5}}>
-                        <Col md="12">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12" style={{marginTop:5}}>
+                        <Grid item  md="12">
                             <div style={{display:"flex"}} >
                                 <div>
                                 I.	
@@ -806,11 +806,11 @@ class MyHealthDocuments extends Component {
                                     This medical record may contain information about physical or sexual abuse, alcoholism, drug abuse, sexually transmitted diseases, abortion, or mental health treatment. Separate consent must be given before this information can be released.
                                 </div>
                             </div>
-                        </Col>
-                    </Row>
-                    <Row md="12">
-                        <Col md="1"></Col>
-                        <Col md="11">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12">
+                        <Grid item  md="1"></Grid>
+                        <Grid item  md="11">
                             <div style={{display:"flex"}} >
                               <Input name="sensitive_consent" checked={this.state.form.sensitive_consent} 
                                     onClick={this.updateItemCheckbox}  type="checkbox" />{' '} 
@@ -818,11 +818,11 @@ class MyHealthDocuments extends Component {
                                 - I consent to have the above information released.
                             </Label>
                             </div>
-                        </Col>
-                    </Row>
-                    <Row md="12">
-                        <Col md="1"></Col>
-                        <Col md="11">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12">
+                        <Grid item  md="1"></Grid>
+                        <Grid item  md="11">
                             <div style={{display:"flex"}} >
                               <Input name="sensitive_do_not_consent" checked={this.state.form.sensitive_do_not_consent} 
                                     onClick={this.updateItemCheckbox}  type="checkbox" />{' '} 
@@ -830,15 +830,15 @@ class MyHealthDocuments extends Component {
                                 - I do not consent to have the above information released.
                             </Label>
                             </div>
-                        </Col>
-                    </Row>
-                    <Row md="12">
-                        <Col md="8">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12">
+                        <Grid item  md="8">
                           <FormGroup row>
                             <Label for="normal-field" md={2} className="text-md-right">
                                 Signature:  
                             </Label>
-                            <Col md={7}>
+                            <Grid item  md={7}>
                                 <div style={{display:"flex"}} >
                                   <Input type="text" name="sensitive_signature_patient" id="normal-field" style={{marginRight:5}}
                                     onChange={this.updateItem} placeholder="Name" value={this.state.form.sensitive_signature_patient}/>
@@ -852,21 +852,21 @@ class MyHealthDocuments extends Component {
                                       viewMode="days" timeFormat={false}
                                     />
                                 </div>
-                            </Col>
+                            </Grid>
                           </FormGroup>
-                        </Col>
-                    </Row>
+                        </Grid>
+                    </Grid>
                     </>
                 )}
-            </Row>
+            </Grid>
             <hr/>
-            <Row md="12">
-                <Col md="6">
+            <Grid md="12">
+                <Grid item  md="6">
                     {(this.isSaveDisabled()) && (<Button disabled={true} color="primary">Save</Button>)}
                     {(!this.isSaveDisabled()) && (<Button onClick={this.save} color="primary">Save</Button>)}
                     <Button outline style={{marginLeft:10}} onClick={this.props.onCancel} color="secondary">Cancel</Button>
-                </Col>
-            </Row>
+                </Grid>
+            </Grid>
         </>
         )
     }

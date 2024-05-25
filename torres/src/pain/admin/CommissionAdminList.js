@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 import { connect } from 'react-redux';
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
 import { FormGroup, Label, Input } from 'reactstrap';
 import ToolkitProvider from 'react-bootstrap-table2-toolkit';
@@ -62,7 +62,7 @@ class CommissionAdminList extends Component {
         this.stateChange = this.stateChange.bind(this);
         this.phoneChange = this.phoneChange.bind(this);
         this.pageChange = this.pageChange.bind(this);
-        this.pageRowsChange = this.pageRowsChange.bind(this);
+        this.pageGridsChange = this.pageGridsChange.bind(this);
     } 
 
     componentWillReceiveProps(p) { 
@@ -172,7 +172,7 @@ class CommissionAdminList extends Component {
         this.setState(this.state)
     } 
 
-    pageRowsChange(t) { 
+    pageGridsChange(t) { 
         this.state.pageSize = t
         this.state.page = 0
         if (this.props.currentUser.entitlements && 
@@ -400,15 +400,15 @@ class CommissionAdminList extends Component {
             {(this.props && this.props.commissionsUser && this.props.commissionsUser.data && 
               this.props.commissionsUser.data.commissions && this.state.selected === null) && ( 
             <>
-            <Row md="12">
-                <Col md="2" style={{marginBottom:10}}>
+            <Grid md="12">
+                <Grid item  md="2" style={{marginBottom:10}}>
                     {/*<Button onClick={() => this.edit({id:"new"})} 
                         style={{marginRight:5,height:35,width:90}} color="primary">Add</Button>
                     */}
-                </Col>
-            </Row>
-            <Row md="12">
-                <Col md="5" style={{marginBottom:10}}>
+                </Grid>
+            </Grid>
+            <Grid md="12">
+                <Grid item  md="5" style={{marginBottom:10}}>
                   {(this.props.commissionsUser && this.props.commissionsUser.data && 
                     this.props.commissionsUser.data.config &&
                     this.props.commissionsUser.data.config.period && this.state.periodSelected !== null) && (
@@ -435,17 +435,17 @@ class CommissionAdminList extends Component {
                           })}
                         />
                     )}
-                </Col>
-                <Col md="7">
+                </Grid>
+                <Grid item  md="7">
                     <div class="pull-right">
                         <div style={{justifyContent:'spread-evenly'}}>
                             <Button onClick={this.commissionReport} outline color="primary"><AssessmentIcon/></Button>
                         </div>
                     </div>
-                </Col>
-            </Row>
-            <Row md="12">
-                <Col md="12">
+                </Grid>
+            </Grid>
+            <Grid md="12">
+                <Grid item  md="12">
                     <PainTable
                         keyField='id' 
                         data={this.props.commissionsUser.data.commissions} 
@@ -454,25 +454,25 @@ class CommissionAdminList extends Component {
                         pageSize={this.state.pageSize}
                         onPageChange={this.pageChange}
                         onSort={this.sortChange}
-                        onPageRowsPerPageChange={this.pageRowsChange}
+                        onPageGridsPerPageChange={this.pageGridsChange}
                         columns={heads}>
                     </PainTable> 
-                </Col>                
-            </Row>
+                </Grid>                
+            </Grid>
             </>
             )}
             {(this.props && this.props.commissions && this.props.commissions.data && 
               this.props.commissions.data.commissions && this.state.selected === null) && ( 
             <>
-            <Row md="12">
-                <Col md="2" style={{marginBottom:10}}>
+            <Grid md="12">
+                <Grid item  md="2" style={{marginBottom:10}}>
                     {/*<Button onClick={() => this.edit({id:"new"})} 
                         style={{marginRight:5,height:35,width:90}} color="primary">Add</Button>
                     */}
-                </Col>
-            </Row>
-            <Row md="12">
-                <Col md="5" style={{marginBottom:10}}>
+                </Grid>
+            </Grid>
+            <Grid md="12">
+                <Grid item  md="5" style={{marginBottom:10}}>
                   {(this.props.commissions && this.props.commissions.data && 
                     this.props.commissions.data.config &&
                     this.props.commissions.data.config.period && this.state.periodSelected !== null) && (
@@ -499,17 +499,17 @@ class CommissionAdminList extends Component {
                           })}
                         />
                     )}
-                </Col>
-                <Col md="7">
+                </Grid>
+                <Grid item  md="7">
                     <div class="pull-right">
                         <div style={{justifyContent:'spread-evenly'}}>
                             <Button onClick={this.commissionReport} outline color="primary"><AssessmentIcon/></Button>
                         </div>
                     </div>
-                </Col>
-            </Row>
-            <Row md="12">
-                <Col md="12">
+                </Grid>
+            </Grid>
+            <Grid md="12">
+                <Grid item  md="12">
                     <PainTable
                         keyField='id' 
                         data={this.props.commissions.data.commissions} 
@@ -518,11 +518,11 @@ class CommissionAdminList extends Component {
                         pageSize={this.state.pageSize}
                         onPageChange={this.pageChange}
                         onSort={this.sortChange}
-                        onPageRowsPerPageChange={this.pageRowsChange}
+                        onPageGridsPerPageChange={this.pageGridsChange}
                         columns={heads}>
                     </PainTable> 
-                </Col>                
-            </Row>
+                </Grid>                
+            </Grid>
             </>
             )}
         </>

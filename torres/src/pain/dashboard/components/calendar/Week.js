@@ -53,7 +53,7 @@ class Week extends Component {
         date.add(1, "d");
     }
     return (
-      <div className={`${s.calendarRow} ${s.week}`}>
+      <div className={`${s.calendarGrid} ${s.week}`}>
         {days}
       </div>
     );

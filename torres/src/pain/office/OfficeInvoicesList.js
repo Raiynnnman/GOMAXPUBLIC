@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import EditIcon from '@mui/icons-material/Edit';
 import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
 import { FormGroup, Label, Input } from 'reactstrap';
@@ -220,121 +220,121 @@ class InvoiceAdminList extends Component {
             {(this.props && this.props.officeInvoices && this.props.officeInvoices.data && 
               this.props.officeInvoices.data.invoices && this.state.selected === null) && ( 
             <>
-            <Row md="12">
-                <Col md="12">
+            <Grid md="12">
+                <Grid item  md="12">
                     <BootstrapTable 
                         keyField='id' data={this.props.officeInvoices.data.invoices.filter((e) => e.invoice_status !== "CREATED")} 
                         cellEdit={ cellEditFactory({ mode: 'click',blurToSave:true })}
                         columns={heads} pagination={ paginationFactory(options)}>
                     </BootstrapTable>
-                </Col>                
-            </Row>
+                </Grid>                
+            </Grid>
             </>
             )}
             {(this.props && this.props.officeInvoices && this.props.officeInvoices.data && 
               this.props.officeInvoices.data.invoices && this.state.selected !== null) && ( 
             <>
-            <Row md="12">
-                <Col md="5">
+            <Grid md="12">
+                <Grid item  md="5">
                     <h5>Details</h5>
-                </Col>
-                <Col md="7">
+                </Grid>
+                <Grid item  md="7">
                     <h5>Stripe Status</h5>
-                </Col>
-            </Row>
-            <Row md="12">
-                <Col md="5">
-                    <Row md="12">
-                        <Col md="12">
+                </Grid>
+            </Grid>
+            <Grid md="12">
+                <Grid item  md="5">
+                    <Grid md="12">
+                        <Grid item  md="12">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               Email
                             </Label>
-                            <Col md={7}>
+                            <Grid item  md={7}>
                               <Input type="text" id="normal-field" onChange={this.emailChange} placeholder="Email" value={this.state.selected.email}/>
-                            </Col>
+                            </Grid>
                           </FormGroup>
-                        </Col>
-                    </Row>
-                    <Row md="12">
-                        <Col md="12">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12">
+                        <Grid item  md="12">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               First Name
                             </Label>
-                            <Col md={7}>
+                            <Grid item  md={7}>
                               <Input type="text" id="normal-field" onChange={this.firstChange} placeholder="First Name" value={this.state.selected.first_name}/>
-                            </Col>
+                            </Grid>
                           </FormGroup>
-                        </Col>
-                    </Row>
-                    <Row md="12">
-                        <Col md="12">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12">
+                        <Grid item  md="12">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               Last Name
                             </Label>
-                            <Col md={7}>
+                            <Grid item  md={7}>
                               <Input type="text" id="normal-field" onChange={this.lastChange} placeholder="Last Name" value={this.state.selected.last_name}/>
-                            </Col>
+                            </Grid>
                           </FormGroup>
-                        </Col>
-                    </Row>
-                    <Row md="12">
-                        <Col md="12">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12">
+                        <Grid item  md="12">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               Phone
                             </Label>
-                            <Col md={7}>
+                            <Grid item  md={7}>
                               <Input type="text" id="normal-field" onChange={this.phoneChange} placeholder="Phone" value={this.state.selected.phone}/>
-                            </Col>
+                            </Grid>
                           </FormGroup>
-                        </Col>
-                    </Row>
-                    <Row md="12">
-                        <Col md="12">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12">
+                        <Grid item  md="12">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               Zipcode
                             </Label>
-                            <Col md={7}>
+                            <Grid item  md={7}>
                               <Input type="text" id="normal-field" onChange={this.zipcodeChange} placeholder="Zip" value={this.state.selected.zipcode}/>
-                            </Col>
+                            </Grid>
                           </FormGroup>
-                        </Col>
-                    </Row>
-                    <Row md="12">
-                        <Col md="12">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12">
+                        <Grid item  md="12">
                           <FormGroup row>
                             <Label for="normal-field" md={4} className="text-md-right">
                               Imported description:
                             </Label>
-                            <Col md={7}>
+                            <Grid item  md={7}>
                               <Input type="text" id="normal-field" readOnly placeholder="Nothing imported" value={this.state.selected.description}/>
-                            </Col>
+                            </Grid>
                           </FormGroup>
-                        </Col>
-                    </Row>
-                </Col>
-                <Col md="7">
-                    <Row md="12">
-                        <Col md="12">
+                        </Grid>
+                    </Grid>
+                </Grid>
+                <Grid item  md="7">
+                    <Grid md="12">
+                        <Grid item  md="12">
                             stripe invoice status here
-                        </Col>
-                    </Row>
-                </Col>
-            </Row>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Grid>
             <hr/>
-            <Row md="12">
+            <Grid md="12">
                 <>
                 {this.state.selected.comments.sort((a,b) => (a.created > b.created ? -1:1)).map((e) => { 
                     return (
-                        <Col md="3" key={e.id}>
+                        <Grid item  md="3" key={e.id}>
                             <Card style={{margin:20,width:400,height:200}} className="mb-xlg border-1">
                                 <CardBody>
-                                    <Row md="12">
-                                        <Col md="6">
+                                    <Grid md="12">
+                                        <Grid item  md="6">
                                             <font style={{fontSize:"14pt"}}>
                                                 {
                                                 this.props.officeInvoices.data.config.assignee.filter((g) => g.id === e.user_id).length > 0 ? 
@@ -342,57 +342,57 @@ class InvoiceAdminList extends Component {
                                                 this.props.officeInvoices.data.config.assignee.filter((g) => g.id === e.user_id)[0].last_name + " " : ""
                                                 }
                                             </font>
-                                        </Col>
-                                        <Col md="6">
+                                        </Grid>
+                                        <Grid item  md="6">
                                             {moment(e.created).format('LLL')}
-                                        </Col>
-                                    </Row>
+                                        </Grid>
+                                    </Grid>
                                     <hr/>
-                                    <Row md="12">
+                                    <Grid md="12">
                                         {(!e.edit) && ( 
-                                        <Col md="12">
+                                        <Grid item  md="12">
                                             <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                             {e.text}
                                             </div>
-                                        </Col>
+                                        </Grid>
                                         )}
                                         {(e.edit) && ( 
-                                        <Col md="12">
+                                        <Grid item  md="12">
                                             <FormGroup row>
-                                              <Col md={12}>
+                                              <Grid item  md={12}>
                                                 <Input value={e.text} rows="3" 
                                                     onChange={this.comment} type="textarea" 
                                                     name="text" id="default-textarea" />
-                                              </Col>
+                                              </Grid>
                                             </FormGroup>
-                                        </Col>
+                                        </Grid>
                                         )}
-                                    </Row>
-                                    <Row md="12">
+                                    </Grid>
+                                    <Grid md="12">
                                         {(e.edit) && ( 
-                                        <Col md="12">
-                                            <Col md="6">
+                                        <Grid item  md="12">
+                                            <Grid item  md="6">
                                                 <Button onClick={this.saveComment} color="primary">Save</Button>
                                                 <Button outline style={{marginLeft:10}} onClick={this.cancelComment} color="secondary">Cancel</Button>
-                                            </Col>
-                                        </Col>
+                                            </Grid>
+                                        </Grid>
                                         )}
-                                    </Row>
+                                    </Grid>
                                 </CardBody>
                             </Card>
-                        </Col>
+                        </Grid>
                     )})}
                     </>
-                </Row>
+                </Grid>
                 <hr/>
-                <Row md="12">
+                <Grid md="12">
                     {(!this.state.commentAdd) && (
-                    <Col md="6">
+                    <Grid item  md="6">
                         <Button onClick={this.save} color="primary">Save</Button>
                         <Button outline style={{marginLeft:10}} onClick={this.cancel} color="secondary">Cancel</Button>
-                    </Col>
+                    </Grid>
                     )}
-                </Row>
+                </Grid>
             </>
             )}
         </>

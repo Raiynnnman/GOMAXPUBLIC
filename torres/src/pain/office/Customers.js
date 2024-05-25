@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
 import { Badge,Button } from 'reactstrap';
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { TabContent, TabPane } from 'reactstrap';
@@ -83,73 +83,73 @@ class Customers extends Component {
             )}
             {(this.props.officeClients && this.props.officeClients.data &&
               this.props.officeClients.data.clients && this.state.selectedAppt === null) && (
-            <Row md="12">
+            <Grid md="12">
                 {this.props.officeClients.data.clients.map((e) => { 
                     return (
                         <>
-                        <Col md="4" onClick={() => this.selectAppt(e)} style={{cursor:'pointer'}}>
+                        <Grid item  md="4" onClick={() => this.selectAppt(e)} style={{cursor:'pointer'}}>
                             <Card style={{
                                 margin:20,
                                 borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}} className="mb-xlg border-1">
                                 <CardBody>
-                                    <Row md="12">
-                                        <Col md="8">
+                                    <Grid md="12">
+                                        <Grid item  md="8">
                                             <font style={{fontSize:"14pt",fontWeight:"bold"}}>
                                             {e.office_name}
                                             </font>
                                             <br/>
-                                        </Col>
-                                        <Col md="4" class="pull-right">
+                                        </Grid>
+                                        <Grid item  md="4" class="pull-right">
                                             {e.status}
-                                        </Col>
-                                    </Row>
+                                        </Grid>
+                                    </Grid>
                                     <hr/>
-                                    <Row md="12">
-                                        <Col md="12">
+                                    <Grid md="12">
+                                        <Grid item  md="12">
                                             <font style={{fontSize:"14pt"}}>
                                             {e.client_first + " " + e.client_last}
                                             </font>
                                             <br/>
-                                        </Col>
-                                    </Row>
-                                    <Row md="12">
-                                        <Col md="12">
+                                        </Grid>
+                                    </Grid>
+                                    <Grid md="12">
+                                        <Grid item  md="12">
                                             <font style={{fontSize:"14pt"}}>
                                             {e.email}
                                             </font>
-                                        </Col>
-                                    </Row>
-                                    <Row md="12">
-                                        <Col md="8">
+                                        </Grid>
+                                    </Grid>
+                                    <Grid md="12">
+                                        <Grid item  md="8">
                                             <font style={{fontSize:"14pt"}}>
                                             {e.phone}
                                             </font>
-                                        </Col>
-                                    </Row>
-                                    <Row md="12">
-                                        <Col md="12">
+                                        </Grid>
+                                    </Grid>
+                                    <Grid md="12">
+                                        <Grid item  md="12">
                                             <div style={{overflow:"auto"}}>
                                                 {e.description}
                                             </div>
-                                        </Col>
-                                    </Row>
+                                        </Grid>
+                                    </Grid>
                                     <div style={{height:130,marginBottom:10,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                     </div>
                                     <hr/>
-                                    <Row md="12"> 
-                                        <Col md="12">
+                                    <Grid md="12"> 
+                                        <Grid item  md="12">
                                             <div style={{height:30,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                                 <Button onClick={() => this.selectAppt(e)} style={{marginRight:10}} color="primary">{translate('View')}</Button>
                                             </div>
-                                        </Col>
-                                    </Row>
+                                        </Grid>
+                                    </Grid>
                                 </CardBody>
                             </Card>
-                        </Col>
+                        </Grid>
                         </>
                     )
                 })}
-            </Row>
+            </Grid>
             )}
         </>
         )

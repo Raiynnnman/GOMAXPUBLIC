@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Col, Row } from 'reactstrap';
+import { Col, Grid } from 'reactstrap';
 import Calendar from 'react-calendar';
 import GoogleAutoComplete from '../utils/GoogleAutoComplete';
 import 'react-calendar/dist/Calendar.css';
@@ -162,8 +162,8 @@ class LocationCard extends Component {
                 margin:20,
                 borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}} className="mb-xlg border-1">
                 <CardBody>
-                    <Row md="12">
-                        <Col md="12">
+                    <Grid md="12">
+                        <Grid item  md="12">
                         <>
                             {(this.props.edit && this.state.selected !== null) && (
                                 <div> 
@@ -178,11 +178,11 @@ class LocationCard extends Component {
                                 </div>
                             )}
                         </>
-                        </Col>
-                    </Row>
+                        </Grid>
+                    </Grid>
                     <hr/>
-                    <Row md="12" style={{marginTop:20}}> 
-                        <Col md="12">
+                    <Grid md="12" style={{marginTop:20}}> 
+                        <Grid item  md="12">
                         <>
                             {(this.props.edit && this.state.selected !== null) && (
                                 <div> 
@@ -199,10 +199,10 @@ class LocationCard extends Component {
                                 </div>
                             )}
                         </>
-                        </Col> 
-                    </Row>
-                    <Row md="12" style={{marginTop:10}}>
-                        <Col md="12">
+                        </Grid> 
+                    </Grid>
+                    <Grid md="12" style={{marginTop:10}}>
+                        <Grid item  md="12">
                         <>
                             {(this.props.edit && this.state.selected !== null) && (
                                 <div> 
@@ -217,10 +217,10 @@ class LocationCard extends Component {
                                 </div>
                             )}
                         </>
-                        </Col>
-                    </Row>
-                    <Row md="12" style={{marginTop:20}}>
-                        <Col md="12">
+                        </Grid>
+                    </Grid>
+                    <Grid md="12" style={{marginTop:20}}>
+                        <Grid item  md="12">
                         <>
                             {(this.props.edit && this.state.selected !== null) && (
                                 <div> 
@@ -235,11 +235,11 @@ class LocationCard extends Component {
                                 </div>
                             )}
                         </>
-                        </Col>
-                    </Row>
+                        </Grid>
+                    </Grid>
                     <hr/>
-                    <Row md="12"> 
-                        <Col md="12">
+                    <Grid md="12"> 
+                        <Grid item  md="12">
                         <>
                             {(!this.props.edit) && (
                                 <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
@@ -247,8 +247,8 @@ class LocationCard extends Component {
                                 </div>
                             )}
                         </>
-                        </Col>
-                    </Row>
+                        </Grid>
+                    </Grid>
                 </CardBody>
             </Card>
         )}
