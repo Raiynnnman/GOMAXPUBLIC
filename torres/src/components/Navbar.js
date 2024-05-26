@@ -3,6 +3,9 @@ import { connect } from 'react-redux';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import { ClickAwayListener } from '@mui/base/ClickAwayListener';
+import NavbarAdmin from './NavbarAdmin';
+
 
 class Navbar extends Component {
     constructor(props) { 
@@ -15,30 +18,44 @@ class Navbar extends Component {
         this.handleClose = this.handleClose.bind(this);
         this.doregister = this.doregister.bind(this);
         this.toggleMenu = this.toggleMenu.bind(this);
+        this.openMenu = this.openMenu.bind(this);
     } 
     componentDidMount() { 
     } 
     componentWillMount() { 
     } 
+    onMenuChange(e) { 
+    } 
     toggleMenu(e) { 
+        console.log("toggle");
         this.state.menu = !this.state.menu 
+        if (!this.state.menu) { 
+            this.state.menuAnchor = null
+        } else { 
+            this.state.menuAnchor = e.currentTarget
+        } 
+        this.setState(this.state)
+    } 
+    openMenu(e) { 
+        console.log("open",e.currentTarget);
+        this.state.menu = true;
         this.state.menuAnchor = e.currentTarget
         this.setState(this.state)
     } 
     handleClose() { 
+        console.log("close");
         this.state.menu = false;
         this.state.menuAnchor = null;
         this.setState(this.state)
     } 
     dologin() { 
-        console.log("here");
         window.location = '/login';
     } 
     doregister() { 
         window.location = '/register';
     } 
     render(){
-        console.log("nav",this.props);
+        console.log("p",this.props);
         return(
             <>
             <div className="row" style={{height:90}}>
@@ -54,35 +71,11 @@ class Navbar extends Component {
                                     </a>
                                 </div>
                             </div>
-                            {(this.props.currentUser) && (
-                                <div className="col-lg-8 d-none d-lg-block">
-                                    <div className="mainmenu-wrapper">
-                                        <nav>
-                                            <ul className="main-menu">
-                                                <li className="active"><a href="/">Home</a></li>
-                                                <li><a href="/#support">Support</a></li>
-                                                <li>
-                                                    <div style={{cursor:"pointer",color:"white"}} onClick={this.toggleMenu}>
-                                                        {this.props.currentUser.email}  
-                                                    </div>
-                                                      <Menu
-                                                        id="basic-menu"
-                                                        anchorEl={this.state.menuAnchor}
-                                                        open={this.state.menu}
-                                                        onClose={this.handleClose}
-                                                        MenuListProps={{
-                                                          'aria-labelledby': 'basic-button',
-                                                        }}
-                                                      >
-                                                        <MenuItem onClick={this.handleClose}>Profile</MenuItem>
-                                                        <MenuItem onClick={this.handleClose}>My account</MenuItem>
-                                                        <MenuItem onClick={this.handleClose}>Logout</MenuItem>
-                                                      </Menu>
-                                                </li>
-                                            </ul>
-                                        </nav>
-                                    </div>
-                                </div>
+                            {(this.props.currentUser && this.props.currentUser.entitlements &&
+                              this.props.currentUser.entitlements.includes('Admin')) && (
+                                <NavbarAdmin 
+                                    onChange={(e) => this.onMenuChange(e)} 
+                                    currentUser={this.props.currentUser} dispatch={this.props.dispatch}/>
                             )}
                             {(this.props.currentUser) && (
                             <div className="col-sm-7 col-7 d-block d-lg-none">
