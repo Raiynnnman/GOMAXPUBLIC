@@ -29,17 +29,17 @@ function DropdownMenu({onChange,items,title,currentUser}) {
     top: 28,
     right: 0,
     left: 0,
-    zIndex: 1,
     border: '1px solid',
     p: 1,
-    bgcolor: 'background.paper',
+    zIndex:9999,
+    bgcolor: '#2d3e50',
   };
 
   return (
-    <div onMouseEnter={handleClick}>
+    <div onMouseEnter={handleClick} style={{marginLeft:10}}>
         <ClickAwayListener onClickAway={handleClickAway}>
-          <Box sx={{ position: 'relative' }}>
-            <div style={{cursor:"pointer",color:"white"}}>
+          <Box sx={{ position: 'relative',background:'#2d3e50'}}>
+            <div style={{cursor:"pointer",color:"white",fontSize:16,fontWeight:400}}>
               {title}
             </div>
             {open ? (
@@ -47,7 +47,10 @@ function DropdownMenu({onChange,items,title,currentUser}) {
                 {items.map((e) => { 
                     if (e.v(currentUser)) { 
                         return(
-                            <MenuItem onClick={() => handleAction(e.a)} id={e.n}>{e.n}</MenuItem>
+                            <MenuItem style={{background:'#2d3e50',color:'white'}} 
+                            onClick={() => handleAction(e.a)} id={e.n}>
+                                {e.n}
+                            </MenuItem>
                         )
                     }
                 })} 

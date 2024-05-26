@@ -63,7 +63,7 @@ class Navbar extends Component {
                     style={{background:'#2d3e50'}}>
                     <div className="container">
                         <div className="row align-items-center">
-                            <div className="col-lg-4 col-sm-5 col-5">
+                            <div className="col-lg-1 col-sm-1 col-1">
                                 <div className="logo">
                                     <a href='/'>
                                         <img className="logo-1" style={{height:80,width:80}}
@@ -78,7 +78,7 @@ class Navbar extends Component {
                                     currentUser={this.props.currentUser} dispatch={this.props.dispatch}/>
                             )}
                             {(this.props.currentUser) && (
-                            <div className="col-sm-7 col-7 d-block d-lg-none">
+                            <div className="col-sm-8 col-8 d-block d-lg-none">
                                 <div className="mobile-menu">
                                     <nav>
                                         <ul>                              

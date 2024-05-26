@@ -11,6 +11,62 @@ function NavbarAdmin({onChange,currentUser,dispatch}) {
 
     const [value,onValueChange] = useState('');
 
+    const systemItems = [
+        {
+         n:'Providers',
+         v:function(c) { 
+            return true;
+         },
+         a:function() { 
+            window.location = '/app/main/admin/providers';
+         }
+        },
+        {
+         n:'Invoices',
+         v:function(c) { 
+            return true;
+         },
+         a:function() { 
+            window.location = '/app/main/admin/invoices';
+         }
+        },
+        {
+         n:'Commissions',
+         v:function(c) { 
+            return true;
+         },
+         a:function() { 
+            window.location = '/app/main/admin/commissions';
+         }
+        },
+        {
+         n:'Coupons',
+         v:function(c) { 
+            return true;
+         },
+         a:function() { 
+            window.location = '/app/main/admin/coupons';
+         }
+        },
+        {
+         n:'Plans',
+         v:function(c) { 
+            return true;
+         },
+         a:function() { 
+            window.location = '/app/main/admin/plans';
+         }
+        },
+        {
+         n:'Users',
+         v:function(c) { 
+            return true;
+         },
+         a:function() { 
+            window.location = '/app/main/admin/users';
+         }
+        },
+    ];
     const profileItems = [
         {n:'Leave Context',
          v:function(c) { 
@@ -38,17 +94,24 @@ function NavbarAdmin({onChange,currentUser,dispatch}) {
     },[]);
     
     return (
-        <div className="col-lg-8 d-none d-lg-block">
+        <div className="col-lg-11 d-none d-lg-block">
             <div className="mainmenu-wrapper">
                 <nav>
                     <ul className="main-menu">
                         <li className="active"><a href="/">Home</a></li>
-                        <li>
-                            <DropdownMenu currentUser={currentUser} 
-                                title={currentUser.email} items={profileItems} dispatch={dispatch}/>
-                        </li>
+                        <li><a href="/app/main/admin/search">Search</a></li>
+                        <li><a href="/app/main/admin/customers">Customers</a></li>
+                        <li><a href="/app/main/admin/one-pager">One Pager</a></li>
+                        <li><a href="/app/main/admin/referrals">Referrals</a></li>
+                        <li><a href="/app/main/admin/map">Map</a></li>
+                        <li><a href="/app/main/admin/registrations">Registrations</a></li>
+                        <li><a href="/app/main/admin/system">System</a></li>
                     </ul>
                 </nav>
+                <div style={{marginRight:20}}>
+                <DropdownMenu currentUser={currentUser} 
+                    title={currentUser.email} items={profileItems} dispatch={dispatch}/>
+                </div>
             </div>
         </div>
     )
