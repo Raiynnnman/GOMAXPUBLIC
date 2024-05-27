@@ -1,9 +1,6 @@
 import { RECEIVED_PROCS_DATA_SUCCESS, RECEIVING_PROCS_DATA } from '../actions/providerSearch';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function proceduresSearch(state = {data:{}},{type,payload}) {
     switch (type) {

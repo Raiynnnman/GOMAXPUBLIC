@@ -1,9 +1,6 @@
 import { RECEIVED_REGUP_DATA_SUCCESS, RECEIVING_REGUP_DATA } from '../actions/registrationAdminUpdate';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function registrationAdminUpdate(state = {data:{}},{type,payload}) {
     switch (type) {

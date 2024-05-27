@@ -1,9 +1,6 @@
 import { RECEIVED_CHUD_DATA_SUCCESS, RECEIVING_CHUD_DATA } from '../actions/chatUploadDoc';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function chatUploadDoc(state = {data:{}},{type,payload}) {
     switch (type) {

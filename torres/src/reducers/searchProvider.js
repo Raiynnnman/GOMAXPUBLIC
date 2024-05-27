@@ -1,9 +1,6 @@
 import { RECEIVED_SRP_DATA_SUCCESS, RECEIVING_SRP_DATA } from '../actions/searchProvider';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+// const defaultState = { data: {}, isReceiving: false };
 
 export default function searchRegister(state = {data:{}},{type,payload}) {
     switch (type) {

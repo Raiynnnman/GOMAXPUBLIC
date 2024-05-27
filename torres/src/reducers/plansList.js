@@ -1,9 +1,6 @@
 import { RECEIVED_PLANS_DATA_SUCCESS, RECEIVING_PLANS_DATA } from '../actions/plansList';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function plansList(state = {data:{}},{type,payload}) {
     switch (type) {

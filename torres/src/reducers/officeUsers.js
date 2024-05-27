@@ -1,9 +1,6 @@
 import { RECEIVED_OFFU_DATA_SUCCESS, RECEIVING_OFFU_DATA } from '../actions/officeUsers';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function officeUsers(state = {data:{}},{type,payload}) {
     switch (type) {

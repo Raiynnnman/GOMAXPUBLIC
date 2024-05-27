@@ -1,9 +1,6 @@
 import { RECEIVED_PHYS_DATA_SUCCESS, RECEIVING_PHYS_DATA } from '../actions/phySave';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function phySave(state = {data:{}},{type,payload}) {
     switch (type) {

@@ -1,9 +1,6 @@
 import { RECEIVED_USERA_DATA_SUCCESS, RECEIVING_USERA_DATA } from '../actions/userAdmin';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+// const defaultState = { data: {}, isReceiving: false };
 
 export default function userAdmin(state = {data:{}},{type,payload}) {
     switch (type) {

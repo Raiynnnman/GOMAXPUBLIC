@@ -1,9 +1,6 @@
 import { RECEIVED_CROOM_DATA_SUCCESS, RECEIVING_CROOM_DATA } from '../actions/createRoom';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function createRoom(state = {data:{}},{type,payload}) {
     switch (type) {

@@ -1,9 +1,6 @@
 import { RECEIVED_PROCAS_DATA_SUCCESS, RECEIVING_PROCAS_DATA } from '../actions/providerSearchAdmin';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function proceduresSearch(state = {data:{}},{type,payload}) {
     switch (type) {

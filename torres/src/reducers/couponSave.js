@@ -1,9 +1,6 @@
 import { RECEIVED_COUPS_DATA_SUCCESS, RECEIVING_COUPS_DATA } from '../actions/couponSave';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function officeSave(state = {data:{}},{type,payload}) {
     switch (type) {

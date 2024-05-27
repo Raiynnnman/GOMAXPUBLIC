@@ -1,9 +1,6 @@
 import { RECEIVED_PROVDASH_DATA_SUCCESS, RECEIVING_PROVDASH_DATA } from '../actions/providerDashboard';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function providerDashboard(state = {data:{}},{type,payload}) {
     switch (type) {

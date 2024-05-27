@@ -1,9 +1,6 @@
 import { RECEIVED_INTENT_DATA_SUCCESS, RECEIVING_INTENT_DATA } from '../actions/setupIntent';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function setupIntent(state = {data:{}},{type,payload}) {
     switch (type) {

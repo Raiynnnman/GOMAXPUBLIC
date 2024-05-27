@@ -1,9 +1,6 @@
 import { RECEIVED_REGPROV_DATA_SUCCESS, RECEIVING_REGPROV_DATA } from '../actions/registerProvider';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function invoiceAdminUpdate(state = {data:{}},{type,payload}) {
     switch (type) {

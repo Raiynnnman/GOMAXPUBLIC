@@ -1,9 +1,6 @@
 import { RECEIVED_SRA_DATA_SUCCESS, RECEIVING_SRA_DATA } from '../actions/searchRegisterAdmin';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+// const defaultState = { data: {}, isReceiving: false };
 
 export default function searchRegisterAdmin(state = {data:{}},{type,payload}) {
     switch (type) {

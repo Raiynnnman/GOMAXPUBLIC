@@ -1,9 +1,6 @@
 import { RECEIVED_COMD_DATA_SUCCESS, RECEIVING_COMD_DATA } from '../actions/registrationReport';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+// const defaultState = { data: {}, isReceiving: false };
 
 export default function offices(state = {data:{}},{type,payload}) {
     switch (type) {

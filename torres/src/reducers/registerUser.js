@@ -1,9 +1,6 @@
 import { RECEIVED_REG_DATA_SUCCESS, RECEIVING_REG_DATA } from '../actions/registerUser';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function offices(state = {data:{}},{type,payload}) {
     switch (type) {

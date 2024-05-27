@@ -1,9 +1,6 @@
 import { RECEIVED_OFFS_DATA_SUCCESS, RECEIVING_OFFS_DATA } from '../actions/officeSave';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function officeSave(state = {data:{}},{type,payload}) {
     switch (type) {

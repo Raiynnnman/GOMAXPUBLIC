@@ -1,9 +1,6 @@
 import { RECEIVED_MYDINV_DATA_SUCCESS, RECEIVING_MYDINV_DATA } from '../actions/mydayApproveInvoice';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function approveinvoice(state = {data:{}},{type,payload}) {
     switch (type) {

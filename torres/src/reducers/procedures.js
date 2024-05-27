@@ -1,9 +1,6 @@
 import { RECEIVED_PROC_DATA_SUCCESS, RECEIVING_PROC_DATA } from '../actions/procedures';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function procedures(state = {data:{}},{type,payload}) {
     switch (type) {

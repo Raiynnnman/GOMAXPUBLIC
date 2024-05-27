@@ -1,9 +1,6 @@
 import { RECEIVED_CONSA_DATA_SUCCESS, RECEIVING_CONSA_DATA } from '../actions/legalAdmin';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function legalAdmin(state = {data:{}},{type,payload}) {
     switch (type) {

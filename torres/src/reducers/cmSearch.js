@@ -1,9 +1,6 @@
 import { RECEIVED_CM_DATA_SUCCESS, RECEIVING_CM_DATA } from '../actions/cmSearch';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function offices(state = {data:[]},{type,payload}) {
     switch (type) {

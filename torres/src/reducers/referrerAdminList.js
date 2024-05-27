@@ -1,9 +1,6 @@
 import { RECEIVED_REFL_DATA_SUCCESS, RECEIVING_REFL_DATA } from '../actions/referrerAdminList';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function offices(state = {data:{}},{type,payload}) {
     switch (type) {

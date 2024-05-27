@@ -1,9 +1,6 @@
 import { RECEIVED_LEAD_DATA_SUCCESS, RECEIVING_LEAD_DATA } from '../actions/leads';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function leads(state = {data:{}},{type,payload}) {
     switch (type) {

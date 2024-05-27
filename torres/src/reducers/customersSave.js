@@ -1,9 +1,6 @@
 import { RECEIVED_CLIS_DATA_SUCCESS, RECEIVING_CLIS_DATA } from '../actions/customersSave';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function offices(state = {data:{}},{type,payload}) {
     switch (type) {

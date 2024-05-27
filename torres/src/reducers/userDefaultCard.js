@@ -1,9 +1,6 @@
 import { RECEIVED_USERCD_DATA_SUCCESS, RECEIVING_USERCD_DATA } from '../actions/userDefaultCard';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+// const defaultState = { data: {}, isReceiving: false };
 
 export default function userDefaultCard(state = {data:{}},{type,payload}) {
     switch (type) {

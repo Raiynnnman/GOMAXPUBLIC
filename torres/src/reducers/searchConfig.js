@@ -1,9 +1,6 @@
 import { RECEIVED_SECONF_DATA_SUCCESS, RECEIVING_SECONF_DATA } from '../actions/searchConfig';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+// const defaultState = { data: {}, isReceiving: false };
 
 export default function searchConfig(state = {data:{}},{type,payload}) {
     switch (type) {

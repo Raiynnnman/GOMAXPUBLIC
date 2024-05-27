@@ -1,9 +1,6 @@
 import { RECEIVED_REFDASH_DATA_SUCCESS, RECEIVING_REFDASH_DATA } from '../actions/referrerDashboard';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function legalDashboard(state = {data:{}},{type,payload}) {
     switch (type) {

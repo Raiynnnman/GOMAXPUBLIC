@@ -1,9 +1,6 @@
 import { RECEIVED_CAPPT_DATA_SUCCESS, RECEIVING_CAPPT_DATA } from "../actions/mydayCustomAppt";
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function mydayGetOfficePatients(state = {data:{}},{type,payload}) {
     switch (type) {

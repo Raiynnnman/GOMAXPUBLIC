@@ -1,9 +1,6 @@
 import { RECEIVED_CHFDD_DATA_SUCCESS, RECEIVING_CHFDD_DATA } from '../actions/chatDownloadDoc';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function chatDownloadDoc(state = {data:{}},{type,payload}) {
     switch (type) {

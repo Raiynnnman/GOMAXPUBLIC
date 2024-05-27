@@ -1,9 +1,6 @@
 import { RECEIVED_CONDASH_DATA_SUCCESS, RECEIVING_CONDASH_DATA } from '../actions/legalDashboard';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function legalDashboard(state = {data:{}},{type,payload}) {
     switch (type) {

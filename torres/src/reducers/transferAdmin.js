@@ -1,9 +1,6 @@
 import { RECEIVED_TRANA_DATA_SUCCESS, RECEIVING_TRANA_DATA } from '../actions/transferAdmin';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+// const defaultState = { data: {}, isReceiving: false };
 
 export default function offices(state = {data:{}},{type,payload}) {
     switch (type) {

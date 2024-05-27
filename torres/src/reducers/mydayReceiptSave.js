@@ -1,9 +1,6 @@
 import { RECEIVED_MRECE_DATA_SUCCESS, RECEIVING_MRECE_DATA } from '../actions/mydayReceiptSave';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function mydayReceiptSave(state = {data:{}},{type,payload}) {
     switch (type) {

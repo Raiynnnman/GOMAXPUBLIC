@@ -1,9 +1,6 @@
 import { RECEIVED_COUP_DATA_SUCCESS, RECEIVING_COUP_DATA } from '../actions/coupons';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function offices(state = {data:{}},{type,payload}) {
     switch (type) {

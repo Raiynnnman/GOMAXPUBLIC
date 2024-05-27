@@ -1,9 +1,6 @@
 import { RECEIVED_REFREP_DATA_SUCCESS, RECEIVING_REFREP_DATA } from '../actions/referralResponse';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function officeSave(state = {data:{}},{type,payload}) {
     switch (type) {

@@ -1,9 +1,6 @@
 import { RECEIVED_OCL_DATA_SUCCESS, RECEIVING_OCL_DATA } from '../actions/officeClients';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function searchRegisterAdmin(state = {data:{}},{type,payload}) {
     switch (type) {

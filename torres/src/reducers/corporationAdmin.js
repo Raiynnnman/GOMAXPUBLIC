@@ -1,9 +1,6 @@
 import { RECEIVED_ACORP_DATA_SUCCESS, RECEIVING_ACORP_DATA } from '../actions/corporationAdmin';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function adminCorporation(state = {data:{}},{type,payload}) {
     switch (type) {

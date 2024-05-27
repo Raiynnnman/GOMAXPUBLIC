@@ -1,9 +1,6 @@
 import { RECEIVED_CUSV_DATA_SUCCESS, RECEIVING_CUSV_DATA } from '../actions/corporationUsersSave';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function offices(state = {data:{}},{type,payload}) {
     switch (type) {

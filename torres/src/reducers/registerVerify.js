@@ -1,9 +1,6 @@
 import { RECEIVED_REGVER_DATA_SUCCESS, RECEIVING_REGVER_DATA } from '../actions/registerVerify';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function offices(state = {data:{}},{type,payload}) {
     switch (type) {

@@ -1,9 +1,6 @@
 import { RECEIVED_UUD_DATA_SUCCESS, RECEIVING_UUD_DATA } from '../actions/userDocumentsUpdate';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+// const defaultState = { data: {}, isReceiving: false };
 
 export default function userDocumentsUpdate(state = {data:{}},{type,payload}) {
     switch (type) {

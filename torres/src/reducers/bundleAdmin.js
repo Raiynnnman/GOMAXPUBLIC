@@ -1,9 +1,6 @@
 import { RECEIVED_BUNDA_DATA_SUCCESS, RECEIVING_BUNDA_DATA } from '../actions/bundleAdmin';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function bundleAdmin(state = {data:{}},{type,payload}) {
     switch (type) {

@@ -1,9 +1,6 @@
 import { RECEIVED_AIUP_DATA_SUCCESS, RECEIVING_AIUP_DATA } from '../actions/invoiceAdminUpdate';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function invoiceAdminUpdate(state = {data:{}},{type,payload}) {
     switch (type) {

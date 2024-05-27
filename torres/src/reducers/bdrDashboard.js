@@ -1,9 +1,6 @@
 import { RECEIVED_BDASH_DATA_SUCCESS, RECEIVING_BDASH_DATA } from '../actions/bdrDashboard';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function adminDashboard(state = {data:{}},{type,payload}) {
     switch (type) {

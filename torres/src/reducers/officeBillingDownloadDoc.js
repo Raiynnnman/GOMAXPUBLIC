@@ -1,9 +1,6 @@
 import { RECEIVED_OFDD_DATA_SUCCESS, RECEIVING_OFDD_DATA } from '../actions/officeBillingDownloadDoc';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function officeBillingDownloadDoc(state = {data:{}},{type,payload}) {
     switch (type) {

@@ -1,9 +1,6 @@
 import { RECEIVED_CONS_DATA_SUCCESS, RECEIVING_CONS_DATA } from '../actions/legal';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function legals(state = {data:{}},{type,payload}) {
     switch (type) {

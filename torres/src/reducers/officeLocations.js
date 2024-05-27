@@ -1,9 +1,6 @@
 import { RECEIVED_OFFLOC_DATA_SUCCESS, RECEIVING_OFFLOC_DATA } from '../actions/officeLocations';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function officeInvoices(state = {data:{}},{type,payload}) {
     switch (type) {

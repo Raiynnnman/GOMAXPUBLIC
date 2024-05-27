@@ -1,9 +1,6 @@
 import { RECEIVED_CORPU_DATA_SUCCESS, RECEIVING_CORPU_DATA } from '../actions/corporationUsers';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function officeUsers(state = {data:{}},{type,payload}) {
     switch (type) {

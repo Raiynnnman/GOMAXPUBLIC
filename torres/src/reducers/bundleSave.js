@@ -1,9 +1,6 @@
 import { RECEIVED_BUNDS_DATA_SUCCESS, RECEIVING_BUNDS_DATA } from '../actions/bundleSave';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function bundleSave(state = {data:{}},{type,payload}) {
     switch (type) {

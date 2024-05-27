@@ -1,9 +1,6 @@
 import { RECEIVED_USER_DATA_SUCCESS, RECEIVING_USER_DATA } from '../actions/user';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+// const defaultState = { data: {}, isReceiving: false };
 
 export default function user(state = {data:{}},{type,payload}) {
     switch (type) {

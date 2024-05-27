@@ -1,9 +1,6 @@
 import { RECEIVED_CONSU_DATA_SUCCESS, RECEIVING_CONSU_DATA } from '../actions/legalAdminUpdate';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function legalAdminUpdate(state = {data:{}},{type,payload}) {
     switch (type) {

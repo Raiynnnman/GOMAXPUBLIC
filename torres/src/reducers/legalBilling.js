@@ -1,9 +1,6 @@
 import { RECEIVED_CONBILL_DATA_SUCCESS, RECEIVING_CONBILL_DATA } from '../actions/legalBilling';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+//const defaultState = { data: {}, isReceiving: false };
 
 export default function legalBilling(state = {data:{}},{type,payload}) {
     switch (type) {

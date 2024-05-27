@@ -1,9 +1,6 @@
 import { RECEIVED_UTRAN_DATA_SUCCESS, RECEIVING_UTRAN_DATA } from '../actions/transfers';
 
-const defaultState = {
-    data: {},
-    isReceiving: false
-};
+// const defaultState = { data: {}, isReceiving: false };
 
 export default function transfers(state = {data:{}},{type,payload}) {
     switch (type) {
