@@ -12,8 +12,6 @@ import Screenshot from '../components/Screenshot';
 import Testimonial from '../components/Testimonial';
 
 class HomeHorizontal extends Component {
-    componentDidMount() { 
-    } 
     render() {
         return (
             <div>
