@@ -32,7 +32,7 @@ class Testimonial extends React.Component {
                                     <img className="image-1" src={require('../assets/images/app/title-icon.png')} alt="App Landing"/>
                                     <img className="image-2" src={require('../assets/images/app/title-icon-2.png')} alt="App Landing"/>
                                     <img className="image-3" src={require('../assets/images/app/title-icon-3.png')} alt="App Landing"/>
-                                    <p>There are many variations of passages of Lorem Ipsum available, but the majorityhave suffered alteration in some form, by injected humour,available</p>
+                                    <p>Review info here</p>
                                 </div>
                                 <div className="row">
                                     <div className="col-lg-8 offset-lg-2 col-xl-6 offset-xl-3">
@@ -60,7 +60,7 @@ class Testimonial extends React.Component {
 
                                 <Slider {...testimonial2} asNavFor={this.state.nav1} ref={slider => (this.testimonial2 = slider)} className="testimonial-text-slider text-center">
                                     <div className="sin-testiText">
-                                        <h2>M S Nawaz </h2>
+                                        <h2>S Miller</h2>
                                         <div className="client-rating">
                                             <i className="zmdi zmdi-star color"></i>
                                             <i className="zmdi zmdi-star color"></i>
@@ -68,10 +68,10 @@ class Testimonial extends React.Component {
                                             <i className="zmdi zmdi-star color"></i>
                                             <i className="zmdi zmdi-star-half color"></i>
                                         </div>
-                                        <p>There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable.</p>
+                                        <p>I am writing to express my gratitude from my family for the care given to my mother. There was care, compassion, and respect. A special thank you to your staff as well; they provided professional guidance, comfort, and strength to make our own decisions. Finally, I cannot praise the #Pain and team enough. They were patient and helpful. All our hope that you continue along this path.</p>
                                     </div>
                                     <div className="sin-testiText">
-                                        <h2>Chowchilla Madera</h2>
+                                        <h2>F Henderson</h2>
                                         <div className="client-rating">
                                             <i className="zmdi zmdi-star color"></i>
                                             <i className="zmdi zmdi-star color"></i>
@@ -79,40 +79,8 @@ class Testimonial extends React.Component {
                                             <i className="zmdi zmdi-star color"></i>
                                             <i className="zmdi zmdi-star-half color"></i>
                                         </div>
-                                        <p>Nam nec tellus a odio tincidunt This lorem is Photoshop's version  of Lorem Ipsum. Proin gravida nibh vel velit auctor aliquet. Aenean nisi sollicitudin, lorem quis bibendum auctor, nisi elit consequat ipsum gravida.</p>
-                                    </div>
-                                    <div className="sin-testiText">
-                                        <h2>Kattie Luis</h2>
-                                        <div className="client-rating">
-                                            <i className="zmdi zmdi-star color"></i>
-                                            <i className="zmdi zmdi-star color"></i>
-                                            <i className="zmdi zmdi-star color"></i>
-                                            <i className="zmdi zmdi-star color"></i>
-                                            <i className="zmdi zmdi-star-half color"></i>
-                                        </div>
-                                        <p>Nam nec tellus a odio tincidunt This is Photoshop's version  of Lorem Ipsum. Proin gravida nibh vel velit auctor aliquet. Aenean tincidunt sollicitudin, lorem quis bibendum auctor, nisi elit consequat ipsum Photoshop.</p>
-                                    </div>
-                                    <div className="sin-testiText">
-                                        <h2>Kattie Luis</h2>
-                                        <div className="client-rating">
-                                            <i className="zmdi zmdi-star color"></i>
-                                            <i className="zmdi zmdi-star color"></i>
-                                            <i className="zmdi zmdi-star color"></i>
-                                            <i className="zmdi zmdi-star color"></i>
-                                            <i className="zmdi zmdi-star-half color"></i>
-                                        </div>
-                                        <p>Nam nec tellus a odio tincidunt This is Photoshop's version  of Lorem Ipsum. Proin gravida nibh vel velit auctor aliquet. Aenean tincidunt sollicitudin, lorem quis bibendum auctor, nisi elit consequat ipsum Photoshop.</p>
-                                    </div>
-                                    <div className="sin-testiText">
-                                        <h2>Kattie Luis</h2>
-                                        <div className="client-rating">
-                                            <i className="zmdi zmdi-star color"></i>
-                                            <i className="zmdi zmdi-star color"></i>
-                                            <i className="zmdi zmdi-star color"></i>
-                                            <i className="zmdi zmdi-star color"></i>
-                                            <i className="zmdi zmdi-star-half color"></i>
-                                        </div>
-                                        <p>Nam nec tellus a odio tincidunt This is Photoshop's version  of Lorem Ipsum. Proin gravida nibh vel velit auctor aliquet. Aenean tincidunt sollicitudin, lorem quis bibendum auctor, nisi elit consequat ipsum Photoshop.</p>
+                                        <p>
+I humbly submit my sincere gratitude to the management and staff of #Pain. They have been outstandingly helpful and provided a high quality of service, care and comfort to our lives. Thank you.</p>
                                     </div>
                                 </Slider>
                                     

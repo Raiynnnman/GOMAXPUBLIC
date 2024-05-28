@@ -10,8 +10,8 @@ class HeroOlive extends Component {
                         <div className="col-lg-7 h-100">
                             <div className="banner-text">
                                 <div className="banner-table-cell">
-                                    <h1>AWESOME <br /> <span className="theme-color">apnew</span> MOBILE APP.</h1>
-                                    <p>There are many variations of passages of Lorem Ipsum available, but the majorityhave suffered alteration in some form, by injected humour, or randomised words which don't look even There are many variations of passages of Lorem Ipsum available</p>
+                                    <h1>AWESOME <br /> <span className="theme-color">POUNDPAIN TECH</span> MOBILE APP.</h1>
+                                    <p>Marketing message here</p>
                                     <div className="banner-buttons">
                                         <button type="button" className="button-default button-olive">Download</button>
                                         <a className="button-default button-white" href="/" role="button">Learn more</a>
@@ -33,7 +33,7 @@ class HeroOlive extends Component {
                                 <div className="single-app">
                                     <div className="single-app-table-cell">
                                         <i className="zmdi zmdi-cloud-download"></i>
-                                        <h4>Download</h4>
+                                        <h4>Website</h4>
                                         <h3>102K</h3>
                                     </div>
                                 </div>
@@ -46,13 +46,6 @@ class HeroOlive extends Component {
                                         <h3>102K</h3>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div className="col-lg-5">
-                            <div className="banner-product-image text-right">
-                                <img className="image-1" src={require('../assets/images/app/banner-mobile.png')} alt="App Landing"/>
-                                <img className="image-2" src={require('../assets/images/app/banner-mobile-2.png')} alt="App Landing"/>
-                                <img className="image-3" src={require('../assets/images/app/banner-mobile-3.png')} alt="App Landing"/>
                             </div>
                         </div>
                     </div>

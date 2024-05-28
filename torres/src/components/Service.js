@@ -7,20 +7,20 @@ class Service extends Component{
         let data = [
             {
                 icon: 'zmdi zmdi-settings',
-                title: 'Easy To Customize',
-                desc: 'There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour'
+                title: 'Feature1',
+                desc: 'Feature1 info here'
             },
 
             {
                 icon: 'zmdi zmdi-favorite',
-                title: 'User Friendly',
-                desc: 'There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour'
+                title: 'Feature2',
+                desc: 'Feature2 info here'
             },
 
             {
                 icon: 'zmdi zmdi-time',
-                title: '24/7 Support',
-                desc: 'There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour'
+                title: 'Feature 3',
+                desc: 'Feature3 info here'
             }
         ];
         let DataList = data.map((val, i) => {

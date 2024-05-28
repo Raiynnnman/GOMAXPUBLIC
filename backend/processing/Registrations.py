@@ -250,6 +250,8 @@ class RegistrationLandingData(RegistrationsBase):
                 p.start_date,p.end_date,p.active,p.slot
             from
                 pricing_data p
+            where 
+                toshow = 1
             """
         p = []
         if 'type' in params and params['type'] is not None:

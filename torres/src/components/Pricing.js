@@ -1,9 +1,17 @@
 import React,  { Component } from "react";
-
+import { connect } from 'react-redux';
 
 class Pricing extends Component{
-    render(){
-        return(
+    
+    selectPlan(e) { 
+        window.location = '/register-provider/' + e;
+    } 
+    render() {
+        console.log("p",this.props);
+        return (
+            <>
+            {(this.props.landingData && this.props.landingData.data && this.props.landingData.data.pricing &&
+              this.props.landingData.data.pricing.length > 0) && ( 
             <div className={`pricing-table-area pt--40 pt_sm--100 ${this.props.horizontalpricing}`} id="pricing">
                 <div className="container">
                     <div className="row">
@@ -13,7 +21,7 @@ class Pricing extends Component{
                                 <img className="image-1" src={require('../assets/images/app/title-icon.png')} alt="App Landing"/>
                                 <img className="image-2" src={require('../assets/images/app/title-icon-2.png')} alt="App Landing"/>
                                 <img className="image-3" src={require('../assets/images/app/title-icon-3.png')} alt="App Landing"/>
-                                <p>There are many variations of passages of Lorem Ipsum available, but the majorityhave suffered alteration in some form, by injected humour,available</p>
+                                <p>Sales message here</p>
                             </div>
                         </div>
                     </div>
@@ -23,22 +31,24 @@ class Pricing extends Component{
                         <div className="col-lg-4 col-md-6 col-12 pricing-column mt--40">
                             <div className="single-price-package">
                                 <div className="price-title">
-                                    <h3>Personal</h3>
+                                    <h3>{this.props.landingData.data.pricing[0].description}</h3>
                                     <div className="price">
-                                        <h4><span className="text-top">$</span><span className="text-large">55</span></h4>
+                                        <h4><span className="text-top">$</span><span className="text-large">
+                                            {this.props.landingData.data.pricing[0].price}</span></h4>
                                         <p><span className="text-bottom">/month</span></p>
                                     </div>
                                 </div>
                                 <div className="price-list">
                                     <ul>
-                                        <li>Five Website</li>
-                                        <li>Five User</li>
-                                        <li>100 GB Bandwidth</li>
-                                        <li>2 GB Storage</li>
-                                        <li>24x7 Support</li>
+                                        {this.props.landingData.data.pricing[0].benefits.map((e) => { 
+                                            return (
+                                                <li>{e.description}</li>
+                                            )
+                                        })}
                                     </ul>
                                     <div className="price-btn">
-                                        <button className="button" type="button">Sign up</button>
+                                        <button onClick={() => this.selectPlan(this.props.landingData.data.pricing[0].id)} 
+                                            className="button" type="button">Sign up</button>
                                     </div>
                                 </div>
                             </div>
@@ -49,22 +59,24 @@ class Pricing extends Component{
                         <div className="col-lg-4 col-md-6 col-12 pricing-column mt--40">
                             <div className="single-price-package list-large">
                                 <div className="price-title">
-                                    <h3>PERSONAL</h3>
+                                    <h3>{this.props.landingData.data.pricing[1].description}</h3>
                                     <div className="price">
-                                        <h4><span className="text-top">$</span><span className="text-large">55</span></h4>
+                                        <h4><span className="text-top">$</span><span className="text-large">
+                                            {this.props.landingData.data.pricing[1].price}</span></h4>
                                         <p><span className="text-bottom">/month</span></p>
                                     </div>
                                 </div>
                                 <div className="price-list">
                                     <ul>
-                                        <li>Five Website</li>
-                                        <li>Five User</li>
-                                        <li>100 GB Bandwidth</li>
-                                        <li>2 GB Storage</li>
-                                        <li>24x7 Support</li>
+                                        {this.props.landingData.data.pricing[1].benefits.map((e) => { 
+                                            return (
+                                                <li>{e.description}</li>
+                                            )
+                                        })}
                                     </ul>
                                     <div className="price-btn">
-                                        <button className="button" type="button">Sign up</button>
+                                        <button onClick={() => this.selectPlan(this.props.landingData.data.pricing[1].id)} 
+                                            className="button" type="button">Sign up</button>
                                     </div>
                                 </div>
                             </div>
@@ -75,22 +87,24 @@ class Pricing extends Component{
                         <div className="col-lg-4 col-md-6 col-12 pricing-column mt--40">
                             <div className="single-price-package">
                                 <div className="price-title">
-                                    <h3>BUSINESS</h3>
+                                    <h3>{this.props.landingData.data.pricing[2].description}</h3>
                                     <div className="price">
-                                        <h4><span className="text-top">$</span><span className="text-large">55</span></h4>
+                                        <h4><span className="text-top">$</span><span className="text-large">
+                                            {this.props.landingData.data.pricing[2].price}</span></h4>
                                         <p><span className="text-bottom">/month</span></p>
                                     </div>
                                 </div>
                                 <div className="price-list">
                                     <ul>
-                                        <li>Five Website</li>
-                                        <li>Five User</li>
-                                        <li>100 GB Bandwidth</li>
-                                        <li>2 GB Storage</li>
-                                        <li>24x7 Support</li>
+                                        {this.props.landingData.data.pricing[2].benefits.map((e) => { 
+                                            return (
+                                                <li>{e.description}</li>
+                                            )
+                                        })}
                                     </ul>
                                     <div className="price-btn">
-                                        <button className="button" type="button">Sign up</button>
+                                        <button onClick={() => this.selectPlan(this.props.landingData.data.pricing[2].id)} 
+                                            className="button" type="button">Sign up</button>
                                     </div>
                                 </div>
                             </div>
@@ -99,13 +113,19 @@ class Pricing extends Component{
                     </div>
                 </div>
             </div>
+            )}
+        </>
         )
     }
 }
 
-export default Pricing;
+function mapStateToProps(store) {
+    return {
+        landingData: store.landingData
+    }
+}
 
-
+export default connect(mapStateToProps)(Pricing);
 
 
 

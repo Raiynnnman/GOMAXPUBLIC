@@ -45,16 +45,13 @@ export function authError(payload) {
 }
 
 export function doInit() {
-  console.log("di");
   return async (dispatch) => {
       let currentUser = null;
       try {
         let token = localStorage.getItem('token');
-        console.log("tok",token);
         if (token) {
           currentUser = await findMe();
         }
-        console.log("auth_init",currentUser,AUTH_INIT_SUCCESS);
         dispatch({
           type: AUTH_INIT_SUCCESS,
           goo:1,
@@ -64,7 +61,6 @@ export function doInit() {
         });
       } catch (error) {
         // Errors.handle(error);
-        console.log("error",error);
         dispatch({
           type: AUTH_INIT_ERROR,
           payload: error,
@@ -124,14 +120,12 @@ export function loginUser(creds) {
             },
           }) 
           api.post("/login", creds).then(res => {
-                console.log("res",res);
                 const token = res.data.data.token;
                 dispatch(receiveToken(token));
                 dispatch(doInit());
                 // dispatch(push('/app'));
                 window.location = "/app";
               }).catch(err => {
-                console.log("err",err);
                 if (err && err.response && err.response.status) { 
                     if (err.response.status === 401) { 
                         dispatch(authError("Login Failed. Please try again."));
@@ -141,7 +135,6 @@ export function loginUser(creds) {
                         dispatch(authError("Something has gone wrong."));
                     } 
                 } else { 
-                    console.log("err2",err);
                     dispatch(authError(err.response.data));
                 } 
               })
