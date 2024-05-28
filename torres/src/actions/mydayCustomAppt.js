@@ -1,9 +1,7 @@
 import axios from 'axios';
 import apiBaseUrl from '../globalConfig.js';
-import Cookies from 'universal-cookie';
 import 'react-toastify/dist/ReactToastify.css';
 import handleError from './handleError';
-const cookies = new Cookies();
 
 export const RECEIVED_CAPPT_DATA_SUCCESS = 'RECEIVED_CAPPT_DATA_SUCCESS';
 export const RECEIVING_CAPPT_DATA = 'RECEIVING_CAPPT_DATA';

@@ -1,10 +1,7 @@
 import axios from 'axios';
 import apiBaseUrl from '../globalConfig.js';
-import Cookies from 'universal-cookie';
-import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import handleError from './handleError';
-const cookies = new Cookies();
 
 export const RECEIVED_PROC_DATA_SUCCESS = 'RECEIVED_PROC_DATA_SUCCESS';
 export const RECEIVING_PROC_DATA = 'RECEIVING_PROC_DATA';

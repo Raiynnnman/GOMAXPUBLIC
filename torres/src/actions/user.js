@@ -1,10 +1,7 @@
 import axios from 'axios';
 import apiBaseUrl from '../globalConfig.js';
-import Cookies from 'universal-cookie';
-import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import handleError from './handleError';
-const cookies = new Cookies();
 
 export const RECEIVED_USER_DATA_SUCCESS = 'RECEIVED_USER_DATA_SUCCESS';
 export const RECEIVING_USER_DATA = 'RECEIVING_USER_DATA';
@@ -27,7 +24,7 @@ export function receivingData(params,callback,args) {
     dispatch({
         type: RECEIVING_USER_DATA
     });
-    const response = await axios.create({
+    const response = await axios.create({ // eslint-disable-line no-unused-vars
             baseURL: apiBaseUrl(),
             withCredentials: true,
             headers: {

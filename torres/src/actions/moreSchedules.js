@@ -1,10 +1,7 @@
 import axios from 'axios';
 import apiBaseUrl from '../globalConfig.js';
-import Cookies from 'universal-cookie';
-import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import handleError from './handleError';
-const cookies = new Cookies();
 
 export const RECEIVED_MORS_DATA_SUCCESS = 'RECEIVED_MORS_DATA_SUCCESS';
 export const RECEIVING_MORS_DATA = 'RECEIVING_MORS_DATA';
