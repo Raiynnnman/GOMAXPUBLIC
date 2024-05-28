@@ -10,8 +10,6 @@ import jwt
 import base64
 import traceback
 from nameparser import HumanName
-#from authorizenet import apicontractsv1
-#from authorizenet.apicontrollers import *
 
 sys.path.append(os.path.realpath(os.curdir))
 
