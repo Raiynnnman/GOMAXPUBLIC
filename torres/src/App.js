@@ -17,6 +17,10 @@ const App = () => {
             <BrowserRouter basename={'/'}>
                 <Switch>
                     <Route exact path='/' component={HomeHorizontal}/>
+                    <Route exact path='/login' component={Login}/>
+                    <Route path="/app" exact render={() => <Redirect to="/app/main"/>}/>
+                    <Route path="/app/main" exact render={() => <Redirect to="/app/main/dashboard"/>}/>
+                    <Route exact path='/app/main/dashboard' component={Dashboard}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/tf`} component={DemoTF}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/home-one`} component={HomeOlive}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/home-two`} component={HomeHorizontal}/>

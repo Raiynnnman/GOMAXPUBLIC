@@ -2,7 +2,7 @@ import React, { useState, Component, useEffect } from 'react';
 import Button from '@mui/material/Button';
 
 
-function TemplateButton({label,onClick,disabled}) {
+function TemplateButton({label,onClick,disabled,style}) {
 
     const doClick = function(e) { 
         console.log("clickme",e)
@@ -10,7 +10,7 @@ function TemplateButton({label,onClick,disabled}) {
     } 
 
     return (
-        <Button style={{marginTop:20}} className="button-default button-olive" variant="contained" 
+        <Button style={style} className="button-default button-olive" variant="contained" 
             onClick={doClick} disabled={disabled}>{label}</Button>
     )
 }

@@ -91,74 +91,26 @@ class Login extends React.Component {
         <>
             <Navbar/>
             <div className="container" style={{marginTop:20}}>
-                <div className="row align-items-center">
-                    <div style={{display:'flex',alignItems:'center',justifyContent:'center'}}> 
-                        <TemplateTextField width="200px" label='Email' helpText='Email' onChange={this.changeEmail}/>
+                    <div className="row align-items-center">
+                        <div style={{display:'flex',alignItems:'center',justifyContent:'center'}}> 
+                            <TemplateTextField width="300px" label='Email' helpText='Email' onChange={this.changeEmail}/>
+                        </div>
                     </div>
-                </div>
-                <div className="row align-items-center">
-                    <div style={{display:'flex',alignItems:'center',justifyContent:'center'}}> 
-                        <TemplateTextFieldPassword width="200px" label='Password' helpText='Password' onChange={this.changePassword}/>
+                    <div className="row align-items-center">
+                        <div style={{display:'flex',alignItems:'center',justifyContent:'center'}}> 
+                            <TemplateTextFieldPassword width="300px" label='Password' helpText='Password' onChange={this.changePassword}/>
+                        </div>
                     </div>
-                </div>
-                <div className="row align-items-center">
-                    <div style={{display:'flex',alignItems:'center',justifyContent:'center'}}> 
-                        <TemplateButton onClick={this.doLogin} label='Login' disable={false}/>
+                    <div className="row align-items-center">
+                        <div style={{display:'flex',alignItems:'center',justifyContent:'center'}}> 
+                            <TemplateButton style={{marginTop:20}} onClick={this.doLogin} label='Login' disable={false}/>
+                            <TemplateButton style={{marginLeft:20,marginTop:20}} onClick={this.register} label='Sign Up' disable={false}/>
+                        </div>
                     </div>
-                </div>
             </div>
         </>
         )
     } 
-    /*render2() {
-        return (
-            <div className="auth-page">
-                <Container>
-                    <h5 className="auth-logo">
-                        <i className="la la-circle text-primary" />
-                        POUNDPAIN TECH
-                        <i className="la la-circle text-danger" />
-                    </h5>
-                    <Widget className="widget-auth mx-auto" title={<h3 className="mt-0">Login to POUNDPAIN TECH</h3>}>
-                        <p className="widget-auth-info">
-                            Use your email to sign in.
-                        </p>
-                        <form className="mt" onSubmit={this.doLogin}>
-                            {
-                                this.props.errorMessage && (
-                                    <Alert className="alert-sm" color="danger">
-                                        {this.props.errorMessage}
-                                    </Alert>
-                                )
-                            }
-                            <div className="form-group">
-                                <input className="form-control no-border" value={this.state.email} onChange={this.changeEmail} type="email" required name="email" placeholder="Email" />
-                            </div>
-                            <p for="normal-field" md={12} className="text-md-right">
-                                <font style={{color:"red"}}>
-                                    {this.state.errorMessage}
-                                </font>
-                            </p>
-                            <div className="form-group mb-0">
-                                <input className="form-control no-border" value={this.state.password} onChange={this.changePassword} type="password" required name="password" placeholder="Password" />
-                            </div>
-                            <Link className="d-block text-right mb-3 mt-1 fs-sm" style={{color:"black"}} to="forgot">Forgot password?</Link>
-                            <Button type="submit" color="primary" className="auth-btn mb-3" disabled={
-                                  !this.state.isValid} size="sm">{this.props.isFetching ? 'Loading...' : 'Login'}</Button>
-                        </form>
-                        <p className="widget-auth-info">
-                            Don't have an account? Sign up now!
-                        </p>
-                        <Link className="d-block text-center" style={{color:"black"}} to="register">Create an Account</Link>
-                    </Widget>
-                </Container>
-                <footer className="auth-footer">
-                  {getVersion()} - {new Date().getFullYear()} &copy; <a rel="noopener noreferrer" target="_blank" href="https://www.poundpain.com">POUNDPAIN TECH</a>
-                </footer>
-            </div>
-        ); 
-    }
-    */
 }
 
 function mapStateToProps(state) {
