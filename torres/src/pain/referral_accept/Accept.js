@@ -62,7 +62,7 @@ class Accept extends React.Component {
                     <Widget style={{backgroundColor:"black"}} className="widget-auth mx-auto" title={<h3 style={{color:'white'}} className="mt-0">Client Accepted!</h3>}>
                         {(this.state.error_message === null) && (
                         <p className="widget-auth-info" style={{color:'white'}}>
-                            Client accepted. Click <a onClick={this.loginPage} style={{color:"blue"}} href="/#/login" to see details>HERE</a> to see details
+                            Client accepted. Click <a onClick={this.loginPage} style={{color:"blue"}} href="/login" to see details>HERE</a> to see details
                         <br/>
                         </p>
                         )}

@@ -86,7 +86,7 @@ class RegisterReferrer extends Component {
                     hideProgressBar:true
                 }
               );
-            window.location = "/#/welcome";
+            window.location = "/welcome";
         },this));
     } 
 

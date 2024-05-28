@@ -194,7 +194,7 @@ class OnePager extends Component {
                                             <div style={{display:'flex',alignContent:'center',justifyContent:'start'}}>
                                             <AppRegistrationIcon style={{margin:20}}/>&nbsp;
                                             <font style={{margin:20,fontSize:18}}>
-                                            Register at <a target="_blank" style={{color:"#fa6a0a"}} href={baseURLConfig() + "/#/register-legal"}>POUNDPAIN TECH</a>
+                                            Register at <a target="_blank" style={{color:"#fa6a0a"}} href={baseURLConfig() + "/register-legal"}>POUNDPAIN TECH</a>
                                             </font>
                                             </div>
                                         </div>
@@ -311,7 +311,7 @@ class OnePager extends Component {
                                     <Grid item xs="12">
                                         <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                                         <Button outline style={{margin:20,borderRadius:"10px"}} 
-                                            onClick={() => { window.location.href='/#/landing'}} color="primary">Schedule a Demo</Button>
+                                            onClick={() => { window.location.href='/landing'}} color="primary">Schedule a Demo</Button>
                                         </div>
                                     </Grid>
                                 </Grid>
@@ -342,7 +342,7 @@ class OnePager extends Component {
                                             <div style={{display:'flex',alignContent:'center',justifyContent:'start'}}>
                                             <AppRegistrationIcon style={{margin:20}}/>&nbsp;
                                             <font style={{margin:20,fontSize:18}}>
-                                            Register at <a target="_blank" style={{color:"#fa6a0a"}} href={baseURLConfig() + "/#/register-provider"}>POUNDPAIN TECH</a>
+                                            Register at <a target="_blank" style={{color:"#fa6a0a"}} href={baseURLConfig() + "/register-provider"}>POUNDPAIN TECH</a>
                                             </font>
                                             </div>
                                         </div>
@@ -459,7 +459,7 @@ class OnePager extends Component {
                                     <Grid item xs="12">
                                         <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                                         <Button outline style={{margin:20,borderRadius:"10px"}} 
-                                            onClick={() => { window.location.href='/#/landing'}} color="primary">Schedule a Demo</Button>
+                                            onClick={() => { window.location.href='/landing'}} color="primary">Schedule a Demo</Button>
                                         </div>
                                     </Grid>
                                 </Grid>

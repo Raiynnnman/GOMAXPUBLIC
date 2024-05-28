@@ -43,7 +43,7 @@ class PricingList extends Component {
                 text:'ID',
                 formatter:(cellContent,row) => (
                     <div>
-                        <a target='_blank' href={baseURLConfig() + '/#/register-provider/' + row.id}>{row.id}</a>
+                        <a target='_blank' href={baseURLConfig() + '/register-provider/' + row.id}>{row.id}</a>
                     </div>
                 )
             },

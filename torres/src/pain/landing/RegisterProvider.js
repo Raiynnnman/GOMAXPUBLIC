@@ -1,39 +1,27 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import MaskedInput from 'react-maskedinput';
-import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
-import Select from 'react-select';
-import { Input } from 'reactstrap';
+import { withRouter, Link } from 'react-router-dom';
+import Navbar from '../../components/Navbar';
+import TemplateTextField from '../utils/TemplateTextField';
+import TemplateButton from '../utils/TemplateButton';
+import Container from '@mui/material/Container';
+import Button from '@mui/material/Button';
 import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
-import SaveIcon from '@mui/icons-material/Save';
-import {CardElement,ElementsConsumer,Elements} from '@stripe/react-stripe-js';
 import { toast } from 'react-toastify';
-import { Col, Grid } from 'reactstrap';
-import { Nav, NavItem, NavLink } from 'reactstrap';
-import { TabContent, TabPane } from 'reactstrap';
+import Grid from '@mui/material/Grid';
+import FilledInput from '@mui/material/FilledInput';
 import cx from 'classnames';
 import classnames from 'classnames';
 import getVersion from '../../version.js';
-import { Container, Alert, Button, FormGroup, Label} from 'reactstrap';
-import { withRouter, Link } from 'react-router-dom';
-import BootstrapTable from 'react-bootstrap-table-next';
-import cellEditFactory from 'react-bootstrap-table2-editor';
-import Widget from '../../components/Widget';
 import { registerProvider } from '../../actions/registerProvider';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
-import {loadStripe} from '@stripe/stripe-js';
-import { setupIntent } from '../../actions/setupIntent';
-import {stripeKey} from '../../stripeConfig.js';
-import BillingCreditCardForm from './BillingCreditCardForm';
 import { squareAppKey, squareLocationKey } from '../../squareConfig.js';
 import { PaymentForm,CreditCard,ApplePay,GooglePay } from 'react-square-web-payments-sdk';
 import {searchProvider} from '../../actions/searchProvider';
 import { getLandingData } from '../../actions/landingData';
 import googleKey from '../../googleConfig';
 import formatPhoneNumber from '../utils/formatPhone';
-
-const stripePromise = loadStripe(stripeKey());
 
 class RegisterProvider extends Component {
     constructor(props) { 
@@ -244,7 +232,7 @@ class RegisterProvider extends Component {
     } 
 
     dologin() { 
-        window.location = "/#/login";
+        window.location = "/login";
     } 
 
     updateVerified(e) { 
@@ -345,7 +333,7 @@ class RegisterProvider extends Component {
                 args.setState(args.state);
                 return;
             } 
-            window.location = "/#/welcome";
+            window.location = "/welcome";
         },this));
     } 
 
@@ -428,29 +416,6 @@ class RegisterProvider extends Component {
 
 
     render() {
-        var heads = [
-            {
-                dataField:'name',
-                width:'5%',
-                text:''
-            },
-            {
-                dataField:'name',
-                width:'25%',
-                text:'Name'
-            },
-            {
-                dataField:'phone',
-                width:'25%',
-                text:'Phone'
-            },
-            {
-                dataField:'addr1',
-                width:'65%',
-                text:'Address'
-            },
-        ]
-        var value = '';
         return (
         <>
             {(this.props.registerProvider && this.props.registerProvider.isReceiving) && (
@@ -459,148 +424,100 @@ class RegisterProvider extends Component {
             {(this.props.searchProvider && this.props.searchProvider.isReceiving) && (
                 <AppSpinner/>
             )}
-            <Grid container xs="12" style={{backgroundColor:"black"}}>
-                <Grid item xs="8"> </Grid>
-                <Grid item xs="4"> 
-                    <div class="pull-right" style={{marginTop:20,marginRight:20}}>
-                    <Button onClick={this.dologin} style={{backgroundColor:"#fa6a0a"}}>Login</Button>
-                    </div>
-                </Grid>
-            </Grid>
-            {(!this.props.match.path.includes("short")) && (
-            <div style={{backgroundColor:'black',display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                <img width="20%" height="20%" src='/painlogo.png'/>
-            </div>
-            )}
+            <Navbar/>
             {(this.props.landingData && this.props.landingData.data && this.props.landingData.data.pricing) && (
-            <div style={{height:this.props.match.path.includes("short") ? 620 :'',backgroundColor:"black",display: 'flex', alignItems: 'start', justifyContent: 'center'}}>
+            <div style={{height:this.props.match.path.includes("short") ? 620 :'',
+                    display: 'flex', alignItems: 'start', justifyContent: 'center'}}>
                 <Grid container xs="12">
                 {(this.state.selPlan !== null) && (
                     <>
                     {(this.state.page === 0) && (
-                    <Widget className="widget-auth mx-auto" 
-                        style={{backgroundColor:"black",color:"white"}} title={<h3 style={{color:"white"}} className="mt-0">Register with POUNDPAIN TECH</h3>}>
-                        <p className="widget-auth-info">
-                            Please enter the information below to register
-                        </p>
-                        <form className="mt" onSubmit={this.doLogin}>
-                            {
-                                this.props.errorMessage && (
-                                    <Alert className="alert-sm" color="danger">
-                                        {this.props.errorMessage}
-                                    </Alert>
-                                )
-                            }
+                    <Container maxWidth="sm" style={{marginTop:20}}>
+                        <div className="row align-items-center">
+                            <p className="widget-auth-info">
+                                Please enter the information below to register
+                            </p>
                             <p for="normal-field" md={12} className="text-md-right">
                                 <font style={{color:"red"}}>
                                     {this.state.errorMessage}
                                 </font>
                             </p>
-                            <div style={{marginBottom:10,borderBottom:'1px solid black'}}>
-                                Practice Name:
-                                <input className="form-control no-border" style={{backgroundColor:'white'}} value={this.state.name} onChange={this.nameChange} required name="name" placeholder="Name" />
-                            </div>
-                            <div style={{marginBottom:10,borderBottom:'1px solid black'}}>
-                                Name:
-                                <input className="form-control no-border" style={{backgroundColor:'white'}} value={this.state.first} onChange={this.firstChange} required name="first" placeholder="Name" />
-                            </div>
-                            <div style={{marginBottom:10,borderBottom:'1px solid black'}}>
-                                Email:
-                                <input className="form-control no-border" style={{backgroundColor:'white'}} value={this.state.email} onChange={this.emailChange} type="email" required name="email" placeholder="Email" />
-                            </div>
-                            <div style={{marginBottom:10,borderBottom:'1px solid black'}}>
-                                Phone:
-                                <input className="form-control no-border" style={{backgroundColor:'white'}} value={this.state.phone} onChange={this.phoneChange} type="phone" required name="phone" placeholder="Phone" />
-                                    {/*<MaskedInput style={{backgroundColor:'white',border:'0px solid white'}}
-                                      className="form-control" id="mask-phone" mask="(111) 111-1111"
-                                      onChange={this.phoneChange} value={this.state.phone}
-                                      size="10"
-                                    />*/}
-                            </div>
-                            {/*<div style={{marginBottom:0,borderBottom:'1px solid black'}}>
-                                Postal Code:
-                                <input className="form-control no-border" style={{backgroundColor:'white'}} value={this.state.zipcode} 
-                                    onChange={this.zipcodeChange} placeholder="Postal Code" />
-                            </div>*/}
-                        </form>
-                    </Widget>
-                    )}
-                    {(this.state.page === 0) && (
-                        <div style={{marginTop:0,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        <div style={{border:"1px solid black"}}></div>
-                        <Button type="submit" onClick={this.nextPage} style={{backgroundColor:"#fa6a0a",color:"white"}} 
-                            className="auth-btn mb-3" disabled={
-                              !this.state.isValid} size="lg">Next</Button>
+                            <TemplateTextField width="300px" label='Practice Name' helpText='Practice Name' onChange={this.nameChange}/>
+                            <TemplateTextField style={{marginTop:10}} width="300px" label='Name' helpText='Name' onChange={this.firstChange}/>
+                            <TemplateTextField style={{marginTop:10}} width="300px" label='Email' helpText='Email' onChange={this.emailChange}/>
+                            <TemplateTextField style={{marginTop:10}} value={this.state.phone} width="300px" label='Phone' helpText='Phone' onChange={this.phoneChange}/>
+                            <TemplateButton style={{height:50,marginTop:20}} onClick={this.nextPage} 
+                                disabled={false} label='Next'/>
                         </div>
+                    </Container>
                     )}
                     {(this.state.page === 1) && (
                         <>
+                    <Container maxWidth="sm" style={{marginTop:20}}>
                         <div style={{marginTop:20}}>
                             <Grid container xs="12">
                                 <Grid item xs="12" sx="3">
-                                <Card style={{
-                                    margin:0,
-                                    borderRadius:"10px",color:"white",backgroundColor:"black"}}> 
-                                    <CardBody>
-                                        {(this.state.error_message) && (
-                                        <Grid container xs="12" style={{marginBottom:10}}>
-                                            <Grid item xs="12">
-                                            <font style={{color:'red',alignText:'center'}}>{this.state.error_message}</font>
-                                            </Grid>
+                                <Container maxWidth="sm"> 
+                                    {(this.state.error_message) && (
+                                    <Grid container xs="12" style={{marginBottom:10}}>
+                                        <Grid item xs="12">
+                                        <font style={{color:'red',alignText:'center'}}>{this.state.error_message}</font>
                                         </Grid>
+                                    </Grid>
+                                    )}
+                                    <Grid container xs="12" style={{marginBottom:10}}>
+                                        <Grid item xs="7">
+                                        <font style={{alignText:'left'}}>Description</font>
+                                        </Grid>
+                                        <Grid item xs="5" style={{textAlign:"right"}}>
+                                        <font class="float-right" style={{marginRight:40,textAlign:'right'}}>Price</font>
+                                        </Grid>
+                                    </Grid>
+                                    <hr/>
+                                    <Grid container xs="12">
+                                        <Grid item xs="7">
+                                        <font style={{alignText:'left'}}>{this.state.selPlan.description}</font>
+                                        </Grid>
+                                        <Grid item xs="5" style={{textAlign:"right"}}>
+                                        <font class='float-right' style={{marginRight:20,textAlign:'right'}}>
+                                            ${parseFloat(this.state.selPlan.upfront_cost * this.state.selPlan.duration).toFixed(2)}</font>
+                                        </Grid>
+                                    </Grid>
+                                    {(this.state.selPlan.coupons.length > 0) && (
+                                    <Grid container xs="12">
+                                        <Grid item xs="7">
+                                            <input 
+                                                style={{marginLeft:0,paddingLeft:0}} 
+                                                value={this.state.coupon} 
+                                                onInput={this.couponChange} 
+                                                onChange={this.couponChange} placeholder="Enter Coupon Code" />
+                                        </Grid>
+                                        <Grid item xs="5" style={{textAlign:"right"}}>
+                                            <font class="float-right" style={{textAlign:"right",marginRight:20}}>
+                                                {this.state.couponRed}</font>
+                                        </Grid>
+                                    </Grid>
+                                    )}
+                                    <hr/>
+                                    <Grid container xs="12">
+                                        <Grid item xs="7">
+                                        {(this.state.coupon_id !== null) && (     
+                                            <font style={{alignText:'left'}}>Total:</font>
                                         )}
-                                        <Grid container xs="12" style={{marginBottom:10}}>
-                                            <Grid item xs="7">
-                                            <font style={{alignText:'left'}}>Description</font>
-                                            </Grid>
-                                            <Grid item xs="5">
-                                            <font class="pull-right" style={{marginRight:40,alignText:'right'}}>Price</font>
-                                            </Grid>
-                                        </Grid>
-                                        <hr/>
-                                        <Grid container xs="12">
-                                            <Grid item xs="7">
-                                            <font style={{alignText:'left'}}>{this.state.selPlan.description}</font>
-                                            </Grid>
-                                            <Grid item xs="5">
-                                            <font class='pull-right' style={{marginRight:20,alignText:'right'}}>${parseFloat(this.state.selPlan.upfront_cost * this.state.selPlan.duration).toFixed(2)}</font>
-                                            </Grid>
-                                        </Grid>
-                                        {(this.state.selPlan.coupons.length > 0) && (
-                                        <Grid container xs="12">
-                                            <Grid item xs="7">
-                                                <input className="form-control no-border" 
-                                                    style={{marginLeft:0,paddingLeft:0,backgroundColor:'black',color:"white"}} 
-                                                    value={this.state.coupon} 
-                                                    onInput={this.couponChange} 
-                                                    onChange={this.couponChange} placeholder="Enter Coupon Code" />
-                                            </Grid>
-                                            <Grid item xs="5">
-                                                <font class="pull-right" style={{textAlign:"right",marginRight:20}}>{this.state.couponRed}</font>
-                                            </Grid>
-                                        </Grid>
+                                        {(this.state.coupon_id === null) && (     
+                                            <font style={{marginRight:20,alignText:'left'}}>Total:</font>
                                         )}
-                                        <hr/>
-                                        <Grid container xs="12">
-                                            <Grid item xs="7">
+                                        </Grid>
+                                        <Grid item xs="5" style={{textAlign:"right"}}>
                                             {(this.state.coupon_id !== null) && (     
-                                                <font style={{alignText:'left'}}>Total:</font>
+                                                <font class='float-right' style={{marginRight:20,alignText:'left'}}>{this.calculatePrice()}</font>
                                             )}
                                             {(this.state.coupon_id === null) && (     
-                                                <font style={{marginRight:20,alignText:'left'}}>Total:</font>
+                                                <font class='float-right' style={{marginRight:20,alignText:'left'}}>{this.calculatePrice()}</font>
                                             )}
-                                            </Grid>
-                                            <Grid item xs="5">
-                                                {(this.state.coupon_id !== null) && (     
-                                                    <font class='pull-right' style={{marginRight:20,alignText:'left'}}>{this.calculatePrice()}</font>
-                                                )}
-                                                {(this.state.coupon_id === null) && (     
-                                                    <font class='pull-right' style={{marginRight:20,alignText:'left'}}>{this.calculatePrice()}</font>
-                                                )}
-                                            </Grid>
                                         </Grid>
-                                    </CardBody>
-                                </Card>
+                                    </Grid>
+                                </Container>
                             </Grid>
                             </Grid> 
                         </div>
@@ -620,69 +537,14 @@ class RegisterProvider extends Component {
                             </Grid>
                         </Grid>
                         </div>
+                    </Container>
                     </>
                     )}
                     </>
                 )}
-                {(this.state.selPlan === null) && (
-                    this.props.landingData.data.pricing.filter((g) => g.toshow === 1).map((f) => { 
-                        return (
-                        <Grid item xs="4">
-                            <Card style={{border:"1px solid white",margin:20,backgroundColor:"black",color:"white",borderRadius:"10px"}}> 
-                                <CardBody style={{margin:0,padding:0,cursor:"pointer"}}>
-                                    <div style={{paddingTop:10,borderRadius:"10px 10px 0px 0px",backgroundColor:"#fa6a0a"}}>
-                                        <div style={{backgroundColor:"#fa6a0a",borderRadius:"10px",fontSize:"18px",display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                                            {f.description}
-                                        </div>
-                                        <div style={{paddingBottom:10,fontWeight:"bold",
-                                            fontSize:'34px',backgroundColor:"#fa6a0a",color:"white",
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                                            ${f.upfront_cost.toFixed(0)}/Month
-                                        </div>
-                                    </div>
-                                    <div style={{fontSize:"17px", padding:10,borderBottom:"1px solid white",display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                                        {(f.benefits.length > 0) && (
-                                        <>
-                                            {f.benefits[1].description}
-                                        </>
-                                        )}
-                                    </div>
-                                    <div style={{fontSize:"17px", padding:10,borderBottom:"1px solid white",display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                                        {(f.benefits.length > 0) && (
-                                        <>
-                                            {f.benefits[2].description}
-                                        </>
-                                        )}
-                                    </div>
-                                    <div>
-                                    {f.benefits.slice(3).map((h) => { 
-                                        return (
-                                        <div style={{fontSize:"17px", padding:10,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                                            <>
-                                                {h.description}
-                                            </>
-                                        </div>
-                                        )
-                                    })}
-                                    </div>
-                                    <div style={{borderTop:"1px solid white",margin:0,padding:0,display: 'flex', alignItems: 'center', justifyContent: 'start'}}></div>
-                                    <div style={{margin:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                                        <Button onClick={() => this.selectPlan(f)} 
-                                            style={{backgroundColor:'#fa6a0a',width:"100%"}}>Subscribe</Button>
-                                    </div>
-                                </CardBody>
-                            </Card>
-                        </Grid>
-                        )
-                    })
-                )}
                 </Grid>
-                
             </div>
             )}
-        {(!this.props.match.path.includes("short")) && (
-        <div style={{height:"500px",backgroundColor:"black"}}></div>
-        )}
         </>
         )
     }

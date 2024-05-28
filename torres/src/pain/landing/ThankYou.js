@@ -37,7 +37,7 @@ class ThankYou extends Component {
                             Thank you for registering with POUNDPAIN TECH! We will be in contact soon. 
                         </p>
                         <p className="widget-auth-info">
-                            Click <a href='/#/landing'>Here</a> to exit.
+                            Click <a href='/landing'>Here</a> to exit.
                         </p>
                     </Widget>
                 </Container>

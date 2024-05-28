@@ -251,11 +251,12 @@ class RegistrationLandingData(RegistrationsBase):
             from
                 pricing_data p
             where 
-                toshow = 1
+                1 = 1 and
+                toshow = 1 
             """
         p = []
         if 'type' in params and params['type'] is not None:
-            q += " where office_type_id = %s " 
+            q += " and office_type_id = %s " 
             p = [params['type']]
         q += """
             order by 

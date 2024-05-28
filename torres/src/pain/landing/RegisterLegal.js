@@ -249,7 +249,7 @@ class RegisterProvider extends Component {
             delete tosend.plan
         } 
         this.props.dispatch(registerProvider(tosend,function(err,args) { 
-            window.location = "/#/welcome";
+            window.location = "/welcome";
         },this));
     } 
 

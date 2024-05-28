@@ -360,7 +360,7 @@ class CommissionAdminList extends Component {
                 text:'Office ID',
                 formatter:(cellContent,row) => (
                     <div>
-                        <a style={{color:'black'}} href={'/#/app/main/admin/office/' + row.office_id} target='_blank'>{row.office_id}</a>
+                        <a style={{color:'black'}} href={'/app/main/admin/office/' + row.office_id} target='_blank'>{row.office_id}</a>
                     </div>
                 )
             },

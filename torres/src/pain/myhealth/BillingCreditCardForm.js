@@ -1,10 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
-import { loadStripe } from "@stripe/stripe-js";
 import { useDispatch, useSelector } from "react-redux";
-import { CardElement, Elements, useElements, useStripe, } from "@stripe/react-stripe-js";
-import { ElementsConsumer } from "@stripe/react-stripe-js";
 import { Button, Form, FormGroup, Label, Input, Grid, Col, Dropdown, DropdownToggle, DropdownItem, DropdownMenu } from "reactstrap";
-import { PaymentElement } from "@stripe/react-stripe-js";
 import { saveCard } from "../../actions/saveCard";
 import { Country, State, City } from "country-state-city";
 import {toast} from "react-toastify";

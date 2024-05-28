@@ -83,14 +83,14 @@ class Landing extends Component {
     } 
     save() { 
         this.props.dispatch(register(this.state.selected)).then((e) => {
-            window.location = '/#/thankyou';
+            window.location = '/thankyou';
         }); 
     } 
     login() { 
-            window.location = '/#/login';
+            window.location = '/login';
     } 
     search() { 
-            window.location = '/#/search';
+            window.location = '/search';
     } 
     onGendChange(e) { 
         this.state.selected.gender = e.value;

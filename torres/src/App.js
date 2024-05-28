@@ -10,6 +10,8 @@ import HomeHorizontal from './pages/HomeHorizontal';
 import {Redirect, BrowserRouter, Switch, Route} from 'react-router-dom';
 import Login from './pain/login/Login';
 import Dashboard from './pain/dashboard/Dashboard';
+import RegisterProvider from './pain/landing/RegisterProvider';
+import Welcome from './pain/welcome/Welcome';
 
 const App = () => {
     return (
@@ -18,6 +20,9 @@ const App = () => {
                 <Switch>
                     <Route exact path='/' component={HomeHorizontal}/>
                     <Route exact path='/login' component={Login}/>
+                    <Route exact path='/register-provider' component={RegisterProvider}/>
+                    <Route exact path='/welcome' component={Welcome}/>
+                    <Route exact path='/register-provider/:id' component={RegisterProvider}/>
                     <Route path="/app" exact render={() => <Redirect to="/app/main"/>}/>
                     <Route path="/app/main" exact render={() => <Redirect to="/app/main/dashboard"/>}/>
                     <Route exact path='/app/main/dashboard' component={Dashboard}/>

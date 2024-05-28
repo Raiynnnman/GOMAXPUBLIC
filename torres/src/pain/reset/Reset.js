@@ -80,7 +80,7 @@ class Reset extends React.Component {
   }
 
   doLogin() { 
-      window.location.href = "/#/login"
+      window.location.href = "/login"
   }
 
     render() {

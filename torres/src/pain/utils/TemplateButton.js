@@ -5,7 +5,6 @@ import Button from '@mui/material/Button';
 function TemplateButton({label,onClick,disabled,style}) {
 
     const doClick = function(e) { 
-        console.log("clickme",e)
         onClick(e);
     } 
 

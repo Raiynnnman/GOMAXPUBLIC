@@ -40,7 +40,7 @@ class Join extends Component {
     } 
 
     register(e) { 
-        window.location = "/#/register-provider/" + e;
+        window.location = "/register-provider/" + e;
     } 
 
     bookNow() { 
