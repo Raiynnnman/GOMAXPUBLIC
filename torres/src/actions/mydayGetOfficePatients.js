@@ -32,7 +32,7 @@ export function receivingData() {
     dispatch({
         type: RECEIVING_GOP_DATA
     });
-    const response = await axios.create({
+    const response = await axios.create({ //eslint-disable-line no-unused-vars
             baseURL: apiBaseUrl(),
             withCredentials: true,
             headers: {

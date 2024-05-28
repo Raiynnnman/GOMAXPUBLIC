@@ -32,7 +32,7 @@ export function receivingData(params,callback,args) {
     dispatch({
         type: RECEIVING_REGPROV_DATA
     });
-    const response = await axios.create({
+    const response = await axios.create({ //eslint-disable-line no-unused-vars
             baseURL: apiBaseUrl(),
             withCredentials: true,
             headers: {

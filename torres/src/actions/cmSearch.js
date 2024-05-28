@@ -24,7 +24,7 @@ export function receivingData(params,callback,args) {
     dispatch({
         type: RECEIVING_CM_DATA
     });
-    const response = await axios.create({
+    const response = await axios.create({ //eslint-disable-line no-unused-vars
             baseURL: apiBaseUrl(),
             withCredentials: true,
             headers: {

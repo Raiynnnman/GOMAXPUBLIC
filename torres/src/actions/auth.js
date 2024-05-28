@@ -21,7 +21,7 @@ export const REGISTER_REQUEST = 'REGISTER_REQUEST';
 export const REGISTER_SUCCESS = 'REGISTER_SUCCESS';
 
 async function findMe() {
-    const response = await axios.create({
+    const response = await axios.create({ //eslint-disable-line no-unused-vars
             baseURL: apiBaseUrl(),
             withCredentials: true,
             headers: {
@@ -115,7 +115,7 @@ export function loginUser(creds) {
         if (creds.social) {
           window.location.href = config.baseURLApi + "/auth/signin/" + creds.social + '?app=' + config.redirectUrl;
         } else if (creds.email.length > 0 && creds.password.length > 0) {
-          const api = axios.create({
+          const api = axios.create({ //eslint-disable-line no-unused-vars
             baseURL: apiBaseUrl(),
             withCredentials: true,
             headers: {
@@ -178,7 +178,7 @@ export function resetPassword(token, password) {
       dispatch({
         type: RESET_REQUEST,
       });
-      axios.create({
+      axios.create({ //eslint-disable-line no-unused-vars
             baseURL: apiBaseUrl(),
             withCredentials: true,
             headers: {
@@ -213,7 +213,7 @@ export function sendPasswordResetEmail(email) {
       dispatch({
         type: PASSWORD_RESET_EMAIL_REQUEST,
       });
-      axios.create({
+      axios.create({ //eslint-disable-line no-unused-vars
         baseURL: apiBaseUrl(),
         headers: {
             Accept: "application/json",
