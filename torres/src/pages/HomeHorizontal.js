@@ -24,8 +24,9 @@ class HomeHorizontal extends Component {
                 <Navbar/>
 
                 {/* Slider */}
-                <HeroOlive horizontal="horizontal" bgshape="bg-shape"/>
+                {/* <HeroOlive horizontal="horizontal" bgshape="bg-shape"/> */}
 
+                <div style={{marginTop:30}}></div>
                 {/* About */}
                 <About horizontalabout="horizontal-about"/>
 

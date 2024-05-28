@@ -6,7 +6,7 @@ class HeroOlive extends Component {
         return(
             <div className={`slider-area bg-color ${this.props.horizontal} ${this.props.bgshape}`} id="home"  style={{background:'#2d3e50'}}>
                 <div className="container h-100">
-                    <div className="row">
+                    {/* <div className="row">
                         <div className="col-lg-7 h-100">
                             <div className="banner-text">
                                 <div className="banner-table-cell">
@@ -20,7 +20,6 @@ class HeroOlive extends Component {
                             </div>
 
                             <div className="banner-apps">
-                                {/* Start Sinhle app */}
                                 <div className="single-app">
                                     <div className="single-app-table-cell">
                                         <i className="zmdi zmdi-apple"></i>
@@ -29,7 +28,6 @@ class HeroOlive extends Component {
                                     </div>
                                 </div>
 
-                                {/* Start Sinhle app */}
                                 <div className="single-app">
                                     <div className="single-app-table-cell">
                                         <i className="zmdi zmdi-cloud-download"></i>
@@ -38,7 +36,6 @@ class HeroOlive extends Component {
                                     </div>
                                 </div>
 
-                                {/* Start Single app */}
                                 <div className="single-app">
                                     <div className="single-app-table-cell">
                                         <i className="zmdi zmdi-android"/>
@@ -48,7 +45,7 @@ class HeroOlive extends Component {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </div>
         )
