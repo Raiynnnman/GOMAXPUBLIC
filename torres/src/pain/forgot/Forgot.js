@@ -2,25 +2,21 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { Alert, Button, Container } from 'reactstrap';
-import Widget from '../../components/Widget';
 import { sendPasswordResetEmail } from '../../actions/auth';
 import { getVersion } from '../../version';
+import TemplateTextField from '../utils/TemplateTextField';
+import Navbar from '../../components/Navbar';
+import TemplateButton from '../utils/TemplateButton';
 
 class Forgot extends React.Component {
-    static propTypes = {
-        dispatch: PropTypes.func.isRequired,
-    };
-
     constructor(props) {
         super(props);
+        this.state = {
+            email: '',
+        };
 
-      this.state = {
-        email: '',
-      };
-
-      this.changeEmail = this.changeEmail.bind(this);
-      this.doSendResetEmail = this.doSendResetEmail.bind(this);
+        this.changeEmail = this.changeEmail.bind(this);
+        this.doSendResetEmail = this.doSendResetEmail.bind(this);
     }
 
     changeEmail(event) {
@@ -40,54 +36,27 @@ class Forgot extends React.Component {
     }
 
     doSendResetEmail(e) {
+      console.log("res",e);
       e.preventDefault();
       this.props.dispatch(sendPasswordResetEmail(this.state.email));
     }
 
     render() {
       return (
-        <div className="auth-page">
-          <Container>
-            <h5 className="auth-logo">
-              <i className="la la-circle text-gray"/>
-              POUNDPAIN TECH
-              <i className="la la-circle text-warning"/>
-            </h5>
-            <Widget className="widget-auth mx-auto" title={<h3 className="mt-0">Forgot password?</h3>}>
-              <p className="widget-auth-info">
-                Please fill your email below
-              </p>
-              <form className="mt" onSubmit={this.doSendResetEmail}>
-                {
-                  this.props.errorMessage && (
-                    <Alert className="alert-sm" color="danger">
-                      {this.props.errorMessage}
-                    </Alert>
-                  )
-                }
-                <div className="form-group">
-                  <input className="form-control no-border" value={this.state.email}
-                         onChange={this.changeEmail} type="email" required name="email"
-                         placeholder="Email"/>
+      <>
+            <Navbar/>
+            <div className="container" style={{marginTop:20}}>
+                <div className="row align-items-center">
+                    <div style={{display:'flex',alignItems:'center',justifyContent:'center'}}> 
+                        <TemplateTextField style={{width:400}} label='Email' helpText='Email' onChange={this.changeEmail}/>
+                    </div>
                 </div>
-                <p for="normal-field" md={12} className="text-md-right">
-                  <font style={{color:"red"}}>
-                      {this.state.errorMessage}
-                  </font>
-                </p>
-                <Button type="submit" color="inverse" className="auth-btn mb-3" disabled={!this.state.isValid}
-                        size="sm">{this.props.isFetching ? 'Loading...' : 'Send'}</Button>
-              </form>
-              <p className="widget-auth-info">
-                Need to Login?
-              </p>
-              <Link className="d-block text-center" to="login">Enter the account</Link>
-            </Widget>
-          </Container>
-          <footer className="auth-footer">
-                <small>POUNDPAIN TECH - {getVersion()}</small>
-          </footer>
-        </div>
+                <div style={{display:'flex',alignItems:'center',justifyContent:'center'}}> 
+                    <a href="/Login">Login</a>
+                    <TemplateButton style={{margin:20}} onClick={this.doSendResetEmail} label='Reset' disable={false}/>
+                </div>
+            </div>
+      </>
       );
     }
 }

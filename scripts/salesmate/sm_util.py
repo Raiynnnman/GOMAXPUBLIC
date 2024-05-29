@@ -395,18 +395,21 @@ class SM_Contacts(SM_Base):
         toget = self.getPayload()
         return self.getData(payload=toget)
 
-    def update(self,args,dryrun=False):
+    def update(self,args,dryrun=False,raw=False):
         self.setCall('/apis/contact/v4')
         self.setType('POST')
         upd = args
         toset = {}
         additional = []
-        for x in upd:
-            if x in CONTACT_MAPPING:
-                v = CONTACT_MAPPING[x] 
-                toset[v] = upd[x]
-        for x in additional:
-            toset[x] = upd[x]
+        if raw:
+            toset = args
+        else:
+            for x in upd:
+                if x in CONTACT_MAPPING:
+                    v = CONTACT_MAPPING[x] 
+                    toset[v] = upd[x]
+            for x in additional:
+                toset[x] = upd[x]
         if dryrun:
             print("CONTACTSET:%s" % json.dumps(toset,indent=4))
             return {'id':None}
@@ -488,18 +491,21 @@ class SM_Companies(SM_Base):
         toget = self.getPayload()
         return self.getData(payload=toget)
 
-    def update(self,args,dryrun=False):
+    def update(self,args,dryrun=False,raw=False):
         self.setType('POST')
         self.setCall('/apis/company/v4')
         upd = args
         toset = {}
         additional = []
-        for x in upd:
-            if x in COMPANY_MAPPING:
-                v = COMPANY_MAPPING[x] 
-                toset[v] = upd[x]
-        for x in additional:
-            toset[x] = upd[x]
+        if raw:
+            toset = args
+        else:
+            for x in upd:
+                if x in COMPANY_MAPPING:
+                    v = COMPANY_MAPPING[x] 
+                    toset[v] = upd[x]
+            for x in additional:
+                toset[x] = upd[x]
         if dryrun:
             print("COMPANYSET:%s" % json.dumps(toset,indent=4))
             return {'id':None}

@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import Demo from './demo/Demo';
+import { ToastContainer } from 'react-toastify';
 import DemoTF from './demo/DemoTF';
 import BlogGrid from './pages/BlogGrid';
 import HomeOlive from './pages/HomeOlive';
@@ -12,14 +13,25 @@ import Login from './pain/login/Login';
 import Dashboard from './pain/dashboard/Dashboard';
 import RegisterProvider from './pain/landing/RegisterProvider';
 import Welcome from './pain/welcome/Welcome';
+import Forgot from './pain/forgot/Forgot';
+import Reset from './pain/reset/Reset';
+import 'react-toastify/dist/ReactToastify.css'
 
+const CloseButton = ({closeToast}) => <i onClick={closeToast} className="la la-close notifications-close"/>
 const App = () => {
     return (
         <div className="App">
+            <ToastContainer
+                autoClose={5000}
+                hideProgressBar
+                closeButton={<CloseButton/>}
+            />
             <BrowserRouter basename={'/'}>
                 <Switch>
                     <Route exact path='/' component={HomeHorizontal}/>
                     <Route exact path='/login' component={Login}/>
+                    <Route exact path='/forgot' component={Forgot}/>
+                    <Route exact path='/reset/:token' component={Reset}/>
                     <Route exact path='/register-provider' component={RegisterProvider}/>
                     <Route exact path='/welcome' component={Welcome}/>
                     <Route exact path='/register-provider/:id' component={RegisterProvider}/>

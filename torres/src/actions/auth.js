@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import { push } from 'connected-react-router';
 import apiBaseUrl from '../globalConfig.js';
 import Cookies from 'universal-cookie';
+import translate from '../pain/utils/translate';
 
 export const AUTH_FAILURE = 'AUTH_FAILURE';
 export const LOGIN_REQUEST = 'LOGIN_REQUEST';
@@ -19,6 +20,8 @@ export const AUTH_INIT_SUCCESS = 'AUTH_INIT_SUCCESS';
 export const AUTH_INIT_ERROR = 'AUTH_INIT_ERROR';
 export const REGISTER_REQUEST = 'REGISTER_REQUEST';
 export const REGISTER_SUCCESS = 'REGISTER_SUCCESS';
+
+axios.defaults.headers.common['UI'] = "2";
 
 async function findMe() {
     const response = await axios.create({ //eslint-disable-line no-unused-vars
@@ -155,7 +158,7 @@ export function verifyEmail(token) {
           toast.success("Your email was verified");
         }
       }).catch(err => {
-        toast.error(err.response.data);
+        toast.error(translate(err.response.data));
       }).finally(() => {
         dispatch(push('/login'));
       })
@@ -165,9 +168,6 @@ export function verifyEmail(token) {
 
 export function resetPassword(token, password) {
   return (dispatch) => {
-    if (false && !config.isBackend) {
-      dispatch(push('/login'));
-    } else {
       dispatch({
         type: RESET_REQUEST,
       });
@@ -179,7 +179,9 @@ export function resetPassword(token, password) {
               "Content-Type": "application/json",
             },
       }).post("/reset", {token:token, password:password}).then(res => {
+         console.log("res.data.data",res.data.data);
           if (res.data && res.data.data && !res.data.data.success) { 
+            toast.error(translate(res.data.data.message));
             dispatch({
                 type: AUTH_FAILURE,
                 payload: res.data.data.message
@@ -189,20 +191,17 @@ export function resetPassword(token, password) {
                 type: RESET_SUCCESS,
             });
             toast.success("Password has been updated");
-            dispatch(push('/login'));
+            window.location = "/login";
+            // dispatch(push('/login'));
         }
       }).catch(err => {
         dispatch(authError(err.response.data));
       })
-    }
   }
 }
 
 export function sendPasswordResetEmail(email) {
   return (dispatch) => {
-    if (!config.isBackend) {
-      dispatch(push('/login'));
-    } else {
       dispatch({
         type: PASSWORD_RESET_EMAIL_REQUEST,
       });
@@ -221,7 +220,6 @@ export function sendPasswordResetEmail(email) {
         }).catch(err => {
             dispatch(authError(err.response.data));
         })
-    }
   }
 }
 

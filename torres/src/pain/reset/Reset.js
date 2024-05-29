@@ -1,18 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom';
+import TextField from '@mui/material/TextField';
 import { connect } from 'react-redux';
-import { Alert, Button, Container } from 'reactstrap';
-import Widget from '../../components/Widget';
 import { authError, resetPassword } from '../../actions/auth';
 import { getVersion } from '../../version';
 import translate from '../utils/translate';
 import { push } from 'connected-react-router';
+import Navbar from '../../components/Navbar';
+import TemplateTextFieldPassword from '../utils/TemplateTextFieldPassword';
+import TemplateButton from '../utils/TemplateButton';
 
 class Reset extends React.Component {
-    static propTypes = {
-        dispatch: PropTypes.func.isRequired,
-    };
 
     constructor(props) {
         super(props);
@@ -85,49 +84,22 @@ class Reset extends React.Component {
 
     render() {
       return (
-        <div className="auth-page">
-          <Container>
-            <h5 className="auth-logo">
-              <i className="la la-circle text-gray"/>
-              POUNDPAIN TECH
-              <i className="la la-circle text-warning"/>
-            </h5>
-            <Widget className="widget-auth mx-auto" title={<h3 className="mt-0">Reset password</h3>}>
-              <p className="widget-auth-info">
-                Please fill all fields below
-              </p>
-              <form className="mt" onSubmit={this.doReset}>
-                {
-                  this.props.errorMessage && (
-                    <Alert className="alert-sm" color="danger">
-                      {translate(this.props.errorMessage)}
-                    </Alert>
-                  )
-                }
-                <div className="form-group">
-                  <input className="form-control no-border" value={this.state.password}
-                         onChange={this.changePassword} type="password" required name="password"
-                         placeholder="Password"/>
+      <>
+        <Navbar/>
+        <div style={{marginTop:20}} className="row align-items-center">
+            <div style={{display:'flex',alignItems:'center',justifyContent:'center'}}> 
+                <TemplateTextFieldPassword style={{width:400}} label='Password' helpText='Password' onChange={this.changePassword}/>
+            </div>
+            <div style={{display:'flex',alignItems:'center',justifyContent:'center'}}> 
+                <TemplateTextFieldPassword style={{marginTop:10,width:400}} label='Verify' helpText='Verify' onChange={this.changeConfirmPassword}/>
+            </div>
+            <div className="row align-items-center">
+                <div style={{display:'flex',alignItems:'center',justifyContent:'center'}}> 
+                    <TemplateButton style={{marginTop:10,margin:20}} onClick={this.doReset} label='Reset' disable={false}/>
                 </div>
-                <div className="form-group">
-                  <input className="form-control no-border" value={this.state.confirmPassword}
-                         onChange={this.changeConfirmPassword} onBlur={this.checkPassword} type="password" required
-                         name="confirmPassword"
-                         placeholder="Confirm"/>
-                </div>
-                <Button type="submit" disabled={this.state.disabled} color="inverse" className="auth-btn mb-3"
-                        size="sm">{this.props.isFetching ? 'Loading...' : 'Reset'}</Button>
-              </form>
-              <p className="widget-auth-info">
-                or
-              </p>
-              <Link style={{color:'black'}} className="text-center" onClick={this.doLogin}>Login</Link>
-            </Widget>
-          </Container>
-          <footer className="auth-footer">
-                <small>POUNDPAIN TECH - {getVersion()}</small>
-          </footer>
+            </div>
         </div>
+      </>
       );
     }
 }

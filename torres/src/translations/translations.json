@@ -8,6 +8,7 @@
         "NO_EMAIL_FOUND_FOR_PRACTICE":"We are unable to find your email in our system. Please visit your dashboard.",
         "INVALID_EMAIL_FOUND_FOR_PRACTICE":"We are unable to find your email in our system. Please visit your dashboard.",
         "OFFICE_ALREADY_ACCEPTED":"Your office has already accepted this patient.",
+        "INVALID_TOKEN_EXPIRED":"Token expired. Please request another reset",
         "REFERRAL_DOESNT_EXIST":"This patient no longer exists. We apologize for the inconvienance",
         "LETTERS_REQUIRED":"Letters are required",
         "NUMBERS_REQUIRED":"Numbers are required",

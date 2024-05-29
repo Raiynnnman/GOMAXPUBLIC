@@ -64,7 +64,6 @@ class Login extends React.Component {
     }
 
     doLogin(e) {
-        console.log("login");
         e.preventDefault();
         this.props.dispatch(loginUser({ email: this.state.email, password: this.state.password }));
     }
@@ -91,22 +90,23 @@ class Login extends React.Component {
         <>
             <Navbar/>
             <div className="container" style={{marginTop:20}}>
-                    <div className="row align-items-center">
-                        <div style={{display:'flex',alignItems:'center',justifyContent:'center'}}> 
-                            <TemplateTextField width="300px" label='Email' helpText='Email' onChange={this.changeEmail}/>
-                        </div>
+                <div className="row align-items-center">
+                    <div style={{display:'flex',alignItems:'center',justifyContent:'center'}}> 
+                        <TemplateTextField style={{width:400}} label='Email' helpText='Email' onChange={this.changeEmail}/>
                     </div>
-                    <div className="row align-items-center">
-                        <div style={{display:'flex',alignItems:'center',justifyContent:'center'}}> 
-                            <TemplateTextFieldPassword width="300px" label='Password' helpText='Password' onChange={this.changePassword}/>
-                        </div>
+                </div>
+                <div className="row align-items-center">
+                    <div style={{display:'flex',alignItems:'center',justifyContent:'center'}}> 
+                        <TemplateTextFieldPassword style={{width:400}} label='Password' helpText='Password' onChange={this.changePassword}/>
                     </div>
-                    <div className="row align-items-center">
-                        <div style={{display:'flex',alignItems:'center',justifyContent:'center'}}> 
-                            <TemplateButton style={{marginTop:20}} onClick={this.doLogin} label='Login' disable={false}/>
-                            <TemplateButton style={{marginLeft:20,marginTop:20}} onClick={this.register} label='Sign Up' disable={false}/>
-                        </div>
+                </div>
+                <div className="row align-items-center">
+                    <div style={{display:'flex',alignItems:'center',justifyContent:'center'}}> 
+                        <a href="/forgot">Forgot Password?</a>
+                        <TemplateButton style={{margin:20}} onClick={this.doLogin} label='Login' disable={false}/>
+                        <TemplateButton style={{margin:20,margin:20}} onClick={this.register} label='Sign Up' disable={false}/>
                     </div>
+                </div>
             </div>
         </>
         )

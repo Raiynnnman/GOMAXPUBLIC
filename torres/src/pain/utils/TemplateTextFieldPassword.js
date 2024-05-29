@@ -1,13 +1,14 @@
-import React, { useState, Component, useEffect } from 'react';
+import React from 'react';
 import TextField from '@mui/material/TextField';
 
-function TemplateTextFieldPassword({label,onChange,helpText,initialValue,width,value}) {
+function TemplateTextFieldPassword({label,onChange,helpText,initialValue,style,value}) {
 
-    
     return (
-        <TextField label={label} variant="outlined" value={value}
+    <>
+        <TextField style={style} label={label} variant="outlined" value={value}
             onChange={onChange} type="password"/>
+    </>
     )
 }
 
-export default TextField;
+export default TemplateTextFieldPassword;

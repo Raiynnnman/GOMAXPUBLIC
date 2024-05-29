@@ -1,12 +1,104 @@
 import React ,  { Component } from "react";
 import { connect } from 'react-redux';
+import DropdownMenu from './DropdownMenu';
+import { logoutUser } from '../actions/auth';
+import { delContext } from '../actions/delContext';
 
 class Navbar extends Component {
+
+    constructor(props) { 
+        super(props);
+        this.logout = this.logout.bind(this);
+        this.leaveContext = this.leaveContext.bind(this);
+    } 
+    
     doLogin() {  
         window.location = '/login';
     } 
+
+    logout() { 
+        this.props.dispatch(logoutUser());
+    } 
+
+    leaveContext() { 
+        this.props.dispatch(delContext({},function(err,args) { 
+            localStorage.removeItem("context");
+            window.location.href = '/index.html';
+        }));
+    } 
+
     render(){
         console.log("p",this.props);
+        const profileItems = [
+            {n:'Leave Context',
+             v:function(c) { 
+                return (c.context ? true : false)
+             },
+             a:this.leaveContext,
+             u:'/'
+            },
+            {n:'Logout',
+             a:this.logout,
+             v:function(c) { return true; },
+             u:'/'  
+            },
+        ]
+        const systemItems = [
+            {
+             n:'Providers',
+             v:function(c) { 
+                return true;
+             },
+             a:function() { 
+                window.location = '/app/main/admin/providers';
+             }
+            },
+            {
+             n:'Invoices',
+             v:function(c) { 
+                return true;
+             },
+             a:function() { 
+                window.location = '/app/main/admin/invoices';
+             }
+            },
+            {
+             n:'Commissions',
+             v:function(c) { 
+                return true;
+             },
+             a:function() { 
+                window.location = '/app/main/admin/commissions';
+             }
+            },
+            {
+             n:'Coupons',
+             v:function(c) { 
+                return true;
+             },
+             a:function() { 
+                window.location = '/app/main/admin/coupons';
+             }
+            },
+            {
+             n:'Plans',
+             v:function(c) { 
+                return true;
+             },
+             a:function() { 
+                window.location = '/app/main/admin/plans';
+             }
+            },
+            {
+             n:'Users',
+             v:function(c) { 
+                return true;
+             },
+             a:function() { 
+                window.location = '/app/main/admin/users';
+             }
+            },
+        ];
         return(
             <div style={{backgroundColor:'#2d3e50'}} className="app-header header--transparent sticker" id="main-menu">
                 <div className="container">
@@ -31,7 +123,13 @@ class Navbar extends Component {
                                             <li><a href="/app/main/admin/referrals">Referrals</a></li>
                                             <li><a href="/app/main/admin/map">Map</a></li>
                                             <li><a href="/app/main/admin/registrations">Registrations</a></li>
-                                            <li><a href="/app/main/admin/registrations">{this.props.currentUser.first_name + " " + this.props.currentUser.last_name}</a></li>
+                                            <li><a href="#">
+                                                <DropdownMenu currentUser={this.props.currentUser} 
+                                                    title={
+                                                    this.props.currentUser.first_name + " " + this.props.currentUser.last_name
+                                                          } items={profileItems} dispatch={this.props.dispatch}/>
+                                                </a>
+                                            </li>
                                         </ul>
                                     </nav>
                                 </div>
