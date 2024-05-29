@@ -11,4 +11,4 @@ function TemplateTextField({label,onChange,helpText,initialValue,style,value}) {
     )
 }
 
-export default TextField;
+export default TemplateTextField;

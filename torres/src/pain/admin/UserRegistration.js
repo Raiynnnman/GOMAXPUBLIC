@@ -1,20 +1,14 @@
 import React, { Component } from 'react';
-import Select from 'react-select';
-import TextareaAutosize from 'react-autosize-textarea';
 import { connect } from 'react-redux';
-import { Col, Grid } from 'reactstrap';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
 import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
 import googleKey from '../../googleConfig';
 import { push } from 'connected-react-router';
-import { Button } from 'reactstrap'; 
-import { Nav, NavItem, NavLink } from 'reactstrap';
-import { TabContent, TabPane } from 'reactstrap';
-import cx from 'classnames';
-import classnames from 'classnames';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
-import { Form, FormGroup, Label, Input, InputGroup, InputGroupText } from 'reactstrap';
-import Login from '../login';
+import TemplateButton from '../utils/TemplateButton';
+import TemplateTextArea from '../utils/TemplateTextArea';
 
 class UserRegistration extends Component {
 
@@ -193,14 +187,12 @@ class UserRegistration extends Component {
             {(this.props.config && this.props.filled !== undefined) && (
                 <div style={{marginBottom:20,display: 'flex', alignItems: 'center', justifyContent: 'spread-evenly'}}>
                   <font style={{width:25}}></font>
-                  <Label style={{width:200,marginLeft:20,marginRight:20}} for="normal-field" className="text-md-right">
                     {translate('Status')}:
-                  </Label>
                     {(this.props.data.status !== 'SCHEDULED') && (
-                        <Button onClick={this.markScheduled} style={{marginRight:10}} color="primary">{translate('Scheduled')}</Button>
+                        <TemplateButton onClick={this.markScheduled} style={{marginRight:10}} color="primary">{translate('Scheduled')}</TemplateButton>
                     )}
-                    <Button onClick={this.markComplete} style={{marginRight:10}} color="primary">{translate('Completed')}</Button>
-                    <Button onClick={this.markNoShow} style={{marginRight:10}} color="danger">{translate('No Show')}</Button>
+                    <TemplateButton onClick={this.markComplete} style={{marginRight:10}} color="primary">{translate('Completed')}</TemplateButton>
+                    <TemplateButton onClick={this.markNoShow} style={{marginRight:10}} color="danger">{translate('No Show')}</TemplateButton>
                 </div>
             )}
             </>
@@ -211,38 +203,39 @@ class UserRegistration extends Component {
                 </Grid>
             </Grid>
             )}
-            <Grid container xs="12" xs="12" style={{marginTop:20}}>
-                <Grid item xs="12">
-                    Name: full name
-                    <br/>
-                    Phone: phone
-                    <br/>
-                    Email: email
-                    <br/>
-                    DOA: date of accident (5/16/24)
-                    <br/>
-                    Address: Address
-                    <br/>
-                    Attny: Attny
-                    <br/>
-                    Language: English | Spanish
+                <Grid container xs="12" xs="12" style={{margin:20}}>
+                    <Grid item xs="2">
+                        <Box>
+                        Name: Full Name
+                        <br/>
+                        Phone: Phone
+                        <br/>
+                        Email: Email
+                        <br/>
+                        DOA: date of accident (5/16/24)
+                        <br/>
+                        Address: Address
+                        <br/>
+                        Attny: Attny
+                        <br/>
+                        Language: English | Spanish
+                        </Box>
+                    </Grid>
                 </Grid>
-            </Grid>
-            <Grid container xs="12" xs="12" style={{marginTop:20}}>
+            <Grid container xs="12" xs="12" style={{margin:20}}>
                 <Grid item xs="12">
-                    <TextareaAutosize
-                      rows={5} style={{backgroundColor:'white'}}
+                    <TemplateTextArea
+                      rows={10} style={{width:500}}
                       placeholder=""
                       onChange={this.setValue} value={this.state.tarea}
-                      className={`form-control ${s.autogrow} transition-height`}
                     />
                 </Grid>
             </Grid>
             <Grid container xs="12" xs="12" style={{marginTop:20}}>
                 <Grid item xs="12" xs="12">
                 <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                    <Button onClick={this.save} style={{marginRight:10}} color="primary">{translate('Save')}</Button>
-                    <Button outline onClick={this.cancel} color="primary">{translate('Cancel')}</Button>
+                    <TemplateButton onClick={this.save} style={{marginRight:10}} label="Save" color="primary">{translate('Save')}</TemplateButton>
+                    <TemplateButton outline onClick={this.cancel} label="Cancel" color="primary">{translate('Cancel')}</TemplateButton>
                 </div>
                 </Grid>
             </Grid>

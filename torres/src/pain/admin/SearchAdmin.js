@@ -1,18 +1,12 @@
 import React, { Component } from 'react';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import Navbar from '../../components/Navbar';
+import Container from '@mui/material/Container';
 import { connect } from 'react-redux';
 import SavedSearchIcon from '@mui/icons-material/SavedSearch';
 import { toast } from 'react-toastify';
 import { push } from 'connected-react-router';
-import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
-import { Col, Grid } from 'reactstrap';
-import { Nav, NavItem, NavLink } from 'reactstrap';
-import { TabContent, TabPane } from 'reactstrap';
-import cx from 'classnames';
-import classnames from 'classnames';
-import Select from 'react-select';
-import { Button } from 'reactstrap'; 
-import { Form, FormGroup, Label, Input } from 'reactstrap';
-import { InputGroup, InputGroupText } from 'reactstrap';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import { getProviderSearchAdmin } from '../../actions/providerSearchAdmin';
@@ -20,14 +14,9 @@ import { searchConfig } from '../../actions/searchConfig';
 import { searchCheckRes } from '../../actions/searchCheckRes';
 import { searchRegister } from '../../actions/searchRegister';
 import { searchRegisterAdmin } from '../../actions/searchRegisterAdmin';
-import makeAnimated from 'react-select/animated';
 import PhysicianCard from './PhysicianCard';
-import AliceCarousel from 'react-alice-carousel';
-import 'react-alice-carousel/lib/alice-carousel.css';
 import UserRegistration from './UserRegistration';
-import Login from '../login';
-
-const animatedComponents = makeAnimated();
+import Login from '../login/Login';
 
 class SearchAdmin extends Component {
     constructor(props) { 
@@ -107,13 +96,6 @@ class SearchAdmin extends Component {
     scheduleAppt(p,e) {
         this.state.selectedAppt = p;
         this.setState(this.state);
-        var params = {
-            id: e.id,
-            procedure:e.proc
-        } 
-        /*this.props.dispatch(searchCheckRes(params,function(err,args,data) { 
-            args[0].updateAppt(args[1],args[2])
-        },[this,p,e]))*/
     }
 
     setProviderType(e) { 
@@ -207,35 +189,14 @@ class SearchAdmin extends Component {
             selected: this.state.selected,
             zipcode: this.state.zipcode
         } 
-        this.props.dispatch(getProceduresSearchAdmin(params))
+        //this.props.dispatch(getProceduresSearchAdmin(params))
         this.setState(this.state);
     }
 
     render() {
-        const responsive = {
-            0: { 
-                items: 1
-            },
-            568: { 
-                items: 1
-            },
-            1024: {
-                items: 1, 
-                itemsFit: 'contain'
-            },
-            1200: {
-                items: 2, 
-                itemsFit: 'contain'
-            },
-        };
-        const styles = {
-          control: base => ({
-            ...base,
-            width: 325
-            })
-        }
         return (
         <>
+            <Navbar/>
             {(this.props.providerSearchAdmin && this.props.providerSearchAdmin.isReceiving) && (
                 <AppSpinner/>
             )}
@@ -247,7 +208,7 @@ class SearchAdmin extends Component {
             )}
             {(Login.isAuthenticated()) && ( 
                 <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                    <h5>Use the zipcode box to find providers. Or enter in the form to have a provider automatically provided..</h5>
+                    <h5>Use the zipcode box to find providers. Or enter in the form to have a provider automatically assigned.</h5>
                 </div>
             )}
             {(Login.isAuthenticated() && this.state.selectedProviderType !== null) && ( 
@@ -257,20 +218,6 @@ class SearchAdmin extends Component {
                     </div>
                 </div>
             )}
-            {(!Login.isAuthenticated()) && ( 
-            <>
-            <Grid container xs="12">
-                <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'space-evenly'}}>
-                        <img src="/painlogo.png" width="200px" height="200px"/>
-                        <font style={{textAlign:"center", fontSize:window.innerWidth < 1024 ? 15 : 30}}>POUNDPAIN TECH</font>
-                        <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        <Button color="primary"onClick={this.login}>Login</Button>
-                        </div>
-                </div>
-            </Grid>
-            <hr/>
-            </>
-            )}
             {(this.props.searchConfig && this.props.searchConfig.data && this.props.searchConfig.data.types && 
               this.state.selectedProviderType === null) && ( 
                 <Grid container xs="12" style={{marginTop:20}}>
@@ -278,18 +225,22 @@ class SearchAdmin extends Component {
                         return (
                             <>
                             <Grid item xs="4" onClick={() => this.setProviderType(e.id)} style={{cursor:'pointer'}}>
-                                <Card 
-                                    style={{borderRadius:"25px 25px 25px 25px",margin:20,width:400,height:300}} className="mb-xlg border-1">
-                                    <CardBody>
+                                <Container>
+                                    <Box style={{border:"1px solid black",
+                                        borderRadius:"25px 25px 25px 25px",margin:20,width:400,height:300}}>
                                         <Grid container xs="12">
-                                            <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                                            <font style={{fontSize:'24px'}}>
-                                                {e.description}
-                                            </font>
+                                            <Grid item xs="12">
+                                            <div style={{textAlign:'center',
+                                                height:300,display: 'flex', 
+                                                alignItems: 'center', justifyContent: 'center'}}>
+                                                <font style={{fontSize:'24px'}}>
+                                                    {e.description}
+                                                </font>
                                             </div>
+                                            </Grid>
                                         </Grid>
-                                    </CardBody>
-                                </Card>
+                                    </Box>
+                                </Container>
                             </Grid>
                             </>
                         )

@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import Spinner from 'react-bootstrap/Spinner';
 
 import './SpinnerInternal.scss';
 
 function AppSpinnerInternal() {
   return (
-    <div className="spinner-internal"><i style={{color:"#153760"}} className="fa fa-5x fa-spinner fa-spin"></i></div>
+  <>
+    {/* <div className="spinner-internal"><i style={{color:"#153760"}} className="fa fa-5x fa-spinner fa-spin"></i></div>*/}
+  </>
   )
 }
 

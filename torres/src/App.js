@@ -16,6 +16,7 @@ import Welcome from './pain/welcome/Welcome';
 import Forgot from './pain/forgot/Forgot';
 import Reset from './pain/reset/Reset';
 import 'react-toastify/dist/ReactToastify.css'
+import SearchAdmin from './pain/admin/SearchAdmin';
 
 const CloseButton = ({closeToast}) => <i onClick={closeToast} className="la la-close notifications-close"/>
 const App = () => {
@@ -38,6 +39,7 @@ const App = () => {
                     <Route path="/app" exact render={() => <Redirect to="/app/main"/>}/>
                     <Route path="/app/main" exact render={() => <Redirect to="/app/main/dashboard"/>}/>
                     <Route exact path='/app/main/dashboard' component={Dashboard}/>
+                    <Route exact path='/app/main/admin/search' component={SearchAdmin}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/tf`} component={DemoTF}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/home-one`} component={HomeOlive}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/home-two`} component={HomeHorizontal}/>
