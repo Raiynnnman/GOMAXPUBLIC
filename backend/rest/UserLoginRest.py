@@ -4,7 +4,7 @@ import os
 import json
 import unittest
 from flask import request, jsonify
-
+import pdb
 from rest.RestBase import RestBase
 from processing import UserLogin
 
@@ -13,6 +13,8 @@ class UserLoginRest(RestBase):
     def post(self, *args, **kwargs):
         u = UserLogin.UserLogin()
         ret = u.process(args[0])
+        print("oh my gosh")
+        pdb.set_trace()
         return ret
 
 class ResetPasswordWithTokenRest(RestBase):

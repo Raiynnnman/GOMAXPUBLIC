@@ -10,7 +10,6 @@ requests/*
 *.swp
 */*.swp
 tmp/*
-common/version.py
 bin/conf/flyway.conf.*
 .idea
 .idea/*

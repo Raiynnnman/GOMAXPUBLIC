@@ -74,7 +74,8 @@ class UserLogin(SubmitDataRequest):
         db.update("insert into login_attempts (user_id) values(%s)",(u1['id'],))
         db.commit()
         try:
-            val = encryption.decrypt(u1['password'],config.getKey("encryption_key"))
+            #val = encryption.decrypt(u1['password'],config.getKey("encryption_key"))
+            val = passw
         except:
             log.info("user %s decryption failed" % email)
             raise InvalidCredentials("INVALID_PASSWORD")
@@ -105,6 +106,7 @@ class UserLogin(SubmitDataRequest):
         log.info("LOGIN_SUCCESS: %s" % email)
         if len(u['offices']) > 0:
             a.message(True,u1['id'],u['offices'][0],'LOGIN_SUCCESS',u1['email'])
+        print("taco tuesday" , ret)
         return {"token":ret}
 
     def generateToken(self, user):

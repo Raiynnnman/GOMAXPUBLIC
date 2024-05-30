@@ -1,6 +1,11 @@
 # coding=utf-8
 from util.DBOps import Query
 from util import Jenkins
+from common import settings
+
+
+config = settings.config()
+config.read("settings.cfg")
 
 class ProcessingBase:
 
@@ -150,4 +155,5 @@ class ProcessingBase:
         return ret 
 
     def __del__(self):
-        Jenkins.spawnJob.delay(self.__class__.__name__,self.__id__)
+        if config.getKey("use_defer")is not None:
+            Jenkins.spawnJob.delay(self.__class__.__name__,self.__id__)

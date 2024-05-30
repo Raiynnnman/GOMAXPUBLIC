@@ -18,7 +18,7 @@ from processing import JobStates
 from processing.SavedFileData import SavedFileData
 from processing.ProcessingBase import ProcessingBase
 from py4j.protocol import Py4JJavaError
-
+import pdb
 config = settings.config()
 config.read("settings.cfg")
 
@@ -131,6 +131,7 @@ class SubmitDataRequest(ProcessingBase):
         else:
             d['data'] = proc
             ret = self.run(d)
+        print(ret , "Submit data req py")
         return ret
 
     def run(self, *args, **kwargs):
@@ -170,10 +171,14 @@ class SubmitDataRequest(ProcessingBase):
             H.close()
             data = json.loads(data)
         jobstate.jobRunning()
+        print("running!!!!!!!!!!!")
         try:
             if isinstance(data, str):
                 data = json.loads(data)
+            print(data,"this data")    
             ret = self.execute(task['jobid'],data)
+            print("after data" , ret)
+            pdb.set_trace()
         except Exception as e:
             print(str(e))
             jobstate.jobError()
@@ -194,4 +199,5 @@ class SubmitDataRequest(ProcessingBase):
                 os.unlink(s3path)
             except Exception:
                 pass
+        pdb.set_trace()
         return ret

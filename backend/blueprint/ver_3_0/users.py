@@ -1,17 +1,19 @@
 # coding=utf-8
 
+import json
 from flasgger.utils import swag_from
 from flask import Blueprint, request
 from blueprint.helper import docs_dir, restcall
 from blueprint.login import token_required
 from rest import UserLoginRest,ProfileRest,UserRest
-
+import pdb
 users = Blueprint('users', __name__)
 @users.route('/login', methods=['POST'])
 @swag_from(docs_dir + 'passwordlogin.yaml')
 def password_check(*args, **kwargs):
     po = UserLoginRest.UserLoginRest()
     return po.postWrapper(*args,**kwargs)
+    #return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
 
 @users.route('/profile', methods=['GET'])
 @token_required
