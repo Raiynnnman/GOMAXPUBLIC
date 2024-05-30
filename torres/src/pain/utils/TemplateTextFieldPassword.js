@@ -7,9 +7,9 @@ function TemplateTextFieldPassword({label,onChange,helpText,initialValue,style,v
 
     return (
     <>
-      <FormControl sx={{ m: 1, width: "100%" }}>
+      <FormControl sx={{ m: 1 }}>
         <TextField style={style} variant="outlined" value={value}
-            onChange={onChange} type="password"/>
+            onChange={onChange} label={label} type="password"/>
       </FormControl>
     </>
     )

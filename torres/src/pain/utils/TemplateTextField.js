@@ -7,8 +7,8 @@ function TemplateTextField({label,onChange,helpText,initialValue,style,value}) {
 
     return (
     <>
-      <FormControl sx={{ m: 1, width: "100%" }}>
-          <TextField variant="outlined" value={value} style={style}
+      <FormControl sx={{ m: 1}}>
+          <TextField variant="outlined" label={label} value={value} style={style}
                 onChange={onChange}/>
       </FormControl>
     </>
