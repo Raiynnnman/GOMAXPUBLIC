@@ -301,6 +301,10 @@ class RegistrationLandingData(RegistrationsBase):
             where active = 1
             order by slot
         """)
+        o = db.query("""
+            select value from system_settings where name='do_billing_charge'
+            """)
+        ret['do_billing_charge'] = o[0]['value']
         if 'pq_id' in params and params['pq_id'] is not None:
             o = db.query("""
                 select
