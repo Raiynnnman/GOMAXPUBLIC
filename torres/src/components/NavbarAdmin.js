@@ -70,7 +70,6 @@ function NavbarAdmin({onChange,currentUser,dispatch}) {
     const profileItems = [
         {n:'Leave Context',
          v:function(c) { 
-            console.log("val",c.context);
             return (c.context ? true : false)
          },
          a:function() { 

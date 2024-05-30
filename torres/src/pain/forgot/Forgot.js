@@ -36,7 +36,6 @@ class Forgot extends React.Component {
     }
 
     doSendResetEmail(e) {
-      console.log("res",e);
       e.preventDefault();
       this.props.dispatch(sendPasswordResetEmail(this.state.email));
     }

@@ -1,18 +1,18 @@
 import React, { Component } from 'react';
-import { FormGroup, Label, Input } from 'reactstrap';
 import { connect } from 'react-redux';
-import { Col, Grid } from 'reactstrap';
-import { Nav, NavItem, NavLink } from 'reactstrap';
-import { TabContent, TabPane } from 'reactstrap';
-import cx from 'classnames';
-import classnames from 'classnames';
-import Select from 'react-select';
-
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import { getTraffic } from '../../actions/trafficGet';
 import TrafficMap from './TrafficMap';
 import HeatMap from './HeatMap';
+import TemplateSelect from '../utils/TemplateSelect';
+import TemplateSelectMulti from '../utils/TemplateSelectMulti';
+import TemplateTextField from '../utils/TemplateTextField';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import Navbar from '../../components/Navbar';
 
 class Map extends Component {
     constructor(props) { 
@@ -75,25 +75,18 @@ class Map extends Component {
     }
 
     onCategoryChange(e,t) { 
-        var torem = 0;
-        if (t.action && t.action === 'remove-value') { 
-            torem = t.removedValue.id;
-            var k = this.state.categories.filter((g) => g.id !== torem);
-            this.state.categories = k;
-            this.setState(this.state);
-        } 
-        if (t.action && t.action === 'select-option') { 
-            torem = t.option.value;
-            var k = this.props.trafficData.data.config.categories.filter((g) => g.id === torem);
-            this.state.categories.push(k[0]);
-            this.setState(this.state);
-        } 
+        this.state.categories = e;
         if (this.state.categories.length < 1) { return; }
         var d = [];
         var c = 0;
         for (c = 0; c < this.state.categories.length;c++) { 
-            d.push(this.state.categories[c].id);
+            if (this.state.categories[c].id) { 
+                d.push(this.state.categories[c].id);
+            } else { 
+                d.push(this.state.categories[c].value);
+            } 
         } 
+        this.setState(this.state);
         this.props.dispatch(getTraffic({categories:d,date:this.state.dateSelected,zipcode:this.state.zipSelected}))
     } 
 
@@ -127,8 +120,8 @@ class Map extends Component {
         } 
     } 
 
-    toggleTab(e) { 
-        this.state.activeTab = e;
+    toggleTab(e,t) { 
+        this.state.activeTab = t;
         this.setState(this.state);
     } 
 
@@ -138,16 +131,15 @@ class Map extends Component {
             {(this.props.trafficData && this.props.trafficData.isReceiving) && (
                 <AppSpinner/>
             )}
-            <div style={{zIndex:512}}>
+            <Navbar/>
+            <div style={{marginLeft:20,marginTop:20,zIndex:512}}>
                 <Grid container xs="12">
                     <Grid item xs="2" style={{zIndex:9995}}>
                       {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.config &&
                         this.props.trafficData.data.config.avail && this.state.dateSelected !== null) && (
-                          <Select
-                              styles={{ menuPortal: base => ({ ...base, zIndex: 9995 }) }}
-                              closeMenuOnSelect={true}
-                              isSearchable={true}
+                          <TemplateSelect
                               onChange={this.onDateChange}
+                              label='Day'
                               value={{
                                 label:this.state.dateSelected
                               }}
@@ -155,7 +147,7 @@ class Map extends Component {
                                 return (
                                     { 
                                     label: e.day,
-                                    value: e.id
+                                    value: e.day
                                     }
                                 )
                               })}
@@ -165,22 +157,20 @@ class Map extends Component {
                     <Grid item xs="1" style={{zIndex:9995}}>
                       {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.config &&
                         this.props.trafficData.data.config.avail && this.state.dateSelected !== null) && (
-                          <Input type="text" id="normal-field" 
+                          <TemplateTextField style={{marginLeft:10}} type="text" id="normal-field" label="Zipcode"
                             onChange={this.onZipChange} placeholder="" value={this.state.zipSelected}/>
                         )}
                     </Grid>                
-                    <Grid item xs="7" style={{zIndex:9995}}>
+                    <Grid item xs="8" style={{zIndex:9995}}>
                       {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.config &&
                         this.props.trafficData.data.config.avail && this.state.dateSelected !== null) && (
-                          <Select
-                              closeMenuOnSelect={true}
-                              isSearchable={false}
-                              isMulti
+                          <TemplateSelectMulti
                               onChange={this.onCategoryChange}
+                              label='Category'
                               value={this.state.categories.map((g) => { 
                                 return (
                                     {
-                                    label:g.name,
+                                    label:g.label ? g.label : g.name,
                                     id:g.id
                                     }
                                 )
@@ -198,34 +188,24 @@ class Map extends Component {
                     </Grid>                
                 </Grid>
             </div>
-            <Grid container xs="12" style={{marginTop:20}}>
+            <Grid container xs="12" style={{marginLeft:20,marginTop:20}}>
                 <Grid item xs="12">
-                    <Nav tabs  className={`${s.coloredNav}`} style={{backgroundColor:"#e8ecec"}}>
-                        <NavItem>
-                            <NavLink className={classnames({ active: this.state.activeTab === 'traffic' })}
-                                onClick={() => { this.toggleTab('traffic') }}>
-                                <span>{translate('Traffic')}</span>
-                            </NavLink>
-                        </NavItem>
-                        <NavItem>
-                            <NavLink className={classnames({ active: this.state.activeTab === 'heatmap' })}
-                                onClick={() => { this.toggleTab('heatmap') }}>
-                                <span>{translate('HeatMap')}</span>
-                            </NavLink>
-                        </NavItem>
-                    </Nav>
-                    {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.center) && (
+                    <Box sx={{width:'100%'}}>
+                        {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.center) && (
                         <>
-                        <TabContent style={{height:"1000px"}} className='mb-lg' activeTab={this.state.activeTab}>
-                            <TabPane tabId="traffic">
-                                <TrafficMap data={this.props.trafficData} centerPoint={this.props.trafficData.data.center}/>
-                            </TabPane>
-                            <TabPane tabId="heatmap">
-                                <HeatMap data={this.props.trafficData} centerPoint={this.props.trafficData.data.center}/>
-                            </TabPane>
-                        </TabContent>
+                        <Tabs value={this.state.activeTab} onChange={this.toggleTab}>
+                            <Tab value='traffic' label='Traffic'/>
+                            <Tab value='heatmap' label='HeatMap'/>
+                        </Tabs>
+                        {(this.state.activeTab === 'traffic') && ( 
+                            <TrafficMap data={this.props.trafficData} centerPoint={this.props.trafficData.data.center}/>
+                        )}
+                        {(this.state.activeTab === 'heatmap') && ( 
+                            <HeatMap data={this.props.trafficData} centerPoint={this.props.trafficData.data.center}/>
+                        )}
                         </>
-                    )}
+                        )}
+                    </Box>
                 </Grid>                
             </Grid>
         </>

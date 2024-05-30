@@ -28,7 +28,6 @@ class Navbar extends Component {
     } 
 
     render(){
-        console.log("p",this.props);
         const profileItems = [
             {n:'Leave Context',
              v:function(c) { 

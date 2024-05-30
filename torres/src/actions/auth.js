@@ -179,7 +179,6 @@ export function resetPassword(token, password) {
               "Content-Type": "application/json",
             },
       }).post("/reset", {token:token, password:password}).then(res => {
-         console.log("res.data.data",res.data.data);
           if (res.data && res.data.data && !res.data.data.success) { 
             toast.error(translate(res.data.data.message));
             dispatch({

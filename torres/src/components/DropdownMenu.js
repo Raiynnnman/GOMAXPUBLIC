@@ -16,12 +16,10 @@ function DropdownMenu({onChange,items,title,currentUser}) {
   };
 
   const handleAction = (e) => {
-    console.log("action",e);
     e();
   }
 
   const handleClickAway = () => {
-    console.log("omg");
     setOpen(false);
   };
 

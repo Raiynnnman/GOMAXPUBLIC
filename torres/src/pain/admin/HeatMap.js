@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { HeatMap, Map, Circle, Marker, GoogleApiWrapper } from "google-maps-react";
-import { Col, Grid } from 'reactstrap';
+import Grid from '@mui/material/Grid';
 import './Map.scss';
 import moment from 'moment';
 

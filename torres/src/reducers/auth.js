@@ -10,7 +10,6 @@ export default function auth(state = {
   currentUser: null,
   loadingInit: true,
 }, {type, payload,goo}) {
-  console.log("t",type,payload,goo);
   switch (type) {
       case LOGIN_REQUEST:
       case RESET_REQUEST:
@@ -35,7 +34,6 @@ export default function auth(state = {
               errorMessage: payload,
           });
       case AUTH_INIT_SUCCESS:
-          console.log("omg",payload);
           return Object.assign({}, state, {
               currentUser: payload.currentUser || null,
               loadingInit: false,
@@ -46,7 +44,6 @@ export default function auth(state = {
               loadingInit: false,
           });
       default:
-          console.log("state",state);
           return state;
   }
 }

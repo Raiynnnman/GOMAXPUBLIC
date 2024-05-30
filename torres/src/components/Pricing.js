@@ -7,7 +7,6 @@ class Pricing extends Component{
         window.location = '/register-provider/' + e;
     } 
     render() {
-        console.log("p",this.props);
         return (
             <>
             {(this.props.landingData && this.props.landingData.data && this.props.landingData.data.pricing &&
