@@ -114,8 +114,6 @@ class RegistrationUpdate(RegistrationsBase):
             '__LINK__':"%s/#/verify/%s" % (url,val.decode('utf-8')),
             '__BASE__':url
         } 
-        if self.isUIV2(): 
-            data['__LINK__']:"%s/verify/%s" % (url,val.decode('utf-8'))
         if config.getKey("appt_email_override") is not None:
             email = config.getKey("appt_email_override")
         m = Mail()
@@ -303,10 +301,6 @@ class RegistrationLandingData(RegistrationsBase):
             where active = 1
             order by slot
         """)
-        o = db.query("""
-            select value from system_settings where name='do_billing_charge'
-            """)
-        ret['do_billing_charge'] = o[0]['value']
         if 'pq_id' in params and params['pq_id'] is not None:
             o = db.query("""
                 select
@@ -991,8 +985,6 @@ class RegisterProvider(RegistrationsBase):
             '__LINK__':"%s/#/verify/%s" % (url,val.decode('utf-8')),
             '__BASE__':url
         } 
-        if self.isUIV2(): 
-            data['__LINK__']:"%s/verify/%s" % (url,val.decode('utf-8'))
         if config.getKey("appt_email_override") is not None:
             email = config.getKey("appt_email_override")
         
@@ -1000,8 +992,6 @@ class RegisterProvider(RegistrationsBase):
         m = Mail()
         data['__OFFICE_NAME__'] = params['name']
         data['__OFFICE_URL__'] = "%s/#/app/main/admin/office/%s" % (url,off_id)
-        if self.isUIV2(): 
-            data['__OFFICE_URL__'] = "%s/app/main/admin/office/%s" % (url,off_id)
         m.defer(email,"Registration with POUNDPAIN TECH","templates/mail/registration-verification.html",data)
         m.defer(sysemail,"New Customer Signed Up","templates/mail/office-signup.html",data)
         db.commit()
@@ -1233,15 +1223,11 @@ class RegisterReferrer(RegistrationsBase):
             '__LINK__':"%s/#/verify/%s" % (url,val.decode('utf-8')),
             '__BASE__':url
         } 
-        if self.isUIV2(): 
-            data['__LINK__']:"%s/#/verify/%s" % (url,val.decode('utf-8'))
         if config.getKey("appt_email_override") is not None:
             email = config.getKey("appt_email_override")
         m = Mail()
         data['__OFFICE_NAME__'] = params['name']
         data['__OFFICE_URL__'] = "%s/#/app/main/admin/office/%s" % (url,insid)
-        if self.isUIV2(): 
-            data['__OFFICE_URL__']:"%s/app/main/admin/office/%s" % (url,insid)
         sysemail = config.getKey("support_email")
         m.defer(email,"Registration with POUNDPAIN TECH","templates/mail/registration-verification.html",data)
         m.defer(sysemail,"New Referrer Signed Up","templates/mail/office-signup.html",data)

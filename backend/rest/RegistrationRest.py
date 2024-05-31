@@ -35,6 +35,7 @@ class RegisterProviderRest(RestBase):
     def post(self, *args, **kwargs):
         u = Registrations.RegisterProvider()
         ret = u.process(args[0])
+        print(ret)
         return ret
 
 class RegistrationSetupIntentRest(RestBase):

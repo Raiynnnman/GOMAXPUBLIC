@@ -18,6 +18,7 @@ from processing import JobStates
 from processing.SavedFileData import SavedFileData
 from processing.ProcessingBase import ProcessingBase
 from py4j.protocol import Py4JJavaError
+
 config = settings.config()
 config.read("settings.cfg")
 
@@ -95,7 +96,6 @@ class SubmitDataRequest(ProcessingBase):
         raise Exception("DERIVED_CLASS_MUST_IMPLEMENT")
 
     def process(self, *args, **kwargs):
-        self.isUIV2()
         jobstate = None
         jobstate = JobStates.JobStates()
         jobstate.jobQueued()
