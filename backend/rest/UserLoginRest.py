@@ -13,8 +13,6 @@ class UserLoginRest(RestBase):
     def post(self, *args, **kwargs):
         u = UserLogin.UserLogin()
         ret = u.process(args[0])
-        print("oh my gosh")
-        pdb.set_trace()
         return ret
 
 class ResetPasswordWithTokenRest(RestBase):

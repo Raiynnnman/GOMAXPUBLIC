@@ -89,6 +89,7 @@ cors = CORS(app,
 )
 app.config['CORS_HEADERS'] = 'Content-Type'
 
+
 def get_file(filename):  # pragma: no cover
     try:
         src = os.path.join(root_dir(), filename)
