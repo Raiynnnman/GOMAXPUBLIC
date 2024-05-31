@@ -133,26 +133,30 @@ for x in df:
         j['name'] = "Unknown"
     j['first'] = "Unknown"
     j['last'] = "Unknown"
-    comp = {
-        'company': j['email'],
-        'website': j['website'],
-        'name': j['name'],
-        'tags': 'Import Jure',
-        'phone': j['phone']
-    } 
-    r = COMPANY_OBJ.update(comp,dryrun=args.no_commit,raw=True)
-    company_sm_id = r['id']
-    contact = { 
-        'email': j['email'],
-        'company': company_sm_id,
-        'firstName': j['first'],
-        'lastName': j['last'],
-        'tags': 'Import Jure',
-        'phone': j['phone'],
-        'website': j['website']
-    } 
-    r = CONTACT_OBJ.update(contact,dryrun=args.no_commit,raw=True)
-    user_sm_id = r['id']
+    try:
+        comp = {
+            'company': j['email'],
+            'website': j['website'],
+            'name': j['name'],
+            'tags': 'Import Jure',
+            'phone': j['phone']
+        } 
+        r = COMPANY_OBJ.update(comp,dryrun=args.no_commit,raw=True)
+        company_sm_id = r['id']
+        contact = { 
+            'email': j['email'],
+            'company': company_sm_id,
+            'firstName': j['first'],
+            'lastName': j['last'],
+            'tags': 'Import Jure',
+            'phone': j['phone'],
+            'website': j['website']
+        } 
+        r = CONTACT_OBJ.update(contact,dryrun=args.no_commit,raw=True)
+        user_sm_id = r['id']
+    except Exception as e:
+        print(str(e))
+
     CNTR += 1
     print("cntr=%s" % CNTR)
     if args.limit is not None and CNTR >= int(args.limit):

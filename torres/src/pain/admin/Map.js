@@ -8,6 +8,7 @@ import { getTraffic } from '../../actions/trafficGet';
 import TrafficMap from './TrafficMap';
 import HeatMap from './HeatMap';
 import TemplateSelect from '../utils/TemplateSelect';
+import TemplateBadge from '../utils/TemplateBadge';
 import TemplateSelectMulti from '../utils/TemplateSelectMulti';
 import TemplateTextField from '../utils/TemplateTextField';
 import Tabs from '@mui/material/Tabs';

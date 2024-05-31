@@ -1,32 +1,28 @@
 import React, { Component } from 'react';
 import { toast } from 'react-toastify';
-import Select from 'react-select';
-import MaskedInput from 'react-maskedinput';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
 import moment from 'moment';
-import { Badge } from 'reactstrap';
-import { Button } from 'reactstrap'; 
-import cellEditFactory from 'react-bootstrap-table2-editor';
 import EditIcon from '@mui/icons-material/Edit';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 import salesforceURL from '../../salesforceConfig';
 
-import { Type } from 'react-bootstrap-table2-editor';
 import { connect } from 'react-redux';
-import { Col, Grid } from 'reactstrap';
-import { Nav, NavItem, NavLink } from 'reactstrap';
-import { FormGroup, Label, InputGroup, Input } from 'reactstrap';
-import { TabContent, TabPane } from 'reactstrap';
-import cx from 'classnames';
-import classnames from 'classnames';
 
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import { getReferrers } from '../../actions/referrerAdminList';
-// import { referralAdminUpdate } from '../../actions/referralAdminUpdate';
-import BootstrapTable from 'react-bootstrap-table-next';
-import paginationFactory from 'react-bootstrap-table2-paginator';
+//import { referralAdminUpdate } from '../../actions/referralAdminUpdate';
 import formatPhoneNumber from '../utils/formatPhone';
 import PainTable from '../utils/PainTable';
+import TemplateSelect from '../utils/TemplateSelect';
+import TemplateBadge from '../utils/TemplateBadge';
+import TemplateButton from '../utils/TemplateButton';
+import TemplateSelectMulti from '../utils/TemplateSelectMulti';
+import TemplateTextField from '../utils/TemplateTextField';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import Navbar from '../../components/Navbar';
 
 class Referrers extends Component {
     constructor(props) { 
@@ -217,13 +213,13 @@ class Referrers extends Component {
             status: this.state.selected.provider_queue_status_id,
         } 
         if (this.state.selected.invoice && this.state.selected.invoice.id) { 
-            tosend.invoice_id = this.state.selected.invoice.id,
+            tosend.invoice_id = this.state.selected.invoice.id
             tosend.invoice_items = this.state.selected.invoice.items
         }
         if (this.state.selected.card) { 
             tosend.card = this.state.selected.card
         }
-        this.props.dispatch(referralAdminUpdate(tosend,function(err,args) { 
+        /*this.props.dispatch(referralAdminUpdate(tosend,function(err,args) { 
             args.props.dispatch(getReferrers(
                 {search:args.state.search,limit:args.state.pageSize,offset:args.state.page,status:args.state.filter},function(err,args) { 
               toast.success('Successfully saved referral.',
@@ -235,7 +231,7 @@ class Referrers extends Component {
               );
               args.close()
             },args))
-        },this));
+        },this));*/
     } 
     onPlansChange(e) { 
         this.state.selected.pricing_id = e.value;
@@ -363,13 +359,13 @@ class Referrers extends Component {
                 text:'Status',
                 formatter:(cellContent,row) => (
                     <div>
-                        {(row.status === 'QUEUED') && (<Badge color="secondary">QUEUED</Badge>)}
-                        {(row.status === 'REJECTED') && (<Badge color="danger">REJECTED</Badge>)}
-                        {(row.status === 'ACCEPTED') && (<Badge color="primary">ACCEPTED</Badge>)}
-                        {(row.status === 'CONTACTED') && (<Badge color="primary">CONTACTED</Badge>)}
-                        {(row.status === 'FOLLOWUP') && (<Badge color="primary">FOLLOWUP</Badge>)}
-                        {(row.status === 'SCHEDULED') && (<Badge color="primary">SCHEDULED</Badge>)}
-                        {(row.status === 'COMPLETED') && (<Badge color="primary">COMPLETED</Badge>)}
+                        {(row.status === 'QUEUED') && (<TemplateBadge label='QUEUED'/>)}
+                        {(row.status === 'REJECTED') && (<TemplateBadge label='REJECTED'/>)}
+                        {(row.status === 'ACCEPTED') && (<TemplateBadge label='ACCEPTED'/>)}
+                        {(row.status === 'CONTACTED') && (<TemplateBadge label='CONTACTED'/>)}
+                        {(row.status === 'FOLLOWUP') && (<TemplateBadge label='FOLLOWUP'/>)}
+                        {(row.status === 'SCHEDULED') && (<TemplateBadge label='SCHEDULED'/>)}
+                        {(row.status === 'COMPLETED') && (<TemplateBadge label='COMPLETED'/>)}
                     </div>
                 )
             },
@@ -392,36 +388,30 @@ class Referrers extends Component {
             {(this.props.referrerAdminList && this.props.referrerAdminList.isReceiving) && (
                 <AppSpinner/>
             )}
-            <Grid container xs="12">
+            <Navbar/>
+            <Grid container xs="12" style={{marginTop:20}}>
                 <Grid item xs="12">
-                    <Nav tabs  className={`${s.coloredNav}`} style={{backgroundColor:"#e8ecec"}}>
-                        <NavItem>
-                            <NavLink className={classnames({ active: this.state.activeTab === 'referrer' })}
-                                onClick={() => { this.toggleTab('referrer') }}>
-                                <span>{translate('Referrals')}</span>
-                            </NavLink>
-                        </NavItem>
-                    </Nav>
-                    <TabContent className='mb-lg' activeTab={this.state.activeTab}>
-                        <TabPane tabId="referrer">
+                    <Tabs value={this.state.activeTab} onChange={this.toggleTab}>
+                        <Tab value='referrer' label='Referrals'/>
+                    </Tabs>
+                    {(this.state.activeTab === 'referrer') && (
+                    <>
                             {(this.state.selected === null) && (
                             <>
-                            <div style={{zIndex:512}}>
+                            <div style={{marginTop:20}}>
                                 <Grid container xs="12">
                                     <Grid item xs="6" style={{zIndex:9995}}>
                                       {(this.props.referrerAdminList && this.props.referrerAdminList.data && 
                                         this.props.referrerAdminList.data.config &&
                                         this.props.referrerAdminList.data.config.status && this.state.statusSelected !== null) && (
-                                          <Select
-                                              closeMenuOnSelect={true}
-                                              isSearchable={false}
-                                              isMulti
+                                          <TemplateSelectMulti
+                                              label="Status"
                                               onChange={this.onStatusFilter}
                                               value={this.state.statusSelected.map((g) => { 
                                                 return (
                                                     {
                                                     label:this.props.referrerAdminList.data.config.status.filter((f) => f.id === g)[0].name,
-                                                    value:this.props.referrerAdminList.data.config.status.filter((f) => f.id === g)[0].id
+                                                    value:this.props.referrerAdminList.data.config.status.filter((f) => f.id === g)[0].name
                                                     }
                                                 )
                                               })}
@@ -429,7 +419,7 @@ class Referrers extends Component {
                                                 return (
                                                     { 
                                                     label: e.name,
-                                                    value: e.id
+                                                    value: e.name
                                                     }
                                                 )
                                               })}
@@ -437,13 +427,13 @@ class Referrers extends Component {
                                         )}
                                     </Grid>                
                                     <Grid item xs={3}>
-                                        <Input type="text" id="normal-field" onChange={this.search}
-                                        placeholder="Search" value={this.state.search}/>
+                                        <TemplateTextField onChange={this.search}
+                                        label="Search" value={this.state.search}/>
                                     </Grid>
                                     <Grid item xs={3}>
                                         <div class='pull-right'>
-                                            <Button onClick={() => this.reload()} style={{marginRight:5,height:35}} outline 
-                                                color="primary"><AutorenewIcon/></Button>
+                                            <TemplateButton onClick={() => this.reload()} style={{marginRight:5,height:35}} outline 
+                                                label={<AutorenewIcon/>}/>
                                         </div>
                                     </Grid>
                                 </Grid>
@@ -484,8 +474,8 @@ class Referrers extends Component {
                             </Grid>
                             </>
                             )}
-                        </TabPane>
-                    </TabContent>
+                        </>
+                    )}
                 </Grid>                
             </Grid>
         </>

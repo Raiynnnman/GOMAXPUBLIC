@@ -19,6 +19,7 @@ import 'react-toastify/dist/ReactToastify.css'
 import SearchAdmin from './pain/admin/SearchAdmin';
 import Map from './pain/admin/Map';
 import Registrations from './pain/admin/Registrations';
+import Referrers from './pain/admin/Referrers';
 
 const CloseButton = ({closeToast}) => <i onClick={closeToast} className="la la-close notifications-close"/>
 const App = () => {
@@ -44,6 +45,7 @@ const App = () => {
                     <Route exact path='/app/main/admin/search' component={SearchAdmin}/>
                     <Route exact path='/app/main/admin/map' component={Map}/>
                     <Route exact path='/app/main/admin/registrations' component={Registrations}/>
+                    <Route exact path='/app/main/admin/referrals' component={Referrers}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/tf`} component={DemoTF}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/home-one`} component={HomeOlive}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/home-two`} component={HomeHorizontal}/>
