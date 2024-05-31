@@ -696,6 +696,8 @@ class WelcomeEmail(AdminBase):
             '__LINK__':"%s/#/login" % (url,),
             '__BASE__':url
         } 
+        if self.isUIV2(): 
+            data['__LINK__']:"%s/login" % (url,)
         m = Mail()
         m.defer(email,"Welcome to POUNDPAIN TECH","templates/mail/welcome.html",data)
         return ret

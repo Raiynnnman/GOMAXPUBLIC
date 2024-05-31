@@ -95,6 +95,7 @@ class SubmitDataRequest(ProcessingBase):
         raise Exception("DERIVED_CLASS_MUST_IMPLEMENT")
 
     def process(self, *args, **kwargs):
+        self.isUIV2()
         jobstate = None
         jobstate = JobStates.JobStates()
         jobstate.jobQueued()

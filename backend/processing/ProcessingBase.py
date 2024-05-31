@@ -2,6 +2,7 @@
 from util.DBOps import Query
 from util import Jenkins
 from common import settings
+from flask import request
 
 
 config = settings.config()
@@ -10,9 +11,22 @@ config.read("settings.cfg")
 class ProcessingBase:
 
     __id__ = None
+    __ui_ver__ = 1
 
     def __init__(self):
         pass
+
+    def setUIVer(self): 
+        if 'Ui' in request.headers:
+            self.__ui_ver__ = request.headers['Ui']
+
+    def getUIVer(self,c): 
+        return self.__ui_ver__ 
+
+    def isUIV2(self):
+        if self.__ui_ver__ == 2:
+            return True
+        return False
 
     def getBillingSystem(self):
         db = Query()

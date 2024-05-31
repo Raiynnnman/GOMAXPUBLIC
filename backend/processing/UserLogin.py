@@ -306,6 +306,8 @@ class ResetPasswordGetToken(SubmitDataRequest):
             '__LINK__':"%s/#/reset/%s" % (url,val.decode('utf-8')),
             '__BASE__':url
         } 
+        if self.isUIV2(): 
+            data['__LINK__']:"%s/reset/%s" % (url,val.decode('utf-8'))
         m = Mail()
         m.defer(email,"Reset Password Request","templates/mail/reset-password.html",data)
         return ret
