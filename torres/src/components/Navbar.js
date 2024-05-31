@@ -117,7 +117,6 @@ class Navbar extends Component {
                                         <ul className="main-menu">
                                             <li className="active"><a href="/">Home</a></li>
                                             <li><a href="/app/main/admin/search">Search</a></li>
-                                            <li><a href="/app/main/admin/customers">Customers</a></li>
                                             <li><a href="/app/main/admin/referrals">Referrals</a></li>
                                             <li><a href="/app/main/admin/map">Map</a></li>
                                             <li><a href="/app/main/admin/registrations">Registrations</a></li>
@@ -143,8 +142,6 @@ class Navbar extends Component {
                                         <ul>                              
                                             <li className="active"><a href="/">Home</a></li>
                                             <li><a href="/app/main/admin/search">Search</a></li>
-                                            <li><a href="/app/main/admin/customers">Customers</a></li>
-                                            <li><a href="/app/main/admin/one-pager">One Page</a></li>
                                             <li><a href="/app/main/admin/referrals">Referrals</a></li>
                                             <li><a href="/app/main/admin/map">Map</a></li>
                                             <li><a href="/app/main/admin/registrations">Registrations</a></li>
