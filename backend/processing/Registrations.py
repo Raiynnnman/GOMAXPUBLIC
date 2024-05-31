@@ -73,7 +73,7 @@ class RegistrationUpdate(RegistrationsBase):
             HAVE=True
         if HAVE:
             log.info("USER_ALREADY_EXISTS")
-            return {'success': False,message:'USER_ALREADY_EXISTS'}
+            return {'success': False,"message":'USER_ALREADY_EXISTS'}
         db.update("""
             delete from registrations_tokens where 
                 registrations_id in (select id from registrations 
