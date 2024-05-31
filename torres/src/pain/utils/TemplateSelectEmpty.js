@@ -7,22 +7,10 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 
 function TemplateSelect({label,onChange,style,value,options}) {
 
-    console.log("v",value);
     return (
     <>
       <FormControl sx={{ m:1,width: "100%" }} style={style}>
-      <InputLabel>{label}</InputLabel>
-      <Select
-        value={value.label ? value.label : value}
-        label={label}
-        onChange={onChange}
-      >
-        {options.map((e) => { 
-            return (
-                <MenuItem value={e.value}>{e.label}</MenuItem>
-            )
-        })}
-      </Select>
+      <InputLabel>{label + ':' + value}</InputLabel>
       </FormControl>
     </>
     )

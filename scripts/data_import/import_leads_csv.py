@@ -98,17 +98,20 @@ for x in df:
         j['name'] = "Unknown"
         if 'https://' not in j['website']:
             j['website'] = 'https://' + j['website']
-        r = requests.get(j['website'],headers={'user-agent':'curl/7.81.0'},timeout=30)
-        html = bs4.BeautifulSoup(r.text)
-        title = str(html.title)
-        if title is not None:
-            # print("t=%s" % title)
-            title = title.replace("<title>","").replace("</title>","").replace("Home - ","")
-            if '|' in title:
-                title = title.split("|")[0]
-            if ' - ' in title:
-                title = title.split(" - ")[0]
-            j['name'] = title
+        try:
+            r = requests.get(j['website'],headers={'user-agent':'curl/7.81.0'},timeout=30)
+            html = bs4.BeautifulSoup(r.text)
+            title = str(html.title)
+            if title is not None:
+                # print("t=%s" % title)
+                title = title.replace("<title>","").replace("</title>","").replace("Home - ","")
+                if '|' in title:
+                    title = title.split("|")[0]
+                if ' - ' in title:
+                    title = title.split(" - ")[0]
+                j['name'] = title
+        except Exception as e:
+            print(str(e))
     # print("name=%s" % j['name'])
     if len(j['name']) < 1:
         j['name'] = "Unknown"

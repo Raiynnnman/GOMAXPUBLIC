@@ -1,37 +1,36 @@
 import React, { Component } from 'react';
 import { toast } from 'react-toastify';
 import Select from 'react-select';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import AssessmentIcon from '@mui/icons-material/Assessment';
-import MaskedInput from 'react-maskedinput';
 import moment from 'moment';
-import { Badge } from 'reactstrap';
-import { Button } from 'reactstrap'; 
-import cellEditFactory from 'react-bootstrap-table2-editor';
 import EditIcon from '@mui/icons-material/Edit';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 import salesforceURL from '../../salesforceConfig';
 import squareLocationKey from '../../squareConfig';
-
-import { Type } from 'react-bootstrap-table2-editor';
 import { connect } from 'react-redux';
-import { Col, Grid } from 'reactstrap';
-import { Nav, NavItem, NavLink } from 'reactstrap';
-import { FormGroup, Label, InputGroup, Input } from 'reactstrap';
-import { TabContent, TabPane } from 'reactstrap';
 import cx from 'classnames';
 import classnames from 'classnames';
-
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import { getRegistrations } from '../../actions/registrationsAdminList';
 import { getRegistrationReport } from '../../actions/registrationReport';
 import { getPlansList } from '../../actions/plansList';
 import { registrationAdminUpdate } from '../../actions/registrationAdminUpdate';
-import BootstrapTable from 'react-bootstrap-table-next';
-import paginationFactory from 'react-bootstrap-table2-paginator';
 import formatPhoneNumber from '../utils/formatPhone';
 import PainTable from '../utils/PainTable';
+import TemplateSelect from '../utils/TemplateSelect';
+import TemplateSelectEmpty from '../utils/TemplateSelectEmpty';
+import TemplateSelectMulti from '../utils/TemplateSelectMulti';
+import TemplateTextField from '../utils/TemplateTextField';
+import TemplateCheckbox from '../utils/TemplateCheckbox';
+import TemplateButton from '../utils/TemplateButton';
+import TemplateBadge from '../utils/TemplateBadge';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import Navbar from '../../components/Navbar';
 
 class Registrations extends Component {
     constructor(props) { 
@@ -172,9 +171,9 @@ class Registrations extends Component {
         this.setState(this.state);
     } 
     onCommissionChange(e,t) { 
-        this.state.selected.commission_user_id = e.value;
-        this.state.selected.commission_name = 
-            this.props.registrationsAdminList.data.config.commission_users.filter((g) => g.id === e.value)[0].name
+        this.state.selected.commission_name = e.target.value;
+        this.state.selected.commission_user_id = 
+            this.props.registrationsAdminList.data.config.commission_users.filter((g) => g.name === e.target.value)[0].id
         this.setState(this.state);
     }
 
@@ -323,8 +322,8 @@ class Registrations extends Component {
             status: this.state.selected.provider_queue_status_id,
         } 
         if (this.state.selected.invoice && this.state.selected.invoice.id) { 
-            tosend.invoice_id = this.state.selected.invoice.id,
-            tosend.invoice_items = this.state.selected.invoice.items
+            tosend.invoice_id = this.state.selected.invoice.id;
+            tosend.invoice_items = this.state.selected.invoice.items;
         }
         if (this.state.selected.card) { 
             tosend.card = this.state.selected.card
@@ -357,31 +356,40 @@ class Registrations extends Component {
         this.setState(this.state);
     } 
     onLeadStrengthChange(e) { 
-        this.state.selected.lead_strength_id = e.value;
+        var o = e.target.value;
+        var t = this.props.registrationsAdminList.data.config.strength.filter((g) => o === g.name);
+        if (t.length > 0) { 
+            this.state.selected.lead_strength_id = t[0].id;
+        } 
         this.setState(this.state);
     } 
     onTypeChange(e) { 
-        this.state.selected.office_type_id = e.value;
-        var t = this.props.registrationsAdminList.data.config.type.filter((g) => e.value === g.id);
+        var o = e.target.value;
+        var t = this.props.registrationsAdminList.data.config.type.filter((g) => o === g.name);
         if (t.length > 0) { 
             this.state.selected.office_type = t[0].name;
+            this.state.selected.office_type_id = t[0].id;
         } 
         this.setState(this.state);
     } 
     onStatusChange(e) { 
-        this.state.selected.provider_queue_status_id = e.value;
+        var o = e.target.value;
+        var t = this.props.registrationsAdminList.data.config.status.filter((g) => o === g.name);
+        if (t.length > 0) { 
+            this.state.selected.provider_queue_status_id = t[0].id;
+        } 
         this.setState(this.state);
     } 
     close() { 
         this.state.selected = null;
         this.setState(this.state);
     } 
-    toggleSubTab(e) { 
-        this.state.subTab = e;
+    toggleSubTab(e,t) { 
+        this.state.subTab = t;
         this.setState(this.state);
     } 
-    toggleTab(e) { 
-        this.state.activeTab = e;
+    toggleTab(e,t) { 
+        this.state.activeTab = t;
         this.setState(this.state);
     } 
 
@@ -402,41 +410,6 @@ class Registrations extends Component {
     } 
 
     render() {
-        const pageButtonRenderer = ({
-          page,
-          currentPage,
-          disabled,
-          title,
-          onPageChange
-        }) => {
-          const handleClick = (e) => {
-             e.preventDefault();
-             this.pageChange(page, currentPage);// api call 
-           };    
-          return (
-            <div>
-              {
-               <li className="page-item">
-                 <a href="#"  onClick={ handleClick } className="page-link">{ page }</a>
-               </li>
-              }
-            </div>
-          );
-        };
-        const options = {
-          pageButtonRenderer,
-          showTotal:true,
-          withFirstAndLast: false,
-          alwaysShowAllBtns: false,
-          nextPageText:'>',
-          sizePerPage:10,
-          paginationTotalRenderer: (f,t,z) => this.renderTotalLabel(f,t,z),
-          totalSize: (this.props.registrationsAdminList && 
-                      this.props.registrationsAdminList.data &&
-                      this.props.registrationsAdminList.data.total) ? this.props.registrationsAdminList.data.total : 10,
-          hideSizePerPage:true,
-          //onPageChange:(page,sizePerPage) => this.pageChange(page,sizePerPage)
-        };
         var offheads = [
             {
                 dataField:'id',
@@ -617,17 +590,6 @@ class Registrations extends Component {
                     </div>
                 )
             },
-            /*{
-                dataField:'verified',
-                sort:true,
-                text:'Verified',
-                formatter: (cellContent,row) => (
-                    <div>
-                        {(row.verified === 1) && (<Badge color="primary">Verified</Badge>)}
-                        {(row.verified === 0) && (<Badge color="danger">Not Verified</Badge>)}
-                    </div>
-                )
-            },*/
             {
                 dataField:'office_type',
                 sort:true,
@@ -645,10 +607,10 @@ class Registrations extends Component {
                 text:'Strength',
                 formatter:(cellContent,row) => (
                     <div>
-                        {(row.lead_strength === 'Preferred Provider') && (<Badge color="primary">Preferred Provider</Badge>)}
-                        {(row.lead_strength === 'In-Network Provider') && (<Badge color="secondary">In-Network Provider</Badge>)}
-                        {(row.lead_strength === 'Potential Provider') && (<Badge color="danger">Potential Provider</Badge>)}
-                        {(row.lead_strength === 'Pending Provider') && (<Badge color="secondary">Pending Provider</Badge>)}
+                        {(row.lead_strength === 'Preferred Provider') && (<TemplateBadge label='Preferred Provider'/>)}
+                        {(row.lead_strength === 'In-Network Provider') && (<TemplateBadge label='In-Network Provider'/>)}
+                        {(row.lead_strength === 'Potential Provider') && (<TemplateBadge label='Potential Provider'/>)}
+                        {(row.lead_strength === 'Pending Provider') && (<TemplateBadge label='Pending Provider'/>)}
                     </div>
                 )
             },
@@ -659,11 +621,11 @@ class Registrations extends Component {
                 text:'Status',
                 formatter:(cellContent,row) => (
                     <div>
-                        {(row.status === 'INVITED') && (<Badge color="primary">INVITED</Badge>)}
-                        {(row.status === 'APPROVED') && (<Badge color="primary">APPROVED</Badge>)}
-                        {(row.status === 'QUEUED') && (<Badge color="secondary">QUEUED</Badge>)}
-                        {(row.status === 'WAITING') && (<Badge color="danger">WAITING</Badge>)}
-                        {(row.status === 'DENIED') && (<Badge color="danger">DENIED</Badge>)}
+                        {(row.status === 'INVITED') && (<TemplateBadge label='INVITED'/>)}
+                        {(row.status === 'APPROVED') && (<TemplateBadge label='APPROVED'/>)}
+                        {(row.status === 'QUEUED') && (<TemplateBadge label='QUEUED'/>)}
+                        {(row.status === 'WAITING') && (<TemplateBadge label='WAITING'/>)}
+                        {(row.status === 'DENIED') && (<TemplateBadge label='DENIED'/>)}
                     </div>
                 )
             },
@@ -684,7 +646,7 @@ class Registrations extends Component {
                 formatter:(cellContent,row) => (
                     <>
                     <div>
-                        <Button onClick={() => this.edit(row)} style={{marginRight:5,height:35}} color="primary"><EditIcon/></Button>
+                        <TemplateButton onClick={() => this.edit(row)} style={{marginRight:5,height:35}} color="primary" label={<EditIcon/>}/>
                     </div>
                     </>
                 )
@@ -723,98 +685,90 @@ class Registrations extends Component {
             {(this.props.registrationsAdminList && this.props.registrationsAdminList.isReceiving) && (
                 <AppSpinner/>
             )}
-            <Grid container xs="12">
+            <Navbar/>
+            <Grid container xs="12" style={{margin:10}}>
+            <>
                 <Grid item xs="12">
-                    <Nav tabs  className={`${s.coloredNav}`} style={{backgroundColor:"#e8ecec"}}>
-                        <NavItem>
-                            <NavLink className={classnames({ active: this.state.activeTab === 'registrations' })}
-                                onClick={() => { this.toggleTab('registrations') }}>
-                                <span>{translate('Registrations')}</span>
-                            </NavLink>
-                        </NavItem>
-                    </Nav>
-                    <TabContent className='mb-lg' activeTab={this.state.activeTab}>
-                        <TabPane tabId="registrations">
+                <>
+                    <Box sx={{width:'100%'}}>
+                    <>
+                        <Tabs value={this.state.activeTab} onChange={this.toggleTab}>
+                            <Tab value='registrations' label='Registrations'/>
+                        </Tabs>
+                        {(this.state.activeTab === 'registrations') && ( 
+                        <>
                             {(this.state.selected === null) && (
                             <>
-                            <div style={{zIndex:512}}>
-                                <Grid container xs="12">
-                                    <Grid item xs="1">
-                                        <Button onClick={this.add} style={{width:50}}
-                                            color="primary"><AddBoxIcon/></Button>
-                                    </Grid>
-                                    <Grid item xs="4" style={{zIndex:9995}}>
-                                      {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
-                                        this.props.registrationsAdminList.data.config &&
-                                        this.props.registrationsAdminList.data.config.status && this.state.statusSelected !== null) && (
-                                          <Select
-                                              closeMenuOnSelect={true}
-                                              isSearchable={false}
-                                              isMulti
-                                              onChange={this.onStatusFilter}
-                                              value={this.state.statusSelected.map((g) => { 
-                                                return (
-                                                    {
-                                                    label:this.props.registrationsAdminList.data.config.status.filter((f) => f.id === g)[0].name,
-                                                    value:this.props.registrationsAdminList.data.config.status.filter((f) => f.id === g)[0].id
-                                                    }
-                                                )
-                                              })}
-                                              options={this.props.registrationsAdminList.data.config.status.map((e) => { 
-                                                return (
-                                                    { 
-                                                    label: e.name,
-                                                    value: e.id
-                                                    }
-                                                )
-                                              })}
-                                            />
-                                        )}
-                                    </Grid>                
-                                    <Grid item xs="4" style={{zIndex:9995}}>
-                                      {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
-                                        this.props.registrationsAdminList.data.config &&
-                                        this.props.registrationsAdminList.data.config.type && this.state.statusSelected !== null) && (
-                                          <Select
-                                              closeMenuOnSelect={true}
-                                              isSearchable={false}
-                                              isMulti
-                                              onChange={this.onTypeFilter}
-                                              value={this.state.typeSelected.map((g) => { 
-                                                return (
-                                                    {
-                                                    label:this.props.registrationsAdminList.data.config.type.filter((f) => f.id === g)[0].name,
-                                                    value:this.props.registrationsAdminList.data.config.type.filter((f) => f.id === g)[0].id
-                                                    }
-                                                )
-                                              })}
-                                              options={this.props.registrationsAdminList.data.config.type.map((e) => { 
-                                                return (
-                                                    { 
-                                                    label: e.name,
-                                                    value: e.id
-                                                    }
-                                                )
-                                              })}
-                                            />
-                                        )}
-                                    </Grid>                
-                                    <Grid item xs={2}>
-                                        <Input type="text" id="normal-field" onChange={this.search}
-                                        placeholder="Search" value={this.state.search}/>
-                                    </Grid>
-                                    <Grid item xs={1}>
-                                        <div class='pull-right'>
-                                            <div style={{display:'flex',justifyContent:"spread-evenly"}}>
-                                                <Button onClick={this.providerReport} outline color="primary"><AssessmentIcon/></Button>
-                                                <Button onClick={() => this.reload()} style={{marginRight:5,height:35}} outline 
-                                                    color="primary"><AutorenewIcon/></Button>
-                                            </div>
-                                        </div>
-                                    </Grid>
+                            <Grid container xs="12" style={{margin:10}}>
+                                <Grid item xs="1">
+                                    <TemplateButton onClick={this.add} style={{margin:10,width:50}}
+                                        color="primary" label={<AddBoxIcon/>}/>
                                 </Grid>
-                            </div>
-                            <Grid container xs="12" style={{marginTop:10}}>
+                                <Grid item xs="4">
+                                    {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
+                                    this.props.registrationsAdminList.data.config &&
+                                    this.props.registrationsAdminList.data.config.status && this.state.statusSelected !== null) && (
+                                      <TemplateSelectMulti
+                                          onChange={this.onStatusFilter}
+                                          label="Status"
+                                          value={this.state.statusSelected.map((g) => { 
+                                            return (
+                                                {
+                                                label:this.props.registrationsAdminList.data.config.status.filter((f) => f.id === g)[0].name,
+                                                value:this.props.registrationsAdminList.data.config.status.filter((f) => f.id === g)[0].id
+                                                }
+                                            )
+                                          })}
+                                          options={this.props.registrationsAdminList.data.config.status.map((e) => { 
+                                            return (
+                                                { 
+                                                label: e.name,
+                                                value: e.id
+                                                }
+                                            )
+                                          })}
+                                        />
+                                    )}
+                                </Grid>
+                                <Grid item xs="4">
+                                    {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
+                                    this.props.registrationsAdminList.data.config &&
+                                    this.props.registrationsAdminList.data.config.type && this.state.statusSelected !== null) && (
+                                      <TemplateSelectMulti
+                                          onChange={this.onTypeFilter}
+                                          label="Type"
+                                          value={this.state.typeSelected.map((g) => { 
+                                            return (
+                                                {
+                                                label:this.props.registrationsAdminList.data.config.type.filter((f) => f.id === g)[0].name,
+                                                value:this.props.registrationsAdminList.data.config.type.filter((f) => f.id === g)[0].id
+                                                }
+                                            )
+                                          })}
+                                          options={this.props.registrationsAdminList.data.config.type.map((e) => { 
+                                            return (
+                                                { 
+                                                label: e.name,
+                                                value: e.id
+                                                }
+                                            )
+                                          })}
+                                        />
+                                    )}
+                                </Grid>
+                                <Grid item xs={2}>
+                                    <TemplateTextField type="text" id="normal-field" onChange={this.search}
+                                    label="Search" value={this.state.search}/>
+                                </Grid>
+                                <Grid item xs={1}>
+                                    <div class='pull-right'>
+                                        <div style={{display:'flex',justifyContent:"spread-evenly"}}>
+                                            <TemplateButton onClick={this.providerReport} label={<AssessmentIcon/>}/>
+                                            <TemplateButton onClick={() => this.reload()} style={{marginLeft:5,height:35}} 
+                                                label={<AutorenewIcon/>}/>
+                                        </div>
+                                    </div>
+                                </Grid>
                                 <Grid item xs="12">
                                     <>
                                     {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
@@ -839,263 +793,204 @@ class Registrations extends Component {
                                     )}
                                     </>
                                 </Grid>
-                            </Grid>
+                             </Grid> 
                             </>
                             )}
                             {(this.state.selected !== null ) && (
-                            <Grid container xs="12" style={{marginTop:10}}>
-                                <Grid item xs="12">
-                                    <Grid container xs="12">
-                                        <Grid item xs="12" style={{zIndex:9999}}>
-                                          {this.state.selected.id && (<FormGroup row>
-                                            <Label for="normal-field" md={1} className="text-md-right">
-                                              ID 
-                                            </Label>
-                                            <Grid item xs={5}>
-                                                <Input type="text" id="normal-field" readOnly 
-                                                placeholder="ID" value={this.state.selected.id}/>
-                                            </Grid>
-                                          </FormGroup>
-                                          )}
-                                          {this.state.selected.office_id && (<FormGroup row>
-                                            <Label for="normal-field" md={1} className="text-md-right">
-                                              Office ID 
-                                            </Label>
-                                            <Grid item xs={5}>
-                                                <Input type="text" id="normal-field" readOnly 
-                                                placeholder="Office ID" value={this.state.selected.office_id}/>
-                                            </Grid>
-                                          </FormGroup>
-                                          )}
-                                          <FormGroup row>
-                                            <Label for="normal-field" md={1} className="text-md-right">
-                                              Practice
-                                            </Label>
-                                            <Grid item xs={5}>
-                                                <Input type="text" id="normal-field" onChange={this.updateName}
-                                                placeholder="Name" value={this.state.selected.name}/>
-                                            </Grid>
-                                          </FormGroup>
-                                          <FormGroup row>
-                                            <Label for="normal-field" md={1} className="text-md-right">
-                                              Email
-                                            </Label>
-                                            <Grid item xs={5}>
-                                                <Input type="text" id="normal-field" onChange={this.updateEmail}
-                                                placeholder="Email" value={this.state.selected.email}/>
-                                            </Grid>
-                                          </FormGroup>
-                                          <FormGroup row>
-                                            <Label for="normal-field" md={1} className="text-md-right">
-                                              First
-                                            </Label>
-                                            <Grid item xs={5}>
-                                                <Input type="text" id="normal-field" onChange={this.updateFirst}
-                                                placeholder="First" value={this.state.selected.first_name}/>
-                                            </Grid>
-                                          </FormGroup>
-                                          <FormGroup row>
-                                            <Label for="normal-field" md={1} className="text-md-right">
-                                              Last
-                                            </Label>
-                                            <Grid item xs={5}>
-                                                <Input type="text" id="normal-field" onChange={this.updateLast}
-                                                placeholder="Last" value={this.state.selected.last_name}/>
-                                            </Grid>
-                                          </FormGroup>
-                                          <FormGroup row>
-                                            <Label for="normal-field" md={1} className="text-md-right">
-                                              Phone
-                                            </Label>
-                                            <Grid item xs={5}>
-                                                <MaskedInput
-                                                  className="form-control" id="mask-phone" mask="(111) 111-1111"
-                                                  onChange={this.updatePhone} value={this.state.selected.phone}
-                                                  size="10"
-                                                />
-                                            </Grid>
-                                          </FormGroup>
-                                          {/*<FormGroup row>
-                                            <Label for="normal-field" md={1} className="text-md-right">
-                                              Initial Payment
-                                            </Label>
-                                            <Grid item xs={5}>
-                                                <Input type="text" id="normal-field" onChange={this.updateInitial}
-                                                placeholder='$' value={this.state.selected.initial_payment}/>
-                                            </Grid>
-                                          </FormGroup>*/}
-                                          <FormGroup row>
-                                            <Label for="normal-field" md={1} className="text-md-right">
-                                              Places ID
-                                            </Label>
-                                            <Grid item xs={5}>
-                                                <Input type="text" id="normal-field" readOnly
-                                                value={this.state.selected.places_id}/>
-                                            </Grid>
-                                          </FormGroup>
-                                          <FormGroup row>
-                                            <Label for="normal-field" md={1} className="text-md-right">
-                                                Sales Owner
-                                            </Label>
-                                            <Grid item xs="5" style={{zIndex:9995}}>
-                                              {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
-                                                this.props.registrationsAdminList.data.config &&
-                                                this.props.registrationsAdminList.data.config.status && this.state.statusSelected !== null) && (
-                                                  <Select
-                                                      closeMenuOnSelect={true}
-                                                      isSearchable={false}
-                                                      onChange={this.onCommissionChange}
-                                                      value={{label:this.state.selected.commission_name}}
-                                                      options={this.props.registrationsAdminList.data.config.commission_users.map((e) => { 
-                                                        return (
-                                                            { 
-                                                            label: e.name,
-                                                            value: e.id
-                                                            }
-                                                        )
-                                                      })}
-                                                    />
-                                                )}
-                                            </Grid>                
-                                        </FormGroup>
-                                        <FormGroup row>
-                                          <Label for="normal-field" md={1} className="text-md-right">
-                                            Do not call
-                                          </Label>
-                                          <Grid item xs={8}>
-                                          <Input type="checkbox" id="normal-field"
-                                                  onChange={this.donotCallChange} placeholder="Email" checked={this.state.selected.do_not_contact}/>
-                                          </Grid>
-                                        </FormGroup>
-                                          <FormGroup row>
-                                            <Label for="normal-field" md={1} className="text-md-right">
-                                              Type
-                                            </Label>
-                                            <Grid item xs={5}>
-                                              {(this.props.registrationsAdminList && this.props.registrationsAdminList.data &&
-                                                this.props.registrationsAdminList.data.config && 
-                                                this.props.registrationsAdminList.data.config.status) && (
-                                              <Select
-                                                  closeMenuOnSelect={true}
-                                                  isSearchable={false}
-                                                  onChange={this.onTypeChange}
-                                                  value={{
-                                                    label:
-                                                        this.props.registrationsAdminList.data.config.type.filter((g) =>
-                                                            this.state.selected.office_type_id === g.id).length > 0 ? 
-                                                        this.props.registrationsAdminList.data.config.type.filter((g) => 
-                                                            this.state.selected.office_type_id === g.id
-                                                    )[0].name : ''
-                                                  }}
-                                                  options={this.props.registrationsAdminList.data.config.type.map((g) => { 
-                                                    return (
-                                                        { 
-                                                        label: g.name,
-                                                        value: g.id
-                                                        }
-                                                    )
-                                                  })}
-                                                />
-                                                )}
-                                            </Grid>
-                                          </FormGroup>
-                                          <FormGroup row>
-                                            <Label for="normal-field" md={1} className="text-md-right">
-                                              Status
-                                            </Label>
-                                            <Grid item xs={5}>
-                                              {(this.props.registrationsAdminList && this.props.registrationsAdminList.data &&
-                                                this.props.registrationsAdminList.data.config && 
-                                                this.props.registrationsAdminList.data.config.status) && (
-                                              <Select
-                                                  closeMenuOnSelect={true}
-                                                  isSearchable={false}
-                                                  onChange={this.onStatusChange}
-                                                  value={{
-                                                    label:
-                                                        this.props.registrationsAdminList.data.config.status.filter((g) => 
-                                                            this.state.selected.provider_queue_status_id === g.id).length > 0 ? 
-                                                        this.props.registrationsAdminList.data.config.status.filter((g) => 
-                                                            this.state.selected.provider_queue_status_id === g.id
-                                                    )[0].name : ''
-                                                  }}
-                                                  options={this.props.registrationsAdminList.data.config.status.map((g) => { 
-                                                    return (
-                                                        { 
-                                                        label: g.name,
-                                                        value: g.id
-                                                        }
-                                                    )
-                                                  })}
-                                                />
-                                                )}
-                                            </Grid>
-                                          </FormGroup>
-                                          <FormGroup row>
-                                            <Label for="normal-field" md={1} className="text-md-right">
-                                              Strength
-                                            </Label>
-                                            <Grid item xs={5}>
-                                              <Select
-                                                  closeMenuOnSelect={true}
-                                                  isSearchable={false}
-                                                  onChange={this.onLeadStrengthChange}
-                                                  value={{
-                                                    label:
-                                                        (this.state.selected.lead_strength_id) ?  this.props.registrationsAdminList.data.config.strength.filter((g) => 
-                                                            this.state.selected.lead_strength_id === g.id
-                                                    )[0].name : ''
-                                                  }}
-                                                  options={this.props.registrationsAdminList.data.config.strength.map((g) => { 
-                                                    return (
-                                                        { 
-                                                        label: g.name,
-                                                        value: g.id
-                                                        }
-                                                    )
-                                                  })}
-                                                />
-                                            </Grid>
-                                          </FormGroup>
+                            <>
+                                <Grid container xs="12" style={{marginTop:10}}>
+                                      {this.state.selected.id && (
+                                        <Grid item xs={1}>
+                                            <TemplateTextField readOnly 
+                                            label="ID" value={this.state.selected.id}/>
+                                        </Grid>
+                                      )}
+                                      {this.state.selected.office_id && (
+                                        <Grid item xs={1}>
+                                            <TemplateTextField readOnly 
+                                            label="Office ID" value={this.state.selected.office_id}/>
+                                        </Grid>
+                                      )}
+                                      <Grid item xs={1}>
+                                      <TemplateCheckbox label='Do Not Call'
+                                              onChange={this.donotCallChange} 
+                                                checked={this.state.selected.do_not_contact}/>
+                                      </Grid>
+                                      <Grid item xs={3}>
+                                        <TemplateTextField onChange={this.updateName}
+                                        label="Office Name" value={this.state.selected.name}/>
+                                      </Grid>
+                                </Grid>
+                                <Grid container xs="12" style={{marginTop:10}}>
+                                      <Grid item xs={3}>
+                                        <TemplateTextField onChange={this.updateEmail}
+                                        label="Email" value={this.state.selected.email}/>
+                                      </Grid>
+                                      <Grid item xs={3}>
+                                        <TemplateTextField onChange={this.updateFirst}
+                                        label="First" value={this.state.selected.first_name}/>
+                                      </Grid>
+                                        <Grid item xs={3}>
+                                            <TemplateTextField onChange={this.updateLast}
+                                            label="Last" value={this.state.selected.last_name}/>
+                                        </Grid>
+                                        <Grid item xs={3}>
+                                            <TemplateTextField label='Phone'
+                                              onChange={this.updatePhone} value={this.state.selected.phone}
+                                            />
                                         </Grid>
                                     </Grid>
+                                <Grid container xs="12" style={{marginTop:10}}>
+                                        <Grid item xs="2">
+                                          {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
+                                            this.props.registrationsAdminList.data.config &&
+                                            this.props.registrationsAdminList.data.config.status && this.state.statusSelected !== null) && (
+                                              <TemplateSelect
+                                                  label='Commission User'
+                                                  onChange={this.onCommissionChange}
+                                                  value={{label:this.state.selected.commission_name,value:this.state.selected.commission_user_id}}
+                                                  options={this.props.registrationsAdminList.data.config.commission_users.map((e) => { 
+                                                    return (
+                                                        { 
+                                                        label: e.name,
+                                                        value: e.name
+                                                        }
+                                                    )
+                                                  })}
+                                                />
+                                            )}
+                                        </Grid>                
+                                        <Grid item xs={3}>
+                                          {(this.props.registrationsAdminList && this.props.registrationsAdminList.data &&
+                                            this.props.registrationsAdminList.data.config && 
+                                            this.props.registrationsAdminList.data.config.status) && (
+                                          <TemplateSelect
+                                              label='Type'
+                                              onChange={this.onTypeChange}
+                                              value={{
+                                                label:
+                                                    this.props.registrationsAdminList.data.config.type.filter((g) =>
+                                                        this.state.selected.office_type_id === g.id).length > 0 ? 
+                                                    this.props.registrationsAdminList.data.config.type.filter((g) => 
+                                                        this.state.selected.office_type_id === g.id
+                                                )[0].name : '',
+                                                value:
+                                                    this.props.registrationsAdminList.data.config.type.filter((g) =>
+                                                        this.state.selected.office_type_id === g.id).length > 0 ? 
+                                                    this.props.registrationsAdminList.data.config.type.filter((g) => 
+                                                        this.state.selected.office_type_id === g.id
+                                                )[0].value : ''
+                                              }}
+                                              options={this.props.registrationsAdminList.data.config.type.map((g) => { 
+                                                return (
+                                                    { 
+                                                    label: g.name,
+                                                    value: g.name
+                                                    }
+                                                )
+                                              })}
+                                            />
+                                            )}
+                                        </Grid>
+                                        <Grid item xs={3}>
+                                          {(this.props.registrationsAdminList && this.props.registrationsAdminList.data &&
+                                            this.props.registrationsAdminList.data.config && 
+                                            this.props.registrationsAdminList.data.config.status) && (
+                                          <TemplateSelect
+                                              label='Status'
+                                              onChange={this.onStatusChange}
+                                              value={{
+                                                label:
+                                                    this.props.registrationsAdminList.data.config.status.filter((g) => 
+                                                        this.state.selected.provider_queue_status_id === g.id).length > 0 ? 
+                                                    this.props.registrationsAdminList.data.config.status.filter((g) => 
+                                                        this.state.selected.provider_queue_status_id === g.id
+                                                )[0].name : '',
+                                              }}
+                                              options={this.props.registrationsAdminList.data.config.status.map((g) => { 
+                                                return (
+                                                    { 
+                                                    label: g.name,
+                                                    value: g.name
+                                                    }
+                                                )
+                                              })}
+                                            />
+                                            )}
+                                        </Grid>
+                                        <Grid item xs={3}>
+                                          <TemplateSelect
+                                              label='Lead Strength'
+                                              onChange={this.onLeadStrengthChange}
+                                              value={{
+                                                label:
+                                                    (this.state.selected.lead_strength_id) ?  this.props.registrationsAdminList.data.config.strength.filter((g) => 
+                                                        this.state.selected.lead_strength_id === g.id
+                                                )[0].name : ''
+                                              }}
+                                              options={this.props.registrationsAdminList.data.config.strength.map((g) => { 
+                                                return (
+                                                    { 
+                                                    label: g.name,
+                                                    value: g.name
+                                                    }
+                                                )
+                                              })}
+                                            />
+                                        </Grid>
                                     <Grid container xs="12">
+                                        <>
                                         {this.state.selected.office_type !== 'Referrer' && (
-                                        <Grid item xs="12">
-                                            <Nav tabs  className={`${s.coloredNav}`} style={{backgroundColor:"#e8ecec"}}>
-                                                <NavItem>
-                                                    <NavLink className={classnames({ active: this.state.subTab === 'plans' })}
-                                                        onClick={() => { this.toggleSubTab('plans') }}>
-                                                        <span>{translate('Plans')}</span>
-                                                    </NavLink>
-                                                </NavItem>
-                                                <NavItem>
-                                                    <NavLink className={classnames({ active: this.state.subTab === 'offices' })}
-                                                        onClick={() => { this.toggleSubTab('offices') }}>
-                                                        <span>{translate('Offices')}</span>
-                                                    </NavLink>
-                                                </NavItem>
-                                                <NavItem>
-                                                    <NavLink className={classnames({ active: this.state.subTab === 'invoices' })}
-                                                        onClick={() => { this.toggleSubTab('invoices') }}>
-                                                        <span>{translate('Invoice')}</span>
-                                                    </NavLink>
-                                                </NavItem>
-                                                <NavItem>
-                                                    <NavLink className={classnames({ active: this.state.subTab === 'history' })}
-                                                        onClick={() => { this.toggleSubTab('history') }}>
-                                                        <span>{translate('History')}</span>
-                                                    </NavLink>
-                                                </NavItem>
-                                            </Nav>
-                                            <TabContent className='mb-lg' activeTab={this.state.subTab}>
-                                                <TabPane tabId="plans">
+                                            <Grid item xs="12">
+                                                <Tabs value={this.state.subTab} onChange={this.toggleSubTab}>
+                                                    <Tab value='plans' label='Plans'/>
+                                                    <Tab value='offices' label='Offices'/>
+                                                    <Tab value='invoice' label='Invoice'/>
+                                                    <Tab value='history' label='History'/>
+                                                </Tabs>
+                                                {(this.state.subTab === 'history') && (
+                                                <>
+                                                    {(this.state.selected.history && this.state.selected.history) && (
+                                                    <>
+                                                    <PainTable 
+                                                        keyField='id' data={this.state.selected.history} 
+                                                        columns={historyheads}>
+                                                    </PainTable>
+                                                    </>
+                                                    )}
+                                                </>
+                                                )}
+                                                {(this.state.subTab === 'offices') && (
+                                                <>
+                                                    <TemplateButton style={{marginBottom:10}} onClick={this.addAddress} 
+                                                        color="primary" label='Add'/>
+                                                    {(this.state.selected.addr && this.state.selected.addr) && (
+                                                    <>
+                                                    <PainTable 
+                                                        keyField='id' data={this.state.selected.addr} 
+                                                        columns={offheads}>
+                                                    </PainTable>
+                                                    </>
+                                                    )}
+                                                </>
+                                                )}
+                                                {(this.state.subTab === 'invoice') && (
+                                                <>
+                                                    {(this.state.selected.invoice && this.state.selected.invoice.items) && (
+                                                        <PainTable 
+                                                            keyField='id' data={this.state.selected.invoice.items} 
+                                                            columns={invheads}>
+                                                        </PainTable>
+                                                    )}
+                                                </>
+                                                )}
+                                                {(this.state.subTab === 'plans') && (
+                                                <>
                                                     <Grid container xs="12" style={{marginBottom:20}}>
                                                         <Grid item xs="5">
-                                                          <Select
-                                                              closeMenuOnSelect={true}
-                                                              isSearchable={false}
+                                                          <TemplateSelect
                                                               onChange={this.onPlansChange}
+                                                              style={{margin:20}}
                                                               value={{
                                                                 label:
                                                                     this.props.plansList.data.filter((g) => 
@@ -1105,16 +1000,15 @@ class Registrations extends Component {
                                                               }}
                                                               options={
                                                                     this.props.plansList.data.map((g) => {
-                                                                        return ({label:g.description,value:g.id})
+                                                                        return ({label:g.description,value:g.description})
                                                                     })
                                                                 }
                                                             />
                                                         </Grid>
                                                         <Grid item xs="5">
-                                                          <Select
-                                                              closeMenuOnSelect={true}
-                                                              isSearchable={false}
+                                                          <TemplateSelect
                                                               onChange={this.onCouponChange}
+                                                              style={{margin:20}}
                                                               value={{
                                                                 label:
                                                                     this.props.registrationsAdminList.data.config.coupons.filter((g) => 
@@ -1124,75 +1018,45 @@ class Registrations extends Component {
                                                               }}
                                                               options={
                                                                     this.props.registrationsAdminList.data.config.coupons.map((g) => {
-                                                                        return ({label:g.name,value:g.id})
+                                                                        return ({label:g.name,value:g.name})
                                                                     })
                                                                 }
                                                             />
+                                                            </Grid>
                                                         </Grid>
-                                                    </Grid>
-                                                    {(this.state.selected.plans && this.state.selected.plans.items) && (
-                                                    <>
-                                                    <BootstrapTable 
-                                                        keyField='id' data={this.state.selected.plans.items} 
-                                                        cellEdit={ cellEditFactory({ mode: 'click',blurToSave:true })}
-                                                        columns={planheads}>
-                                                    </BootstrapTable>
+                                                        {(this.state.selected.plans && this.state.selected.plans.items) && (
+                                                        <>
+                                                        <PainTable 
+                                                            keyField='id' data={this.state.selected.plans.items} 
+                                                            columns={planheads}>
+                                                        </PainTable>
+                                                        </>
+                                                        )}
                                                     </>
                                                     )}
-                                                </TabPane>
-                                                <TabPane tabId="history">
-                                                    {(this.state.selected.history && this.state.selected.history) && (
-                                                    <>
-                                                    <BootstrapTable 
-                                                        keyField='id' data={this.state.selected.history} 
-                                                        columns={historyheads}>
-                                                    </BootstrapTable>
-                                                    </>
-                                                    )}
-                                                </TabPane>
-                                                <TabPane tabId="offices">
-                                                    <Button style={{marginBottom:10}} onClick={this.addAddress} 
-                                                        color="primary">Add</Button>
-                                                    {(this.state.selected.addr && this.state.selected.addr) && (
-                                                    <>
-                                                    <BootstrapTable 
-                                                        cellEdit={ cellEditFactory({ mode: 'click',blurToSave:true })}
-                                                        keyField='id' data={this.state.selected.addr} 
-                                                        columns={offheads}>
-                                                    </BootstrapTable>
-                                                    </>
-                                                    )}
-                                                </TabPane>
-                                                <TabPane tabId="invoices">
-                                                    <Button onClick={() => this.addInvoiceGrid({id:"new"})} 
-                                                        style={{marginRight:5,marginBottom:10,height:35,width:90}} color="primary">Add</Button>
-                                                    {(this.state.selected.invoice && this.state.selected.invoice.items) && (
-                                                        <BootstrapTable 
-                                                            keyField='id' data={this.state.selected.invoice.items} 
-                                                            cellEdit={ cellEditFactory({ mode: 'click',blurToSave:true })}
-                                                            columns={invheads}>
-                                                        </BootstrapTable>
-                                                    )}
-                                                </TabPane>
-                                            </TabContent>
-                                        </Grid>
-                                        )}
-                                    </Grid>
-                                    <Grid container xs="12">
-                                        <Grid item xs="12">
-                                            <Grid item xs="6">
-                                                <Button onClick={this.save} color="primary">Save</Button>
-                                                <Button outline style={{marginLeft:10}} onClick={this.close} 
-                                                    color="secondary">Close</Button>
                                             </Grid>
+                                        )}
+                                        </>
+                                    </Grid>
+                                </Grid>
+                                <Grid container xs="12" style={{marginTop:20}}>
+                                    <Grid item xs="12">
+                                        <Grid item xs="6">
+                                            <TemplateButton onClick={this.save} color="primary" label="Save"/>
+                                            <TemplateButton outline style={{marginLeft:10}} onClick={this.close} 
+                                                color="secondary" label="Close"/>
                                         </Grid>
                                     </Grid>
                                 </Grid>
-                            </Grid>
+                            </>
                             )}
-                        </TabPane>
-                    </TabContent>
+                        </>
+                        )}
+                    </>
+                    </Box>
+                </>
                 </Grid>                
+            </>
             </Grid>
         </>
         )

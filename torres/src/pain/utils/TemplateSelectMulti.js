@@ -39,8 +39,8 @@ function TemplateSelectMulti({label,onChange,style,value,options}) {
 
   return (
     <div>
-      <FormControl sx={{ m: 1, ml:2, width: "100%" }}>
-        <InputLabel id="demo-multiple-name-label">Name</InputLabel>
+      <FormControl sx={{ m: 1, width: "100%" }}>
+        <InputLabel>{label}</InputLabel>
         <Select
           multiple
           value={selected}

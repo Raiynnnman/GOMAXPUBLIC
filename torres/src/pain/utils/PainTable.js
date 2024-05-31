@@ -1,22 +1,20 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Col, Grid } from 'reactstrap';
 import TableFooter from '@mui/material/TableFooter';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import { styled } from '@mui/material/styles';
-import { Nav, NavItem, NavLink } from 'reactstrap';
-import { TabContent, TabPane } from 'reactstrap';
 import cx from 'classnames';
 import Box from '@mui/material/Box';
 import TablePagination from '@mui/material/TablePagination';
 import classnames from 'classnames';
+import Grid from '@mui/material/Grid';
 import translate from '../utils/translate';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
-import TableGrid from '@mui/material/TableGrid';
+import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
 import FirstPageIcon from '@mui/icons-material/FirstPage';
@@ -120,7 +118,7 @@ class PainTable extends Component {
                     <TableContainer component={Paper}>
                       <Table sx={{ minWidth: 650 }} size="small" aria-label="">
                         <TableHead>
-                          <TableGrid>
+                          <TableRow>
                             {this.props.columns.map((e) => { 
                                 if (!e.hidden) { 
                                 return(
@@ -144,11 +142,11 @@ class PainTable extends Component {
                                 </TableCell>
                                 )
                             }})}
-                          </TableGrid>
+                          </TableRow>
                         </TableHead>
                         <TableBody>
                           {this.props.data.map((row) => (
-                            <TableGrid
+                            <TableRow
                               key={row.id}
                               sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
@@ -162,7 +160,7 @@ class PainTable extends Component {
                                         )
                                     }
                                 })}
-                            </TableGrid>
+                            </TableRow>
                           ))}
                         </TableBody>
                         <TableFooter>
