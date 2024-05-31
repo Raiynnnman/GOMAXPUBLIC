@@ -117,7 +117,10 @@ class RegistrationUpdate(RegistrationsBase):
         if config.getKey("appt_email_override") is not None:
             email = config.getKey("appt_email_override")
         m = Mail()
-        m.defer(email,"Registration with POUNDPAIN TECH","templates/mail/registration-verification.html",data)
+        if config.getKey("use_defer") is not None:
+            m.defer(email,"Registration with POUNDPAIN TECH","templates/mail/registration-verification.html",data)
+        else:
+            m.send_email(email,"Registration with POUNDPAIN TECH","templates/mail/registration-verification.html",data)
         db.commit()
         return {'success': True}
 
@@ -992,8 +995,12 @@ class RegisterProvider(RegistrationsBase):
         m = Mail()
         data['__OFFICE_NAME__'] = params['name']
         data['__OFFICE_URL__'] = "%s/#/app/main/admin/office/%s" % (url,off_id)
-        m.defer(email,"Registration with POUNDPAIN TECH","templates/mail/registration-verification.html",data)
-        m.defer(sysemail,"New Customer Signed Up","templates/mail/office-signup.html",data)
+        if config.getKey("use_defer") is not None:
+            m.defer(email,"Registration with POUNDPAIN TECH","templates/mail/registration-verification.html",data)
+            m.defer(sysemail,"New Customer Signed Up","templates/mail/office-signup.html",data)
+        else:
+            m.send_email(email,"Registration with POUNDPAIN TECH","templates/mail/registration-verification.html",data)
+            m.send_email(sysemail,"New Customer Signed Up","templates/mail/office-signup.html",data)
         db.commit()
         return ret
 
@@ -1229,7 +1236,11 @@ class RegisterReferrer(RegistrationsBase):
         data['__OFFICE_NAME__'] = params['name']
         data['__OFFICE_URL__'] = "%s/#/app/main/admin/office/%s" % (url,insid)
         sysemail = config.getKey("support_email")
-        m.defer(email,"Registration with POUNDPAIN TECH","templates/mail/registration-verification.html",data)
-        m.defer(sysemail,"New Referrer Signed Up","templates/mail/office-signup.html",data)
+        if config.getKey("use_defer") is not None:
+            m.defer(email,"Registration with POUNDPAIN TECH","templates/mail/registration-verification.html",data)
+            m.defer(sysemail,"New Referrer Signed Up","templates/mail/office-signup.html",data)
+        else:
+            m.send_email(email,"Registration with POUNDPAIN TECH","templates/mail/registration-verification.html",data)
+            m.send_email(sysemail,"New Referrer Signed Up","templates/mail/office-signup.html",data)
         db.commit()
         return ret
