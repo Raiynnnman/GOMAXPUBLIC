@@ -20,6 +20,7 @@ import SearchAdmin from './pain/admin/SearchAdmin';
 import Map from './pain/admin/Map';
 import Registrations from './pain/admin/Registrations';
 import Referrers from './pain/admin/Referrers';
+import Register from './pain/register/Register';
 
 const CloseButton = ({closeToast}) => <i onClick={closeToast} className="la la-close notifications-close"/>
 const App = () => {
@@ -34,6 +35,7 @@ const App = () => {
                 <Switch>
                     <Route exact path='/' component={HomeHorizontal}/>
                     <Route exact path='/login' component={Login}/>
+                    <Route exact path='/register' component={Register}/>
                     <Route exact path='/forgot' component={Forgot}/>
                     <Route exact path='/reset/:token' component={Reset}/>
                     <Route exact path='/register-provider' component={RegisterProvider}/>
