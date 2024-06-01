@@ -80,7 +80,6 @@ class CouponSave(AdminBase):
         db = Query()
         insid = 0
         OT = self.getOfficeTypes()
-        print(params)
         if 'id' in params and params['id'] is not None:
             db.update("""
                 update coupons set 

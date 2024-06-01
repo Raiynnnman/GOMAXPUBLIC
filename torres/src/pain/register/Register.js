@@ -57,7 +57,6 @@ class Register extends React.Component {
       last_name: data.get('last_name'),
       zipcode: data.get('zip_code'),
     };
-    console.log(creds);
     this.props.dispatch(registerUser(creds));
     this.props.history.push({
       pathname: '/login',

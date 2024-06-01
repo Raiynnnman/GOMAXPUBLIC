@@ -428,7 +428,6 @@ class ClientList(OfficeBase):
         CI = self.getClientIntake()
         for g in inputs:
             cols.append(g['f'])
-        print(off_id)
         o = db.query("""
             select
                 ci.id,u.first_name as client_first,
@@ -567,14 +566,12 @@ class ReferralUpdate(OfficeBase):
 
     def execute(self, *args, **kwargs):
         ret = {}
-        print(args,kwargs)
         if len(args) < 2:
             return {'success': False, 'message': 'TOKEN_MISSING'}
         js = args[1]
         if len(js) < 1:
             return {'success': False, 'message': 'TOKEN_INVALID_FORMAT'}
         js = js[0]
-        print(js)
         if 'token' not in js:
             return {'success': False, 'message': 'TOKEN_REQUIRED'}
         db = Query()
@@ -594,7 +591,7 @@ class ReferralUpdate(OfficeBase):
                 """,(r,)
             )
             if len(lck) > 0:
-                print("ALREADY_ACCEPTED_BY_ANOTHER_PROVIDER (%s)" % r)
+                log.info("ALREADY_ACCEPTED_BY_ANOTHER_PROVIDER (%s)" % r)
                 return {'success': False, 'message': 'ALREADY_ACCEPTED_BY_ANOTHER_PROVIDER'}
             db.update("""
                 insert into referrer_users_lock (referrer_users_id) values
@@ -604,7 +601,6 @@ class ReferralUpdate(OfficeBase):
             lck_id = db.query("select LAST_INSERT_ID()");
             lck_id = lck_id[0]['LAST_INSERT_ID()']
             db.commit()
-            print(o,r,oa)
             q = db.query("""
                 select 
                     ru.id,ru.referrer_users_status_id,ru.email,ru.name,ru.phone,
@@ -621,20 +617,19 @@ class ReferralUpdate(OfficeBase):
                 return {'success': False, 'message': 'REFERRAL_DOESNT_EXIST'}
             q = q[0]
             if q['referrer_users_status_id'] != REF['QUEUED'] and q['office_id'] == o:
-                print("OFFICE_ALREADY_ACCEPTED (%s)" % r)
+                log.info("OFFICE_ALREADY_ACCEPTED (%s)" % r)
                 return {'success': False, 'message': 'OFFICE_ALREADY_ACCEPTED'}
             if q['referrer_users_status_id'] != REF['QUEUED']:
-                print("ALREADY_ACCEPTED_BY_ANOTHER_PROVIDER (%s)" % r)
+                log.info("ALREADY_ACCEPTED_BY_ANOTHER_PROVIDER (%s)" % r)
                 return {'success': False, 'message': 'ALREADY_ACCEPTED_BY_ANOTHER_PROVIDER'}
-            print(q)
             if js['accept']:
                 off = db.query("""select email from office where id=%s""",(o,))
                 if len(off) < 1:
-                    print("ERROR: No office email found for %s" % o)
+                    log.error("ERROR: No office email found for %s" % o)
                     return {'success': False, 'message': 'NO_EMAIL_FOUND_FOR_PRACTICE'}
                 off = off[0]
                 if off['email'] is None or len(off['email']) < 1:
-                    print("ERROR: No office email found for %s" % o)
+                    log.error("ERROR: No office email found for %s" % o)
                     return {'success': False, 'message': 'INVALID_EMAIL_FOUND_FOR_PRACTICE'}
                 db.update("""
                     update referrer_users set 
@@ -655,7 +650,6 @@ class ReferralUpdate(OfficeBase):
                 doa = ''
                 try:
                     doa = calcdate.parseDate(q['doa'])
-                    print(doa)
                 except Exception as e:
                     print(str(e))
                     print("couldnt parse date: %s" % q['doa'])
@@ -739,7 +733,6 @@ class ReferrerUpdate(OfficeBase):
                 update referrer_users set referrer_users_status_id=%s where id=%s
                 """,(status,insid)
             )
-        print("doi=%s" % dest_office_id)
         if dest_office_id is not None:
             db.update("""
                 update referrer_users set office_id=%s where id=%s
@@ -756,7 +749,6 @@ class ReferrerUpdate(OfficeBase):
                 """,(row['email'],insid)
             )
         if 'phone' in row:
-            print(row['phone'])
             db.update("""
                 update referrer_users set phone=%s where id = %s
                 """,(row['phone'],insid)
@@ -801,7 +793,6 @@ class ReferrerUpdate(OfficeBase):
             off_id,
             encryption.getSHA256("%s-%s" % (off_id,calcdate.getTimestampUTC()))
         )
-        print(params)
         ext = '.json'
         if 'content' in params:
             data = params['content'].split('base64,')
@@ -856,7 +847,6 @@ class ReferrerUpdate(OfficeBase):
             LANG = self.getLanguages()
             try: 
                 j = params['client'].split('\n')
-                print(j)
                 for x in j:
                     if ':' not in x:
                         continue
@@ -868,7 +858,6 @@ class ReferrerUpdate(OfficeBase):
                     key = key.lower()
                     tosave[key] = value.rstrip().lstrip()
                     line += 1 
-                print(tosave)
                 if 'address' not in tosave:
                     return {'success': False,'message': 'ADDRESS_REQUIRED'}
                 addr = pyap.parse(tosave['address'],country='US')

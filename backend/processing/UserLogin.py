@@ -106,7 +106,6 @@ class UserLogin(SubmitDataRequest):
         log.info("LOGIN_SUCCESS: %s" % email)
         if len(u['offices']) > 0:
             a.message(True,u1['id'],u['offices'][0],'LOGIN_SUCCESS',u1['email'])
-        print("taco tuesday" , ret)
         return {"token":ret}
 
     def generateToken(self, user):

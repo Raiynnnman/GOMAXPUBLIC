@@ -1,28 +1,20 @@
 import React, { Component } from 'react';
 import moment from 'moment';
+import Box from '@mui/material/Box';
+import AddBoxIcon from '@mui/icons-material/AddBox';
+import DeleteIcon from '@mui/icons-material/Delete';
+import Grid from '@mui/material/Grid';
+import Container from '@mui/material/Container';
 import { connect } from 'react-redux';
-import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
-import { Col, Grid } from 'reactstrap';
-import ToolkitProvider from 'react-bootstrap-table2-toolkit';
 import { push } from 'connected-react-router';
-import Select from 'react-select';
-import cellEditFactory from 'react-bootstrap-table2-editor';
 import EditIcon from '@mui/icons-material/Edit';
 import LaunchIcon from '@mui/icons-material/Launch';
-import { Nav, NavItem, NavLink } from 'reactstrap';
-import { TabContent, TabPane } from 'reactstrap';
 import cx from 'classnames';
 import classnames from 'classnames';
-import { Button } from 'reactstrap'; 
-import { Badge } from 'reactstrap';
-import { Search } from 'react-bootstrap-table2-toolkit';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
-import { FormGroup, Label, Input } from 'reactstrap';
-import BootstrapTable from 'react-bootstrap-table-next';
-import paginationFactory from 'react-bootstrap-table2-paginator';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { getOffices } from '../../actions/offices';
@@ -31,8 +23,18 @@ import { officeSave } from '../../actions/officeSave';
 import { officeReportDownload } from '../../actions/officeReportDownload';
 import formatPhoneNumber from '../utils/formatPhone';
 import PainTable from '../utils/PainTable';
+import TemplateSelect from '../utils/TemplateSelect';
+import TemplateSelectEmpty from '../utils/TemplateSelectEmpty';
+import TemplateSelectMulti from '../utils/TemplateSelectMulti';
+import TemplateTextField from '../utils/TemplateTextField';
+import TemplateTextArea from '../utils/TemplateTextArea';
+import TemplateCheckbox from '../utils/TemplateCheckbox';
+import TemplateButton from '../utils/TemplateButton';
+import TemplateBadge from '../utils/TemplateBadge';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import Navbar from '../../components/Navbar';
 
-const { SearchBar } = Search;
 class OfficeList extends Component {
     constructor(props) { 
         super(props);
@@ -239,8 +241,8 @@ class OfficeList extends Component {
         this.state.selected.addr = t;
         this.setState(this.state);
     } 
-    toggleSubTab(e) { 
-        this.state.subTab = e;
+    toggleSubTab(e,t) { 
+        this.state.subTab = t;
         this.setState(this.state);
     } 
     addAddress() { 
@@ -347,41 +349,6 @@ class OfficeList extends Component {
     } 
 
     render() {
-        const pageButtonRenderer = ({
-          page,
-          currentPage,
-          disabled,
-          title,
-          onPageChange
-        }) => {
-          const handleClick = (e) => {
-             e.preventDefault();
-             this.pageChange(page, currentPage);// api call 
-           };    
-          return (
-            <div>
-              {
-               <li className="page-item">
-                 <a href="#"  onClick={ handleClick } className="page-link">{ page }</a>
-               </li>
-              }
-            </div>
-          );
-        };
-        const options = {
-          pageButtonRenderer,
-          showTotal:true,
-          withFirstAndLast: false,
-          alwaysShowAllBtns: false,
-          nextPageText:'>',
-          sizePerPage:10,
-          paginationTotalRenderer: (f,t,z) => this.renderTotalLabel(f,t,z),
-          totalSize: (this.props.offices && 
-                      this.props.offices.data &&
-                      this.props.offices.data.total) ? this.props.offices.data.total : 10,
-          hideSizePerPage:true,
-          //onPageChange:(page,sizePerPage) => this.pageChange(page,sizePerPage)
-        };
         var clientheads = [
             {
                 dataField:'id',
@@ -501,11 +468,11 @@ class OfficeList extends Component {
                 text:'Status',
                 formatter:(cellContent,row) => (
                     <div>
-                        {(row.status === 'INVITED') && (<Badge color="primary">INVITED</Badge>)}
-                        {(row.status === 'APPROVED') && (<Badge color="primary">APPROVED</Badge>)}
-                        {(row.status === 'QUEUED') && (<Badge color="secondary">QUEUED</Badge>)}
-                        {(row.status === 'WAITING') && (<Badge color="danger">WAITING</Badge>)}
-                        {(row.status === 'DENIED') && (<Badge color="danger">DENIED</Badge>)}
+                        {(row.status === 'INVITED') && (<TemplateBadge label='INVITED'/>)}
+                        {(row.status === 'APPROVED') && (<TemplateBadge label='APPROVED'/>)}
+                        {(row.status === 'QUEUED') && (<TemplateBadge label='QUEUED'/>)}
+                        {(row.status === 'WAITING') && (<TemplateBadge label='WAITING'/>)}
+                        {(row.status === 'DENIED') && (<TemplateBadge label='DENIED'/>)}
                     </div>
                 )
             },
@@ -515,8 +482,8 @@ class OfficeList extends Component {
                 text:'Active',
                 formatter: (cellContent,row) => (
                     <div>
-                        {(row.active === 1) && (<Badge color="primary">Active</Badge>)}
-                        {(row.active === 0) && (<Badge color="danger">Inactive</Badge>)}
+                        {(row.active === 1) && (<TemplateBadge label='Active'/>)}
+                        {(row.active === 0) && (<TemplateBadge label='Inactive'/>)}
                     </div>
                 )
             },
@@ -541,8 +508,8 @@ class OfficeList extends Component {
                 text:'Actions',
                 formatter:(cellContent,row) => ( 
                     <div>
-                        <Button onClick={() => this.edit(row)} style={{marginRight:5,height:35}} color="primary"><EditIcon/></Button>
-                        <Button onClick={() => this.getContext(row)} style={{height:35}} color="primary"><LaunchIcon/></Button>
+                        <TemplateButton onClick={() => this.edit(row)} style={{marginRight:5,height:35}} label={<EditIcon/>}/>
+                        <TemplateButton onClick={() => this.getContext(row)} style={{height:35}} label={<LaunchIcon/>}/>
                     </div>
                 )
             },
@@ -621,7 +588,7 @@ class OfficeList extends Component {
                 editable: false,
                 formatter:(cellContent,row) => ( 
                     <div>
-                        <Button onClick={() => this.delGrid(row)} style={{marginRight:5,height:35,width:90}} color="danger">Delete</Button>
+                        <TemplateButton onClick={() => this.delGrid(row)} style={{marginRight:5,height:35,width:90}} label={<DeleteIcon/>}/>
                     </div>
                 )
             },
@@ -714,13 +681,15 @@ class OfficeList extends Component {
             {(this.props.officeReportDownload && this.props.officeReportDownload.isReceiving) && (
                 <AppSpinner/>
             )}
+            <Navbar/>
+            <Box style={{margin:20}}>
             {(this.state.selected === null) && (
             <Grid container xs="12">
                 <Grid item xs="5" style={{zIndex:9995}}>
                   {(this.props.offices && this.props.offices.data && 
                     this.props.offices.data.config &&
                     this.props.offices.data.config.provider_status && this.state.statusSelected !== null) && (
-                      <Select
+                      <TemplateSelectMulti
                           closeMenuOnSelect={true}
                           isSearchable={false}
                           isMulti
@@ -729,7 +698,7 @@ class OfficeList extends Component {
                             return (
                                 {
                                 label:this.props.offices.data.config.provider_status.filter((f) => f.id === g)[0].name,
-                                value:this.props.offices.data.config.provider_status.filter((f) => f.id === g)[0].id
+                                value:this.props.offices.data.config.provider_status.filter((f) => f.id === g)[0].name
                                 }
                             )
                           })}
@@ -737,7 +706,7 @@ class OfficeList extends Component {
                             return (
                                 { 
                                 label: e.name,
-                                value: e.id
+                                value: e.name
                                 }
                             )
                           })}
@@ -745,15 +714,15 @@ class OfficeList extends Component {
                     )}
                 </Grid>                
                 <Grid item xs={3}>
-                    <Input type="text" id="normal-field" onChange={this.search}
-                    placeholder="Search" value={this.state.search}/>
+                    <TemplateTextField type="text" id="normal-field" onChange={this.search}
+                    label="Search" value={this.state.search}/>
                 </Grid>
-                <Grid item xs="4">
-                    <div class="pull-right">
+                <Grid item xs={4}>
+                    <div style={{display:'flex',alignItems:'center',justifyItems:'end'}}>
                         <div style={{justifyContent:'spread-evenly'}}>
-                            <Button onClick={() => this.reload()} style={{marginRight:5,height:35}} outline 
-                                color="primary"><AutorenewIcon/></Button>
-                            <Button onClick={this.officeReport} outline color="primary"><AssessmentIcon/></Button>
+                            <TemplateButton onClick={() => this.reload()} style={{marginRight:5,height:35}} outline 
+                                label={<AutorenewIcon/>}/>
+                            <TemplateButton onClick={this.officeReport} label={<AssessmentIcon/>}/>
                         </div>
                     </div>
                 </Grid>
@@ -764,12 +733,6 @@ class OfficeList extends Component {
             <>
             <Grid container xs="12" style={{marginTop:10}}>
                 <Grid item xs="12">
-                      {/*<BootstrapTable 
-                          keyField="id"
-                          data={this.props.offices.data.offices} 
-                          columns={ heads }
-                            pagination={ paginationFactory(options) }>
-                      </BootstrapTable>*/}
                       <PainTable
                             keyField='id' 
                             data={this.props.offices.data.offices} 
@@ -788,235 +751,100 @@ class OfficeList extends Component {
             {(this.props && this.props.offices && this.props.offices.data && this.props.offices.data.offices &&
               this.props.offices.data.offices.length > 0 && this.state.selected !== null) && ( 
                 <>
-                <Grid container xs="12">
-                    <Grid item xs="12">
-                        <Grid container xs="12">
-                            <Grid item xs={4}>
-                              <FormGroup row>
-                                <Label for="normal-field" md={4} className="text-md-right">
-                                  ID
-                                </Label>
-                                <Grid item xs={8}>
-                                  <Input type="text" id="normal-field" readOnly placeholder="ID" value={this.state.selected.id}/>
-                                </Grid>
-                              </FormGroup>
-                            </Grid>
-                        </Grid>
-                        <Grid container xs="12">
-                            <Grid item xs={4}>
-                              <FormGroup row>
-                                <Label for="normal-field" md={4} className="text-md-right">
-                                  Service Start
-                                </Label>
-                                <Grid item xs={8}>
-                                  <Input type="text" readOnly id="normal-field" value={this.state.selected.service_start_date}/>
-                                </Grid>
-                              </FormGroup>
-                            </Grid>
-                        </Grid>
-                        <Grid container xs="12">
-                            <Grid item xs={4}>
-                              <FormGroup row>
-                                <Label for="normal-field" md={4} className="text-md-right">
-                                  Name
-                                </Label>
-                                <Grid item xs={8}>
-                                  <Input type="text" id="normal-field" onChange={this.nameChange} placeholder="Name" value={this.state.selected.name}/>
-                                </Grid>
-                              </FormGroup>
-                            </Grid>
-                        </Grid>
-                        <Grid container xs="12">
-                          <Grid item xs={4}>
-                            <FormGroup row>
-                              <Label for="normal-field" md={4} className="text-md-right">
-                                Office Email
-                              </Label>
-                              <Grid item xs={8}>
-                              <Input type="text" id="normal-field"
-                                      onChange={this.emailChange} placeholder="Email" value={this.state.selected.email}/>
-                                {this.state.errorMessage &&
-                                  <p for="normal-field" md={12} className="text-md-right">
-                                      <font style={{color:"red"}}>
-                                          {this.state.errorMessage}
-                                      </font>
-                                  </p>
-                                }
-                              </Grid>
-                            </FormGroup>
-                          </Grid>
-                        </Grid>
-                        <Grid container xs="12">
-                          <Grid item xs={4}>
-                            <FormGroup row>
-                                <Label for="normal-field" md={4} className="text-md-right">
-                                    Sales Owner
-                                </Label>
-                                <Grid item xs="8" style={{zIndex:9995}}>
-                                  {(this.props.offices && this.props.offices.data && 
-                                    this.props.offices.data.config &&
-                                    this.props.offices.data.config.commission_users) && (
-                                      <Select
-                                          closeMenuOnSelect={true}
-                                          isSearchable={false}
-                                          onChange={this.onCommissionChange}
-                                          value={{label:this.state.selected.commission_name}}
-                                          options={this.props.offices.data.config.commission_users.map((e) => { 
-                                            return (
-                                                { 
-                                                label: e.name,
-                                                value: e.id
-                                                }
-                                            )
-                                          })}
-                                        />
-                                    )}
-                                </Grid>                
-                            </FormGroup>
-                          </Grid>
-                        </Grid>
-                        <Grid container xs="12">
-                          <Grid item xs={4}>
-                            <FormGroup row>
-                              <Label for="normal-field" md={4} className="text-md-right">
-                                Active
-                              </Label>
-                              <Grid item xs={8}>
-                              <Input type="checkbox" id="normal-field"
-                                      onChange={this.activeChange} placeholder="Email" checked={this.state.selected.active}/>
-                              </Grid>
-                            </FormGroup>
-                          </Grid>
-                        </Grid>
-                        <Grid container xs="12">
-                          <Grid item xs={4}>
-                            <FormGroup row>
-                              <Label for="normal-field" md={4} className="text-md-right">
-                                Do not call
-                              </Label>
-                              <Grid item xs={8}>
-                              <Input type="checkbox" id="normal-field"
-                                      onChange={this.donotCallChange} placeholder="Email" checked={this.state.selected.do_not_contact}/>
-                              </Grid>
-                            </FormGroup>
-                          </Grid>
-                        </Grid>
-                        <Grid container xs="12">
-                          <Grid item xs={4}>
-                            <FormGroup row>
-                              <Label for="normal-field" md={4} className="text-md-right">
-                                Priority
-                              </Label>
-                              <Grid item xs={8}>
-                              <Input type="text" id="normal-field"
-                                      onChange={this.priorityChange} placeholder="Priority" value={this.state.selected.priority}/>
-                              </Grid>
-                            </FormGroup>
-                          </Grid>
-                        </Grid>
-                        <Grid container xs="12">
-                          <Grid item xs={4}>
-                            <FormGroup row>
-                              <Label for="normal-field" md={4} className="text-md-right">
-                                Provider ID
-                              </Label>
-                              <Grid item xs={8} style={{color:'black'}}>
-                                  {(this.state.selected.stripe_cust_id && this.state.selected.stripe_cust_id.includes('cus_'))  && (
-                                      <a href={'https://dashboard.stripe.com/customers/' + this.state.selected.stripe_cust_id}
-                                        target='_blank'>{this.state.selected.stripe_cust_id}</a>
-                                  )}
-                                  {(this.state.selected.stripe_cust_id && !this.state.selected.stripe_cust_id.includes('cus_'))  && (
-                                      <a style={{color:'black'}} href={'https://squareup.com/dashboard/customers/directory/customer/' + this.state.selected.stripe_cust_id}
-                                        target='_blank'>{this.state.selected.stripe_cust_id}</a>
-                                  )}
-                              </Grid>
-                            </FormGroup>
-                          </Grid>
-                        </Grid>
+                <Grid container xs="12" style={{margin:10}}>
+                    <Grid item xs={1}>
+                      <TemplateTextField readOnly label="ID" value={this.state.selected.id}/>
+                    </Grid>
+                    <Grid item xs={2}>
+                      <TemplateTextField readOnly label='Service Start' value={this.state.selected.service_start_date}/>
+                    </Grid>
+                    <Grid item xs={3}>
+                      <TemplateTextField onChange={this.nameChange} label="Name" value={this.state.selected.name}/>
+                    </Grid>
+                    <Grid item xs={3}>
+                      <TemplateTextField 
+                              onChange={this.emailChange} label="Email" value={this.state.selected.email}/>
+                    </Grid>
+                    <Grid item xs={3}>
+                      {(this.props.offices && this.props.offices.data && 
+                        this.props.offices.data.config &&
+                        this.props.offices.data.config.commission_users) && (
+                          <TemplateSelect
+                              label='Commission Owner'
+                              onChange={this.onCommissionChange}
+                              value={{label:this.state.selected.commission_name}}
+                              options={this.props.offices.data.config.commission_users.map((e) => { 
+                                return (
+                                    { 
+                                    label: e.name,
+                                    value: e.name
+                                    }
+                                )
+                              })}
+                            />
+                        )}
                     </Grid>                
+                    <Grid item xs={1}>
+                    <TemplateCheckbox 
+                          onChange={this.activeChange} label="Active" checked={this.state.selected.active}/>
+                    </Grid>
+                    <Grid item xs={1}>
+                    <TemplateCheckbox 
+                        onChange={this.donotCallChange} label="Do not call" checked={this.state.selected.do_not_contact}/>
+                    </Grid>
+                    <Grid item xs={1}>
+                    <TemplateTextField 
+                          onChange={this.priorityChange} label="Priority" value={this.state.selected.priority}/>
+                    </Grid>
+                    {/*<Grid item xs={3} style={{color:'black'}}>
+                      {(this.state.selected.stripe_cust_id && this.state.selected.stripe_cust_id.includes('cus_'))  && (
+                          <a href={'https://dashboard.stripe.com/customers/' + this.state.selected.stripe_cust_id}
+                            target='_blank'>{this.state.selected.stripe_cust_id}</a>
+                      )}
+                      {(this.state.selected.stripe_cust_id && !this.state.selected.stripe_cust_id.includes('cus_'))  && (
+                          <a style={{color:'black'}} href={'https://squareup.com/dashboard/customers/directory/customer/' + this.state.selected.stripe_cust_id}
+                            target='_blank'>{this.state.selected.stripe_cust_id}</a>
+                      )}
+                     </Grid>*/}
                 </Grid>
                 <Grid container xs="12">
                     <Grid item xs="12">
-                        <Nav tabs  className={`${s.coloredNav}`} style={{backgroundColor:"#e8ecec"}}>
-                            <NavItem>
-                                <NavLink className={classnames({ active: this.state.subTab === 'plans' })}
-                                    onClick={() => { this.toggleSubTab('plans') }}>
-                                    <span>{translate('Plans')}</span>
-                                </NavLink>
-                            </NavItem>
-                            <NavItem>
-                                <NavLink className={classnames({ active: this.state.subTab === 'offices' })}
-                                    onClick={() => { this.toggleSubTab('offices') }}>
-                                    <span>{translate('Offices')}</span>
-                                </NavLink>
-                            </NavItem>
-                            <NavItem>
-                                <NavLink className={classnames({ active: this.state.subTab === 'invoices' })}
-                                    onClick={() => { this.toggleSubTab('invoices') }}>
-                                    <span>{translate('Invoices')}</span>
-                                </NavLink>
-                            </NavItem>
-                            <NavItem>
-                                <NavLink className={classnames({ active: this.state.subTab === 'potentials' })}
-                                    onClick={() => { this.toggleSubTab('potentials') }}>
-                                    <span>{translate('Potentials')}</span>
-                                </NavLink>
-                            </NavItem>
-                            <NavItem>
-                                <NavLink className={classnames({ active: this.state.subTab === 'history' })}
-                                    onClick={() => { this.toggleSubTab('history') }}>
-                                    <span>{translate('History')}</span>
-                                </NavLink>
-                            </NavItem>
-                            <NavItem>
-                                <NavLink className={classnames({ active: this.state.subTab === 'cards' })}
-                                    onClick={() => { this.toggleSubTab('cards') }}>
-                                    <span>{translate('Cards')}</span>
-                                </NavLink>
-                            </NavItem>
-                            <NavItem>
-                                <NavLink className={classnames({ active: this.state.subTab === 'clients' })}
-                                    onClick={() => { this.toggleSubTab('clients') }}>
-                                    <span>{translate('Clients')}</span>
-                                </NavLink>
-                            </NavItem>
-                            <NavItem>
-                                <NavLink className={classnames({ active: this.state.subTab === 'comments' })}
-                                    onClick={() => { this.toggleSubTab('comments') }}>
-                                    <span>{translate('Comments')}</span>
-                                </NavLink>
-                            </NavItem>
-                        </Nav>
-                        <TabContent className='mb-lg' activeTab={this.state.subTab}>
-                            <TabPane tabId="clients">
-                              <BootstrapTable 
-                                  keyField="id"
-                                  data={this.state.selected.clients} 
-                                  columns={ clientheads }>
-                              </BootstrapTable>
-                            </TabPane>
-                            <TabPane tabId="cards">
-                              <BootstrapTable 
+                        <Tabs style={{marginBottom:20}} value={this.state.subTab} onChange={this.toggleSubTab}>
+                            <Tab value='plans' label='Plans'/>
+                            <Tab value='offices' label='Offices'/>
+                            <Tab value='invoices' label='Invoices'/>
+                            <Tab value='potentials' label='Potentials'/>
+                            <Tab value='history' label='History'/>
+                            <Tab value='cards' label='Cards'/>
+                            <Tab value='clients' label='Clients'/>
+                            <Tab value='comments' label='Comments'/>
+                        </Tabs>
+                        {(this.state.subTab === 'clients') && (
+                          <PainTable
+                              keyField="id"
+                              data={this.state.selected.clients} 
+                              columns={ clientheads }/>
+                        )}
+                        {(this.state.subTab === 'cards') && (
+                              <PainTable
                                   keyField="id"
                                   data={this.state.selected.cards} 
-                                  columns={ cardheads }>
-                              </BootstrapTable>
-                            </TabPane>
-                            <TabPane tabId="history">
-                              <BootstrapTable 
+                                  columns={ cardheads }/>
+                        )}
+                        {(this.state.subTab === 'history') && (
+                              <PainTable
                                   keyField="id"
                                   data={this.state.selected.history} 
-                                  columns={ historyheads }>
-                              </BootstrapTable>
-                            </TabPane>
-                            <TabPane tabId="potentials">
-                              <BootstrapTable 
+                                  columns={ historyheads }/>
+                        )}
+                        {(this.state.subTab === 'history') && (
+                              <PainTable
                                   keyField="id"
                                   data={this.state.selected.potential} 
-                                  columns={ potheads }>
-                              </BootstrapTable>
-                            </TabPane>
-                            <TabPane tabId="plans">
+                                  columns={ potheads }/>
+                        )}
+                        {(this.state.subTab === 'plans') && (
+                        <>
                                 {(this.state.selected.plans && this.state.selected.plans.items) && (
                                 <>
                                     <Grid container xs="12" style={{marginBottom:20,borderBottom:"1px solid black"}}>
@@ -1034,108 +862,106 @@ class OfficeList extends Component {
                                         </Grid>
                                     </Grid>
                                     <Grid container xs="12" style={{marginBottom:20}}>
-                                        <BootstrapTable 
+                                        <PainTable
                                             keyField='id' data={this.state.selected.plans.items} 
-                                            cellEdit={ cellEditFactory({ mode: 'click',blurToSave:true })}
-                                            columns={planheads}>
-                                        </BootstrapTable>
+                                            columns={planheads}/>
                                     </Grid>
                                 </>
                                 )}
-                            </TabPane>
-                            <TabPane tabId="offices">
-                                <Button style={{marginBottom:10}} onClick={this.addAddress} 
-                                    color="primary">Add</Button>
+                            </>
+                        )}
+                        {(this.state.subTab === 'offices') && (
+                        <>
+                                <TemplateButton style={{marginBottom:10}} onClick={this.addAddress} 
+                                    label={<AddBoxIcon/>}/>
                                 {(this.state.selected.addr && this.state.selected.addr) && (
                                 <>
-                                <BootstrapTable 
-                                    cellEdit={ cellEditFactory({ mode: 'click',blurToSave:true })}
+                                <PainTable
                                     keyField='id' data={this.state.selected.addr} 
-                                    columns={offheads}>
-                                </BootstrapTable>
+                                    columns={offheads}/>
                                 </>
                                 )}
-                            </TabPane>
-                            <TabPane tabId="invoices">
-                                {/*<Button onClick={() => this.addInvoiceGrid({id:"new"})} 
-                                    style={{marginRight:5,marginBottom:10,height:35,width:90}} color="primary">Add</Button> */}
+                        </>
+                        )}
+                        {(this.state.subTab === 'invoices') && (
+                        <>
                                 {(this.state.selected.invoices && this.state.selected.invoices) && (
-                                    <BootstrapTable 
+                                    <PainTable
                                         keyField='id' data={this.state.selected.invoices} 
-                                        columns={invheads}>
-                                    </BootstrapTable>
+                                        columns={invheads}/>
                                 )}
-                            </TabPane>
-                            <TabPane tabId="comments">
-                                <Button onClick={() => this.addComment({id:"new"})} color="primary">Add Comment</Button>
+                        </>
+                        )}
+                        {(this.state.subTab === 'comments') && (
+                        <>
+                                <TemplateButton onClick={() => this.addComment({id:"new"})} label={<AddBoxIcon/>}/>
                                 {this.state.selected.comments.sort((a,b) => (a.created > b.created ? -1:1)).map((e) => { 
                                     return (
                                         <Grid item xs="3" key={e.id}>
-                                            <Card style={{margin:20,width:400,height:200}} className="mb-xlg border-1">
-                                                <CardBody>
-                                                    <Grid container xs="12">
+                                            <Container style={{margin:20,width:400,height:200}} className="mb-xlg border-1">
+                                                <Grid container xs="12">
+                                                    <Grid item xs="6">
+                                                        <font style={{fontSize:"14pt"}}>
+                                                            {
+                                                            this.state.selected.assignee.filter((g) => g.id === e.user_id).length > 0 ? 
+                                                            this.state.selected.assignee.filter((g) => g.id === e.user_id)[0].first_name + " " +
+                                                            this.state.selected.assignee.filter((g) => g.id === e.user_id)[0].last_name + " " : ""
+                                                            }
+                                                        </font>
+                                                    </Grid>
+                                                    <Grid item xs="6">
+                                                        {moment(e.created).format('LLL')}
+                                                    </Grid>
+                                                </Grid>
+                                                <hr/>
+                                                <Grid container xs="12">
+                                                    {(!e.edit) && ( 
+                                                    <Grid item xs="12">
+                                                        <div style={{overflow:"auto",height:100,display: 'flex', 
+                                                            alignItems: 'left', justifyContent: 'start'}}>
+                                                        {e.text}
+                                                        </div>
+                                                    </Grid>
+                                                    )}
+                                                    {(e.edit) && ( 
+                                                    <Grid item xs="12">
+                                                      <Grid item xs={12}>
+                                                        <TemplateTextArea value={e.text} 
+                                                            onChange={this.comment} 
+                                                        />
+                                                      </Grid>
+                                                    </Grid>
+                                                    )}
+                                                </Grid>
+                                                <Grid container xs="12">
+                                                    {(e.edit) && ( 
+                                                    <Grid item xs="12">
                                                         <Grid item xs="6">
-                                                            <font style={{fontSize:"14pt"}}>
-                                                                {
-                                                                this.state.selected.assignee.filter((g) => g.id === e.user_id).length > 0 ? 
-                                                                this.state.selected.assignee.filter((g) => g.id === e.user_id)[0].first_name + " " +
-                                                                this.state.selected.assignee.filter((g) => g.id === e.user_id)[0].last_name + " " : ""
-                                                                }
-                                                            </font>
-                                                        </Grid>
-                                                        <Grid item xs="6">
-                                                            {moment(e.created).format('LLL')}
+                                                            <TemplateButton onClick={this.saveComment} label='Save'/>
+                                                            <TemplateButton outline style={{marginLeft:10}} 
+                                                                onClick={this.cancelComment} label='Cancel'/>
                                                         </Grid>
                                                     </Grid>
-                                                    <hr/>
-                                                    <Grid container xs="12">
-                                                        {(!e.edit) && ( 
-                                                        <Grid item xs="12">
-                                                            <div style={{overflow:"auto",height:100,display: 'flex', 
-                                                                alignItems: 'left', justifyContent: 'start'}}>
-                                                            {e.text}
-                                                            </div>
-                                                        </Grid>
-                                                        )}
-                                                        {(e.edit) && ( 
-                                                        <Grid item xs="12">
-                                                            <FormGroup row>
-                                                              <Grid item xs={12}>
-                                                                <Input value={e.text} rows="3" 
-                                                                    onChange={this.comment} type="textarea" 
-                                                                    name="text" id="default-textarea" />
-                                                              </Grid>
-                                                            </FormGroup>
-                                                        </Grid>
-                                                        )}
-                                                    </Grid>
-                                                    <Grid container xs="12">
-                                                        {(e.edit) && ( 
-                                                        <Grid item xs="12">
-                                                            <Grid item xs="6">
-                                                                <Button onClick={this.saveComment} color="primary">Save</Button>
-                                                                <Button outline style={{marginLeft:10}} onClick={this.cancelComment} color="secondary">Cancel</Button>
-                                                            </Grid>
-                                                        </Grid>
-                                                        )}
-                                                    </Grid>
-                                                </CardBody>
-                                            </Card>
+                                                    )}
+                                                </Grid>
+                                            </Container>
                                         </Grid>
                                     )})}
-                            </TabPane>
-                        </TabContent>
+                            </>
+                            )}
                     </Grid>
                 </Grid>
-                <Grid container xs="12">
+                <hr/>
+                <Grid container xs="12" style={{marginTop:20}}>
                     <Grid item xs="6">
-                        <Button onClick={this.save} color="primary" disabled={!this.state.selected.name || !this.state.selected.email || 
-                          this.state.errorMessage || this.state.phoneMessage}>Save</Button>
-                        <Button outline style={{marginLeft:10}} onClick={this.cancel} color="secondary">Cancel</Button>
+                        <TemplateButton onClick={this.save} color="primary" disabled={!this.state.selected.name || !this.state.selected.email || 
+                          this.state.errorMessage || this.state.phoneMessage} label='Save'/>
+                        <TemplateButton outline style={{marginLeft:10}} onClick={this.cancel} label='Cancel'/>
                     </Grid>
                 </Grid>
             </>
             )}
+            </Box>
         </>
         )
     }

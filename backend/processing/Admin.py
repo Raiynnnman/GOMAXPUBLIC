@@ -768,7 +768,7 @@ class OfficeList(AdminBase):
                     ) as addr,u.phone,u.first_name,u.last_name,o.stripe_cust_id,o.old_stripe_cust_id,
                     o.priority,pq.do_not_contact,
                     ot.name as office_type,o.updated,o.commission_user_id,
-                    concat(comu.first_name, ' ', comu.last_name) as commission_name
+                    trim(concat(comu.first_name, ' ', comu.last_name)) as commission_name
                 from 
                     office o
                     left outer join office_addresses oa on oa.office_id=o.id
@@ -967,6 +967,8 @@ class OfficeList(AdminBase):
             ret['offices'].append(x)
         ret['config'] = {}
         ret['config']['commission_users'] = db.query("""
+            select 1,'System' as name
+            UNION ALL
             select id,concat(first_name,' ',last_name) as name from users 
                 where id in (select user_id from user_entitlements where entitlements_id=10)
         """)
@@ -1319,7 +1321,6 @@ class RegistrationUpdate(AdminBase):
             delete from office_addresses where office_id=%s
             """,(offid,)
         )
-        print("params=%s" % params)
         if 'do_not_contact' in params:
             db.update("""
                 update provider_queue set do_not_contact=%s where office_id=%s
@@ -1649,7 +1650,6 @@ class TrafficGet(AdminBase):
         ret = {}
         job,user,off_id,params = self.getArgs(*args,**kwargs)
         today = calcdate.getYearToday()
-        print(params)
         if 'date' in params:
             if params['date'] == 'All':
                 del params['date']
@@ -1873,7 +1873,6 @@ class TrafficGet(AdminBase):
                      zipcoords['lat'],STR['Potential Provider'],
                      zipcoords['lng'],zipcoords['lat'])
             )
-            print(o)
             for t in o:
                 t['coords'] = json.loads(t['coords'])
                 ret['data'].append(t) 
@@ -2003,7 +2002,6 @@ class AdminReportGet(AdminBase):
                 where cio.client_intake_id = ci.id and office_id=%s and hidden=0 group by office_id 
                 """,(y['id'],)
             )
-            print("ref=%s" % y['customers_referred'])
             if len(y['customers_referred']) > 0:
                 y['customers_referred'] = y['customers_referred'][0]['cnt']
             else:
@@ -2112,7 +2110,6 @@ class AdminBookingRegister(AdminBase):
         ret = {}
         job,user,off_id,params = self.getArgs(*args,**kwargs)
         db = Query()
-        print("params=%s" % params)
         if 'value' not in params:
             return {'success': False,'message': 'DATA_REQUIRED'}
         inputs = ['name','phone','email','doa','address','attny','language']
@@ -2121,7 +2118,6 @@ class AdminBookingRegister(AdminBase):
         LANG = self.getLanguages()
         try: 
             j = params['value'].split('\n')
-            print(j)
             for x in j:
                 if ':' not in x:
                     continue
@@ -2133,7 +2129,6 @@ class AdminBookingRegister(AdminBase):
                 key = key.lower()
                 tosave[key] = value.rstrip().lstrip()
                 line += 1 
-            print(tosave)
             if 'address' not in tosave:
                 return {'success': False,'message': 'ADDRESS_REQUIRED'}
             addr = pyap.parse(tosave['address'],country='US')
@@ -2718,7 +2713,6 @@ class CommissionList(AdminBase):
                 u.id = cus.user_id
         """
         p = []
-        print(params)
         if 'CommissionsAdmin' not in user['entitlements']:
             q1 += ' and cus.user_id = %s ' % user['id']
             q2 += ' and cus.user_id = %s ' % user['id']
@@ -2749,9 +2743,7 @@ class CommissionList(AdminBase):
             q +=  " limit %s offset %s " 
             p.append(limit)
             p.append(offset*limit)
-        print(q,p)
         o = db.query(q,p)
-        print(len(o))
         if 'report' in params and params['report'] is not None:
             ret['filename'] = 'commission_report.csv'
             frame = pd.DataFrame.from_dict(o)

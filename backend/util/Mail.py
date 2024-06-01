@@ -25,13 +25,11 @@ class Mail:
 
    
     def defer(self, to, subject, template, data):
-        print("We made it to the mail")
         try:
             self.defer_with_timeout(self.send_email, to, subject, template, data, timeout=10)
-            print("we completed mail")
         except Exception as e:
             error_message = "Celery is down or task exceeded timeout."
-            print(error_message)
+            print(str(e))
             log.error(f"Failed to defer email task. Reason: {str(e)}")
             log.error(error_message)
             log.error(f"Original recipient: {to}, Subject: {subject}, Template: {template}, Data: {data}")
