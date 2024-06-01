@@ -24,7 +24,7 @@ class HomeHorizontal extends Component {
                 <Navbar/>
 
                 {/* Slider */}
-                {/* <HeroOlive horizontal="horizontal" bgshape="bg-shape"/> */}
+                <HeroOlive horizontal="horizontal" bgshape="bg-shape"/>
 
                 <div style={{marginTop:30}}></div>
                 {/* About */}
@@ -34,7 +34,7 @@ class HomeHorizontal extends Component {
                 <Service horizontal="horizontal"/>
 
                 {/*Feature */}
-                {/*<Feature horizontalfeature="horizontal-feature"/>*/}
+                <Feature horizontalfeature="horizontal-feature"/>
 
                 {/* Download */}
                 {/*<Download horizontal="horizontal"/>*/}
@@ -46,13 +46,13 @@ class HomeHorizontal extends Component {
                 <Testimonial/>
 
                 {/* Screenshot */}
-                {/* <Screenshot/> */}
+                <Screenshot/> 
 
                 {/* Blog */}
-                {/* <Blog/> */}
+                <Blog/> 
 
                 {/* Footer */}
-                {/* <Footer horizontal="horizontal"/> */}
+                <Footer horizontal="horizontal"/> 
 
             </div>
         )

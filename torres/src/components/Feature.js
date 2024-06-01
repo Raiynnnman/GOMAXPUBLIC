@@ -41,7 +41,7 @@ class Feature extends Component{
            return(
                /* Start Single Feature */
                <div className="feature" key={i}>
-                   <div className="feature-icon">
+                   <div style={{backgrounColor:'#fa6a0a'}} className="feature-icon">
                        <i className={`${val.icon}`}/>
                    </div>
                    <div className="content">
