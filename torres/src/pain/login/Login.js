@@ -14,6 +14,7 @@ import translate from '../utils/translate';
 import TemplateTextField from '../utils/TemplateTextField';
 import TemplateTextFieldPassword from '../utils/TemplateTextFieldPassword';
 import TemplateButton from '../utils/TemplateButton';
+import { registerUser } from '../../actions/registerUser.js';
 
 class Login extends React.Component {
 
@@ -38,6 +39,7 @@ class Login extends React.Component {
         };
 
         this.doLogin = this.doLogin.bind(this);
+        this.goSignUp = this.goSignUp.bind(this)
         this.googleLogin = this.googleLogin.bind(this);
         this.microsoftLogin = this.microsoftLogin.bind(this);
         this.changeEmail = this.changeEmail.bind(this);
@@ -61,6 +63,14 @@ class Login extends React.Component {
 
     changePassword(event) {
         this.setState({ password: event.target.value });
+    }
+
+    goSignUp(e){
+        e.preventDefault()
+        this.props.dispatch(registerUser())
+        this.props.history.push({ // Navigate to Register component with data
+            pathname: '/register',
+        })
     }
 
     doLogin(e) {
@@ -104,7 +114,7 @@ class Login extends React.Component {
                     <div style={{display:'flex',alignItems:'center',justifyContent:'center'}}> 
                         <a href="/forgot">Forgot Password?</a>
                         <TemplateButton style={{margin:20}} onClick={this.doLogin} label='Login' disable={false}/>
-                        <TemplateButton style={{margin:20,margin:20}} onClick={this.register} label='Sign Up' disable={false}/>
+                        <TemplateButton style={{margin:20,margin:20}} onClick={this.goSignUp} label='Sign Up' disable={false}/>
                     </div>
                 </div>
             </div>
