@@ -5,7 +5,8 @@
 .button-default{
     background: #ffffff none repeat scroll 0 0;
     border: 0 none;
-    color: #2d3e50;
+    //color: #2d3e50;
+    color: #fa6a0a;
     display: inline-block;
     font-family: "Raleway",sans-serif;
     font-size: 18px;
@@ -22,11 +23,13 @@
         color: #ffffff;
     }
     &.button-olive{
-        background-color: $theme-color;
+        // background-color: $theme-color;
+        background-color: #fa6a0a;
         color: #ffffff;
         &:hover{
             background: #ffffff none repeat scroll 0 0;
-            color: #2d3e50;
+            // color: #2d3e50;
+            color: #fa6a0a;
         }
     }
     

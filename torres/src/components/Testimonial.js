@@ -28,10 +28,7 @@ class Testimonial extends React.Component {
                         <div className="col-lg-12">
                             <div className="testimonial-activation">
                                 <div className="section-title text-center mb--80">
-                                    <h2>APP <span className="theme-color">REVIEWS</span></h2>
-                                    <img className="image-1" src={require('../assets/images/app/title-icon.png')} alt="App Landing"/>
-                                    <img className="image-2" src={require('../assets/images/app/title-icon-2.png')} alt="App Landing"/>
-                                    <img className="image-3" src={require('../assets/images/app/title-icon-3.png')} alt="App Landing"/>
+                                    <h2>APP <span style={{color:'#fa6a0a'}}>REVIEWS</span></h2>
                                     <p>Review info here</p>
                                 </div>
                                 <div className="row">
@@ -58,7 +55,8 @@ class Testimonial extends React.Component {
                                     </div>
                                 </div>
 
-                                <Slider {...testimonial2} asNavFor={this.state.nav1} ref={slider => (this.testimonial2 = slider)} className="testimonial-text-slider text-center">
+                                <Slider {...testimonial2} style={{color:'black'}} asNavFor={this.state.nav1} 
+                                    ref={slider => (this.testimonial2 = slider)} className="testimonial-text-slider text-center">
                                     <div className="sin-testiText">
                                         <h2>S Miller</h2>
                                         <div className="client-rating">

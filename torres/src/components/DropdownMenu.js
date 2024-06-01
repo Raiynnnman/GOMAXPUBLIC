@@ -26,19 +26,20 @@ function DropdownMenu({onChange,items,title,currentUser}) {
   const styles: SxProps = {
     position: 'absolute',
     top: 28,
-    width:150,
+    width:160,
     right: 0,
     left: 0,
     border: '1px solid',
     p: 1,
     zIndex:9999,
-    bgcolor: '#2d3e50',
+    // bgcolor: '#2d3e50',
+    bgcolor: 'black',
   };
 
   return (
     <div onMouseEnter={handleClick} style={{marginLeft:10}}>
         <ClickAwayListener onClickAway={handleClickAway}>
-          <Box sx={{ position: 'relative',background:'#2d3e50'}}>
+          <Box sx={{ position: 'relative',backgroundColor:'black'}}>
             <div style={{cursor:"pointer",color:"white",fontWeight:'bold',fontSize:12}}>
               {title}
             </div>
@@ -47,7 +48,7 @@ function DropdownMenu({onChange,items,title,currentUser}) {
                 {items.map((e) => { 
                     if (e.v(currentUser)) { 
                         return(
-                            <MenuItem style={{fontWeight:'bold',background:'#2d3e50',color:'white'}} 
+                            <MenuItem style={{fontWeight:'bold',background:'black',color:'white'}} 
                             onClick={() => handleAction(e.a)} id={e.n}>
                                 {e.n}
                             </MenuItem>

@@ -34,7 +34,8 @@
         line-height: 32px;
         padding: 0 16px;
         background-color: #ffffff;
-        color: #2d3e50;
+        //color: #2d3e50;
+        color: #fa6a0a;
         height: 32px;
         &:hover{
             background-color: $theme-color;
@@ -100,7 +101,8 @@
     }
 }
 .app-header.stick {
-    background: #2d3e50 none repeat scroll 0 0;
+    //background: #2d3e50 none repeat scroll 0 0;
+    background: #fa6a0a none repeat scroll 0 0;
     box-shadow: 0 0 3px rgba(0, 0, 0, 0.15);
     padding: 25px 0;
     position: fixed;

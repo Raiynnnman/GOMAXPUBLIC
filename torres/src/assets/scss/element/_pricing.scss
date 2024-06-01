@@ -16,7 +16,7 @@
     box-shadow: 0 0 20px 1px rgba(35, 31, 32, 0.2);
     text-align: center;
     .price-title {
-        background: #2D3E50 none repeat scroll 0 0;
+        background: #fa6a0a none repeat scroll 0 0;
         padding: 35px 0 34px;
         h3{
             color: #ffffff;
@@ -68,7 +68,8 @@
         margin: 0;
         padding: 0;
         li {
-            color: #2d3e50;
+            //color: #2d3e50;
+            color: #fa6a0a;
             font-family: "Raleway", sans-serif;
             font-size: 18px;
             font-weight: 500;
@@ -80,7 +81,8 @@
 
 
 .price-btn .button {
-    background: #2d3e50 none repeat scroll 0 0;
+    // background: #2d3e50 none repeat scroll 0 0;
+    background: #fa6a0a none repeat scroll 0 0;
     border: 0 none;
     border-radius: 13px;
     color: #ffffff;

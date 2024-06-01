@@ -88,7 +88,8 @@
 
 .single-service{
     .service-icon {
-        background-color: #7a9757;
+        // background-color: #7a9757;
+        background-color: #fa6a0a;
         border-radius: 36px 36px 0;
         display: inline-table;
         height: 100px;
@@ -114,7 +115,8 @@
     }
     &:hover{
         .service-icon {
-            background-color: #2d3e50;
+            //background-color: #2d3e50;
+            background-color: #fa6a0a;
         }
     }
 }

@@ -99,7 +99,7 @@ class Navbar extends Component {
             },
         ];
         return(
-            <div style={{backgroundColor:'#2d3e50'}} className="app-header header--transparent sticker" id="main-menu">
+            <div style={{backgroundColor:'black'}} className="app-header header--transparent sticker" id="main-menu">
                 <div className="container">
                     <div className="row align-items-center">
                         <div className="col-lg-3 col-sm-3 col-3">

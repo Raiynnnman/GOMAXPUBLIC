@@ -115,7 +115,8 @@
             border: 0;
             &:hover {
                 background-color: #fff;
-                color: #2d3e50;
+                //color: #2d3e50;
+                color: #fa6a0a;
             }
         }
     }
@@ -228,7 +229,8 @@
 .newsletter-content .button {
     border: 0 none;
     border-radius: 9px;
-    color: #2d3e50;
+    color: #fa6a0a;
+    //color: #2d3e50;
     font-family: $heading-font;
     font-size: 16px;
     height: 100%;

@@ -377,14 +377,15 @@
     }
 
     .overlay-gradient::before {
-        background: #2d3e50;
-        background: -webkit-gradient(left top, left bottom, color-stop(0%, #2d3e50), color-stop(100%, $theme-color));
-        background: -webkit-gradient(left top, left bottom, color-stop(0%, #2d3e50), color-stop(100%, $theme-color));
-        background: -webkit-linear-gradient(top, #2d3e50 0%, $theme-color 100%);
-        background: -o-linear-gradient(top, #2d3e50 0%, $theme-color 100%);
-        background: -webkit-gradient(linear, left top, left bottom, from(#2d3e50), to($theme-color));
-        background: linear-gradient(to bottom, #2d3e50 0%, $theme-color 100%);
-        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#2d3e50', endColorstr='$theme-color', GradientType=0);
+        //background: #2d3e50;
+        background: #fa6a0a;
+        background: -webkit-gradient(left top, left bottom, color-stop(0%, #fa6a0a), color-stop(100%, $theme-color));
+        background: -webkit-gradient(left top, left bottom, color-stop(0%, #fa6a0a), color-stop(100%, $theme-color));
+        background: -webkit-linear-gradient(top, #fa6a0a 0%, $theme-color 100%);
+        background: -o-linear-gradient(top, #fa6a0a 0%, $theme-color 100%);
+        background: -webkit-gradient(linear, left top, left bottom, from(#fa6a0a), to($theme-color));
+        background: linear-gradient(to bottom, #fa6a0a 0%, $theme-color 100%);
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fa6a0a', endColorstr='$theme-color', GradientType=0);
         opacity: 0.9;
     }
 
