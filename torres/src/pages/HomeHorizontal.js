@@ -3,7 +3,7 @@ import React, {Component} from "react";
 import { connect } from 'react-redux';
 import About from '../components/About';
 import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+import FooterHome from '../components/FooterHome';
 import Service from '../components/Service';
 import Pricing from '../components/Pricing';
 import Feature from '../components/Feature';
@@ -52,7 +52,7 @@ class HomeHorizontal extends Component {
                 <Blog/> 
 
                 {/* Footer */}
-                <Footer horizontal="horizontal"/> 
+                <FooterHome horizontal="horizontal"/> 
 
             </div>
         )
