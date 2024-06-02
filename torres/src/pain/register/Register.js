@@ -8,13 +8,13 @@ import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import favicon from '../../assets/images/logo/favicon.png';
 import { MuiTelInput } from 'mui-tel-input';
 import { registerUser } from '../../actions/registerUser';
-import logo from '../../assets/images/logo/logo.png';
 import Navbar from '../../components/Navbar';
 
 function Copyright(props) {
@@ -33,18 +33,26 @@ function Copyright(props) {
 const defaultTheme = createTheme({
   palette: {
     primary: {
-      main: '#FFA500', 
+      main: '#FFA500',
     },
+  },
+  typography: {
+    fontFamily: "'Montserrat', sans-serif",
   },
 });
 
 class Register extends React.Component {
   state = {
     value: '',
+    userType: '',
   };
 
   handleChange = (newValue) => {
     this.setState({ value: newValue });
+  };
+
+  handleUserTypeChange = (event) => {
+    this.setState({ userType: event.target.value });
   };
 
   handleSubmit = (event) => {
@@ -56,6 +64,7 @@ class Register extends React.Component {
       first_name: data.get('first_name'),
       last_name: data.get('last_name'),
       zipcode: data.get('zip_code'),
+      userType: this.state.userType,
     };
     this.props.dispatch(registerUser(creds));
     this.props.history.push({
@@ -66,40 +75,26 @@ class Register extends React.Component {
   render() {
     return (
       <ThemeProvider theme={defaultTheme}>
-        <Navbar/>
         <CssBaseline />
-        <Grid
-          container
-          alignItems="center"
-          justifyContent='right'
-          sx={{
-            height: '100vh',
-            backgroundImage: `url(${logo})`,
-            backgroundRepeat: 'no-repeat',
-            backgroundSize: 'contain, cover',
-          }}
-        >
-          <Grid item xs={12} sm={8} md={6} marginRight={-40} >
+        <Box sx={{ height: '100vh', background: 'linear-gradient(to right, #fff7e6, #ffffff)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+          <Grid container justifyContent="center" alignItems="center" sx={{ width: '100%', maxWidth: '768px', padding: 2 }}>
             <Paper
               elevation={12}
               sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                padding: 10,
-                borderRadius: 10,
-                width:600
+                width: '100%',
+                padding: { xs: 2, sm: 4, md: 6 },
+                borderRadius: '30px',
+                boxShadow: '0 5px 15px rgba(0, 0, 0, 0.35)',
+                backgroundColor: '#fff',
               }}
             >
-              <Avatar src={favicon} sx={{ m: 2, width: 100, height: 100 }} />
-              <Typography variant="h6" gutterBottom>
+              <Typography variant="h6" align="center" gutterBottom>
                 Sign up to Pound Pain Tech
               </Typography>
-              <Typography variant="body1" paragraph>
-                Please fill out this form, and we'll send you a welcome email so you can verify your email address
-                and sign in.
+              <Typography variant="body1" align="center" paragraph>
+                Please fill out this form, and we'll send you a welcome email so you can verify your email address and sign in.
               </Typography>
-              <Box component="form" noValidate onSubmit={this.handleSubmit} sx={{ mt: 1, width: '100%' }}>
+              <Box component="form" noValidate onSubmit={this.handleSubmit} sx={{ mt: 1 }}>
                 <TextField
                   margin="normal"
                   required
@@ -109,6 +104,7 @@ class Register extends React.Component {
                   name="first_name"
                   autoComplete="first_name"
                   autoFocus
+                  sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
                 />
                 <TextField
                   margin="normal"
@@ -118,6 +114,7 @@ class Register extends React.Component {
                   label="Last Name"
                   name="last_name"
                   autoComplete="last_name"
+                  sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
                 />
                 <TextField
                   margin="normal"
@@ -127,6 +124,7 @@ class Register extends React.Component {
                   label="Email"
                   name="email"
                   autoComplete="email"
+                  sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
                 />
                 <MuiTelInput
                   value={this.state.value}
@@ -135,6 +133,7 @@ class Register extends React.Component {
                   fullWidth
                   margin="normal"
                   defaultCountry="US"
+                  sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
                 />
                 <TextField
                   margin="normal"
@@ -144,22 +143,38 @@ class Register extends React.Component {
                   label="Zip Code"
                   name="zip_code"
                   autoComplete="zip_code"
+                  sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
                 />
-                <Button
-                  type="submit"
+                <Select
+                  value={this.state.userType}
+                  onChange={this.handleUserTypeChange}
+                  displayEmpty
                   fullWidth
-                  variant="contained"
-                  sx={{ mt: 3 }}
+                  sx={{ marginTop: 2, marginBottom: 2, backgroundColor: '#eee', borderRadius: '8px' }}
                 >
-                  Register
-                </Button>
+                  <MenuItem value="" disabled>
+                    Who are you?
+                  </MenuItem>
+                  <MenuItem value="Legal">Legal</MenuItem>
+                  <MenuItem value="Provider">Provider</MenuItem>
+                  <MenuItem value="User">User</MenuItem>
+                </Select>
+                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    sx={{ borderRadius: 8, backgroundColor: '#512da8', color: '#fff', padding: '10px 45px', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase' }}
+                  >
+                    Register
+                  </Button>
+                </Box>
                 <Box mt={2}>
                   <Copyright />
                 </Box>
               </Box>
             </Paper>
           </Grid>
-        </Grid>
+        </Box>
       </ThemeProvider>
     );
   }
