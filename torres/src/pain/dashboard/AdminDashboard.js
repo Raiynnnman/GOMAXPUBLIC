@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import cx from 'classnames';
 import classnames from 'classnames';
-import Navbar from '../../components/Navbar';
 import Grid from '@mui/material/Grid';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
@@ -32,7 +31,6 @@ class AdminDashboard extends Component {
             )}
             {(this.props.adminDashboard && this.props.adminDashboard.data && this.props.adminDashboard.data.visits) && (
             <>
-            <Navbar/>
             <Grid container spacing={1}>
                 <>
                 <Grid item xs={0} md={3}>

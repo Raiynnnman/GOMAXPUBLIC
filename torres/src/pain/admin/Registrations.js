@@ -686,6 +686,7 @@ class Registrations extends Component {
                 <AppSpinner/>
             )}
             <Navbar/>
+            <Box style={{margin:20}}>
             <Grid container xs="12" style={{margin:10}}>
             <>
                 <Grid item xs="12">
@@ -1058,6 +1059,7 @@ class Registrations extends Component {
                 </Grid>                
             </>
             </Grid>
+        </Box>
         </>
         )
     }

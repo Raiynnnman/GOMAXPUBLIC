@@ -197,6 +197,7 @@ class SearchAdmin extends Component {
         return (
         <>
             <Navbar/>
+            <Box style={{margin:20}}>
             {(this.props.providerSearchAdmin && this.props.providerSearchAdmin.isReceiving) && (
                 <AppSpinner/>
             )}
@@ -283,6 +284,7 @@ class SearchAdmin extends Component {
                     </Grid>
                 </Grid>
             )}
+        </Box>
         </>
         )
     }

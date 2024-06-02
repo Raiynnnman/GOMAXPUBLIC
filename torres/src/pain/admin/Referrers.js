@@ -269,41 +269,6 @@ class Referrers extends Component {
     } 
 
     render() {
-        const pageButtonRenderer = ({
-          page,
-          currentPage,
-          disabled,
-          title,
-          onPageChange
-        }) => {
-          const handleClick = (e) => {
-             e.preventDefault();
-             this.pageChange(page, currentPage);// api call 
-           };    
-          return (
-            <div>
-              {
-               <li className="page-item">
-                 <a href="#"  onClick={ handleClick } className="page-link">{ page }</a>
-               </li>
-              }
-            </div>
-          );
-        };
-        const options = {
-          pageButtonRenderer,
-          showTotal:true,
-          withFirstAndLast: false,
-          alwaysShowAllBtns: false,
-          nextPageText:'>',
-          sizePerPage:10,
-          paginationTotalRenderer: (f,t,z) => this.renderTotalLabel(f,t,z),
-          totalSize: (this.props.referrerAdminList && 
-                      this.props.referrerAdminList.data &&
-                      this.props.referrerAdminList.data.total) ? this.props.referrerAdminList.data.total : 10,
-          hideSizePerPage:true,
-          //onPageChange:(page,sizePerPage) => this.pageChange(page,sizePerPage)
-        };
         var regheads = [
             {
                 dataField:'id',
@@ -389,6 +354,7 @@ class Referrers extends Component {
                 <AppSpinner/>
             )}
             <Navbar/>
+            <Box style={{margin:20}}>
             <Grid container xs="12" style={{marginTop:20}}>
                 <Grid item xs="12">
                     <Tabs value={this.state.activeTab} onChange={this.toggleTab}>
@@ -478,6 +444,7 @@ class Referrers extends Component {
                     )}
                 </Grid>                
             </Grid>
+        </Box>
         </>
         )
     }

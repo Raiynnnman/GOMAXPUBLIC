@@ -115,7 +115,7 @@ class Navbar extends Component {
                                 <div className="mainmenu-wrapper">
                                     <nav>
                                         <ul className="main-menu">
-                                            <li className="active"><a href="/">Home</a></li>
+                                            <li className="active"><a href="/app">Home</a></li>
                                             <li><a href="/app/main/admin/search">Search</a></li>
                                             <li><a href="/app/main/admin/referrals">Referrals</a></li>
                                             <li><a href="/app/main/admin/map">Map</a></li>
