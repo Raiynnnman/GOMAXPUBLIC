@@ -35,6 +35,8 @@ const App = () => {
             <ToastContainer
                 autoClose={5000}
                 hideProgressBar
+                theme='colored'
+                closeOnClick
                 closeButton={<CloseButton/>}
             />
             <BrowserRouter basename={'/'}>

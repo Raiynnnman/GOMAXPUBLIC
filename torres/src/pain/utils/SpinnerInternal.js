@@ -1,11 +1,16 @@
 import React, { Component } from 'react';
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
+import LinearProgress from '@mui/material/LinearProgress';
 
 import './SpinnerInternal.scss';
 
 function AppSpinnerInternal() {
   return (
   <>
-    {/* <div className="spinner-internal"><i style={{color:"#153760"}} className="fa fa-5x fa-spinner fa-spin"></i></div>*/}
+    <Box sx={{ position:'absolute',top:25,left:50,display: 'flex' }}>
+      <CircularProgress />
+    </Box>
   </>
   )
 }
