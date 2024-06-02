@@ -1,136 +1,149 @@
 import React from 'react';
+import Button from '@mui/material/Button';
+import CssBaseline from '@mui/material/CssBaseline';
+import TextField from '@mui/material/TextField';
+import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
-import FilledInput from '@mui/material/FilledInput';
-import HeroOlive from '../../components/HeroOlive';
-import { withRouter, Link } from 'react-router-dom';
-import Navbar from '../../components/Navbar';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { registerUser } from '../../actions/registerUser';
+import Navbar from '../../components/Navbar';
+import { Link } from 'react-router-dom';
 import { loginUser, receiveToken, doInit } from '../../actions/auth';
-import jwt from "jsonwebtoken";
-// import microsoft from '../../images/microsoft.png';
-import getVersion from '../../version.js';
-import { push } from 'connected-react-router';
-import translate from '../utils/translate';
-import TemplateTextField from '../utils/TemplateTextField';
-import TemplateTextFieldPassword from '../utils/TemplateTextFieldPassword';
-import TemplateButton from '../utils/TemplateButton';
-import { registerUser } from '../../actions/registerUser.js';
+
+const defaultTheme = createTheme({
+  palette: {
+    primary: {
+      main: '#FFA500',
+    },
+  },
+  typography: {
+    fontFamily: "'Montserrat', sans-serif",
+  },
+});
 
 class Login extends React.Component {
+  state = {
+    value: '',
+    userType: '',
+  };
 
-    static isAuthenticated() {
-      const token = localStorage.getItem('token');
-      //if (!config.isBackend && token) return true;
-      if (token) return true;
-      if (!token) return;
-      const date = new Date().getTime() / 1000;
-      const data = jwt.decode(token);
-      if (!data) return;
-      return date < data.exp;
-    }
+  handleChange = (newValue) => {
+    this.setState({ value: newValue });
+  };
 
-    constructor(props) {
-        super(props);
+  handleUserTypeChange = (event) => {
+    this.setState({ userType: event.target.value });
+  };
 
-        this.state = {
-          email: '',
-          password: ''
-          
-        };
-
-        this.doLogin = this.doLogin.bind(this);
-        this.goSignUp = this.goSignUp.bind(this)
-        this.googleLogin = this.googleLogin.bind(this);
-        this.microsoftLogin = this.microsoftLogin.bind(this);
-        this.changeEmail = this.changeEmail.bind(this);
-        this.changePassword = this.changePassword.bind(this);
-    }
-
-    changeEmail(event,t) {
-        this.setState({ email: event.target.value });
-        const emailRegex = /^[A-Za-z0-9._-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/;
-        this.state.isValid = emailRegex.test(event.target.value);
-        if (this.state.isValid) {
-            this.setState(prevState => ({
-                ...prevState.register,
-                email: event.target.value,
-                errorMessage: '',
-            }));
-        } else {
-            this.setState({ errorMessage: 'Invalid email format' });
-        }
-    }
-
-    changePassword(event) {
-        this.setState({ password: event.target.value });
-    }
-
-    goSignUp(e){
-        e.preventDefault()
-        this.props.dispatch(registerUser())
-        this.props.history.push({ // Navigate to Register component with data
-            pathname: '/register',
-        })
-    }
-
-    doLogin(e) {
-        e.preventDefault();
-        this.props.dispatch(loginUser({ email: this.state.email, password: this.state.password }));
-    }
-
-    googleLogin() {
-        this.props.dispatch(loginUser({social: "google"}));
-    }
-
-    microsoftLogin() {
-        this.props.dispatch(loginUser({social: "microsoft"}));
-    }
-
-    componentDidMount() {
-        const params = new URLSearchParams(this.props.location.search);
-        const token = params.get('token');
-        if (token) {
-            this.props.dispatch(receiveToken(token));
-            this.props.dispatch(doInit());
-        }
-    }
-
-    render() { 
-        return (
-        <>
-            <Navbar/>
-            <div className="container" style={{marginTop:20}}>
-                <div className="row align-items-center">
-                    <div style={{display:'flex',alignItems:'center',justifyContent:'center'}}> 
-                        <TemplateTextField style={{width:400}} label='Email' helpText='Email' onChange={this.changeEmail}/>
-                    </div>
-                </div>
-                <div className="row align-items-center">
-                    <div style={{display:'flex',alignItems:'center',justifyContent:'center'}}> 
-                        <TemplateTextFieldPassword style={{width:400}} label='Password' helpText='Password' onChange={this.changePassword}/>
-                    </div>
-                </div>
-                <div className="row align-items-center">
-                    <div style={{display:'flex',alignItems:'center',justifyContent:'center'}}> 
-                        <a href="/forgot">Forgot Password?</a>
-                        <TemplateButton style={{margin:20}} onClick={this.doLogin} label='Login' disable={false}/>
-                        <TemplateButton style={{margin:20,margin:20}} onClick={this.goSignUp} label='Sign Up' disable={false}/>
-                    </div>
-                </div>
-            </div>
-        </>
-        )
-    } 
-}
-
-function mapStateToProps(state) {
-    return {
-        // isFetching: state.auth.isFetching,
-        // isAuthenticated: state.auth.isAuthenticated,
-        // errorMessage: state.auth.errorMessage,
-        auth: state.auth
+  handleSubmit = (event) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    const creds = {
+      email: data.get('email'),
+      password: data.get('password'),
     };
+    this.props.dispatch(loginUser(creds));
+    this.props.history.push({
+      pathname: '/login',
+    });
+  };
+
+  componentDidMount() {
+    const params = new URLSearchParams(this.props.location.search);
+    const token = params.get('token');
+    if (token) {
+      this.props.dispatch(receiveToken(token));
+      this.props.dispatch(doInit());
+    }
+  }
+
+  render() {
+    return (
+      <ThemeProvider theme={defaultTheme}>
+        <Navbar />
+        <CssBaseline />
+        <Box sx={{ height: '100vh', background: 'linear-gradient(to right, #fff7e6, #ffffff)', display: 'flex', alignItems: 'center', justifyContent: 'center', px: 2 }}>
+          <Grid container justifyContent="center" alignItems="center" sx={{ width: '100%', maxWidth: '768px', padding: 2 }}>
+            <Paper
+              elevation={12}
+              sx={{
+                width: '100%',
+                padding: { xs: 2, sm: 4, md: 6 },
+                borderRadius: '30px',
+                boxShadow: '0 5px 15px rgba(0, 0, 0, 0.35)',
+                backgroundColor: '#fff',
+              }}
+            >
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={6} sx={{ borderRight: { md: '1px solid #eee' }, pr: { xs: 0, md: 2 } }}>
+                  <Box component="form" noValidate onSubmit={this.handleSubmit} sx={{ mt: 1 }}>
+                    <Typography variant="h6" align="center" gutterBottom>
+                      Login
+                    </Typography>
+                    <TextField
+                      margin="normal"
+                      required
+                      fullWidth
+                      id="email"
+                      label="Email"
+                      name="email"
+                      autoComplete="email"
+                      sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                    />
+                    <TextField
+                      margin="normal"
+                      required
+                      fullWidth
+                      id="password"
+                      label="Password"
+                      name="password"
+                      type="password"
+                      autoComplete="current-password"
+                      sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                    />
+                    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+                      <Button
+                        type="submit"
+                        variant="contained"
+                        sx={{ borderRadius: 8, backgroundColor: '#FF5733', color: '#fff', padding: '10px 45px', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase' }}
+                      >
+                        Login
+                      </Button>
+                    </Box>
+                    <Box mt={2}>
+                      <Typography variant="body2" color="text.secondary" align="center">
+                        Forgot password? <Link to="/forgot">Reset here</Link>
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Grid>
+                <Grid item xs={12} md={6} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mt: { xs: 4, md: 0 } }}>
+                  <Box sx={{ textAlign: 'center' }}>
+                    <Typography variant="h6" align="center" gutterBottom>
+                      Create an Account
+                    </Typography>
+                    <Button
+                      variant="contained"
+                      sx={{ borderRadius: 8, backgroundColor: '#FF5733', color: '#fff', padding: '10px 45px', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase' }}
+                      onClick={() => this.props.history.push('/register')}
+                    >
+                      Sign Up
+                    </Button>
+                  </Box>
+                </Grid>
+              </Grid>
+            </Paper>
+          </Grid>
+        </Box>
+      </ThemeProvider>
+    );
+  }
 }
+
+const mapStateToProps = (state) => ({});
 
 export default withRouter(connect(mapStateToProps)(Login));
-

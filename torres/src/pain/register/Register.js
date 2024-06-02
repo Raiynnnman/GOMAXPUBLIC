@@ -164,7 +164,7 @@ class Register extends React.Component {
                   <Button
                     type="submit"
                     variant="contained"
-                    sx={{ borderRadius: 8, backgroundColor: '#512da8', color: '#fff', padding: '10px 45px', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase' }}
+                    sx={{ borderRadius: 8, backgroundColor: '#FF5733', color: '#fff', padding: '10px 45px', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase' }}
                   >
                     Register
                   </Button>
