@@ -1,35 +1,33 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Col, Grid } from 'reactstrap';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
-import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
 import { getInvoiceAdmin } from '../../actions/invoiceAdmin';
-import { FormGroup, Label, Input } from 'reactstrap';
 import moment from 'moment';
-import Select from 'react-select';
 import { push } from 'connected-react-router';
-import { Nav, NavItem, NavLink } from 'reactstrap';
-import { searchRegister } from '../../actions/searchRegister';
-import { TabContent, TabPane } from 'reactstrap';
 import cx from 'classnames';
 import classnames from 'classnames';
-import { Button } from 'reactstrap'; 
-import { Badge } from 'reactstrap';
-import { Search } from 'react-bootstrap-table2-toolkit';
 import translate from '../utils/translate';
 import { invoiceAdminUpdate } from '../../actions/invoiceAdminUpdate';
 import AppSpinner from '../utils/Spinner';
-import BootstrapTable from 'react-bootstrap-table-next';
-import paginationFactory from 'react-bootstrap-table2-paginator';
-import cellEditFactory from 'react-bootstrap-table2-editor';
 import EditIcon from '@mui/icons-material/Edit';
-import PhysicianCard from '../search/PhysicianCard';
-import AliceCarousel from 'react-alice-carousel';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import PainTable from '../utils/PainTable';
+import TemplateSelect from '../utils/TemplateSelect';
+import TemplateSelectEmpty from '../utils/TemplateSelectEmpty';
+import TemplateSelectMulti from '../utils/TemplateSelectMulti';
+import TemplateTextField from '../utils/TemplateTextField';
+import TemplateTextArea from '../utils/TemplateTextArea';
+import TemplateCheckbox from '../utils/TemplateCheckbox';
+import TemplateButton from '../utils/TemplateButton';
+import TemplateBadge from '../utils/TemplateBadge';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import Navbar from '../../components/Navbar';
 
-const { SearchBar } = Search;
 class InvoiceAdminList extends Component {
     constructor(props) { 
         super(props);
@@ -74,6 +72,7 @@ class InvoiceAdminList extends Component {
             p.invoiceAdmin.data.config.status && this.state.statusSelected === null) { 
             var c = 0;
             var t = [];
+            var t1 = []
             for (c = 0; c < p.invoiceAdmin.data.config.status.length; c++) { 
                 if (p.invoiceAdmin.data.config.status[c].name === 'PAID') { continue; }
                 if (p.invoiceAdmin.data.config.status[c].name === 'GENERATED') { continue; }
@@ -81,8 +80,10 @@ class InvoiceAdminList extends Component {
                 if (p.invoiceAdmin.data.config.status[c].name === 'VOID') { continue; }
                 if (p.invoiceAdmin.data.config.status[c].name === 'APPROVED') { continue; }
                 t.push(p.invoiceAdmin.data.config.status[c].id); 
+                console.log("push",p.invoiceAdmin.data.config.status[c]);
+                t1.push(p.invoiceAdmin.data.config.status[c]);
             } 
-            this.state.statusSelected = t;
+            this.state.statusSelected = t1;
             this.state.filter = t;
             this.setState(this.state);
             this.props.dispatch(getInvoiceAdmin(
@@ -263,53 +264,7 @@ class InvoiceAdminList extends Component {
     } 
 
     render() {
-        const pageButtonRenderer = ({
-          page,
-          currentPage,
-          disabled,
-          title,
-          onPageChange
-        }) => {
-          const handleClick = (e) => {
-             e.preventDefault();
-             this.pageChange(page, currentPage);// api call 
-           };    
-          return (
-            <div>
-              {
-               <li className="page-item">
-                 <a href="#"  onClick={ handleClick } className="page-link">{ page }</a>
-               </li>
-              }
-            </div>
-          );
-        };
-        const options = {
-          pageButtonRenderer,
-          showTotal:true,
-          withFirstAndLast: false,
-          alwaysShowAllBtns: false,
-          nextPageText:'>',
-          sizePerPage:10,
-          paginationTotalRenderer: (f,t,z) => this.renderTotalLabel(f,t,z),
-          totalSize: (this.props.invoiceAdmin && 
-                      this.props.invoiceAdmin.data &&
-                      this.props.invoiceAdmin.data.total) ? this.props.invoiceAdmin.data.total : 10,
-          hideSizePerPage:true,
-          //onPageChange:(page,sizePerPage) => this.pageChange(page,sizePerPage)
-        };
-        const responsive = {
-            0: { 
-                items: 1
-            },
-            568: { 
-                items: 1
-            },
-            1024: {
-                items: 1, 
-                itemsFit: 'contain'
-            },
-        };
+        console.log("s",this.state);
         var itemheads = [
             {
                 dataField:'id',
@@ -456,7 +411,7 @@ class InvoiceAdminList extends Component {
                 editable: false,
                 formatter:(cellContent,row) => ( 
                     <div>
-                        <Button onClick={() => this.edit(row)} style={{marginRight:5,height:35}} color="primary"><EditIcon/></Button>
+                        <TemplateButton onClick={() => this.edit(row)} style={{marginRight:5,height:35}} label={<EditIcon/>}/>
                     </div>
                 )
             }
@@ -482,6 +437,8 @@ class InvoiceAdminList extends Component {
         }  
         return (
         <>
+            <Navbar/>
+            <Box style={{margin:20}}>
             {(this.props.invoiceAdmin && this.props.invoiceAdmin.isReceiving) && (
                 <AppSpinner/>
             )}
@@ -492,16 +449,14 @@ class InvoiceAdminList extends Component {
                 {(this.state.statusSelected && this.state.statusSelected.length > 0) && (
                 <>
                 <Grid item xs="6" style={{marginBottom:10}}>
-                      <Select
-                          closeMenuOnSelect={true}
-                          isSearchable={false}
-                          isMulti
+                      <TemplateSelectMulti
+                          label='Status'
                           onChange={this.onStatusChange}
                           value={this.state.statusSelected.map((g) => { 
                             return (
                                 {
-                                label:this.props.invoiceAdmin.data.config.status.filter((f) => f.id === g)[0].name,
-                                value:this.props.invoiceAdmin.data.config.status.filter((f) => f.id === g)[0].id
+                                label:this.props.invoiceAdmin.data.config.status.filter((f) => f.name === g.name)[0].name,
+                                value:this.props.invoiceAdmin.data.config.status.filter((f) => f.name === g.name)[0].name
                                 }
                             )
                           })}
@@ -509,20 +464,20 @@ class InvoiceAdminList extends Component {
                             return (
                                 { 
                                 label: e.name,
-                                value: e.id
+                                value: e.name
                                 }
                             )
                           })}
                         />
                 </Grid>
                 <Grid item xs={3}>
-                    <Input type="text" id="normal-field" onChange={this.search}
-                    placeholder="Search" value={this.state.search}/>
+                    <TemplateTextField type="text" id="normal-field" onChange={this.search}
+                    label="Search" value={this.state.search}/>
                 </Grid>
                 <Grid item xs={3}>
                     <div class='pull-right'>
-                        <Button onClick={() => this.reload()} style={{marginRight:5,height:35}} outline 
-                            color="primary"><AutorenewIcon/></Button>
+                        <TemplateButton onClick={() => this.reload()} style={{marginRight:5,height:35}} outline 
+                            label={<AutorenewIcon/>}/>
                     </div>
                 </Grid>
                 </>
@@ -530,12 +485,6 @@ class InvoiceAdminList extends Component {
             </Grid>
             <Grid container xs="12">
                 <Grid item xs="12">
-                    {/*<BootstrapTable 
-                        keyField='id' 
-                        data={this.props.invoiceAdmin.data.invoices} 
-                        cellEdit={ cellEditFactory({ mode: 'click',blurToSave:true })}
-                        columns={heads} pagination={ paginationFactory(options)}>
-                    </BootstrapTable>*/}
                     <PainTable
                         keyField='id' 
                         data={this.props.invoiceAdmin.data.invoices} 
@@ -578,7 +527,7 @@ class InvoiceAdminList extends Component {
                             Status
                         </Grid>
                         <Grid item xs="7">
-                              <Select
+                              <TemplateSelect
                                   closeMenuOnSelect={true}
                                   isSearchable={false}
                                   onChange={this.onInvoiceStatusChange}
@@ -598,62 +547,37 @@ class InvoiceAdminList extends Component {
                     </Grid>
                     <Grid container xs="12">
                         <Grid item xs="12">
-                          <FormGroup row>
-                            <Label for="normal-field" md={4} className="text-md-right">
-                              Email
-                            </Label>
                             <Grid item xs={7}>
-                              <Input type="text" id="normal-field" readOnly onChange={this.emailChange} placeholder="Email" value={this.state.selected.email}/>
+                              <TemplateTextField type="text" id="normal-field" readOnly onChange={this.emailChange} label="Email" value={this.state.selected.email}/>
                             </Grid>
-                          </FormGroup>
                         </Grid>
                     </Grid>
                     <Grid container xs="12">
                         <Grid item xs="12">
-                          <FormGroup row>
-                            <Label for="normal-field" md={4} className="text-md-right">
-                              First Name
-                            </Label>
                             <Grid item xs={7}>
-                              <Input type="text" id="normal-field" readOnly onChange={this.firstChange} placeholder="First Name" value={this.state.selected.first_name}/>
+                              <TemplateTextField type="text" id="normal-field" readOnly onChange={this.firstChange} label="First Name" value={this.state.selected.first_name}/>
                             </Grid>
-                          </FormGroup>
                         </Grid>
                     </Grid>
                     <Grid container xs="12">
                         <Grid item xs="12">
-                          <FormGroup row>
-                            <Label for="normal-field" md={4} className="text-md-right">
-                              Last Name
-                            </Label>
                             <Grid item xs={7}>
-                              <Input type="text" id="normal-field" readOnly onChange={this.lastChange} placeholder="Last Name" value={this.state.selected.last_name}/>
+                              <TemplateTextField type="text" id="normal-field" readOnly onChange={this.lastChange} label="Last Name" value={this.state.selected.last_name}/>
                             </Grid>
-                          </FormGroup>
                         </Grid>
                     </Grid>
                     <Grid container xs="12">
                         <Grid item xs="12">
-                          <FormGroup row>
-                            <Label for="normal-field" md={4} className="text-md-right">
-                              Phone
-                            </Label>
                             <Grid item xs={7}>
-                              <Input type="text" id="normal-field" readOnly onChange={this.phoneChange} placeholder="Phone" value={this.state.selected.phone}/>
+                              <TemplateTextField type="text" id="normal-field" readOnly onChange={this.phoneChange} label="Phone" value={this.state.selected.phone}/>
                             </Grid>
-                          </FormGroup>
                         </Grid>
                     </Grid>
                     <Grid container xs="12">
                         <Grid item xs="12">
-                          <FormGroup row>
-                            <Label for="normal-field" md={4} className="text-md-right">
-                              Office
-                            </Label>
                             <Grid item xs={7}>
-                              <Input type="text" id="normal-field" readOnly onChange={this.phoneChange} placeholder="Office" value={this.state.selected.office_name}/>
+                              <TemplateTextField type="text" id="normal-field" readOnly onChange={this.phoneChange} label="Office" value={this.state.selected.office_name}/>
                             </Grid>
-                          </FormGroup>
                         </Grid>
                     </Grid>
                 </Grid>
@@ -719,16 +643,14 @@ class InvoiceAdminList extends Component {
             </Grid>
             <Grid container xs="12">
                 <Grid item xs="6">
-                    <BootstrapTable 
+                    <PainTable
                         keyField='id' data={this.state.selected.items} 
-                        columns={itemheads}> 
-                    </BootstrapTable>
+                        columns={itemheads}/> 
                 </Grid>
                 <Grid item xs="6">
-                    <BootstrapTable 
+                    <PainTable
                         keyField='id' data={this.state.selected.history} 
-                        columns={historyheads}> 
-                    </BootstrapTable>
+                        columns={historyheads}/> 
                 </Grid>
             </Grid>
             <hr/>
@@ -739,7 +661,7 @@ class InvoiceAdminList extends Component {
             </Grid>
             <Grid container xs="12">
                 <Grid item xs="4">
-                    <Button onClick={() => this.addComment({id:"new"})} color="primary">Add Comment</Button>
+                    <TemplateButton onClick={() => this.addComment({id:"new"})} color="primary" label='Add Comment'/>
                 </Grid>
             </Grid>
             <Grid container xs="12">
@@ -747,8 +669,7 @@ class InvoiceAdminList extends Component {
                 {this.state.selected.comments.sort((a,b) => (a.created > b.created ? -1:1)).map((e) => { 
                     return (
                         <Grid item xs="3" key={e.id}>
-                            <Card style={{margin:20,width:400,height:200}} className="mb-xlg border-1">
-                                <CardBody>
+                            <Container style={{margin:20,width:400,height:200}} className="mb-xlg border-1">
                                     <Grid container xs="12">
                                         <Grid item xs="6">
                                             <font style={{fontSize:"14pt"}}>
@@ -775,13 +696,11 @@ class InvoiceAdminList extends Component {
                                         )}
                                         {(e.edit) && ( 
                                         <Grid item xs="12">
-                                            <FormGroup row>
                                               <Grid item xs={12}>
-                                                <Input value={e.text} rows="3" 
+                                                <TemplateTextArea value={e.text} rows="3" 
                                                     onChange={this.comment} type="textarea" 
                                                     name="text" id="default-textarea" />
                                               </Grid>
-                                            </FormGroup>
                                         </Grid>
                                         )}
                                     </Grid>
@@ -789,14 +708,13 @@ class InvoiceAdminList extends Component {
                                         {(e.edit) && ( 
                                         <Grid item xs="12">
                                             <Grid item xs="6">
-                                                <Button onClick={this.saveComment} color="primary">Save</Button>
-                                                <Button outline style={{marginLeft:10}} onClick={this.cancelComment} color="secondary">Cancel</Button>
+                                                <TemplateButton onClick={this.saveComment} color="primary" label='Save'/>
+                                                <TemplateButton outline style={{marginLeft:10}} onClick={this.cancelComment} label='Cancel'/>
                                             </Grid>
                                         </Grid>
                                         )}
                                     </Grid>
-                                </CardBody>
-                            </Card>
+                            </Container>
                         </Grid>
                     )})}
                     </>
@@ -805,13 +723,14 @@ class InvoiceAdminList extends Component {
                 <Grid container xs="12" style={{marginTop:10}}>
                     {(!this.state.commentAdd) && (
                     <Grid item xs="6">
-                        <Button onClick={this.save} color="primary">Save</Button>
-                        <Button outline style={{marginLeft:10}} onClick={this.cancel} color="secondary">Cancel</Button>
+                        <TemplateButton onClick={this.save} color="primary" label='Save'/>
+                        <TemplateButton outline style={{marginLeft:10}} onClick={this.cancel} label='Cancel'/>
                     </Grid>
                     )}
                 </Grid>
             </>
             )}
+        </Box>
         </>
         )
     }

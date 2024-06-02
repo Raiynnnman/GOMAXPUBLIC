@@ -1,35 +1,33 @@
 import React, { Component } from 'react';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
 import { connect } from 'react-redux';
-import { Col, Grid } from 'reactstrap';
-import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
-import { FormGroup, Label, Input } from 'reactstrap';
-import ToolkitProvider from 'react-bootstrap-table2-toolkit';
 import moment from 'moment';
-import Select from 'react-select';
 import { push } from 'connected-react-router';
-import { Nav, NavItem, NavLink } from 'reactstrap';
-import { searchRegister } from '../../actions/searchRegister';
-import { TabContent, TabPane } from 'reactstrap';
 import cx from 'classnames';
 import classnames from 'classnames';
-import { Button } from 'reactstrap'; 
-import { Badge } from 'reactstrap';
-import { Search } from 'react-bootstrap-table2-toolkit';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import { getContext } from '../../actions/context';
 import { getUserAdmin } from '../../actions/userAdmin';
-import BootstrapTable from 'react-bootstrap-table-next';
-import paginationFactory from 'react-bootstrap-table2-paginator';
-import cellEditFactory from 'react-bootstrap-table2-editor';
 import EditIcon from '@mui/icons-material/Edit';
-import PhysicianCard from '../search/PhysicianCard';
-import AliceCarousel from 'react-alice-carousel';
 import { searchCheckRes } from '../../actions/searchCheckRes';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import PainTable from '../utils/PainTable';
+import TemplateSelect from '../utils/TemplateSelect';
+import TemplateSelectEmpty from '../utils/TemplateSelectEmpty';
+import TemplateSelectMulti from '../utils/TemplateSelectMulti';
+import TemplateTextField from '../utils/TemplateTextField';
+import TemplateTextArea from '../utils/TemplateTextArea';
+import TemplateCheckbox from '../utils/TemplateCheckbox';
+import TemplateButton from '../utils/TemplateButton';
+import TemplateBadge from '../utils/TemplateBadge';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import Navbar from '../../components/Navbar';
 
-const { SearchBar } = Search;
 class UserAdminList extends Component {
     constructor(props) { 
         super(props);
@@ -148,53 +146,6 @@ class UserAdminList extends Component {
     } 
 
     render() {
-        const pageButtonRenderer = ({
-          page,
-          currentPage,
-          disabled,
-          title,
-          onPageChange
-        }) => {
-          const handleClick = (e) => {
-             e.preventDefault();
-             this.pageChange(page, currentPage);// api call 
-           };    
-          return (
-            <div>
-              {
-               <li className="page-item">
-                 <a href="#"  onClick={ handleClick } className="page-link">{ page }</a>
-               </li>
-              }
-            </div>
-          );
-        };
-        const options = {
-          pageButtonRenderer,
-          showTotal:true,
-          withFirstAndLast: false,
-          alwaysShowAllBtns: false,
-          nextPageText:'>',
-          sizePerPage:10,
-          paginationTotalRenderer: (f,t,z) => this.renderTotalLabel(f,t,z),
-          totalSize: (this.props.userAdmin && 
-                      this.props.userAdmin.data &&
-                      this.props.userAdmin.data.total) ? this.props.userAdmin.data.total : 10,
-          hideSizePerPage:true,
-          //onPageChange:(page,sizePerPage) => this.pageChange(page,sizePerPage)
-        };
-        const responsive = {
-            0: { 
-                items: 1
-            },
-            568: { 
-                items: 1
-            },
-            1024: {
-                items: 1, 
-                itemsFit: 'contain'
-            },
-        };
         var heads = [
             {
                 dataField:'id',
@@ -228,8 +179,8 @@ class UserAdminList extends Component {
                 text:'Active',
                 formatter: (cellContent,row) => (
                     <div>
-                        {(row.active === 1) && (<Badge color="primary">Active</Badge>)}
-                        {(row.active === 0) && (<Badge color="danger">Inactive</Badge>)}
+                        {(row.active === 1) && (<TemplateBadge label="Active"/>)}
+                        {(row.active === 0) && (<TemplateBadge label="Inactive"/>)}
                     </div>
                 )
             },
@@ -239,10 +190,10 @@ class UserAdminList extends Component {
                 text:'Roles',
                 formatter: (cellContent,row) => (
                     <div>
-                        {(row.entitlements.filter((e) => e.name === 'Admin').length > 0) && (<Badge color="danger">Admin</Badge>)}
-                        {(row.entitlements.filter((e) => e.name === 'Provider').length > 0)&& (<Badge color="warning">Provider</Badge>)}
-                        {(row.entitlements.filter((e) => e.name === 'Legal').length > 0)&& (<Badge color="info">Legal</Badge>)}
-                        {(row.entitlements.filter((e) => e.name === 'Customer').length > 0) && (<Badge color="primary">Customer</Badge>)}
+                        {(row.entitlements.filter((e) => e.name === 'Admin').length > 0) && (<TemplateBadge label='Admin'/>)}
+                        {(row.entitlements.filter((e) => e.name === 'Provider').length > 0)&& (<TemplateBadge label='Provider'/>)}
+                        {(row.entitlements.filter((e) => e.name === 'Legal').length > 0)&& (<TemplateBadge label='Legal</Badge'/>)}
+                        {(row.entitlements.filter((e) => e.name === 'Customer').length > 0) && (<TemplateBadge label='Customer'/>)}
                     </div>
                 )
             },
@@ -264,13 +215,15 @@ class UserAdminList extends Component {
                 editable: false,
                 formatter:(cellContent,row) => ( 
                     <div>
-                        {/*<Button onClick={() => this.edit(row)} style={{marginRight:5,height:35}} color="primary"><EditIcon/></Button>*/}
+                        {/*<TemplateButton onClick={() => this.edit(row)} style={{marginRight:5,height:35}} color="primary"><EditIcon/></Button>*/}
                     </div>
                 )
             },
         ];
         return (
         <>
+        <Navbar/>
+        <Box style={{margin:20}}>
             {(this.props.userAdmin && this.props.userAdmin.isReceiving) && (
                 <AppSpinner/>
             )}
@@ -279,19 +232,18 @@ class UserAdminList extends Component {
             <>
             <Grid container xs="12">
                 <Grid item xs="2" style={{marginBottom:10}}>
-                    {/*<Button onClick={() => this.edit({id:"new"})} 
+                    {/*<TemplateButton onClick={() => this.edit({id:"new"})} 
                         style={{marginRight:5,height:35,width:90}} color="primary">Add</Button>
                     */}
                 </Grid>
             </Grid>
             <Grid container xs="12">
                 <Grid item xs="12">
-                      <BootstrapTable 
+                      <PainTable
                           keyField="id"
                           data={ this.props.userAdmin.data.users }
                           columns={ heads }
-                          pagination={ paginationFactory(options) }>
-                      </BootstrapTable>
+                          />
                 </Grid>                
             </Grid>
             </>
@@ -308,110 +260,65 @@ class UserAdminList extends Component {
                 <Grid item xs="5">
                     <Grid container xs="12">
                         <Grid item xs="12">
-                          <FormGroup row>
-                            <Label for="normal-field" md={4} className="text-md-right">
-                              Email
-                            </Label>
                             <Grid item xs={7}>
-                              <Input type="text" id="normal-field" onChange={this.emailChange} placeholder="Email" value={this.state.selected.email}/>
+                              <TemplateTextField type="text" id="normal-field" onChange={this.emailChange} label="Email" value={this.state.selected.email}/>
                             </Grid>
-                          </FormGroup>
                         </Grid>
                     </Grid>
                     <Grid container xs="12">
                         <Grid item xs="12">
-                          <FormGroup row>
-                            <Label for="normal-field" md={4} className="text-md-right">
-                              First Name
-                            </Label>
                             <Grid item xs={7}>
-                              <Input type="text" id="normal-field" onChange={this.firstChange} placeholder="First Name" value={this.state.selected.first_name}/>
+                              <TemplateTextField type="text" id="normal-field" onChange={this.firstChange} label="First Name" value={this.state.selected.first_name}/>
                             </Grid>
-                          </FormGroup>
                         </Grid>
                     </Grid>
                     <Grid container xs="12">
                         <Grid item xs="12">
-                          <FormGroup row>
-                            <Label for="normal-field" md={4} className="text-md-right">
-                              Last Name
-                            </Label>
                             <Grid item xs={7}>
-                              <Input type="text" id="normal-field" onChange={this.lastChange} placeholder="Last Name" value={this.state.selected.last_name}/>
+                              <TemplateTextField type="text" id="normal-field" onChange={this.lastChange} label="Last Name" value={this.state.selected.last_name}/>
                             </Grid>
-                          </FormGroup>
                         </Grid>
                     </Grid>
                     <Grid container xs="12">
                         <Grid item xs="12">
-                          <FormGroup row>
-                            <Label for="normal-field" md={4} className="text-md-right">
-                              Phone
-                            </Label>
                             <Grid item xs={7}>
-                              <Input type="text" id="normal-field" onChange={this.phoneChange} placeholder="Phone" value={this.state.selected.phone}/>
+                              <TemplateTextField type="text" id="normal-field" onChange={this.phoneChange} label="Phone" value={this.state.selected.phone}/>
                             </Grid>
-                          </FormGroup>
                         </Grid>
                     </Grid>
                     <Grid container xs="12">
                         <Grid item xs="12">
-                          <FormGroup row>
-                            <Label for="normal-field" md={4} className="text-md-right">
-                              Address1
-                            </Label>
                             <Grid item xs={7}>
-                              <Input type="text" id="normal-field" onChange={this.addr1Change} placeholder="Address 1" value={this.state.selected.addr1}/>
+                              <TemplateTextField type="text" id="normal-field" onChange={this.addr1Change} label="Address 1" value={this.state.selected.addr1}/>
                             </Grid>
-                          </FormGroup>
                         </Grid>
                     </Grid>
                     <Grid container xs="12">
                         <Grid item xs="12">
-                          <FormGroup row>
-                            <Label for="normal-field" md={4} className="text-md-right">
-                              Address2
-                            </Label>
                             <Grid item xs={7}>
-                              <Input type="text" id="normal-field" onChange={this.addr2Change} placeholder="Address 1" value={this.state.selected.addr2}/>
+                              <TemplateTextField type="text" id="normal-field" onChange={this.addr2Change} label="Address 1" value={this.state.selected.addr2}/>
                             </Grid>
-                          </FormGroup>
                         </Grid>
                     </Grid>
                     <Grid container xs="12">
                         <Grid item xs="12">
-                          <FormGroup row>
-                            <Label for="normal-field" md={4} className="text-md-right">
-                              City
-                            </Label>
                             <Grid item xs={7}>
-                              <Input type="text" id="normal-field" onChange={this.cityChange} placeholder="Address 1" value={this.state.selected.city}/>
+                              <TemplateTextField type="text" id="normal-field" onChange={this.cityChange} label="Address 1" value={this.state.selected.city}/>
                             </Grid>
-                          </FormGroup>
                         </Grid>
                     </Grid>
                     <Grid container xs="12">
                         <Grid item xs="12">
-                          <FormGroup row>
-                            <Label for="normal-field" md={4} className="text-md-right">
-                              State
-                            </Label>
                             <Grid item xs={7}>
-                              <Input type="text" id="normal-field" onChange={this.stateChange} placeholder="Address 1" value={this.state.selected.state}/>
+                              <TemplateTextField type="text" id="normal-field" onChange={this.stateChange} label="Address 1" value={this.state.selected.state}/>
                             </Grid>
-                          </FormGroup>
                         </Grid>
                     </Grid>
                     <Grid container xs="12">
                         <Grid item xs="12">
-                          <FormGroup row>
-                            <Label for="normal-field" md={4} className="text-md-right">
-                              Zipcode
-                            </Label>
                             <Grid item xs={7}>
-                              <Input type="text" id="normal-field" onChange={this.zipcodeChange} placeholder="Zip" value={this.state.selected.zipcode}/>
+                              <TemplateTextField type="text" id="normal-field" onChange={this.zipcodeChange} label="Zip" value={this.state.selected.zipcode}/>
                             </Grid>
-                          </FormGroup>
                         </Grid>
                     </Grid>
                 </Grid>
@@ -420,13 +327,14 @@ class UserAdminList extends Component {
             <Grid container xs="12">
                 {(!this.state.commentAdd) && (
                 <Grid item xs="6">
-                    <Button onClick={this.save} color="primary">Save</Button>
-                    <Button outline style={{marginLeft:10}} onClick={this.cancel} color="secondary">Cancel</Button>
+                    <TemplateButton onClick={this.save} label='Save'/>
+                    <TemplateButton outline style={{marginLeft:10}} onClick={this.cancel} label='Cancel'/>
                 </Grid>
                 )}
             </Grid>
             </>
             )}
+        </Box>
         </>
         )
     }

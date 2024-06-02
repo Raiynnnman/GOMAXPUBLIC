@@ -1,17 +1,24 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Col, Grid } from 'reactstrap';
-import { Nav, NavItem, NavLink } from 'reactstrap';
-import { TabContent, TabPane } from 'reactstrap';
-import cx from 'classnames';
-import classnames from 'classnames';
-import BootstrapTable from 'react-bootstrap-table-next';
-import cellEditFactory from 'react-bootstrap-table2-editor';
-import paginationFactory from 'react-bootstrap-table2-paginator';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import { getPlansList } from '../../actions/plansList';
 import baseURLConfig from '../../baseURLConfig';
+import PainTable from '../utils/PainTable';
+import TemplateSelect from '../utils/TemplateSelect';
+import TemplateSelectEmpty from '../utils/TemplateSelectEmpty';
+import TemplateSelectMulti from '../utils/TemplateSelectMulti';
+import TemplateTextField from '../utils/TemplateTextField';
+import TemplateTextArea from '../utils/TemplateTextArea';
+import TemplateCheckbox from '../utils/TemplateCheckbox';
+import TemplateButton from '../utils/TemplateButton';
+import TemplateBadge from '../utils/TemplateBadge';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import Navbar from '../../components/Navbar';
 
 class PricingList extends Component {
     constructor(props) { 
@@ -72,40 +79,25 @@ class PricingList extends Component {
                 text:'Price'
             }
         ]
-        const options = {
-          showTotal:true,
-          sizePerPage:10,
-          hideSizePerPage:true
-        };
         return (
         <>
+        <Navbar/>
+        <Box style={{margin:20}}>
             {(this.props.plansList && this.props.plansList.isReceiving) && (
                 <AppSpinner/>
             )}
+          {(this.props.plansList && this.props.plansList.data && 
+            this.props.plansList.data.length > 0 &&
+            this.props.plansList.data.length > 0) && (
             <Grid container xs="12">
                 <Grid item xs="12">
-                    <Nav tabs  className={`${s.coloredNav}`} style={{backgroundColor:"#e8ecec"}}>
-                        <NavItem>
-                            <NavLink className={classnames({ active: this.state.activeTab === 'pricing' })}
-                                onClick={() => { this.toggleTab('pricing') }}>
-                                <span>{translate('Pricing')}</span>
-                            </NavLink>
-                        </NavItem>
-                    </Nav>
-                    <TabContent className='mb-lg' activeTab={this.state.activeTab}>
-                        {(this.props.plansList && this.props.plansList.data && 
-                          this.props.plansList.data.length > 0)&& ( 
-                        <TabPane tabId="pricing">
-                            <BootstrapTable 
-                                keyField='id' data={this.props.plansList.data} 
-                                pagination={paginationFactory(options)}
-                                columns={planheads}>
-                            </BootstrapTable>
-                        </TabPane>
-                        )}
-                    </TabContent>
+                    <PainTable
+                        keyField='id' data={this.props.plansList.data} 
+                        columns={planheads}/>
                 </Grid>                
             </Grid>
+          )}
+        </Box>
         </>
         )
     }

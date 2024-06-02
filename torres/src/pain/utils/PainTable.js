@@ -122,7 +122,7 @@ class PainTable extends Component {
                             {this.props.columns.map((e) => { 
                                 if (!e.hidden) { 
                                 return(
-                                <TableCell align={e.align} style={{backgroundColor:'#6fb0f9',color:'white'}}>
+                                <TableCell align={e.align} style={{backgroundColor:'#fa6a0a',color:'white'}}>
                                     {(!e.sort) && (
                                     <>
                                         {e.text}

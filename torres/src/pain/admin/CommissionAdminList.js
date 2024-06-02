@@ -2,37 +2,33 @@ import React, { Component } from 'react';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 import { connect } from 'react-redux';
-import { Col, Grid } from 'reactstrap';
-import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
-import { FormGroup, Label, Input } from 'reactstrap';
-import ToolkitProvider from 'react-bootstrap-table2-toolkit';
 import moment from 'moment';
-import Select from 'react-select';
 import { push } from 'connected-react-router';
-import { Nav, NavItem, NavLink } from 'reactstrap';
-import { searchRegister } from '../../actions/searchRegister';
-import { TabContent, TabPane } from 'reactstrap';
 import cx from 'classnames';
 import classnames from 'classnames';
-import { Button } from 'reactstrap'; 
-import { Badge } from 'reactstrap';
-import { Search } from 'react-bootstrap-table2-toolkit';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import { getCommissionAdmin } from '../../actions/commissions';
 import { getCommissionUserAdmin } from '../../actions/commissionsUser';
-import BootstrapTable from 'react-bootstrap-table-next';
-import paginationFactory from 'react-bootstrap-table2-paginator';
-import cellEditFactory from 'react-bootstrap-table2-editor';
 import EditIcon from '@mui/icons-material/Edit';
-import PhysicianCard from '../search/PhysicianCard';
-import AliceCarousel from 'react-alice-carousel';
-import { searchCheckRes } from '../../actions/searchCheckRes';
 import { toast } from 'react-toastify';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
 import 'react-toastify/dist/ReactToastify.css';
 import PainTable from '../utils/PainTable';
+import TemplateSelect from '../utils/TemplateSelect';
+import TemplateSelectEmpty from '../utils/TemplateSelectEmpty';
+import TemplateSelectMulti from '../utils/TemplateSelectMulti';
+import TemplateTextField from '../utils/TemplateTextField';
+import TemplateTextArea from '../utils/TemplateTextArea';
+import TemplateCheckbox from '../utils/TemplateCheckbox';
+import TemplateButton from '../utils/TemplateButton';
+import TemplateBadge from '../utils/TemplateBadge';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import Navbar from '../../components/Navbar';
 
-const { SearchBar } = Search;
 class CommissionAdminList extends Component {
     constructor(props) { 
         super(props);
@@ -49,7 +45,6 @@ class CommissionAdminList extends Component {
         this.cancel = this.cancel.bind(this);
         this.save = this.save.bind(this);
         this.pageChange = this.pageChange.bind(this);
-        this.renderTotalLabel = this.renderTotalLabel.bind(this);
         this.emailChange = this.emailChange.bind(this);
         this.zipcodeChange = this.zipcodeChange.bind(this);
         this.firstChange = this.firstChange.bind(this);
@@ -242,10 +237,6 @@ class CommissionAdminList extends Component {
         this.setState(this.state);
     } 
 
-    renderTotalLabel(f,t,s) { 
-        var numpage = s/t;
-        return "Showing page " + (this.state.page+1) + " of " + numpage.toFixed(0);
-    } 
     firstChange(e) { 
         this.state.selected['first_name'] = e.target.value;
         this.setState(this.state);
@@ -286,53 +277,6 @@ class CommissionAdminList extends Component {
     } 
 
     render() {
-        const pageButtonRenderer = ({
-          page,
-          currentPage,
-          disabled,
-          title,
-          onPageChange
-        }) => {
-          const handleClick = (e) => {
-             e.preventDefault();
-             this.pageChange(page, currentPage);// api call 
-           };    
-          return (
-            <div>
-              {
-               <li className="page-item">
-                 <a href="#"  onClick={ handleClick } className="page-link">{ page }</a>
-               </li>
-              }
-            </div>
-          );
-        };
-        const options = {
-          pageButtonRenderer,
-          showTotal:true,
-          withFirstAndLast: false,
-          alwaysShowAllBtns: false,
-          nextPageText:'>',
-          sizePerPage:10,
-          paginationTotalRenderer: (f,t,z) => this.renderTotalLabel(f,t,z),
-          totalSize: (this.props.commissions && 
-                      this.props.commissions.data &&
-                      this.props.commissions.data.total) ? this.props.commissions.data.total : 10,
-          hideSizePerPage:true,
-          //onPageChange:(page,sizePerPage) => this.pageChange(page,sizePerPage)
-        };
-        const responsive = {
-            0: { 
-                items: 1
-            },
-            568: { 
-                items: 1
-            },
-            1024: {
-                items: 1, 
-                itemsFit: 'contain'
-            },
-        };
         var heads = [
             {
                 dataField:'id',
@@ -376,21 +320,23 @@ class CommissionAdminList extends Component {
                 )
             },
             {
-                dataField:'updated',
+                dataField:'created',
                 sort:true,
                 editable: false,
                 align:'center',
-                text:'Updated',
+                text:'created',
                 formatter:(cellContent,row) => (
                     <div>
-                        {moment(row['updated']).isValid() ?  
-                         moment(row['updated']).format('LLL') : moment(row['updated2']).format('LLL')}
+                        {moment(row['created']).isValid() ?  
+                         moment(row['created']).format('LLL') : moment(row['created2']).format('LLL')}
                     </div>
                 )
             },
         ];
         return (
         <>
+        <Navbar/>
+        <Box style={{margin:20}}>
             {(this.props.commissions && this.props.commissions.isReceiving) && (
                 <AppSpinner/>
             )}
@@ -401,21 +347,12 @@ class CommissionAdminList extends Component {
               this.props.commissionsUser.data.commissions && this.state.selected === null) && ( 
             <>
             <Grid container xs="12">
-                <Grid item xs="2" style={{marginBottom:10}}>
-                    {/*<Button onClick={() => this.edit({id:"new"})} 
-                        style={{marginRight:5,height:35,width:90}} color="primary">Add</Button>
-                    */}
-                </Grid>
-            </Grid>
-            <Grid container xs="12">
                 <Grid item xs="5" style={{marginBottom:10}}>
                   {(this.props.commissionsUser && this.props.commissionsUser.data && 
                     this.props.commissionsUser.data.config &&
                     this.props.commissionsUser.data.config.period && this.state.periodSelected !== null) && (
-                      <Select
-                          closeMenuOnSelect={true}
-                          isSearchable={false}
-                          isMulti
+                      <TemplateSelectMulti
+                          label='Period'
                           onChange={this.onPeriodFilter}
                           value={this.state.periodSelected.map((g) => { 
                             return (
@@ -437,9 +374,9 @@ class CommissionAdminList extends Component {
                     )}
                 </Grid>
                 <Grid item xs="7">
-                    <div class="pull-right">
+                    <div style={{display:'flex',justifyItems:'end'}}>
                         <div style={{justifyContent:'spread-evenly'}}>
-                            <Button onClick={this.commissionReport} outline color="primary"><AssessmentIcon/></Button>
+                            <TemplateButton onClick={this.commissionReport} outline label={<AssessmentIcon/>}/>
                         </div>
                     </div>
                 </Grid>
@@ -466,7 +403,7 @@ class CommissionAdminList extends Component {
             <>
             <Grid container xs="12">
                 <Grid item xs="2" style={{marginBottom:10}}>
-                    {/*<Button onClick={() => this.edit({id:"new"})} 
+                    {/*<TemplateButton onClick={() => this.edit({id:"new"})} 
                         style={{marginRight:5,height:35,width:90}} color="primary">Add</Button>
                     */}
                 </Grid>
@@ -476,7 +413,7 @@ class CommissionAdminList extends Component {
                   {(this.props.commissions && this.props.commissions.data && 
                     this.props.commissions.data.config &&
                     this.props.commissions.data.config.period && this.state.periodSelected !== null) && (
-                      <Select
+                      <TemplateSelectMulti
                           closeMenuOnSelect={true}
                           isSearchable={false}
                           isMulti
@@ -500,10 +437,11 @@ class CommissionAdminList extends Component {
                         />
                     )}
                 </Grid>
-                <Grid item xs="7">
-                    <div class="pull-right">
+                <Grid item xs="6"></Grid>
+                <Grid item xs="1">
+                    <div style={{display:'flex',alignItems:'end',justifyItems:'end'}}>
                         <div style={{justifyContent:'spread-evenly'}}>
-                            <Button onClick={this.commissionReport} outline color="primary"><AssessmentIcon/></Button>
+                            <TemplateButton onClick={this.commissionReport} outline label={<AssessmentIcon/>}/>
                         </div>
                     </div>
                 </Grid>
@@ -525,6 +463,7 @@ class CommissionAdminList extends Component {
             </Grid>
             </>
             )}
+        </Box>
         </>
         )
     }

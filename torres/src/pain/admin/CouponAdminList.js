@@ -2,40 +2,35 @@ import React, { Component } from 'react';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 import AddBoxIcon from '@mui/icons-material/AddBox';
-import MaskedInput from 'react-maskedinput';
 import { connect } from 'react-redux';
 import { getPlansList } from '../../actions/plansList';
-import { Col, Grid } from 'reactstrap';
-import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
-import { FormGroup, Label, Input } from 'reactstrap';
-import ToolkitProvider from 'react-bootstrap-table2-toolkit';
 import moment from 'moment';
-import Select from 'react-select';
 import { push } from 'connected-react-router';
-import { Nav, NavItem, NavLink } from 'reactstrap';
 import { searchRegister } from '../../actions/searchRegister';
-import { TabContent, TabPane } from 'reactstrap';
-import cx from 'classnames';
-import classnames from 'classnames';
-import { Button } from 'reactstrap'; 
-import { Badge } from 'reactstrap';
-import { Search } from 'react-bootstrap-table2-toolkit';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import { getCouponAdmin } from '../../actions/coupons';
 import { couponSave } from '../../actions/couponSave';
-import BootstrapTable from 'react-bootstrap-table-next';
-import paginationFactory from 'react-bootstrap-table2-paginator';
-import cellEditFactory from 'react-bootstrap-table2-editor';
 import EditIcon from '@mui/icons-material/Edit';
-import PhysicianCard from '../search/PhysicianCard';
-import AliceCarousel from 'react-alice-carousel';
 import { searchCheckRes } from '../../actions/searchCheckRes';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import PainTable from '../utils/PainTable';
+import TemplateSelect from '../utils/TemplateSelect';
+import TemplateSelectEmpty from '../utils/TemplateSelectEmpty';
+import TemplateSelectMulti from '../utils/TemplateSelectMulti';
+import TemplateTextField from '../utils/TemplateTextField';
+import TemplateTextArea from '../utils/TemplateTextArea';
+import TemplateCheckbox from '../utils/TemplateCheckbox';
+import TemplateButton from '../utils/TemplateButton';
+import TemplateBadge from '../utils/TemplateBadge';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import Navbar from '../../components/Navbar';
 
-const { SearchBar } = Search;
 class CouponAdminList extends Component {
     constructor(props) { 
         super(props);
@@ -104,7 +99,7 @@ class CouponAdminList extends Component {
         } 
         this.state.statusSelected = t;
         this.state.filter = t;
-        this.props.dispatch(getRegistrations(
+        this.props.dispatch(getCouponAdmin(
             {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,period:this.state.filter}
         ));
         this.setState(this.state)
@@ -261,8 +256,8 @@ class CouponAdminList extends Component {
                 text:'Active',
                 formatter: (cellContent,row) => (
                     <div>
-                        {(row.active === 1) && (<Badge color="primary">Active</Badge>)}
-                        {(row.active === 0) && (<Badge color="danger">Inactive</Badge>)}
+                        {(row.active === 1) && (<TemplateBadge label='Active'/>)}
+                        {(row.active === 0) && (<TemplateBadge label='Inactive'/>)}
                     </div>
                 )
             },
@@ -318,24 +313,27 @@ class CouponAdminList extends Component {
                 editable: false,
                 formatter:(cellContent,row) => ( 
                     <div>
-                        <Button onClick={() => this.edit(row)} style={{marginRight:5,height:35}} color="primary"><EditIcon/></Button>
+                        <TemplateButton onClick={() => this.edit(row)} style={{marginRight:5,height:35}} label={<EditIcon/>}/>
                     </div>
                 )
             }
         ];
         return (
         <>
+        <Navbar/>
+        <Box style={{margin:20}}>
             {(this.props.coupons && this.props.coupons.isReceiving) && (
                 <AppSpinner/>
             )}
             {(this.props && this.props.coupons && this.props.coupons.data && 
               this.props.coupons.data.coupons && this.state.selected === null) && ( 
             <>
+            
             <Grid container xs="12">
                 <Grid item xs="2" style={{marginBottom:10}}>
                     <Grid item xs="1">
-                        <Button onClick={() => this.edit({id:"new"})} style={{width:50}}
-                            color="primary"><AddBoxIcon/></Button>
+                        <TemplateButton onClick={() => this.edit({id:"new"})} style={{width:50}}
+                            label={<AddBoxIcon/>}/>
                     </Grid>
                 </Grid>
             </Grid>
@@ -360,150 +358,103 @@ class CouponAdminList extends Component {
               this.props.coupons.data.coupons && this.state.selected !== null) && ( 
               <>
                 <Grid container xs="12" style={{marginTop:10}}>
-                    <Grid item xs="12">
-                          {this.state.selected.id && (<FormGroup row>
-                            <Label for="normal-field" md={1} className="text-md-right">
-                              ID 
-                            </Label>
-                            <Grid item xs={5}>
-                                <Input type="text" id="normal-field" readOnly 
-                                placeholder="ID" value={this.state.selected.id}/>
-                            </Grid>
-                          </FormGroup>
-                          )}
-                          <FormGroup row>
-                              <Label for="normal-field" md={1} className="text-md-right">
-                                Active
-                              </Label>
-                              <Grid item xs={8}>
-                              <Input type="checkbox" id="normal-field"
-                                      onChange={this.activeChange} placeholder="Email" checked={this.state.selected.active}/>
-                              </Grid>
-                          </FormGroup>
-                          <FormGroup row>
-                            <Label for="normal-field" md={1} className="text-md-right">
-                              Name 
-                            </Label>
-                            <Grid item xs={5}>
-                                <Input type="text" id="normal-field" onChange={this.nameChange}
-                                placeholder="Name" value={this.state.selected.name}/>
-                            </Grid>
-                          </FormGroup>
-                          <FormGroup row>
-                            <Label for="normal-field" md={1} className="text-md-right">
-                                Plan
-                            </Label>
-                            <Grid item xs="5" style={{zIndex:9995}}>
-                              {(this.props.plansList && this.props.plansList.data && 
-                                this.props.plansList.data) && (
-                                  <Select
-                                      closeMenuOnSelect={true}
-                                      isSearchable={false}
-                                      onChange={this.planChange}
-                                      value={{
-                                        label:
-                                            this.props.plansList.data.filter((e) => this.state.selected.pricing_data_id === e.id).length > 0 ? 
-                                                this.props.plansList.data.filter((e) => this.state.selected.pricing_data_id === e.id)[0].description + 
-                                                " ($" + this.props.plansList.data.filter((e) => this.state.selected.pricing_data_id === e.id)[0].upfront_cost + ")"
-                                                : ''
-                                        }}
-                                      options={this.props.plansList.data.map((e) => { 
-                                        return (
-                                            { 
-                                            label: e.description + " ($" + e.upfront_cost + ")",
-                                            value: e.id
-                                            }
-                                        )
-                                      })}
-                                    />
-                                )}
-                            </Grid>                
-                          </FormGroup>
-                          <FormGroup row>
-                            <Label for="normal-field" md={1} className="text-md-right">
-                              Total
-                            </Label>
-                            <Grid item xs={5}>
-                                <MaskedInput
-                                  className="form-control" id="mask-phone" mask="$1111"
-                                  disabled={this.state.selected.perc !== null || this.state.selected.reduction !== null}
-                                  placeholderChar=' '
-                                  onChange={this.totalChange} value={this.state.selected.total ? "" + this.state.selected.total : ""}
-                                  size="10"
+                      {this.state.selected.id && (
+                        <Grid item xs={1}>
+                            <TemplateTextField type="text" id="normal-field" readOnly 
+                            label="ID" value={this.state.selected.id}/>
+                        </Grid>
+                      )}
+                          <Grid item xs={8}>
+                          <TemplateCheckbox type="checkbox" id="normal-field"
+                                  onChange={this.activeChange} label="Active" checked={this.state.selected.active}/>
+                          </Grid>
+                        <Grid item xs={5}>
+                            <TemplateTextField type="text" id="normal-field" onChange={this.nameChange}
+                            label="Name" value={this.state.selected.name}/>
+                        </Grid>
+                        <Grid item xs="5" style={{zIndex:9995}}>
+                          {(this.props.plansList && this.props.plansList.data && 
+                            this.props.plansList.data) && (
+                              <TemplateSelect
+                                  label='Plan'
+                                  onChange={this.planChange}
+                                  value={{
+                                    value:
+                                        this.props.plansList.data.filter((e) => this.state.selected.pricing_data_id === e.id).length > 0 ? 
+                                            this.props.plansList.data.filter((e) => this.state.selected.pricing_data_id === e.id)[0].description + 
+                                            " ($" + this.props.plansList.data.filter((e) => this.state.selected.pricing_data_id === e.id)[0].upfront_cost + ")"
+                                            : '',
+                                    label:
+                                        this.props.plansList.data.filter((e) => this.state.selected.pricing_data_id === e.id).length > 0 ? 
+                                            this.props.plansList.data.filter((e) => this.state.selected.pricing_data_id === e.id)[0].description + 
+                                            " ($" + this.props.plansList.data.filter((e) => this.state.selected.pricing_data_id === e.id)[0].upfront_cost + ")"
+                                            : ''
+                                    }}
+                                  options={this.props.plansList.data.map((e) => { 
+                                    return (
+                                        { 
+                                        label: e.description + " ($" + e.upfront_cost + ")",
+                                        value: e.description + " ($" + e.upfront_cost + ")",
+                                        }
+                                    )
+                                  })}
                                 />
-                            </Grid>
-                          </FormGroup>
-                          <FormGroup row>
-                            <Label for="normal-field" md={1} className="text-md-right">
-                              Percentage
-                            </Label>
-                            <Grid item xs={5}>
-                                <MaskedInput
-                                  className="form-control" id="mask-perc" mask="11%"
-                                  disabled={this.state.selected.total !== null || this.state.selected.reduction !== null}
-                                  placeholderChar=' '
-                                  onChange={this.percChange} value={
-                                    this.state.selected.perc ? "" + this.state.selected.perc * 100 : ""}
-                                  size="10"
-                                />
-                            </Grid>
-                          </FormGroup>
-                          <FormGroup row>
-                            <Label for="normal-field" md={1} className="text-md-right">
-                              Reduction
-                            </Label>
-                            <Grid item xs={5}>
-                                <MaskedInput
-                                  className="form-control" id="mask-reduction" mask="$1111"
-                                  disabled={this.state.selected.perc !== null || this.state.selected.total !== null}
-                                  placeholderChar=' '
-                                  onChange={this.reductionChange} value={
-                                    this.state.selected.reduction ? "" + this.state.selected.reduction : "" 
-                                    }
-                                  size="10"
-                                />
-                            </Grid>
-                          </FormGroup>
-                          <FormGroup row>
-                            <Label for="normal-field" md={1} className="text-md-right">
-                              Start Date
-                            </Label>
-                            <Grid item xs={5}>
-                                <MaskedInput
-                                  className="form-control" id="mask-phone" mask="1111-11-11"
-                                  placeholderChar=' '
-                                  onChange={this.startChange} value={this.state.selected.start_date}
-                                  size="10"
-                                />
-                            </Grid>
-                          </FormGroup>
-                          <FormGroup row>
-                            <Label for="normal-field" md={1} className="text-md-right">
-                              End Date
-                            </Label>
-                            <Grid item xs={5}>
-                                <MaskedInput
-                                  placeholderChar=' '
-                                  className="form-control" id="mask-phone" mask="1111-11-11"
-                                  onChange={this.endChange} value={this.state.selected.end_date}
-                                  size="10"
-                                />
-                            </Grid>
-                          </FormGroup>
-                    </Grid>
+                            )}
+                        </Grid>                
+                        <Grid item xs={5}>
+                            <TemplateTextField
+                              label='Total'
+                              onChange={this.totalChange} value={this.state.selected.total ? "" + this.state.selected.total : ""}
+                              size="10"
+                            />
+                        </Grid>
+                        <Grid item xs={5}>
+                            <TemplateTextField
+                              disabled={this.state.selected.total !== null || this.state.selected.reduction !== null}
+                              label='Percentage'
+                              onChange={this.percChange} value={
+                                this.state.selected.perc ? "" + this.state.selected.perc * 100 : ""}
+                              size="10"
+                            />
+                        </Grid>
+                        <Grid item xs={5}>
+                            <TemplateTextField
+                              label='Reduction'
+                              disabled={this.state.selected.perc !== null || this.state.selected.total !== null}
+                              onChange={this.reductionChange} value={
+                                this.state.selected.reduction ? "" + this.state.selected.reduction : "" 
+                                }
+                              size="10"
+                            />
+                        </Grid>
+                        <Grid item xs={5}>
+                            <TemplateTextField
+                              label='Start Date'
+                              onChange={this.startChange} value={this.state.selected.start_date}
+                              size="10"
+                            />
+                        </Grid>
+                        <Grid item xs={5}>
+                            <TemplateTextField
+                              label='End Date'
+                              onChange={this.endChange} value={this.state.selected.end_date}
+                              size="10"
+                            />
+                        </Grid>
                 </Grid>
                 <hr/>
                 <Grid container xs="12">
                     <Grid item xs="12">
                         <Grid item xs="6">
-                            <Button onClick={this.save} color="primary">Save</Button>
-                            <Button outline style={{marginLeft:10}} onClick={this.cancel} 
-                                color="secondary">Close</Button>
+                            <TemplateButton onClick={this.save} label='Save'/>
+                            <TemplateButton outline style={{marginLeft:10}} onClick={this.cancel} 
+                                label='Close'/>
                         </Grid>
                     </Grid>
                 </Grid>
                 </>
             )}
+        </Box>
         </>
         )
     }

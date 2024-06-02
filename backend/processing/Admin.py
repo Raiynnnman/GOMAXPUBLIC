@@ -617,7 +617,7 @@ class InvoicesList(AdminBase):
                 from 
                 invoices_comment ic, users u
                 where ic.user_id = u.id and invoices_id=%s
-                order by created desc
+                order by ic.created desc
                 """,(x['id'],)
             )
             x['last_comment'] = ''

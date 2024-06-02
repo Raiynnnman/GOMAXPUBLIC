@@ -46,19 +46,24 @@ function TemplateSelectMulti({label,onChange,style,value,options}) {
           value={selected}
           onChange={handleChange}
           renderValue={(e) => { 
+                    console.log("e",e);
             return ( 
                 e.map((f) => { 
+                    console.log("f",f);
                     return <Chip label={f} onDelete={() => handleDelete(f)} />
                 })
             )
 
           }}
         >
-          {options.map((n) => (
-            <MenuItem key={n.id} value={n.label} >
-              {n.label}
-            </MenuItem>
-          ))}
+          {options.map((n) => {
+            console.log("n",n)
+            return (
+                <MenuItem key={n.id} value={n.label} >
+                  {n.label}
+                </MenuItem>
+            )
+          })}
         </Select>
       </FormControl>
     </div>

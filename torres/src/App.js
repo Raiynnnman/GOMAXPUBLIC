@@ -22,6 +22,11 @@ import Registrations from './pain/admin/Registrations';
 import Referrers from './pain/admin/Referrers';
 import Register from './pain/register/Register';
 import OfficeAdminList from './pain/admin/OfficeAdminList';
+import InvoiceAdminList from './pain/admin/InvoiceAdminList';
+import CommissionAdminList from './pain/admin/CommissionAdminList';
+import CouponAdminList from './pain/admin/CouponAdminList';
+import PricingList from './pain/admin/PricingList';
+import UserAdminList from './pain/admin/UserAdminList';
 
 const CloseButton = ({closeToast}) => <i onClick={closeToast} className="la la-close notifications-close"/>
 const App = () => {
@@ -50,6 +55,11 @@ const App = () => {
                     <Route exact path='/app/main/admin/registrations' component={Registrations}/>
                     <Route exact path='/app/main/admin/referrals' component={Referrers}/>
                     <Route exact path='/app/main/admin/providers' component={OfficeAdminList}/>
+                    <Route exact path='/app/main/admin/invoices' component={InvoiceAdminList}/>
+                    <Route exact path='/app/main/admin/commissions' component={CommissionAdminList}/>
+                    <Route exact path='/app/main/admin/coupons' component={CouponAdminList}/>
+                    <Route exact path='/app/main/admin/plans' component={PricingList}/>
+                    <Route exact path='/app/main/admin/users' component={UserAdminList}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/tf`} component={DemoTF}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/home-one`} component={HomeOlive}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/home-two`} component={HomeHorizontal}/>
