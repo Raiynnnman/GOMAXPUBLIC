@@ -1373,9 +1373,15 @@ class RegistrationUpdate(AdminBase):
                         (%s,%s,%s)
                     """,(invid,user['id'],'Updated Invoice' )
                 )
-        if params['status'] == PQS['APPROVED']:
+        if params['status'] == PQS['APPROVED'] or params['status'] == PQS['INVITED']:
             db.update("""
                 update office set active = 1 where id = %s
+                """,(offid,)
+            )
+            db.update("""
+                update users set active = 1 where id in ( 
+                    select user_id from office_user where office_id=%s
+                )
                 """,(offid,)
             )
             db.update("""

@@ -50,8 +50,8 @@ class Mail:
         sender = "noreply@poundpain.com"
         access = config.getKey("email_user")
         secret = config.getKey("email_pass")
-        with open(template, "r") as H:
-            body = H.read()
+        with open(template, "rb") as H:
+            body = H.read().decode('utf-8',errors='ignore')
         for x in data:
             body = body.replace(x, data[x])
         client = boto3.client(
