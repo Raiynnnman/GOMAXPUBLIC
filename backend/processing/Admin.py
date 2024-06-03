@@ -1393,9 +1393,67 @@ class RegistrationUpdate(AdminBase):
                     provider_queue_status_id = %s where office_id = %s
             """,(PQS['INVITED'],offid)
             )
+            u = db.query("""
+                select u.id,u.email  from users u,office_user ou
+                    where u.id=ou.user_id and ou.office_id=%s
+                """,(offid,)
+            )
+            db.commit()
             # TODO: Send welcome mail here
+            if len(u) > 0:
+                print("per")
+                we = WelcomeEmailReset()
+                we.execute(0,[{'email': u[0]['email']}])
         self.setJenkinsID(offid)
         db.commit()
+        return ret
+
+class WelcomeEmailReset(AdminBase):
+
+    def __init__(self):
+        super().__init__()
+
+    def isDeferred(self):
+        return False
+
+    def execute(self, *args, **kwargs):
+        ret = []
+        params = args[1][0]
+        if 'email' not in params:
+            raise Exception('EMAIL_REQUIRED')
+        email = params['email'].lower()
+        db = Query()
+        o = db.query("""
+            select id from users where email=%s
+        """,(email.lower(),)
+        )
+        if len(o) < 1:
+            ret = { 
+                "success":False,
+                "message": "USER_DOESNT_EXIST"
+            }
+            return ret
+        user_id = o[0]['id']
+        url = config.getKey("host_url")
+        ul = UserLogin.ResetPasswordGetToken()
+        val = ul.genToken(user_id,email.lower())
+        data = { 
+            '__LINK__':"%s/#/reset/%s" % (url,val.decode('utf-8')),
+            '__BASE__':url
+        } 
+        if self.isUIV2(): 
+            data['__LINK__']:"%s/reset/%s" % (url,val.decode('utf-8'))
+        if config.getKey("appt_email_override") is not None:
+            email = config.getKey("appt_email_override")
+        sysemail = config.getKey("support_email")
+        m = Mail()
+        m.defer(email,"Welcome to POUNDPAIN TECH","templates/mail/welcome-reset.html",data)
+        data['__OFFICE_NAME__'] = params['name']
+        data['__OFFICE_URL__'] = "%s/#/app/main/admin/office/%s" % (url,off_id)
+        if self.isUIV2(): 
+            data['__OFFICE_URL__'] = "%s/app/main/admin/office/%s" % (url,off_id)
+        m.defer(email,"Welcome to POUNDPAIN TECH","templates/mail/welcome-reset.html",data)
+        m.defer(sysemail,"New Customer Signed Up","templates/mail/office-signup.html",data)
         return ret
 
 class RegistrationList(AdminBase):

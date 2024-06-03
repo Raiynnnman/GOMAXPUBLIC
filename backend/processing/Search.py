@@ -318,6 +318,7 @@ class WelcomeEmailReset(SearchBase):
             data['__LINK__']:"%s/reset/%s" % (url,val.decode('utf-8'))
         if config.getKey("appt_email_override") is not None:
             email = config.getKey("appt_email_override")
+        print("toqueue")
         m = Mail()
         m.defer(email,"Appointment Scheduled with POUNDPAIN TECH","templates/mail/welcome-reset.html",data)
         return ret
