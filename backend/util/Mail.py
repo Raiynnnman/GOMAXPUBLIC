@@ -5,6 +5,7 @@ import logging
 import threading
 from concurrent.futures import ThreadPoolExecutor, TimeoutError
 
+import traceback
 from common import settings, version
 from processing.run import app
 from util.Logging import Logging
@@ -30,6 +31,8 @@ class Mail:
         except Exception as e:
             error_message = "Celery is down or task exceeded timeout."
             print(str(e))
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
             log.error(f"Failed to defer email task. Reason: {str(e)}")
             log.error(error_message)
             log.error(f"Original recipient: {to}, Subject: {subject}, Template: {template}, Data: {data}")
