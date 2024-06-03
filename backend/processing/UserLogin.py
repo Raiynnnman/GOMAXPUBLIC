@@ -61,7 +61,7 @@ class UserLogin(SubmitDataRequest):
         if ' ' in email:
             raise InvalidCredentials("INVALID_EMAIL")
         passw = user['password']
-        if len(passw) < 1:
+        if passw is None or len(passw) < 1:
             log.info("user %s had no password" % email)
             raise InvalidCredentials("PASSWORD_REQUIRED")
         u1 = self.getProfile(email.lower())
@@ -74,20 +74,7 @@ class UserLogin(SubmitDataRequest):
         db.update("insert into login_attempts (user_id) values(%s)",(u1['id'],))
         db.commit()
         try:
-            #val = encryption.decrypt(u1['password'],config.getKey("encryption_key"))
-
-            userEmail = user['email']
-            userPass = user['password']
-
-            # Use parameterized queries to prevent SQL injection
-            query = "SELECT * FROM users WHERE email = %s AND password = %s"
-            val = db.query(query, (userEmail, userPass))
-
-            print("here", val[0]['password'])
-            val = val[0]['password']
-            #val = encryption.decrypt(u1['password'],config.getKey("encryption_key"))
-            val = passw
-            
+            val = encryption.decrypt(u1['password'],config.getKey("encryption_key"))
         except:
             log.info("user %s decryption failed" % email)
             raise InvalidCredentials("INVALID_PASSWORD")
