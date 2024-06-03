@@ -5,7 +5,7 @@ class Footer extends Component {
         return(
         <>
         <div>
-            <div className="row">
+            <div className="row" style={{position:'absolute',bottom:10}}>
                 <div style={{fontSize:12,marginLeft:10}} className="footer-text text-left">
                     <span>Copyright POUNDPAIN TECH© {new Date().getFullYear()} <a href="https://poundpain.com">{getVersion()}</a></span>
                 </div>

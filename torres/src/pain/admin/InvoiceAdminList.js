@@ -80,7 +80,6 @@ class InvoiceAdminList extends Component {
                 if (p.invoiceAdmin.data.config.status[c].name === 'VOID') { continue; }
                 if (p.invoiceAdmin.data.config.status[c].name === 'APPROVED') { continue; }
                 t.push(p.invoiceAdmin.data.config.status[c].id); 
-                console.log("push",p.invoiceAdmin.data.config.status[c]);
                 t1.push(p.invoiceAdmin.data.config.status[c]);
             } 
             this.state.statusSelected = t1;
@@ -264,7 +263,6 @@ class InvoiceAdminList extends Component {
     } 
 
     render() {
-        console.log("s",this.state);
         var itemheads = [
             {
                 dataField:'id',

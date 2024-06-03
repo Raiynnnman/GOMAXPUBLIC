@@ -1,20 +1,19 @@
 import React, { Component } from 'react';
+import Box from '@mui/material/Box';
 import { connect } from 'react-redux';
-import { Col, Grid } from 'reactstrap';
 import { toast } from 'react-toastify';
-import { Nav, NavItem, NavLink } from 'reactstrap';
-import { TabContent, TabPane } from 'reactstrap';
 import cx from 'classnames';
 import classnames from 'classnames';
 import AddBoxIcon from '@mui/icons-material/AddBox';
-import { Badge } from 'reactstrap';
-import { Button } from 'reactstrap'; 
-
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import {getOfficeLocations} from '../../actions/officeLocations';
 import {officeLocationsSave} from '../../actions/officeLocationsSave';
 import LocationCard from './LocationCard';
+import Grid from '@mui/material/Grid';
+import Container from '@mui/material/Container';
+import TemplateButton from '../utils/TemplateButton';
+import Navbar from '../../components/Navbar';
 
 class OfficeAddresses extends Component {
     constructor(props) { 
@@ -91,6 +90,8 @@ class OfficeAddresses extends Component {
     render() {
         return (
         <>
+        <Navbar/>
+        <Box style={{margin:20}}>
             {(this.props.officeLocations && this.props.officeLocations.isReceiving) && (
                 <AppSpinner/>
             )}
@@ -105,9 +106,9 @@ class OfficeAddresses extends Component {
             <Grid container xs="12">
                 <Grid item xs="12">
                     <Grid item xs="6">
-                        <Button onClick={this.save} color="primary">Save</Button>
-                        <Button outline style={{marginLeft:10}} onClick={this.cancel} 
-                            color="secondary">Close</Button>
+                        <TemplateButton onClick={this.save} label='Save'/>
+                        <TemplateButton outline style={{marginLeft:10}} onClick={this.cancel} 
+                            label='Close'/>
                     </Grid>
                 </Grid>
             </Grid>
@@ -117,8 +118,8 @@ class OfficeAddresses extends Component {
             <>
             <Grid container xs="12">
                 <Grid item xs="1">
-                    <Button onClick={() => this.edit({id:'new'})} style={{width:50}}
-                        color="primary"><AddBoxIcon/></Button>
+                    <TemplateButton onClick={() => this.edit({id:'new'})} style={{width:50}}
+                        label={<AddBoxIcon/>}/>
                 </Grid>
             </Grid>
             <Grid container xs="12">
@@ -138,6 +139,7 @@ class OfficeAddresses extends Component {
             </Grid>
             </>
             )}
+        </Box>
         </>
         )
     }

@@ -1,20 +1,22 @@
 import React, { Component } from 'react';
-import Select from 'react-select';
-import TextareaAutosize from 'react-autosize-textarea';
 import { connect } from 'react-redux';
-import { Col, Grid } from 'reactstrap';
-import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
+import GoogleAutoComplete from '../utils/GoogleAutoComplete';
 import googleKey from '../../googleConfig';
 import { push } from 'connected-react-router';
-import { Button } from 'reactstrap'; 
-import { Nav, NavItem, NavLink } from 'reactstrap';
-import { TabContent, TabPane } from 'reactstrap';
-import cx from 'classnames';
-import classnames from 'classnames';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
-import { Form, FormGroup, Label, Input, InputGroup, InputGroupText } from 'reactstrap';
 import Login from '../login';
+import Navbar from '../../components/Navbar';
+import TemplateSelect from '../utils/TemplateSelect';
+import TemplateSelectEmpty from '../utils/TemplateSelectEmpty';
+import TemplateSelectMulti from '../utils/TemplateSelectMulti';
+import TemplateTextField from '../utils/TemplateTextField';
+import TemplateTextArea from '../utils/TemplateTextArea';
+import TemplateCheckbox from '../utils/TemplateCheckbox';
+import TemplateButton from '../utils/TemplateButton';
+import TemplateBadge from '../utils/TemplateBadge';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
 
 class CustomerView extends Component {
 
@@ -229,14 +231,12 @@ class CustomerView extends Component {
             {(this.props.config && this.props.filled !== undefined) && (
                 <div style={{marginBottom:20,display: 'flex', alignItems: 'center', justifyContent: 'spread-evenly'}}>
                   <font style={{width:25}}></font>
-                  <Label style={{width:200,marginLeft:20,marginRight:20}} for="normal-field" className="text-md-right">
                     {translate('Status')}:
-                  </Label>
                     {(this.props.data.status !== 'SCHEDULED') && (
-                        <Button onClick={this.markScheduled} style={{marginRight:10}} color="primary">{translate('Scheduled')}</Button>
+                        <TemplateButton onClick={this.markScheduled} style={{marginRight:10}} label={translate('Scheduled')}/>
                     )}
-                    <Button onClick={this.markComplete} style={{marginRight:10}} color="primary">{translate('Completed')}</Button>
-                    <Button onClick={this.markNoShow} style={{marginRight:10}} color="danger">{translate('No Show')}</Button>
+                    <TemplateButton onClick={this.markComplete} style={{marginRight:10}} label={translate('Completed')}/>
+                    <TemplateButton onClick={this.markNoShow} style={{marginRight:10}} label={translate('No Show')}/>
                 </div>
             )}
             {this.state.inputs.map((t) => {
@@ -244,21 +244,17 @@ class CustomerView extends Component {
                 <Grid container xs="12" xs="12" style={{marginTop:5}}>
                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'spread-evenly'}}>
                           <font style={{width:25}}>{cntr++}.</font>
-                          <Label style={{width:200,marginLeft:20,marginRight:20}} for="normal-field" className="text-md-right">
-                              {translate(t.l)}:
-                          </Label>
                         {t.t === 'text' && (
-                          <Input type="text" style={{backgroundColor:'white'}}
+                          <TemplateTextField type="text" style={{backgroundColor:'white'}}
                             onChange={(e) => this.setValue(t,e)} 
                                 value={this.state.inputs.filter((g) => g.f === t.f)[0].v} 
-                            placeholder={t.l} />
+                            label={t.l} />
                         )}
                         {t.t === 'textfield' && (
-                            <TextareaAutosize
+                            <TemplateTextArea
                               rows={5} style={{backgroundColor:'white'}}
                               placeholder=""
                               onChange={(e) => this.setValue(t,e)} value={this.state.inputs.filter((g) => g.f === t.f)[0].v} 
-                              className={`form-control ${s.autogrow} transition-height`}
                             />
                         )}
                         {t.t === 'checkbox' && (
@@ -270,12 +266,11 @@ class CustomerView extends Component {
                           <>
                           {this.state.address === null && (
                             <div style={{width:'100%'}}>
-                              <GooglePlacesAutocomplete style={{backgroundColor:'white'}}
-                                    selectProps={{ value, onChange: this.updateAddress }} apiKey={googleKey()}/>
+                              <GoogleAutoComplete onChange={this.updateAddress}/>
                             </div>
                           )}
                           {this.state.address !== null && (
-                          <Input type="text" style={{backgroundColor:'white'}}
+                          <TemplateTextField type="text" style={{backgroundColor:'white'}}
                             value={this.state.address.fulladdr}/>
                           )}
                           </>
@@ -288,8 +283,8 @@ class CustomerView extends Component {
             <Grid container xs="12" xs="12" style={{marginTop:20}}>
                 <Grid item xs="12" xs="12">
                 <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                    <Button onClick={this.save} style={{marginRight:10}} color="primary">{translate('Save')}</Button>
-                    <Button outline onClick={this.cancel} color="primary">{translate('Cancel')}</Button>
+                    <TemplateButton onClick={this.save} style={{marginRight:10}} label={translate('Save')}/>
+                    <TemplateButton onClick={this.cancel} label={translate('Cancel')}/>
                 </div>
                 </Grid>
             </Grid>

@@ -1,14 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import Grid from '@mui/material/Grid';
+import Navbar from '../../components/Navbar';
+import Container from '@mui/material/Container';
+import Box from '@mui/material/Box';
+import TemplateButton from '../utils/TemplateButton';
 import { toast } from 'react-toastify';
-import { Badge,Button } from 'reactstrap';
-import { Col, Grid } from 'reactstrap';
-import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
-import { Nav, NavItem, NavLink } from 'reactstrap';
-import { TabContent, TabPane } from 'reactstrap';
-import cx from 'classnames';
-import classnames from 'classnames';
-
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import {clientList} from '../../actions/officeClients';
@@ -65,6 +62,8 @@ class Customers extends Component {
     render() {
         return (
         <>
+        <Navbar/>
+        <Box style={{margin:20}}>
             {(this.props.officeClient && this.props.officeClient.isReceiving) && (
                 <AppSpinner/>
             )}
@@ -88,69 +87,69 @@ class Customers extends Component {
                     return (
                         <>
                         <Grid item xs="4" onClick={() => this.selectAppt(e)} style={{cursor:'pointer'}}>
-                            <Card style={{
+                            <Container style={{
                                 margin:20,
                                 borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}} className="mb-xlg border-1">
-                                <CardBody>
-                                    <Grid container xs="12">
-                                        <Grid item xs="8">
-                                            <font style={{fontSize:"14pt",fontWeight:"bold"}}>
-                                            {e.office_name}
-                                            </font>
-                                            <br/>
-                                        </Grid>
-                                        <Grid item xs="4" class="pull-right">
-                                            {e.status}
-                                        </Grid>
+                                <Grid container xs="12">
+                                    <Grid item xs="8">
+                                        <font style={{fontSize:"14pt",fontWeight:"bold"}}>
+                                        {e.office_name}
+                                        </font>
+                                        <br/>
                                     </Grid>
-                                    <hr/>
-                                    <Grid container xs="12">
-                                        <Grid item xs="12">
-                                            <font style={{fontSize:"14pt"}}>
-                                            {e.client_first + " " + e.client_last}
-                                            </font>
-                                            <br/>
-                                        </Grid>
+                                    <Grid item xs="4" class="pull-right">
+                                        {e.status}
                                     </Grid>
-                                    <Grid container xs="12">
-                                        <Grid item xs="12">
-                                            <font style={{fontSize:"14pt"}}>
-                                            {e.email}
-                                            </font>
-                                        </Grid>
+                                </Grid>
+                                <hr/>
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
+                                        <font style={{fontSize:"14pt"}}>
+                                        {e.client_first + " " + e.client_last}
+                                        </font>
+                                        <br/>
                                     </Grid>
-                                    <Grid container xs="12">
-                                        <Grid item xs="8">
-                                            <font style={{fontSize:"14pt"}}>
-                                            {e.phone}
-                                            </font>
-                                        </Grid>
+                                </Grid>
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
+                                        <font style={{fontSize:"14pt"}}>
+                                        {e.email}
+                                        </font>
                                     </Grid>
-                                    <Grid container xs="12">
-                                        <Grid item xs="12">
-                                            <div style={{overflow:"auto"}}>
-                                                {e.description}
-                                            </div>
-                                        </Grid>
+                                </Grid>
+                                <Grid container xs="12">
+                                    <Grid item xs="8">
+                                        <font style={{fontSize:"14pt"}}>
+                                        {e.phone}
+                                        </font>
                                     </Grid>
-                                    <div style={{height:130,marginBottom:10,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                                    </div>
-                                    <hr/>
-                                    <Grid container xs="12"> 
-                                        <Grid item xs="12">
-                                            <div style={{height:30,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                                                <Button onClick={() => this.selectAppt(e)} style={{marginRight:10}} color="primary">{translate('View')}</Button>
-                                            </div>
-                                        </Grid>
+                                </Grid>
+                                <Grid container xs="12">
+                                    <Grid item xs="12">
+                                        <div style={{overflow:"auto"}}>
+                                            {e.description}
+                                        </div>
                                     </Grid>
-                                </CardBody>
-                            </Card>
+                                </Grid>
+                                <div style={{height:130,marginBottom:10,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                                </div>
+                                <hr/>
+                                <Grid container xs="12"> 
+                                    <Grid item xs="12">
+                                        <div style={{height:30,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                                            <TemplateButton onClick={() => this.selectAppt(e)} 
+                                                style={{marginRight:10}} label={translate('View')}/>
+                                        </div>
+                                    </Grid>
+                                </Grid>
+                            </Container>
                         </Grid>
                         </>
                     )
                 })}
             </Grid>
             )}
+        </Box>
         </>
         )
     }

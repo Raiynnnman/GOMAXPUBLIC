@@ -23,7 +23,7 @@ class Navbar extends Component {
     leaveContext() { 
         this.props.dispatch(delContext({},function(err,args) { 
             localStorage.removeItem("context");
-            window.location.href = '/index.html';
+            window.location.href = '/app';
         }));
     } 
 
@@ -109,7 +109,50 @@ class Navbar extends Component {
                                 </a>
                             </div>
                         </div>
-                        {(this.props.currentUser && this.props.currentUser.entitlements && this.props.currentUser.entitlements.includes('Admin')) && (
+                        {(this.props.currentUser && this.props.currentUser.entitlements && 
+                            this.props.currentUser.entitlements.includes('OfficeAdmin')) && (
+                            <>
+                            <div className="col-lg-9 d-none d-lg-block">
+                                <div className="mainmenu-wrapper">
+                                    <nav>
+                                        <ul className="main-menu">
+                                            <li className="active"><a href="/app">Home</a></li>
+                                            <li><a href="/app/main/office/clients">Clients</a></li>
+                                            <li><a href="/app/main/office/locations">Locations</a></li>
+                                            {/*<li><a href="/app/main/office/invoices">Invoices</a></li>*/}
+                                            <li><a href="#">
+                                                <DropdownMenu currentUser={this.props.currentUser} 
+                                                    title={
+                                                    this.props.currentUser.first_name + " " + this.props.currentUser.last_name
+                                                          } items={profileItems} dispatch={this.props.dispatch}/>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </div>
+                            </div>
+                            <div className="col-sm-9 col-9 d-block d-lg-none">
+                                <div className="mobile-menu">
+                                    <nav>
+                                        <ul>                              
+                                            <li className="active"><a href="/app">Home</a></li>
+                                            <li><a href="/app/main/admin/locations">Locations</a></li>
+                                            <li><a href="/app/main/office/clients">Clients</a></li>
+                                            <li><a href="#">
+                                                <DropdownMenu currentUser={this.props.currentUser} 
+                                                    title={
+                                                    this.props.currentUser.first_name + " " + this.props.currentUser.last_name
+                                                          } items={profileItems} dispatch={this.props.dispatch}/>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </div>
+                            </div>
+                            </>
+                        )}
+                        {(this.props.currentUser && this.props.currentUser.entitlements && 
+                          this.props.currentUser.entitlements.includes('Admin') && !this.props.currentUser.context) && (
                             <>
                             <div className="col-lg-9 d-none d-lg-block">
                                 <div className="mainmenu-wrapper">

@@ -260,7 +260,7 @@ class OfficeList extends Component {
     getContext(e) { 
         this.props.dispatch(getContext({office:e.id},function(err,args) { 
                 localStorage.setItem("context",true);
-                window.location.href = '/index.html';
+                window.location.href = '/app';
         }))
     } 
 

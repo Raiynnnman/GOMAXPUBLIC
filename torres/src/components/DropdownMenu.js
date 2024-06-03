@@ -41,7 +41,7 @@ function DropdownMenu({onChange,items,title,currentUser}) {
         <ClickAwayListener onClickAway={handleClickAway}>
           <Box sx={{ position: 'relative',backgroundColor:'black'}}>
             <div style={{cursor:"pointer",color:"white",fontWeight:'bold',fontSize:12}}>
-              {title}
+              {title}{currentUser.context ? " - " + currentUser.contextValue.name:'' }
             </div>
             {open ? (
               <Box sx={styles}>

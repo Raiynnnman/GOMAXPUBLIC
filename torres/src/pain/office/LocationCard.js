@@ -1,24 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Col, Grid } from 'reactstrap';
-import Calendar from 'react-calendar';
 import GoogleAutoComplete from '../utils/GoogleAutoComplete';
-import 'react-calendar/dist/Calendar.css';
-import { Nav, NavItem, NavLink } from 'reactstrap';
-import { TabContent, TabPane } from 'reactstrap';
-import cx from 'classnames';
-import classnames from 'classnames';
-import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
-import { Badge,Button } from 'reactstrap';
-import { Popover, PopoverHeader, PopoverBody } from 'reactstrap';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import AppSpinnerInternal from '../utils/SpinnerInternal';
-import { getMoreSchedules } from '../../actions/moreSchedules';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import googleKey from '../../googleConfig';
-import { isValidDate } from '../utils/validationUtils';
 import formatPhoneNumber from '../utils/formatPhone';
+import Grid from '@mui/material/Grid';
+import Container from '@mui/material/Container';
+import TemplateButton from '../utils/TemplateButton';
 
 class LocationCard extends Component {
     constructor(props) { 
@@ -33,7 +23,6 @@ class LocationCard extends Component {
             dateSelectedForRest:'',
             selected:null
         }
-        this.onDateChange = this.onDateChange.bind(this);
         this.save = this.save.bind(this);
         this.save = this.save.bind(this);
         this.cancel = this.cancel.bind(this);
@@ -41,7 +30,6 @@ class LocationCard extends Component {
         this.changeValue = this.changeValue.bind(this);
         this.scheduleAppt = this.scheduleAppt.bind(this);
         this.selectDay = this.selectDay.bind(this);
-        this.moreToggle = this.moreToggle.bind(this);
     } 
 
     componentWillReceiveProps(np) { 
@@ -102,42 +90,6 @@ class LocationCard extends Component {
         this.setState(this.state);
     } 
 
-    onDateChange(e) {
-        var j = new Date(e);
-        if (!isValidDate(j)) { 
-            j = new Date();
-        } 
-        var date = j.toISOString()
-        var date2 = j.toDateString()
-        date = date.substring(0,10)
-        date2 = date2.substring(0,15)
-        this.state.pickDay = false;
-        this.state.dateSelected = date2
-        this.state.dateSelectedForRest = date;
-        var params = {
-            date: this.state.dateSelectedForRest,
-            id: this.props.provider.phy_id
-        }
-        this.state.lastMore = this.props.provider.phy_id;
-        this.props.dispatch(getMoreSchedules(params));
-        this.state.more[this.props.provider.phy_id] = false;
-        this.state.inMore = this.props.provider.phy_id;
-        this.setState(this.state)
-    } 
-
-    moreToggle(e) { 
-        for (const[key,value] of Object.entries(this.state.more)) { 
-            var k = parseInt(key)
-            if (k === e) { continue; }
-            this.state.more[k] = false;
-        } 
-        if (this.state.lastMore !== e) { 
-            this.onDateChange(this.state.dateSelectedForRest + " 00:00:00")
-        } 
-        this.state.more[e] = !this.state.more[e];
-        this.setState(this.state);
-    } 
-
     scheduleAppt(e) { 
         this.moreToggle(this.props.provider.phy_id);
         this.props.onScheduleAppt(this.props.provider,e)
@@ -158,10 +110,9 @@ class LocationCard extends Component {
         return (
         <>
         {(this.props.provider) && (
-            <Card style={{
+            <Container style={{
                 margin:20,
                 borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}} className="mb-xlg border-1">
-                <CardBody>
                     <Grid container xs="12">
                         <Grid item xs="12">
                         <>
@@ -243,14 +194,13 @@ class LocationCard extends Component {
                         <>
                             {(!this.props.edit) && (
                                 <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                                    <Button color="primary" onClick={() => this.props.onEdit(this.props.provider)}>Edit</Button>
+                                    <TemplateButton color="primary" onClick={() => this.props.onEdit(this.props.provider)} label='Edit'/>
                                 </div>
                             )}
                         </>
                         </Grid>
                     </Grid>
-                </CardBody>
-            </Card>
+            </Container>
         )}
         </>
         )

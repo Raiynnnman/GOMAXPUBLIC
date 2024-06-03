@@ -27,6 +27,8 @@ import CommissionAdminList from './pain/admin/CommissionAdminList';
 import CouponAdminList from './pain/admin/CouponAdminList';
 import PricingList from './pain/admin/PricingList';
 import UserAdminList from './pain/admin/UserAdminList';
+import OfficeAddresses from './pain/office/OfficeAddresses';
+import Customers from './pain/office/Customers';
 
 const CloseButton = ({closeToast}) => <i onClick={closeToast} className="la la-close notifications-close"/>
 const App = () => {
@@ -62,6 +64,8 @@ const App = () => {
                     <Route exact path='/app/main/admin/coupons' component={CouponAdminList}/>
                     <Route exact path='/app/main/admin/plans' component={PricingList}/>
                     <Route exact path='/app/main/admin/users' component={UserAdminList}/>
+                    <Route exact path="/app/main/office/locations" exact component={OfficeAddresses} />
+                    <Route exact path="/app/main/office/clients" exact component={Customers} />
                     <Route exact path={`${process.env.PUBLIC_URL}/tf`} component={DemoTF}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/home-one`} component={HomeOlive}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/home-two`} component={HomeHorizontal}/>

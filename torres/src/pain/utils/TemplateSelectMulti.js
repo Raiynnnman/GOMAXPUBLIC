@@ -46,10 +46,8 @@ function TemplateSelectMulti({label,onChange,style,value,options}) {
           value={selected}
           onChange={handleChange}
           renderValue={(e) => { 
-                    console.log("e",e);
             return ( 
                 e.map((f) => { 
-                    console.log("f",f);
                     return <Chip label={f} onDelete={() => handleDelete(f)} />
                 })
             )
@@ -57,7 +55,6 @@ function TemplateSelectMulti({label,onChange,style,value,options}) {
           }}
         >
           {options.map((n) => {
-            console.log("n",n)
             return (
                 <MenuItem key={n.id} value={n.label} >
                   {n.label}
