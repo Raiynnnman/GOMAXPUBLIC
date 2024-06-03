@@ -75,7 +75,19 @@ class UserLogin(SubmitDataRequest):
         db.commit()
         try:
             #val = encryption.decrypt(u1['password'],config.getKey("encryption_key"))
+
+            userEmail = user['email']
+            userPass = user['password']
+
+            # Use parameterized queries to prevent SQL injection
+            query = "SELECT * FROM users WHERE email = %s AND password = %s"
+            val = db.query(query, (userEmail, userPass))
+
+            print("here", val[0]['password'])
+            val = val[0]['password']
+            #val = encryption.decrypt(u1['password'],config.getKey("encryption_key"))
             val = passw
+            
         except:
             log.info("user %s decryption failed" % email)
             raise InvalidCredentials("INVALID_PASSWORD")
