@@ -16,6 +16,7 @@ import { connect } from 'react-redux';
 import { MuiTelInput } from 'mui-tel-input';
 import { registerUser } from '../../actions/registerUser';
 import Navbar from '../../components/Navbar';
+import { registerProvider } from '../../actions/registerProvider';
 
 function Copyright(props) {
   return (
@@ -42,9 +43,11 @@ const defaultTheme = createTheme({
 });
 
 class Register extends React.Component {
+  
   state = {
     value: '',
     userType: '',
+    addresses: [{ address: '', city: '', state: '', zipcode: '' }],
   };
 
   handleChange = (newValue) => {
@@ -55,6 +58,25 @@ class Register extends React.Component {
     this.setState({ userType: event.target.value });
   };
 
+  handleInputChange = (event, index) => {
+    const { name, value } = event.target;
+    const addresses = [...this.state.addresses];
+    addresses[index][name] = value;
+    this.setState({ addresses });
+  };
+
+  handleAddAddress = () => {
+    this.setState({
+      addresses: [...this.state.addresses, { address: '', city: '', state: '', zipcode: '' }]
+    });
+  };
+
+  handleDeleteAddress = (index) => {
+    const addresses = [...this.state.addresses];
+    addresses.splice(index, 1);
+    this.setState({ addresses });
+  };
+
   handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -63,13 +85,47 @@ class Register extends React.Component {
       email: data.get('email'),
       first_name: data.get('first_name'),
       last_name: data.get('last_name'),
-      zipcode: data.get('zip_code'),
-      userType: this.state.userType,
+      zipcode: data.get('zipcode'),
+      userType: this.state.userType
     };
-    this.props.dispatch(registerUser(creds));
-    this.props.history.push({
-      pathname: '/login',
-    });
+
+    const name = {
+      name: creds.first_name + " " + creds.last_name
+    };
+
+  
+    const addresses = this.state.addresses.map((address, index) => {
+      return { [`addr${index + 1}`]: address };
+  });
+  
+    const addressObj = addresses.reduce((acc, curr) => {
+        const key = Object.keys(curr)[0];
+        acc[key] = curr[key];
+        return acc;
+    }, {});
+
+    switch (creds.userType.toLowerCase()) {
+      case 'user':
+        this.props.dispatch(registerUser(creds));
+        break;
+      case 'provider':
+        const providerCreds = {
+          phone: this.state.value,
+          email: data.get('email'),
+          name: name.name,
+          addresses: addressObj,
+        };
+        this.props.dispatch(registerProvider(providerCreds));
+        break;
+      case 'legal':
+        console.log(creds.userType);
+        break;
+      default:
+        console.error("Invalid user type");
+    }
+
+    this.setState({ value: '', userType: '', addresses: [{ address: '', city: '', state: '', zipcode: '' }] });
+    event.currentTarget.reset();
   };
 
   render() {
@@ -87,6 +143,11 @@ class Register extends React.Component {
                 borderRadius: '30px',
                 boxShadow: '0 5px 15px rgba(0, 0, 0, 0.35)',
                 backgroundColor: '#fff',
+                maxHeight: '80vh',
+                overflowY: 'auto',
+                '::-webkit-scrollbar': { display: 'none' }, // Hide scrollbar in WebKit-based browsers
+                msOverflowStyle: 'none', // IE and Edge
+                scrollbarWidth: 'none', // Firefox
               }}
             >
               <Typography variant="h6" align="center" gutterBottom>
@@ -136,16 +197,6 @@ class Register extends React.Component {
                   defaultCountry="US"
                   sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
                 />
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="zip_code"
-                  label="Zip Code"
-                  name="zip_code"
-                  autoComplete="zip_code"
-                  sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
-                />
                 <Select
                   value={this.state.userType}
                   onChange={this.handleUserTypeChange}
@@ -160,18 +211,130 @@ class Register extends React.Component {
                   <MenuItem value="Provider">Provider</MenuItem>
                   <MenuItem value="User">User</MenuItem>
                 </Select>
-                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    sx={{ borderRadius: 8, backgroundColor: '#FF5733', color: '#fff', padding: '10px 45px', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase' }}
-                  >
-                    Register
-                  </Button>
-                </Box>
-                <Box mt={2}>
-                  <Copyright />
-                </Box>
+                {this.state.userType.toLowerCase() === 'provider' && (
+                  <>
+                    <Typography variant="h6" align="center" >
+                      Provider Address
+                    </Typography>
+                    {this.state.addresses.map((address, index) => (
+                      <Box key={index} sx={{ display: 'flex', flexDirection: 'column', gap: 1, position: 'relative' }}>
+                        <TextField
+                          margin="normal"
+                          required
+                          fullWidth
+                          id={`address-${index}`}
+                          label={`Address ${index + 1}`}
+                          name="address"
+                          value={address.address}
+                          onChange={(e) => this.handleInputChange(e, index)}
+                          sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                        />
+                        <TextField
+                          margin="normal"
+                          required
+                          fullWidth
+                          id={`city-${index}`}
+                          label="City"
+                          name="city"
+                          value={address.city}
+                          onChange={(e) => this.handleInputChange(e, index)}
+                          sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                        />
+                        <TextField
+                          margin="normal"
+                          required
+                          fullWidth
+                          id={`state-${index}`}
+                          label="State"
+                          name="state"
+                          value={address.state}
+                          onChange={(e) => this.handleInputChange(e, index)}
+                          sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                        />  
+                        <TextField
+                          margin="normal"
+                          required
+                          fullWidth
+                          id={`zipcode-${index}`}
+                          label="Zip Code"
+                          name="zipcode"
+                          autoComplete="zipcode"
+                          value={address.zipcode}
+                          onChange={(e) => this.handleInputChange(e, index)}
+                          sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                        />
+                        <Button
+                          type="button"
+                          variant="contained"
+                          color="error"
+                          onClick={() => this.handleDeleteAddress(index)}
+                          sx={{
+                            mt: 2,
+                            borderRadius: 8,
+                            backgroundColor: '#FF5733',
+                            color: '#fff',
+                            padding: '5px 20px',
+                            fontWeight: 600,
+                            letterSpacing: '1px',
+                            '&:hover': {
+                              backgroundColor: '#C70039',
+                            },
+                          }}
+                        >
+                          Delete
+                        </Button>
+                      </Box>
+                    ))}
+                    <Button
+                      type="button"
+                      variant="contained"
+                      color="primary"
+                      onClick={this.handleAddAddress}
+                      sx={{
+                        mt: 2,
+                        borderRadius: 8,
+                        backgroundColor: '#FF5733',
+                        color: '#fff',
+                        padding: '10px 20px',
+                        fontWeight: 600,
+                        letterSpacing: '1px',
+                        '&:hover': {
+                          backgroundColor: '#C70039',
+                        },
+                      }}
+                    >
+                      Add Address
+                    </Button>
+                  </>
+                )}
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  sx={{
+                    mt: 3,
+                    mb: 2,
+                    borderRadius: 8,
+                    backgroundColor: '#FF5733',
+                    color: '#fff',
+                    padding: '10px 20px',
+                    fontWeight: 600,
+                    letterSpacing: '1px',
+                    '&:hover': {
+                      backgroundColor: '#C70039',
+                    },
+                  }}
+                >
+                  Sign Up
+                </Button>
+                <Grid container justifyContent="center">
+                  <Grid item>
+                    <Link href="/login" variant="body2">
+                      {"Already have an account? Sign In"}
+                    </Link>
+                  </Grid>
+                </Grid>
+                <Copyright sx={{ mt: 5 }} />
               </Box>
             </Paper>
           </Grid>
@@ -181,6 +344,4 @@ class Register extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => ({});
-
-export default withRouter(connect(mapStateToProps)(Register));
+export default withRouter(connect()(Register));
