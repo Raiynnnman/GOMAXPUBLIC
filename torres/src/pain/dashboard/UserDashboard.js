@@ -76,7 +76,12 @@ class UserDashboard extends Component {
                 <AppSpinner/>
             )}
             <Grid container xs="12">
-                <h3>User Dashboard Here</h3>
+                <Grid item xs="6">
+                    <h3>User Dashboard Here</h3>
+                </Grid>
+                <Grid item xs="6">
+                    <h3>Journey Here</h3>
+                </Grid>
             </Grid>
         </>
         )

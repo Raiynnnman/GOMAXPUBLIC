@@ -336,6 +336,9 @@ class RegistrationLandingData(RegistrationsBase):
                     addr.append(x)
                 o['addr'] = addr
                 ret['pq'] = o
+        ret['do_billing_charge'] = db.query("""
+            select value from system_settings where name='do_billing_charge'
+            """)[0]['value']
         return ret
 
 class RegisterProvider(RegistrationsBase):

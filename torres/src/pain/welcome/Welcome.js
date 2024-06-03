@@ -9,6 +9,7 @@ import getVersion from '../../version.js';
 import Container from '@mui/material/Container';
 import { push } from 'connected-react-router';
 import translate from '../utils/translate';
+import Navbar from '../../components/Navbar';
 
 class Welcome extends React.Component {
 
@@ -30,11 +31,12 @@ class Welcome extends React.Component {
     render() {
         return (
             <div>
+            <Navbar/>
                 <Container maxWidth="sm">
                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                         <img width="20%" height="20%" src='/painlogo.png'/>
                     </div>
-                    <p style={{textAlign:'center'}}>
+                    <p style={{color:'black',textAlign:'center'}}>
                         Welcome to POUNDPAIN TECH! You will receive an email with details on how to login and get started. 
                     </p>
                     <br/>

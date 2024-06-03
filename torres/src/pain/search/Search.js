@@ -242,22 +242,32 @@ class SearchAdmin extends Component {
             )}
             {(this.props.searchConfig && this.props.searchConfig.data && this.props.searchConfig.data.types && 
               this.state.selectedProvider === null) && ( 
-                <div style={{cursor:'pointer',display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                <Grid container xs="12" style={{marginTop:20}}>
                     {this.props.searchConfig.data.types.map((e) => { 
                         return (
                             <>
-                                <Box onClick={() => this.setProviderType(e.id)} 
-                                    style={{border:"1px solid black",borderRadius:"25px 25px 25px 25px",margin:20,width:400,height:300}}>
-                                        <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                                        <font style={{fontSize:'24px',color:'black'}}>
-                                            {e.description}
-                                        </font>
-                                        </div>
-                                </Box>
+                            <Grid item xs="4" onClick={() => this.setProviderType(e.id)} style={{cursor:'pointer'}}>
+                                <Container>
+                                    <Box style={{border:"1px solid black",
+                                        borderRadius:"25px 25px 25px 25px",margin:20,width:400,height:300}}>
+                                        <Grid container xs="12">
+                                            <Grid item xs="12">
+                                            <div style={{textAlign:'center',
+                                                height:300,display: 'flex', 
+                                                alignItems: 'center', justifyContent: 'center'}}>
+                                                <font style={{fontSize:'24px'}}>
+                                                    {e.description}
+                                                </font>
+                                            </div>
+                                            </Grid>
+                                        </Grid>
+                                    </Box>
+                                </Container>
+                            </Grid>
                             </>
                         )
                     })}
-                </div>
+                </Grid>
             )}
             {(this.props.providerSearch && this.props.providerSearch.data && 
                 this.props.providerSearch.data && this.props.providerSearch.data.providers &&

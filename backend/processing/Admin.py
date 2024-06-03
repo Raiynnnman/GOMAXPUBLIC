@@ -11,6 +11,7 @@ import jwt
 import pandas as pd
 from io import StringIO
 from nameparser import HumanName
+import googlemaps
 
 sys.path.append(os.path.realpath(os.curdir))
 
@@ -2129,14 +2130,35 @@ class AdminBookingRegister(AdminBase):
                 key = key.lower()
                 tosave[key] = value.rstrip().lstrip()
                 line += 1 
-            if 'address' not in tosave:
+            if 'address' not in tosave or len(tosave['address']) < 1:
                 return {'success': False,'message': 'ADDRESS_REQUIRED'}
-            addr = pyap.parse(tosave['address'],country='US')
-            parsed_address = addr[0]
-            street = parsed_address.street_number + " " + parsed_address.street_name
-            city = parsed_address.city
-            state = parsed_address.region1
-            postal_code = parsed_address.postal_code
+            api_key=config.getKey("google_api_key")
+            gmaps = googlemaps.Client(key=api_key)
+            # addr = pyap.parse(tosave['address'],country='US')
+            addr = gmaps.geocode(tosave['address'])
+            if len(addr) < 1:
+                return {'success': False,'message': 'FAILED_TO_PARSE_ADDRESS'}
+            addr = addr[0]
+            print(addr)
+            lat = addr['geometry']['location']['lat']
+            lon = addr['geometry']['location']['lng']
+            places_id = addr['place_id']
+            street = ''
+            city = ''
+            state =''
+            postal_code = ''
+            for y in addr['address_components']:
+                print(y)
+                if 'street_number' in y['types']:
+                    street = y['long_name']
+                if 'route' in y['types']:
+                    street += " " + y['long_name']
+                if 'locality' in y['types']:
+                    city += y['long_name']
+                if 'administrative_area_level_1' in y['types']:
+                    state += y['long_name']
+                if 'postal_code' in y['types']:
+                    postal_code = y['long_name']
             tosave['addr1'] = street
             tosave['city'] = city
             tosave['state'] = state

@@ -26,7 +26,7 @@ function DropdownMenu({onChange,items,title,currentUser}) {
   const styles: SxProps = {
     position: 'absolute',
     top: 28,
-    width:160,
+    width:180,
     right: 0,
     left: 0,
     border: '1px solid',

@@ -69,7 +69,8 @@ const App = () => {
                     <Route exact path='/app/main/admin/users' component={UserAdminList}/>
                     <Route exact path="/app/main/office/locations" exact component={OfficeAddresses} />
                     <Route exact path="/app/main/office/clients" exact component={Customers} />
-                    <Route exact path="/app/main/clients/appointments" exact component={Appointments} />
+                    <Route exact path="/app/main/client/search" exact component={Search} />
+                    <Route exact path="/app/main/client/appointments" exact component={Appointments} />
                     <Route exact path={`${process.env.PUBLIC_URL}/tf`} component={DemoTF}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/home-one`} component={HomeOlive}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/home-two`} component={HomeHorizontal}/>

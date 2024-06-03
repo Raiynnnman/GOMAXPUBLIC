@@ -416,6 +416,7 @@ class RegisterProvider extends Component {
 
 
     render() {
+        console.log("p",this.props);
         return (
         <>
             {(this.props.registerProvider && this.props.registerProvider.isReceiving) && (
@@ -434,7 +435,7 @@ class RegisterProvider extends Component {
                     {(this.state.page === 0) && (
                     <Container maxWidth="sm" style={{marginTop:20}}>
                         <div className="row align-items-center">
-                            <p className="widget-auth-info">
+                            <p style={{color:'black'}} className="widget-auth-info">
                                 Please enter the information below to register
                             </p>
                             <p for="normal-field" md={12} className="text-md-right">
@@ -446,12 +447,20 @@ class RegisterProvider extends Component {
                             <TemplateTextField style={{marginTop:10}} width="300px" label='Name' helpText='Name' onChange={this.firstChange}/>
                             <TemplateTextField style={{marginTop:10}} width="300px" label='Email' helpText='Email' onChange={this.emailChange}/>
                             <TemplateTextField style={{marginTop:10}} value={this.state.phone} width="300px" label='Phone' helpText='Phone' onChange={this.phoneChange}/>
-                            <TemplateButton style={{height:50,marginTop:20}} onClick={this.nextPage} 
-                                disabled={false} label='Next'/>
+                            {(this.props.landingData &&  this.props.landingData.data &&  
+                              this.props.landingData.data.do_billing_charge !== 0) && (
+                                <TemplateButton style={{height:50,marginTop:20}} onClick={this.nextPage} 
+                                    disabled={false} label='Next'/>
+                            )}
+                            {(this.props.landingData &&  this.props.landingData.data &&  
+                                this.props.landingData.data.do_billing_charge === 0) && (
+                                <TemplateButton style={{height:50,marginTop:20}} onClick={this.register} 
+                                    disabled={false} label='Register'/>
+                            )}
                         </div>
                     </Container>
                     )}
-                    {(this.state.page === 1) && (
+                    {(this.state.page === 1 && this.props.landingData.data.do_billing_charge !== 0) && (
                         <>
                     <Container maxWidth="sm" style={{marginTop:20}}>
                         <div style={{marginTop:20}}>

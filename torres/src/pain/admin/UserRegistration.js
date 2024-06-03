@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
@@ -30,6 +31,7 @@ class UserRegistration extends Component {
         this.markComplete = this.markComplete.bind(this);
         this.markScheduled = this.markScheduled.bind(this);
         this.markNoShow = this.markNoShow.bind(this);
+        this.copyContent = this.copyContent.bind(this);
         this.cancel = this.cancel.bind(this);
         this.onSearch = this.onSearch.bind(this);
         this.setValue = this.setValue.bind(this);
@@ -67,6 +69,16 @@ class UserRegistration extends Component {
             this.setState(this.state);
         } 
     }
+
+    copyContent() { 
+        this.state.tarea = 
+            'Name: Full Name\n' + 'Phone: Phone\n' + 
+            'Email: someone@gmail.com\n' + 'DOA:\n' + 
+            'Address: Address\n' + 'Attny: Attny\n' + 
+            'Language: English\n' 
+        this.setState(this.state);
+    } 
+
 
     cancel() { 
         this.props.onCancel()
@@ -204,7 +216,7 @@ class UserRegistration extends Component {
             </Grid>
             )}
                 <Grid container xs="12" xs="12" style={{margin:20}}>
-                    <Grid item xs="2">
+                    <Grid item xs="2" style={{color:'black'}}>
                         <Box>
                         Name: Full Name
                         <br/>
@@ -221,11 +233,14 @@ class UserRegistration extends Component {
                         Language: English | Spanish
                         </Box>
                     </Grid>
+                    <Grid item xs="2" style={{color:'black'}}>
+                        <TemplateButton label={<ContentCopyIcon/>} onClick={this.copyContent}/>
+                    </Grid>
                 </Grid>
             <Grid container xs="12" xs="12" style={{margin:20}}>
                 <Grid item xs="12">
-                    <TemplateTextArea
-                      rows={10} style={{width:500}}
+                    <TemplateTextArea 
+                      rows={10} style={{color:'black',width:500}}
                       placeholder=""
                       onChange={this.setValue} value={this.state.tarea}
                     />

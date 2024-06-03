@@ -194,6 +194,7 @@ class SearchAdmin extends Component {
     }
 
     render() {
+        console.log("p",this.props);
         return (
         <>
             <Navbar/>
@@ -207,12 +208,7 @@ class SearchAdmin extends Component {
             {(this.props.searchCheckRes && this.props.searchCheckRes.isReceiving) && (
                 <AppSpinner/>
             )}
-            {(Login.isAuthenticated()) && ( 
-                <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                    <h5>Use the zipcode box to find providers. Or enter in the form to have a provider automatically assigned.</h5>
-                </div>
-            )}
-            {(Login.isAuthenticated() && this.state.selectedProviderType !== null) && ( 
+            {(this.state.selectedProviderType !== null) && ( 
                 <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                     <div className="form-group mb-0">
                         <input className="form-control no-border" value={this.state.zipcode} onChange={this.changeZip} required name="zip" placeholder="Zip" />
@@ -262,7 +258,10 @@ class SearchAdmin extends Component {
                     })} 
                 </Grid>
             )}
-            {(this.state.selectedAppt === null && this.state.selectedProviderType !== null && this.state.zipcode === null) && (
+            {(this.state.selectedAppt === null && this.props.providerSearchAdmin.data && 
+              this.props.providerSearchAdmin.data.providers && 
+              this.props.providerSearchAdmin.data.providers.length < 1 && 
+              this.state.selectedProviderType !== null && this.state.zipcode === null) && (
                 <Grid container xs="12">
                     <Grid item xs="12">
                         <UserRegistration error_message={this.state.error_message} data={this.state.selectedAppt} onCancel={this.cancel} onRegister={this.register}/>
