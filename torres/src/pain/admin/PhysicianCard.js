@@ -228,7 +228,7 @@ class PhysicianCard extends Component {
                     <Grid container xs="12"> 
                         <Grid item xs="12">
                             <div style={{height:30,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                                <TemplateButton color="primary" label="Book" onClick={this.scheduleAppt}></TemplateButton>
+                                <TemplateButton color="primary" label="Contact" onClick={this.scheduleAppt}></TemplateButton>
                             </div>
                         </Grid>
                     </Grid>

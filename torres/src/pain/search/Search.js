@@ -1,31 +1,22 @@
 import React, { Component } from 'react';
+import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
+import Box from '@mui/material/Box';
+import Navbar from '../../components/Navbar';
 import SavedSearchIcon from '@mui/icons-material/SavedSearch';
 import { push } from 'connected-react-router';
-import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
-import { Col, Grid } from 'reactstrap';
-import { Nav, NavItem, NavLink } from 'reactstrap';
-import { TabContent, TabPane } from 'reactstrap';
-import cx from 'classnames';
-import classnames from 'classnames';
-import Select from 'react-select';
-import { Button } from 'reactstrap'; 
-import { Form, FormGroup, Label, Input } from 'reactstrap';
-import { InputGroup, InputGroupText } from 'reactstrap';
+import TemplateButton from '../utils/TemplateButton';
 import translate from '../utils/translate';
+import Grid from '@mui/material/Grid';
+import Container from '@mui/material/Container';
 import AppSpinner from '../utils/Spinner';
 import { getProviderSearch } from '../../actions/providerSearch';
 import { searchConfig } from '../../actions/searchConfig';
 import { searchCheckRes } from '../../actions/searchCheckRes';
 import { searchRegister } from '../../actions/searchRegister';
-import makeAnimated from 'react-select/animated';
 import PhysicianCard from './PhysicianCard';
-import AliceCarousel from 'react-alice-carousel';
-import 'react-alice-carousel/lib/alice-carousel.css';
 import UserRegistration from './UserRegistration';
 import Login from '../login';
-
-const animatedComponents = makeAnimated();
 
 class SearchAdmin extends Component {
     constructor(props) { 
@@ -189,7 +180,7 @@ class SearchAdmin extends Component {
             selected: this.state.selected,
             zipcode: this.state.zipcode
         } 
-        this.props.dispatch(getProceduresSearchAdmin(params))
+        //this.props.dispatch(getProceduresSearchAdmin(params))
         this.setState(this.state);
     }
 
@@ -218,6 +209,8 @@ class SearchAdmin extends Component {
         }
         return (
         <>
+        <Navbar/>
+        <Box style={{margin:20}}>
             {(this.props.providerSearch && this.props.providerSearch.isReceiving) && (
                 <AppSpinner/>
             )}
@@ -227,48 +220,16 @@ class SearchAdmin extends Component {
             {(this.props.searchCheckRes && this.props.searchCheckRes.isReceiving) && (
                 <AppSpinner/>
             )}
-            {(Login.isAuthenticated()) && ( 
-                <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                    <h5>Use the zipcode box to find providers. Contact a provider in minutes.</h5>
-                </div>
-            )}
-            {(Login.isAuthenticated() && this.state.selectedProvider !== null) && ( 
-                <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                    <div className="form-group mb-0">
-                        <input className="form-control no-border" value={this.state.zipcode} onChange={this.changeZip} required name="zip" placeholder="Zip" />
-                    </div>
-                </div>
-            )}
-            {(!Login.isAuthenticated()) && ( 
-            <>
-            <Grid container xs="12">
-                <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'space-evenly'}}>
-                        <img src="/painlogo.png" width="200px" height="200px"/>
-                        <font style={{textAlign:"center", fontSize:window.innerWidth < 1024 ? 15 : 30}}>POUNDPAIN TECH</font>
-                        <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        <Button color="primary"onClick={this.login}>Login</Button>
-                        </div>
-                </div>
-            </Grid>
-            <hr/>
-            </>
-            )}
-            {(!Login.isAuthenticated() && this.state.selectedAppt === null) && ( 
+            {(this.state.selectedAppt === null) && ( 
             <Grid container xs="12"> 
                 <Grid item xs="12">
-                    <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        <font style={{textAlign:"center", fontSize:window.innerWidth < 1024 ? 20 : 40,fontWeight:"bold"}}>
-                            Save money on common medical procedures
-                        </font>
-                    </div>
-                    <br/>
                     <div style={{height:50,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        <font style={{textAlign:"center", fontSize:20}}>
-                            Find the best price for the highest quality providers. Contact a provider in seconds.
+                        <font style={{color:'black',textAlign:"center", fontSize:20}}>
+                            Find the high quality providers. Contact a provider in seconds.
                         </font>
                     </div>
                     <div style={{height:50,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        {(!Login.isAuthenticated() && this.state.selectedProvider !== null && this.state.geo === false) && ( 
+                        {(this.state.selectedProvider !== null && this.state.geo === false) && ( 
                             <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                 <div className="form-group mb-0">
                                     <input className="form-control no-border" value={this.state.zipcode} onChange={this.changeZip} required name="zip" placeholder="Zip" />
@@ -285,18 +246,14 @@ class SearchAdmin extends Component {
                     {this.props.searchConfig.data.types.map((e) => { 
                         return (
                             <>
-                                <Card onClick={() => this.setProviderType(e.id)} 
-                                    style={{borderRadius:"25px 25px 25px 25px",margin:20,width:400,height:300}} className="mb-xlg border-1">
-                                    <CardBody>
-                                        <Grid container xs="12">
-                                            <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                                            <font style={{fontSize:'24px'}}>
-                                                {e.description}
-                                            </font>
-                                            </div>
-                                        </Grid>
-                                    </CardBody>
-                                </Card>
+                                <Box onClick={() => this.setProviderType(e.id)} 
+                                    style={{border:"1px solid black",borderRadius:"25px 25px 25px 25px",margin:20,width:400,height:300}}>
+                                        <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                                        <font style={{fontSize:'24px',color:'black'}}>
+                                            {e.description}
+                                        </font>
+                                        </div>
+                                </Box>
                             </>
                         )
                     })}
@@ -306,13 +263,15 @@ class SearchAdmin extends Component {
                 this.props.providerSearch.data && this.props.providerSearch.data.providers &&
                 this.props.providerSearch.data.providers.length > 0 && this.state.provider !== null &&
                 this.state.selectedAppt === null) && (
-                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'spread-evenly'}}>
+                <Grid container sx={12}>
                     {this.props.providerSearch.data.providers.map((e) => { 
                         return (
-                                <PhysicianCard onScheduleAppt={this.scheduleAppt} provider={e}/>
+                            <Grid item sx={3}>
+                            <PhysicianCard onScheduleAppt={this.scheduleAppt} provider={e}/>
+                            </Grid>
                         )
                     })} 
-                </div>
+                </Grid>
             )}
             {(this.props.providerSearch && this.props.providerSearch.data && 
                 this.props.providerSearch.data && this.props.providerSearch.data.providers &&
@@ -329,6 +288,7 @@ class SearchAdmin extends Component {
                     </Grid>
                 </Grid>
             )}
+        </Box>
         </>
         )
     }

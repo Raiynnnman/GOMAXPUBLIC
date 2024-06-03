@@ -54,7 +54,10 @@
     "extends": [
       "react-app",
       "react-app/jest"
-    ]
+    ],
+    "rules": {
+      "no-direct-mutation-state": 0
+    }
   },
   "browser": {
     "crypto": false

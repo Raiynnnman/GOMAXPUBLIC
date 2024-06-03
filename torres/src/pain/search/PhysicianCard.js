@@ -1,22 +1,16 @@
 import React, { Component } from 'react';
+import StarOutlineRoundedIcon from '@mui/icons-material/StarOutlineRounded';
 import { connect } from 'react-redux';
-import { Col, Grid } from 'reactstrap';
-import Calendar from 'react-calendar';
-import 'react-calendar/dist/Calendar.css';
-import { Nav, NavItem, NavLink } from 'reactstrap';
-import { TabContent, TabPane } from 'reactstrap';
 import cx from 'classnames';
 import classnames from 'classnames';
-import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
-import { Badge,Button } from 'reactstrap';
-import { Popover, PopoverHeader, PopoverBody } from 'reactstrap';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import AppSpinnerInternal from '../utils/SpinnerInternal';
-import { getMoreSchedules } from '../../actions/moreSchedules';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import { isValidDate } from '../utils/validationUtils';
 import formatPhoneNumber from '../utils/formatPhone';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Container from '@mui/material/Container';
+import TemplateButton from '../utils/TemplateButton';
 
 class PhysicianCard extends Component {
     constructor(props) { 
@@ -30,11 +24,9 @@ class PhysicianCard extends Component {
             dateSelectedForRest:'',
             selected:null
         }
-        this.onDateChange = this.onDateChange.bind(this);
         this.getDate = this.getDate.bind(this);
         this.scheduleAppt = this.scheduleAppt.bind(this);
         this.selectDay = this.selectDay.bind(this);
-        this.moreToggle = this.moreToggle.bind(this);
     } 
 
     componentWillReceiveProps(np) { 
@@ -65,42 +57,6 @@ class PhysicianCard extends Component {
         this.setState(this.state)
     } 
 
-    onDateChange(e) {
-        var j = new Date(e);
-        if (!isValidDate(j)) { 
-            j = new Date();
-        } 
-        var date = j.toISOString()
-        var date2 = j.toDateString()
-        date = date.substring(0,10)
-        date2 = date2.substring(0,15)
-        this.state.pickDay = false;
-        this.state.dateSelected = date2
-        this.state.dateSelectedForRest = date;
-        var params = {
-            date: this.state.dateSelectedForRest,
-            id: this.props.provider.phy_id
-        }
-        this.state.lastMore = this.props.provider.phy_id;
-        this.props.dispatch(getMoreSchedules(params));
-        this.state.more[this.props.provider.phy_id] = false;
-        this.state.inMore = this.props.provider.phy_id;
-        this.setState(this.state)
-    } 
-
-    moreToggle(e) { 
-        for (const[key,value] of Object.entries(this.state.more)) { 
-            var k = parseInt(key)
-            if (k === e) { continue; }
-            this.state.more[k] = false;
-        } 
-        if (this.state.lastMore !== e) { 
-            this.onDateChange(this.state.dateSelectedForRest + " 00:00:00")
-        } 
-        this.state.more[e] = !this.state.more[e];
-        this.setState(this.state);
-    } 
-
     scheduleAppt(e) { 
         this.props.onScheduleAppt(this.props.provider,e)
     } 
@@ -117,114 +73,113 @@ class PhysicianCard extends Component {
             this.state.inMore = 0;
             this.setState(this.state)
         } 
+        console.log("p",this.props);
         return (
         <>
         {(this.props.provider) && (
-            <Card style={{
-                margin:20,
-                borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}} className="mb-xlg border-1">
-                <CardBody>
-                    <Grid container xs="12">
-                        <Grid item xs="12">
-                            <font style={{fontSize:"14pt",fontWeight:"bold"}}>
-                            {this.props.provider.office_name} 
-                            </font>
-                            <br/>
-                            <font style={{fontSize:"14pt",fontWeight:"bold"}}>
-                            {this.props.provider.profile.title ? this.props.provider.title + " ": ''} 
-                            {this.props.provider.profile.first_name + " " + 
-                                this.props.provider.profile.last_name}
-                            </font>
-                            <br/>
-                            {(this.props.provider.rating === 5) && (
-                            <>
-                                <i style={{color:"gold"}} className="fa fa-star me-2" />
-                                <i style={{color:"gold"}} className="fa fa-star me-2" />
-                                <i style={{color:"gold"}} className="fa fa-star me-2" />
-                                <i style={{color:"gold"}} className="fa fa-star me-2" />
-                                <i style={{color:"gold"}} className="fa fa-star me-2" />
-                            </>
-                            )}
-                            {(this.props.provider.rating >= 4) && (
-                            <>
-                                <i style={{color:"gold"}} className="fa fa-star me-2" />
-                                <i style={{color:"gold"}} className="fa fa-star me-2" />
-                                <i style={{color:"gold"}} className="fa fa-star me-2" />
-                                <i style={{color:"gold"}} className="fa fa-star me-2" />
-                                <i style={{color:"lightgrey"}} className="fa fa-star me-2" />
-                            </>
-                            )}
-                            {(this.props.provider.rating >= 3 && this.props.provider.rating < 4) && (
-                            <>
-                                <i style={{color:"gold"}} className="fa fa-star me-2" />
-                                <i style={{color:"gold"}} className="fa fa-star me-2" />
-                                <i style={{color:"gold"}} className="fa fa-star me-2" />
-                                <i style={{color:"lightgrey"}} className="fa fa-star me-2" />
-                                <i style={{color:"lightgrey"}} className="fa fa-star me-2" />
-                            </>
-                            )}
-                            {(this.props.provider.rating >= 2 && this.props.provider.rating < 3) && (
-                            <>
-                                <i style={{color:"gold"}} className="fa fa-star me-2" />
-                                <i style={{color:"gold"}} className="fa fa-star me-2" />
-                                <i style={{color:"lightgrey"}} className="fa fa-star me-2" />
-                                <i style={{color:"lightgrey"}} className="fa fa-star me-2" />
-                                <i style={{color:"lightgrey"}} className="fa fa-star me-2" />
-                            </>
-                            )}
-                            {(this.props.provider.rating >= 1 && this.props.provider.rating < 2) && (
-                            <>
-                                <i style={{color:"gold"}} className="fa fa-star me-2" />
-                                <i style={{color:"lightgrey"}} className="fa fa-star me-2" />
-                                <i style={{color:"lightgrey"}} className="fa fa-star me-2" />
-                                <i style={{color:"lightgrey"}} className="fa fa-star me-2" />
-                                <i style={{color:"lightgrey"}} className="fa fa-star me-2" />
-                                <i style={{color:"lightgrey"}} className="fa fa-star me-2" />
-                            </>
-                            )}
-                            {(this.props.provider.rating >= 0 && this.props.provider.rating < 1) && (
-                            <>
-                                <i style={{color:"lightgrey"}} className="fa fa-star me-2" />
-                                <i style={{color:"lightgrey"}} className="fa fa-star me-2" />
-                                <i style={{color:"lightgrey"}} className="fa fa-star me-2" />
-                                <i style={{color:"lightgrey"}} className="fa fa-star me-2" />
-                                <i style={{color:"lightgrey"}} className="fa fa-star me-2" />
-                                <i style={{color:"lightgrey"}} className="fa fa-star me-2" />
-                            </>
-                            )}
-                            {this.props.provider.rating.toFixed(1)}
-                        </Grid>
-                        <Grid item xs="2"></Grid>
-                        <Grid item xs="4" class="pull-right">
-                        </Grid>
+            <Container style={{
+                marginTop:20,height:320,color:'black',
+                borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}}>
+                <Grid container xs="12">
+                    <Grid item xs="12">
+                        <font style={{fontSize:"14pt",fontWeight:"bold"}}>
+                        {this.props.provider.office_name} 
+                        </font>
+                        <br/>
+                        <font style={{fontSize:"14pt",fontWeight:"bold"}}>
+                        {this.props.provider.profile.title ? this.props.provider.profile.title + " ": ''} 
+                        {this.props.provider.profile.first_name + " " + 
+                            this.props.provider.profile.last_name}
+                        </font>
+                        <br/>
+                        {(this.props.provider.rating === 5) && (
+                        <>
+                            <StarOutlineRoundedIcon style={{color:"gold"}} className="fa fa-star me-2" />
+                            <StarOutlineRoundedIcon style={{color:"gold"}} className="fa fa-star me-2" />
+                            <StarOutlineRoundedIcon style={{color:"gold"}} className="fa fa-star me-2" />
+                            <StarOutlineRoundedIcon style={{color:"gold"}} className="fa fa-star me-2" />
+                            <StarOutlineRoundedIcon style={{color:"gold"}} className="fa fa-star me-2" />
+                        </>
+                        )}
+                        {(this.props.provider.rating >= 4) && (
+                        <>
+                            <StarOutlineRoundedIcon style={{color:"gold"}} className="fa fa-star me-2" />
+                            <StarOutlineRoundedIcon style={{color:"gold"}} className="fa fa-star me-2" />
+                            <StarOutlineRoundedIcon style={{color:"gold"}} className="fa fa-star me-2" />
+                            <StarOutlineRoundedIcon style={{color:"gold"}} className="fa fa-star me-2" />
+                            <StarOutlineRoundedIcon style={{color:"lightgrey"}} className="fa fa-star me-2" />
+                        </>
+                        )}
+                        {(this.props.provider.rating >= 3 && this.props.provider.rating < 4) && (
+                        <>
+                            <StarOutlineRoundedIcon style={{color:"gold"}} className="fa fa-star me-2" />
+                            <StarOutlineRoundedIcon style={{color:"gold"}} className="fa fa-star me-2" />
+                            <StarOutlineRoundedIcon style={{color:"gold"}} className="fa fa-star me-2" />
+                            <StarOutlineRoundedIcon style={{color:"lightgrey"}} className="fa fa-star me-2" />
+                            <StarOutlineRoundedIcon style={{color:"lightgrey"}} className="fa fa-star me-2" />
+                        </>
+                        )}
+                        {(this.props.provider.rating >= 2 && this.props.provider.rating < 3) && (
+                        <>
+                            <StarOutlineRoundedIcon style={{color:"gold"}} className="fa fa-star me-2" />
+                            <StarOutlineRoundedIcon style={{color:"gold"}} className="fa fa-star me-2" />
+                            <StarOutlineRoundedIcon style={{color:"lightgrey"}} className="fa fa-star me-2" />
+                            <StarOutlineRoundedIcon style={{color:"lightgrey"}} className="fa fa-star me-2" />
+                            <StarOutlineRoundedIcon style={{color:"lightgrey"}} className="fa fa-star me-2" />
+                        </>
+                        )}
+                        {(this.props.provider.rating >= 1 && this.props.provider.rating < 2) && (
+                        <>
+                            <StarOutlineRoundedIcon style={{color:"gold"}} className="fa fa-star me-2" />
+                            <StarOutlineRoundedIcon style={{color:"lightgrey"}} className="fa fa-star me-2" />
+                            <StarOutlineRoundedIcon style={{color:"lightgrey"}} className="fa fa-star me-2" />
+                            <StarOutlineRoundedIcon style={{color:"lightgrey"}} className="fa fa-star me-2" />
+                            <StarOutlineRoundedIcon style={{color:"lightgrey"}} className="fa fa-star me-2" />
+                            <StarOutlineRoundedIcon style={{color:"lightgrey"}} className="fa fa-star me-2" />
+                        </>
+                        )}
+                        {(this.props.provider.rating >= 0 && this.props.provider.rating < 1) && (
+                        <>
+                            <StarOutlineRoundedIcon style={{color:"lightgrey"}} className="fa fa-star me-2" />
+                            <StarOutlineRoundedIcon style={{color:"lightgrey"}} className="fa fa-star me-2" />
+                            <StarOutlineRoundedIcon style={{color:"lightgrey"}} className="fa fa-star me-2" />
+                            <StarOutlineRoundedIcon style={{color:"lightgrey"}} className="fa fa-star me-2" />
+                            <StarOutlineRoundedIcon style={{color:"lightgrey"}} className="fa fa-star me-2" />
+                            <StarOutlineRoundedIcon style={{color:"lightgrey"}} className="fa fa-star me-2" />
+                        </>
+                        )}
+                        {this.props.provider.rating.toFixed(1)}
                     </Grid>
-                    <hr/>
-                    <div style={{height:130,marginBottom:10,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                    <>
-                        {(this.props.provider.headshot) && (<img style={{width:140,height:130,objectFit:"fill"}} src={this.props.provider.headshot}/>)}
-                        {(!this.props.provider.headshot) && (<img style={{width:140,height:130,objectFit:"fill"}} src="/headshot.png"/>)}
-                    </>
-                    </div>
-                    <Grid container xs="12"> <Grid item xs="12">{this.props.provider.miles.toFixed(2)} miles</Grid> </Grid>
-                    {(false) && ( <Grid container xs="12"> 
-                        <Grid item xs="4">
-                            <Button color="secondary">See Reviews</Button>
-                        </Grid>
-                        <Grid item xs="4">
-                            <Button color="secondary">See Video</Button>
-                        </Grid>
+                    <Grid item xs="2"></Grid>
+                    <Grid item xs="4" class="pull-right">
                     </Grid>
-                    )}
-                    <hr/>
-                    <Grid container xs="12"> 
-                        <Grid item xs="12">
-                            <div style={{height:30,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                                <Button color="primary" onClick={this.scheduleAppt}>Book</Button>
-                            </div>
-                        </Grid>
+                </Grid>
+                <hr/>
+                <div style={{height:130,marginBottom:10,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                <>
+                    {(this.props.provider.headshot) && (<img style={{width:140,height:130,objectFit:"fill"}} src={this.props.provider.headshot}/>)}
+                    {(!this.props.provider.headshot) && (<img style={{width:140,height:130,objectFit:"fill"}} src="/headshot.png"/>)}
+                </>
+                </div>
+                <Grid container xs="12"> <Grid item xs="12">{this.props.provider.miles.toFixed(2)} miles</Grid> </Grid>
+                {(false) && ( <Grid container xs="12"> 
+                    <Grid item xs="4">
+                        <TemplateButton color="secondary" label='See Reviews'/>
                     </Grid>
-                </CardBody>
-            </Card>
+                    <Grid item xs="4">
+                        <TemplateButton color="secondary" label='See Video'/>
+                    </Grid>
+                </Grid>
+                )}
+                <hr/>
+                <Grid container xs="12"> 
+                    <Grid item xs="12">
+                        <div style={{height:30,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                            <TemplateButton color="primary" onClick={this.scheduleAppt} label='Book'/>
+                        </div>
+                    </Grid>
+                </Grid>
+            </Container>
         )}
         </>
         )
@@ -233,8 +188,7 @@ class PhysicianCard extends Component {
 
 function mapStateToProps(store) {
     return {
-        currentUser: store.auth.currentUser,
-        moreSchedules: store.moreSchedules
+        currentUser: store.auth.currentUser
     }
 }
 

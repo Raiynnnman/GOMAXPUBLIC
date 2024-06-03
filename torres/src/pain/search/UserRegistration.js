@@ -1,16 +1,16 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Col, Grid } from 'reactstrap';
 import { push } from 'connected-react-router';
-import { Button } from 'reactstrap'; 
-import { Nav, NavItem, NavLink } from 'reactstrap';
-import { TabContent, TabPane } from 'reactstrap';
 import cx from 'classnames';
 import classnames from 'classnames';
 import translate from '../utils/translate';
+import TemplateButton from '../utils/TemplateButton';
 import AppSpinner from '../utils/Spinner';
-import { Form, FormGroup, Label, Input, InputGroup, InputGroupText } from 'reactstrap';
 import Login from '../login';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Container from '@mui/material/Container';
+import TemplateTextField from '../utils/TemplateTextField';
 
 class UserRegistration extends Component {
 
@@ -129,108 +129,49 @@ class UserRegistration extends Component {
                     <div style={{height:300,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                         <div>
                         <Grid container xs="12" xs="12">
-                          <FormGroup row>
-                            <Label for="normal-field" md="3" xs="3" className="text-md-right">
-                              {translate('Email')}:
-                            </Label>
-                            <Grid item xs="9" xs="9" style={{marginLeft:0}}>
-                              <Input type="text" id="normal-field" 
+                            <Grid item xs="12" style={{marginLeft:0}}>
+                              <TemplateTextField style={{width:"100%"}}
                                 onChange={this.setEmail} value={this.state.register.email} 
-                                placeholder="Email" />
+                                label="Email" />
                             </Grid>
-                          </FormGroup>
                         </Grid>
                         <Grid container xs="12" xs="12">
-                          <FormGroup row>
-                            <Label for="normal-field" md="3" xs="3" className="text-md-right">
-                              {translate('First')}:
-                            </Label>
-                            <Grid item xs="9" xs="9" style={{marginLeft:0}}>
-                              <Input type="text" id="normal-field" 
+                            <Grid item xs="12" style={{marginLeft:0}}>
+                              <TemplateTextField type="text" id="normal-field" style={{width:"100%"}}
                                 onChange={this.setFirst} value={this.state.register.first_name} 
-                                placeholder="First Name" />
+                                label="First Name" />
                             </Grid>
-                          </FormGroup>
                         </Grid>
                         <Grid container xs="12" xs="12">
-                          <FormGroup row>
-                            <Label for="normal-field" md="3" xs="3" className="text-md-right">
-                              {translate('Last')}:
-                            </Label>
-                            <Grid item xs="9" xs="9" style={{marginLeft:0}}>
-                              <Input type="text" id="normal-field" 
+                            <Grid item xs="12" style={{marginLeft:0}}>
+                              <TemplateTextField type="text" id="normal-field" style={{width:"100%"}}
                                 onChange={this.setLast} value={this.state.register.last_name} 
-                                placeholder="Last Name" />
+                                label="Last Name" />
                             </Grid>
-                          </FormGroup>
                         </Grid>
                         <Grid container xs="12" xs="12">
-                          <FormGroup row>
-                            <Label for="normal-field" md="3" xs="3" className="text-md-right">
-                              {translate('Phone')}:
-                            </Label>
-                            <Grid item xs="9" xs="9" style={{marginLeft:0}}>
-                              <Input type="text" id="normal-field" 
+                            <Grid item xs="12" style={{marginLeft:0}}>
+                              <TemplateTextField type="text" id="normal-field" style={{width:"100%"}}
                                 onChange={this.setPhone} value={this.state.register.phone} 
-                                placeholder="Phone" />
+                                label="Phone" />
                             </Grid>
-                          </FormGroup>
-                        </Grid>
-                        {/*<Grid container xs="12" xs="12">
-                          <FormGroup row>
-                            <Label for="normal-field" md="3" xs="3" className="text-md-right">
-                              Password:
-                            </Label>
-                            <Grid item xs="9" xs="9" style={{marginLeft:0}}>
-                              <Input type="password" id="normal-field" 
-                                onChange={this.setPassword} value={this.state.register.password} 
-                                placeholder="Password" />
-                            </Grid>
-                          </FormGroup>
                         </Grid>
                         <Grid container xs="12" xs="12">
-                          <FormGroup row>
-                            <Label for="normal-field" md="3" xs="3" className="text-md-right">
-                              Verify:
-                            </Label>
-                            <Grid item xs="9" xs="9" style={{marginLeft:0}}>
-                              <Input type="password" id="normal-field" 
-                                onChange={this.setVPassword} value={this.state.register.verify} 
-                                placeholder="Verify" />
-                            </Grid>
-                          </FormGroup>
-                        </Grid>*/}
-                        <Grid container xs="12" xs="12">
-                          <FormGroup row>
-                            <Label for="normal-field" md={12} className="text-md-right">
-                              <font style={{color:"red"}}>
-                                  {translate(this.state.errorMessage)} 
-                                  <br></br>
-                                  {translate(this.state.phoneMessage)}
-                              </font>
-                            </Label>
-                          </FormGroup>
-                        </Grid>
-                        <Grid container xs="12" xs="12">
-                            <Grid item xs="12" xs="12">
-                                <Button onClick={this.schedule} style={{marginRight:10}} color="primary" 
+                            <Grid item xs="12" >
+                            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                                <TemplateButton onClick={this.schedule} style={{marginRight:10}}  
                                 disabled={
                                   !this.state.isValid ||
                                   !this.state.register.first_name || 
                                   !this.state.register.last_name ||
-                                  this.state.register.phone.length != 14}>{translate('Contact')}</Button>
-                                <Button outline onClick={this.cancel} color="primary">{translate('Cancel')}</Button>
+                                  this.state.register.phone.length != 14} label={translate('Contact')}/>
+                                <TemplateButton outline onClick={this.cancel} label={translate('Cancel')}/>
+                            </div>
                             </Grid>
                         </Grid>
                     </div>
                     </div>
                     </>
-                )}
-                {(this.props.currentUser) && (
-                    <div style={{marginBottom:10,height:500,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        <Button onClick={this.schedule} style={{marginRight:10}} color="primary">{translate('Book')}</Button>
-                        <Button outline onClick={this.cancel} color="primary">{translate('Cancel')}</Button>
-                    </div>
                 )}
                 </>
                 </Grid>                

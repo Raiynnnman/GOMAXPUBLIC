@@ -204,6 +204,7 @@ class Navbar extends Component {
                                             <li><a href="#about">About</a></li>
                                             <li><a href="#pricing">Pricing</a></li>
                                             <li><a href="#reviews">Reviews</a></li>
+                                            <li><a href="/search">Search</a></li>
                                             <li><a href="#support">Support</a></li>
                                         </ul>
                                     </nav>
@@ -218,6 +219,7 @@ class Navbar extends Component {
                                             <li><a href="#about">About</a></li>
                                             <li><a href="#pricing">Pricing</a></li>
                                             <li><a href="#reviews">Reviews</a></li>
+                                            <li><a href="/search">Search</a></li>
                                             <li><a href="#support">Support</a></li>
                                             <li><a href="/login">Login</a></li>
                                         </ul>
