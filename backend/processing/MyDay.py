@@ -703,6 +703,8 @@ class CustomAppointmentEmail(MyDayBase):
             '__LINK__': "%s/#/login" % (url,),
             '__BASE__': url
         }
+        if self.isUIV2(): 
+            data['__LINK__']:"%s/login" % (url,)
         m = Mail()
         m.defer(email, "Appointment Scheduled with POUNDPAIN TECH",
                 "templates/mail/appointment.html", data)
@@ -728,6 +730,8 @@ class OfficeAppointmentEmail(MyDayBase):
             '__LINK__': "%s/#/login" % (url,),
             '__BASE__': url
         }
+        if self.isUIV2(): 
+            data['__LINK__']:"%s/login" % (url,)
         m = Mail()
         m.defer(email, "Appointment Scheduled with POUNDPAIN TECH",
                 "templates/mail/office-appointment.html", data)

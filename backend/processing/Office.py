@@ -676,6 +676,8 @@ class ReferralUpdate(OfficeBase):
                     '__LINK__':"%s/#/login" % (url,),
                     '__BASE__':url
                 } 
+                if self.isUIV2(): 
+                    data['__LINK__']:"%s/login" % (url,)
                 if config.getKey("appt_email_override") is not None:
                     email = config.getKey("appt_email_override")
                 m = Mail()
