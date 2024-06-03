@@ -55,8 +55,13 @@ class Register extends React.Component {
   };
 
   handleUserTypeChange = (event) => {
-    this.setState({ userType: event.target.value });
-  };
+      const userType = event.target.value;
+      this.setState({ userType });
+  
+      if (userType.toLowerCase() === 'provider') {
+        this.props.history.push('/');
+      }
+    };
 
   handleInputChange = (event, index) => {
     const { name, value } = event.target;
@@ -93,11 +98,10 @@ class Register extends React.Component {
       name: creds.first_name + " " + creds.last_name
     };
 
-  
     const addresses = this.state.addresses.map((address, index) => {
       return { [`addr${index + 1}`]: address };
-  });
-  
+    });
+
     const addressObj = addresses.reduce((acc, curr) => {
         const key = Object.keys(curr)[0];
         acc[key] = curr[key];
@@ -156,7 +160,23 @@ class Register extends React.Component {
               <Typography variant="body1" align="center" paragraph>
                 Please fill out this form, and we'll send you a welcome email so you can verify your email address and sign in.
               </Typography>
+              
               <Box component="form" noValidate onSubmit={this.handleSubmit} sx={{ mt: 1 }}>
+              <Select
+                  value={this.state.userType}
+                  onChange={this.handleUserTypeChange}
+                  displayEmpty
+                  fullWidth
+                  autoFocus
+                  sx={{ marginTop: 2, marginBottom: 2, backgroundColor: '#eee', borderRadius: '8px' }}
+                >
+                  <MenuItem value="" disabled>
+                    Who are you?
+                  </MenuItem>
+                  <MenuItem value="Legal">Legal</MenuItem>
+                  <MenuItem value="Provider">Provider</MenuItem>
+                  <MenuItem value="User">User</MenuItem>
+                </Select>
                 <TextField
                   margin="normal"
                   required
@@ -165,7 +185,7 @@ class Register extends React.Component {
                   label="First Name"
                   name="first_name"
                   autoComplete="first_name"
-                  autoFocus
+                   
                   sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
                 />
                 <TextField
@@ -197,20 +217,7 @@ class Register extends React.Component {
                   defaultCountry="US"
                   sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
                 />
-                <Select
-                  value={this.state.userType}
-                  onChange={this.handleUserTypeChange}
-                  displayEmpty
-                  fullWidth
-                  sx={{ marginTop: 2, marginBottom: 2, backgroundColor: '#eee', borderRadius: '8px' }}
-                >
-                  <MenuItem value="" disabled>
-                    Who are you?
-                  </MenuItem>
-                  <MenuItem value="Legal">Legal</MenuItem>
-                  <MenuItem value="Provider">Provider</MenuItem>
-                  <MenuItem value="User">User</MenuItem>
-                </Select>
+               
                 {this.state.userType.toLowerCase() === 'provider' && (
                   <>
                     <Typography variant="h6" align="center" >
@@ -220,7 +227,6 @@ class Register extends React.Component {
                       <Box key={index} sx={{ display: 'flex', flexDirection: 'column', gap: 1, position: 'relative' }}>
                         <TextField
                           margin="normal"
-                          required
                           fullWidth
                           id={`address-${index}`}
                           label={`Address ${index + 1}`}
@@ -231,7 +237,6 @@ class Register extends React.Component {
                         />
                         <TextField
                           margin="normal"
-                          required
                           fullWidth
                           id={`city-${index}`}
                           label="City"
@@ -242,7 +247,6 @@ class Register extends React.Component {
                         />
                         <TextField
                           margin="normal"
-                          required
                           fullWidth
                           id={`state-${index}`}
                           label="State"
@@ -253,7 +257,6 @@ class Register extends React.Component {
                         />  
                         <TextField
                           margin="normal"
-                          required
                           fullWidth
                           id={`zipcode-${index}`}
                           label="Zip Code"

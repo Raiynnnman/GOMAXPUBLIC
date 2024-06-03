@@ -32,6 +32,7 @@ import Customers from './pain/office/Customers';
 import Search from './pain/search/Search';
 import Appointments from './pain/clients/Appointments';
 
+import Pricing from './components/Pricing';
 const CloseButton = ({closeToast}) => <i onClick={closeToast} className="la la-close notifications-close"/>
 const App = () => {
     return (
@@ -50,6 +51,7 @@ const App = () => {
                     <Route exact path='/register' component={Register}/>
                     <Route exact path='/search' component={Search}/>
                     <Route exact path='/forgot' component={Forgot}/>
+                    <Route exact path='/provider-pricing' component={Pricing}/>
                     <Route exact path='/reset/:token' component={Reset}/>
                     <Route exact path='/register-provider' component={RegisterProvider}/>
                     <Route exact path='/welcome' component={Welcome}/>
@@ -67,6 +69,8 @@ const App = () => {
                     <Route exact path='/app/main/admin/coupons' component={CouponAdminList}/>
                     <Route exact path='/app/main/admin/plans' component={PricingList}/>
                     <Route exact path='/app/main/admin/users' component={UserAdminList}/>
+                    <Route exact path="/app/main/office/locations"  component={OfficeAddresses} />
+                    <Route exact path="/app/main/office/clients"  component={Customers} />
                     <Route exact path="/app/main/office/locations" exact component={OfficeAddresses} />
                     <Route exact path="/app/main/office/clients" exact component={Customers} />
                     <Route exact path="/app/main/client/search" exact component={Search} />
