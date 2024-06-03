@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Col, Grid } from 'reactstrap';
-import { Nav, NavItem, NavLink } from 'reactstrap';
-import { TabContent, TabPane } from 'reactstrap';
-import cx from 'classnames';
-import classnames from 'classnames';
-
+import Grid from '@mui/material/Grid';
+import Container from '@mui/material/Container';
+import Box from '@mui/material/Box';
+import Navbar from '../components/Navbar';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 
@@ -13,32 +11,26 @@ class Template extends Component {
     constructor(props) { 
         super(props);
         this.state = { 
-            activeTab: "office"
         }
-        this.toggleTab = this.toggleTab.bind(this);
     } 
 
     componentWillReceiveProps(p) { 
     }
 
     componentDidMount() {
-        // this.props.dispatch(getOffices({page:0,limit:10000}))
     }
 
-    toggleTab(e) { 
-        this.state.activeTab = e;
-    } 
 
     render() {
         return (
         <>
-            {(this.props.offices && this.props.offices.isReceiving) && (
-                <AppSpinner/>
-            )}
+        <Navbar/>
+        <Box style={{margin:20}}>
             <Grid container xs="12">
                 <Grid item xs="12">
                 </Grid>                
             </Grid>
+        </Box>
         </>
         )
     }
@@ -46,8 +38,7 @@ class Template extends Component {
 
 function mapStateToProps(store) {
     return {
-        currentUser: store.auth.currentUser,
-        offices: store.offices
+        currentUser: store.auth.currentUser
     }
 }
 

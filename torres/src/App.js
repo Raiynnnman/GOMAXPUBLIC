@@ -30,6 +30,7 @@ import UserAdminList from './pain/admin/UserAdminList';
 import OfficeAddresses from './pain/office/OfficeAddresses';
 import Customers from './pain/office/Customers';
 import Search from './pain/search/Search';
+import Appointments from './pain/clients/Appointments';
 
 const CloseButton = ({closeToast}) => <i onClick={closeToast} className="la la-close notifications-close"/>
 const App = () => {
@@ -68,6 +69,7 @@ const App = () => {
                     <Route exact path='/app/main/admin/users' component={UserAdminList}/>
                     <Route exact path="/app/main/office/locations" exact component={OfficeAddresses} />
                     <Route exact path="/app/main/office/clients" exact component={Customers} />
+                    <Route exact path="/app/main/clients/appointments" exact component={Appointments} />
                     <Route exact path={`${process.env.PUBLIC_URL}/tf`} component={DemoTF}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/home-one`} component={HomeOlive}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/home-two`} component={HomeHorizontal}/>
