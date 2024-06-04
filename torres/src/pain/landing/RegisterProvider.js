@@ -1,572 +1,430 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { withRouter, Link } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
+import {
+    Container,
+    Grid,
+    TextField,
+    Button,
+    Typography,
+    Paper,
+    Box,
+    CssBaseline,
+    Snackbar,
+    Alert
+} from '@mui/material';
 import Navbar from '../../components/Navbar';
-import TemplateTextField from '../utils/TemplateTextField';
-import TemplateButton from '../utils/TemplateButton';
-import Container from '@mui/material/Container';
-import Button from '@mui/material/Button';
-import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
-import { toast } from 'react-toastify';
-import Grid from '@mui/material/Grid';
-import FilledInput from '@mui/material/FilledInput';
-import cx from 'classnames';
-import classnames from 'classnames';
-import getVersion from '../../version.js';
-import { registerProvider } from '../../actions/registerProvider';
-import translate from '../utils/translate';
+import Pricing from '../../components/Pricing';
+import { PaymentForm, CreditCard } from 'react-square-web-payments-sdk';
 import AppSpinner from '../utils/Spinner';
-import { squareAppKey, squareLocationKey } from '../../squareConfig.js';
-import { PaymentForm,CreditCard,ApplePay,GooglePay } from 'react-square-web-payments-sdk';
-import {searchProvider} from '../../actions/searchProvider';
-import { getLandingData } from '../../actions/landingData';
-import googleKey from '../../googleConfig';
 import formatPhoneNumber from '../utils/formatPhone';
+import { getLandingData } from '../../actions/landingData';
+import { searchProvider } from '../../actions/searchProvider';
+import { registerProvider } from '../../actions/registerProvider';
+
+import { squareAppKey, squareLocationKey } from '../../squareConfig';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+
+const defaultTheme = createTheme({
+    palette: {
+        primary: {
+            main: '#FF5733',
+        },
+    },
+    typography: {
+        fontFamily: "'Montserrat', sans-serif",
+    },
+});
 
 class RegisterProvider extends Component {
-    constructor(props) { 
-        super(props);
-        this.state = { 
-            page:0,
-            plan:0,
-            selectedAddrId:null,
-            card:null,
-            currentName:'',
-            currentPhone:'',
-            first:'',
-            last:'',
-            phone:'',
-            email:'',
-            error_message:null,
-            pq_id:null,
-            coupon:null,
-            setPrice:0,
-            calculatedPrice:0,
-            coupon_id:null,
-            couponRed:"$" + 0.00,
-            couponRedValue:0,
-            addresses:[],
-            showAddresses:[],
-            intentid:'',
-            selPlan:null,
-            license:'',
-            provtype:1,
-            provtypeSel:[
-                'Chiropractor'
-            ]
-        }
-        this.nameChange = this.nameChange.bind(this);
-        this.nextPage = this.nextPage.bind(this);
-        this.selectPlan = this.selectPlan.bind(this);
-        this.couponChange = this.couponChange.bind(this);
-        this.updateVerified = this.updateVerified.bind(this);
-        this.getCoupon = this.getCoupon.bind(this);
-        this.firstChange = this.firstChange.bind(this);
-        this.phoneChange = this.phoneChange.bind(this);
-        this.lastChange = this.lastChange.bind(this);
-        this.emailChange = this.emailChange.bind(this);
-        this.updateAddress = this.updateAddress.bind(this);
-        this.licenseChange = this.licenseChange.bind(this);
-        this.search = this.search.bind(this);
-        this.officeNameChange = this.officeNameChange.bind(this);
-        this.officeStateChange = this.officeStateChange.bind(this);
-        this.officeZipChange = this.officeZipChange.bind(this);
-        this.officeCityChange = this.officeCityChange.bind(this);
-        this.officePhoneChange = this.officePhoneChange.bind(this);
-        this.officeAddr1Change = this.officeAddr1Change.bind(this);
-        this.provtypeChange = this.provtypeChange.bind(this);
-        this.zipcodeChange = this.zipcodeChange.bind(this);
-        this.addGrid = this.addGrid.bind(this);
-        this.saveGrid = this.saveGrid.bind(this);
-        this.checkValid = this.checkValid.bind(this);
-        this.register = this.register.bind(this);
-        this.saveCard= this.saveCard.bind(this);
-        this.calculatePrice = this.calculatePrice.bind(this);
-        this.cancel= this.cancel.bind(this);
-        this.cardChange = this.cardChange.bind(this);
-    } 
-
-    componentWillReceiveProps(p) { 
-        if (p.landingData && p.landingData.data && p.landingData.data.pq && this.state.pq_id !== null
-            && this.state.phone.length < 1) { 
-            this.state.phone = formatPhoneNumber(p.landingData.data.pq.phone);
-            this.state.first = p.landingData.data.pq.first_name + " " + p.landingData.data.pq.last_name;
-            this.state.name = p.landingData.data.pq.name;
-            this.state.email = p.landingData.data.pq.email;
-            this.state.showAddresses = p.landingData.data.pq.addr;
-            this.setState(this.state);
-            this.state.selPlan = p.landingData.data.pricing.filter((e) => parseInt(p.landingData.data.pq.plan) === e.id)
-            if (this.state.selPlan.length > 0) { 
-                this.state.selPlan = this.state.selPlan[0]
-            } else { 
-                this.state.selPlan = null;
-            } 
-            this.checkValid()
-            
-        } 
-        if (p.landingData && p.landingData.data && p.landingData.data.pricing && this.state.selPlan === null) { 
-            this.state.selPlan = p.landingData.data.pricing.filter((e) => parseInt(this.state.plan) === e.id)
-            if (this.state.selPlan.length > 0) { 
-                this.state.selPlan = this.state.selPlan[0]
-            } else { 
-                this.state.selPlan = null;
-            } 
-            this.setState(this.state);
-        } 
-        var relList = false;
-        if (p.searchProvider.data && p.searchProvider.data.potentials && this.state.page === 1 && this.state.pq_id === null) {  
-            var g = p.searchProvider.data.potentials.map((e) => { 
-                return (e.id)
-            }) 
-            var h = this.state.showAddresses.map((e) => { 
-                return (e.id)
-            }) 
-            g.sort((a, b) => (a > b ? -1 : 1));
-            h.sort((a, b) => (a > b ? -1 : 1));
-            if (JSON.stringify(g) !== JSON.stringify(h)) { 
-                this.state.showAddresses = p.searchProvider.data.potentials
-                this.setState(this.state);
-            } 
-        } 
-    }
-
+    state = {
+        page: 0,
+        plan: 0,
+        selectedAddrId: null,
+        card: null,
+        currentName: '',
+        currentPhone: '',
+        first: '',
+        last: '',
+        phone: '',
+        email: '',
+        error_message: null,
+        pq_id: null,
+        coupon: null,
+        setPrice: 0,
+        calculatedPrice: 0,
+        coupon_id: null,
+        couponRed: '$0.00',
+        couponRedValue: 0,
+        addresses: [],
+        showAddresses: [],
+        intentid: '',
+        selPlan: null,
+        license: '',
+        provtype: 1,
+        provtypeSel: ['Chiropractor'],
+        showPaymentForm: false,
+        snackbarOpen: false,
+        snackbarMessage: '',
+        snackbarSeverity: 'success'
+    };
 
     componentDidMount() {
-        this.state.plan = this.props.match.params.id;
-        if (this.props.match.params.pq_id) { 
-            this.state.pq_id = this.props.match.params.pq_id;
-        } 
-        this.props.dispatch(getLandingData({type:this.state.provtype,pq_id:this.state.pq_id}));
+        const { id, pq_id } = this.props.match.params;
+        this.setState({ plan: id, pq_id });
+        this.props.dispatch(
+            getLandingData({ type: this.state.provtype, pq_id })
+        );
     }
 
-    checkValid() { 
-        /* Implement checks */
-        this.state.isValid = true;
-        this.setState(this.state);
-    } 
-    zipcodeChange(e) { 
-        this.state.zipcode = e.target.value;
-        this.setState(this.state);
-    } 
-
-    selectPlan(e) { 
-        this.state.selPlan = e;
-        this.setState(this.state);
-    } 
-
-    calculatePrice() { 
-        if (this.state.selPlan && this.state.selPlan.upfront_cost && this.state.couponRed.replace) { 
-            var t = this.state.selPlan.upfront_cost * this.state.selPlan.duration
-            t = parseFloat(t + parseFloat(this.state.couponRedValue))
-            this.state.setPrice = t.toFixed(2);
-            return "$" + t.toFixed(2);
-        } 
-        else if (this.state.selPlan && this.state.selPlan.upfront_cost) { 
-            var t = this.state.selPlan.upfront_cost * this.state.selPlan.duration
-            this.state.setPrice = t.toFixed(2);
-            return "$" + (t).toFixed(2);
+    componentDidUpdate(prevProps) {
+        if (
+            this.props.landingData !== prevProps.landingData &&
+            this.props.landingData.data
+        ) {
+            const { pq, pricing } = this.props.landingData.data;
+            if (pq && this.state.pq_id && !this.state.phone) {
+                this.setState({
+                    phone: formatPhoneNumber(pq.phone),
+                    first: `${pq.first_name} ${pq.last_name}`,
+                    name: pq.name,
+                    email: pq.email,
+                    showAddresses: pq.addr,
+                    selPlan: pricing.find((e) => parseInt(pq.plan) === e.id) || null,
+                });
+            } else if (pricing && !this.state.selPlan) {
+                this.setState({
+                    selPlan: pricing.find((e) => parseInt(this.state.plan) === e.id) || null,
+                });
+            }
         }
-        else { 
-            return "$" + "0.00"
-        } 
-    } 
 
-    couponChange(e) { 
-        this.state.coupon = e.target.value;
-        this.setState(this.state);
-        this.getCoupon();
-        this.calculatePrice();
-    } 
-    getCoupon() { 
-        var t = this.state.selPlan.coupons.filter((e) => this.state.coupon === e.name)
-        if (t.length > 0) { 
-            t = t[0]
-            this.state.coupon_id = t.id
-            if (t.perc) { 
-                var v = this.state.selPlan.upfront_cost * this.state.selPlan.duration
-                v = v*t.perc;
-                this.state.couponRed = "($" + v.toFixed(2) + ")";
-                this.state.couponRedValue = -v.toFixed(2);
-                this.setState(this.state)
-            } 
-            else if (t.total) { 
-                var v = this.state.selPlan.upfront_cost * this.state.selPlan.duration
-                v = v - t.total;
-                this.state.couponRed = "($" + v.toFixed(2) + ")";
-                this.state.couponRedValue = -v.toFixed(2);
-                this.setState(this.state)
-            } 
-            else if (t.reduction) { 
-                var v = this.state.selPlan.upfront_cost * this.state.selPlan.duration
-                v = t.reduction;
-                this.state.couponRed = "($" + v.toFixed(2) + ")";
-                this.state.couponRedValue = -v.toFixed(2);
-                this.setState(this.state)
-            } 
-        } 
-        else {
-            this.state.couponRed = "$" + 0.00;
-            this.state.couponRedValue = 0.00
+        if (this.props.searchProvider !== prevProps.searchProvider && this.state.page === 1 && !this.state.pq_id) {
+            const potentialAddresses = this.props.searchProvider.data.potentials;
+            if (potentialAddresses) {
+                const newAddresses = potentialAddresses.map((e) => e.id).sort();
+                const currentAddresses = this.state.showAddresses.map((e) => e.id).sort();
+                if (JSON.stringify(newAddresses) !== JSON.stringify(currentAddresses)) {
+                    this.setState({ showAddresses: potentialAddresses });
+                }
+            }
         }
-    } 
+    }
 
-    updateAddress(e,t,v) { 
-        var t = e.value.terms
-        var c = t[t.length-2].value ? t[t.length-2].value : ''
-        var s = t[t.length-3].value ? t[t.length-3].value : ''
-        this.state.showAddresses.push({
-            verified: 1,
-            places_id:e.value.place_id,
-            addr1:e.value.structured_formatting.main_text,
-            fulladdr:e.label,
-            name: this.state.currentName,
-            phone: this.state.currentPhone,
-            city:c,
-            state:s,
-            zipcode:0
-        })
-        this.state.currentName = ''
-        this.state.currentPhone = ''
-        this.setState(this.state);
-        this.addGrid()
-    } 
+    handleInputChange = (event) => {
+        const { name, value } = event.target;
+        this.setState({ [name]: value }, this.checkValid);
+    };
 
-    dologin() { 
-        window.location = "/login";
-    } 
+    handlePhoneChange = (event) => {
+        const phone = formatPhoneNumber(event.target.value);
+        this.setState({ phone });
+    };
 
-    updateVerified(e) { 
-        var c = 0;
-        var i = -1;
-        for (c=0;c<this.state.showAddresses.length;c++) { 
-            if (this.state.showAddresses[c].id === e) { 
-                i = c;
-            } 
-        } 
-        if (i !== -1) { 
-            this.state.showAddresses[i].verified = 
-                this.state.showAddresses[i].verified ? 0 : 1
-            this.setState(this.state)
-        }
-    } 
+    handleCouponChange = (event) => {
+        this.setState({ coupon: event.target.value }, this.getCoupon);
+    };
 
-    cancel() { 
-    } 
-
-    cardChange(e,t,i) { 
-    } 
-
-    search() { 
-        if (this.state.pq_id !== null) { return; }
-        var ts = { 
-            n:this.state.name,
-            p:this.state.phone,
-            e:this.state.email
-        } 
-        this.props.dispatch(searchProvider(ts));
-    } 
-
-    saveCard(e,i) { 
-        this.state.card = e;
-        this.state.intentid = i;
-        this.setState(this.state);
-        this.register()
-        // this.nextPage();
-    } 
-    officeNameChange(e) {
-        this.state.currentName = e.target.value;
-        this.setState(this.state);
-    } 
-    officeStateChange(e) {
-        this.state.addresses[this.state.selectedAddrId].state = e.target.value;
-        this.setState(this.state);
-    } 
-    officeZipChange(e) {
-        this.state.addresses[this.state.selectedAddrId].zipcode = e.target.value;
-        this.setState(this.state);
-    } 
-    officeCityChange(e) {
-        this.state.addresses[this.state.selectedAddrId].city = e.target.value;
-        this.setState(this.state);
-    } 
-    officePhoneChange(e) {
-        let val = e.target.value.replace(/\D/g, "")
-        .match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
-        let validPhone = !val[2] ? val[1]: "(" + val[1] + ") " + val[2] + (val[3] ? "-" + val[3] : "");
-        this.state.currentPhone = validPhone;
-        this.setState(this.state);
-        if (validPhone.length < 14 && validPhone.length > 0) {
-            this.setState({ phoneMessage: 'Please add a 10 digit phone number' });
+    getCoupon = () => {
+        const { coupon, selPlan } = this.state;
+        const matchingCoupon = selPlan.coupons.find((e) => coupon === e.name);
+        if (matchingCoupon) {
+            const discountValue = this.calculateDiscount(matchingCoupon);
+            this.setState({
+                coupon_id: matchingCoupon.id,
+                couponRed: `($${discountValue.toFixed(2)})`,
+                couponRedValue: -discountValue.toFixed(2),
+            });
         } else {
-            this.setState({ phoneMessage: '' });
+            this.setState({ couponRed: '$0.00', couponRedValue: 0.00 });
         }
-    } 
-    officeAddr1Change(e) {
-        this.state.addresses[this.state.selectedAddrId].addr1 = e.target.value;
-        this.setState(this.state);
-    } 
+    };
 
-    register() { 
-        var a = this.state.showAddresses.filter((e) => e.verified === 1)
-        var tosend = { 
-            email: this.state.email,
-            first: this.state.first,
-            name: this.state.name,
-            phone: this.state.phone,
-            plan: this.state.selPlan.id,
-            provtype:this.state.provtype,
-            card: this.state.card,
-            last: this.state.last,
-            zipcode:this.state.zipcode,
-            addresses: a 
-        } 
-        if (this.state.coupon_id) { 
-            tosend.coupon_id = this.state.coupon_id
-        } 
-        if (this.state.pq_id !== null) {
-            tosend.pq_id = this.state.pq_id
-            delete tosend.plan
-        } 
-        this.props.dispatch(registerProvider(tosend,function(err,args) { 
-            if (err !== null) { 
-                args.state.error_message = err.message;
-                args.setState(args.state);
+    calculateDiscount = (coupon) => {
+        const totalCost = this.state.selPlan.upfront_cost * this.state.selPlan.duration;
+        if (coupon.perc) {
+            return totalCost * coupon.perc;
+        } else if (coupon.total) {
+            return totalCost - coupon.total;
+        } else if (coupon.reduction) {
+            return coupon.reduction;
+        }
+        return 0;
+    };
+
+    calculatePrice = () => {
+        const { selPlan, couponRedValue } = this.state;
+        if (selPlan) {
+            const totalCost = selPlan.upfront_cost * selPlan.duration;
+            const finalPrice = totalCost + parseFloat(couponRedValue);
+            return `$${finalPrice.toFixed(2)}`;
+        }
+        return '$0.00';
+    };
+
+    nextPage = () => {
+        this.setState((prevState) => ({ page: prevState.page + 1 }), this.searchProvider);
+    };
+
+    searchProvider = () => {
+        const { name, phone, email } = this.state;
+        this.props.dispatch(searchProvider({ n: name, p: phone, e: email }));
+    };
+
+    saveCard = (card, intentid) => {
+        this.setState({ card, intentid }, this.registerProvider);
+    };
+
+    registerProvider = () => {
+        const { email, first, name, phone, selPlan, card, last, zipcode, showAddresses, coupon_id, pq_id, provtype } = this.state;
+        const verifiedAddresses = showAddresses.filter((e) => e.verified);
+        const registrationData = {
+            email,
+            first,
+            name,
+            phone,
+            plan: selPlan.id,
+            provtype,
+            card,
+            last,
+            zipcode,
+            addresses: verifiedAddresses,
+            coupon_id,
+            pq_id,
+        };
+
+        this.props.dispatch(registerProvider(registrationData, (err, args) => {
+            if (err) {
+                this.setState({
+                    snackbarOpen: true,
+                    snackbarMessage: err.message,
+                    snackbarSeverity: 'error'
+                });
                 return;
-            } 
-            window.location = "/welcome";
-        },this));
-    } 
+            }
+            window.location = '/welcome';
+        }));
+    };
 
-    nextPage() { 
-        this.state.page += 1;
-        this.setState(this.state);
-        this.checkValid();
-        this.search();
-    }
+    checkValid = () => {
+        // Implement validation logic
+        this.setState({ isValid: true });
+    };
 
-    phoneChange(e) { 
-        //this.state.phone = e.target.value;
-        let val = e.target.value.replace(/\D/g, "")
-        .match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
-        let validPhone = !val[2] ? val[1]: "(" + val[1] + ") " + val[2] + (val[3] ? "-" + val[3] : "");
-        this.state.phone = validPhone;
-        this.setState(this.state);
-        if (validPhone.length < 14 && validPhone.length > 0) {
-            this.setState({ phoneMessage: 'Please add a 10 digit phone number' });
-        } else {
-            this.setState({ phoneMessage: '' });
-        }
-        this.setState(this.state);
-        this.checkValid();
-    }
-
-    nameChange(e) { 
-        this.state.name = e.target.value;
-        this.setState(this.state);
-        this.checkValid();
-    }
-
-    licenseChange(e) { 
-        this.state.license = e.target.value;
-        this.setState(this.state);
-        this.checkValid();
-
-    }
-
-    emailChange(e) { 
-        this.state.email = e.target.value;
-        this.setState(this.state);
-        this.checkValid();
-    }
-
-    provtypeChange(e) { 
-
-    } 
-
-    saveGrid(e) { 
-        this.state.selectedAddrId = null
-        this.setState(this.state);
-    }
-
-    addGrid(e) { 
-        this.state.selectedAddrId = this.state.addresses.length 
-        this.state.addresses.push({
-            id: this.state.selectedAddrId,
-            name:'',
-            addr1:'',
-            phone:'',
-            city:'',
-            state:'',
-            zipcode:''
-        })
-        this.setState(this.state);
-    }
-
-    firstChange(e) { 
-        this.state.first = e.target.value;
-        this.setState(this.state);
-        this.checkValid();
-    }
-
-    lastChange(e) { 
-        this.state.last = e.target.value;
-        this.setState(this.state);
-        this.checkValid();
-    } 
-
+    handleCloseSnackbar = () => {
+        this.setState({ snackbarOpen: false });
+    };
 
     render() {
-        console.log("p",this.props);
+        const { page, selPlan, phone, couponRed, error_message, snackbarOpen, snackbarMessage, snackbarSeverity } = this.state;
+        const { registerProvider, searchProvider, landingData } = this.props;
+
         return (
-        <>
-            {(this.props.registerProvider && this.props.registerProvider.isReceiving) && (
-                <AppSpinner/>
-            )}
-            {(this.props.searchProvider && this.props.searchProvider.isReceiving) && (
-                <AppSpinner/>
-            )}
-            <Navbar/>
-            {(this.props.landingData && this.props.landingData.data && this.props.landingData.data.pricing) && (
-            <div style={{height:this.props.match.path.includes("short") ? 620 :'',
-                    display: 'flex', alignItems: 'start', justifyContent: 'center'}}>
-                <Grid container xs="12">
-                {(this.state.selPlan !== null) && (
-                    <>
-                    {(this.state.page === 0) && (
-                    <Container maxWidth="sm" style={{marginTop:20}}>
-                        <div className="row align-items-center">
-                            <p style={{color:'black'}} className="widget-auth-info">
-                                Please enter the information below to register
-                            </p>
-                            <p for="normal-field" md={12} className="text-md-right">
-                                <font style={{color:"red"}}>
-                                    {this.state.errorMessage}
-                                </font>
-                            </p>
-                            <TemplateTextField width="300px" label='Practice Name' helpText='Practice Name' onChange={this.nameChange}/>
-                            <TemplateTextField style={{marginTop:10}} width="300px" label='Name' helpText='Name' onChange={this.firstChange}/>
-                            <TemplateTextField style={{marginTop:10}} width="300px" label='Email' helpText='Email' onChange={this.emailChange}/>
-                            <TemplateTextField style={{marginTop:10}} value={this.state.phone} width="300px" label='Phone' helpText='Phone' onChange={this.phoneChange}/>
-                            {(this.props.landingData &&  this.props.landingData.data &&  
-                              this.props.landingData.data.do_billing_charge !== 0) && (
-                                <TemplateButton style={{height:50,marginTop:20}} onClick={this.nextPage} 
-                                    disabled={false} label='Next'/>
-                            )}
-                            {(this.props.landingData &&  this.props.landingData.data &&  
-                                this.props.landingData.data.do_billing_charge === 0) && (
-                                <TemplateButton style={{height:50,marginTop:20}} onClick={this.register} 
-                                    disabled={false} label='Register'/>
-                            )}
-                        </div>
-                    </Container>
-                    )}
-                    {(this.state.page === 1 && this.props.landingData.data.do_billing_charge !== 0) && (
-                        <>
-                    <Container maxWidth="sm" style={{marginTop:20}}>
-                        <div style={{marginTop:20}}>
-                            <Grid container xs="12">
-                                <Grid item xs="12" sx="3">
-                                <Container maxWidth="sm"> 
-                                    {(this.state.error_message) && (
-                                    <Grid container xs="12" style={{marginBottom:10}}>
-                                        <Grid item xs="12">
-                                        <font style={{color:'red',alignText:'center'}}>{this.state.error_message}</font>
-                                        </Grid>
-                                    </Grid>
-                                    )}
-                                    <Grid container xs="12" style={{marginBottom:10}}>
-                                        <Grid item xs="7">
-                                        <font style={{alignText:'left'}}>Description</font>
-                                        </Grid>
-                                        <Grid item xs="5" style={{textAlign:"right"}}>
-                                        <font class="float-right" style={{marginRight:40,textAlign:'right'}}>Price</font>
-                                        </Grid>
-                                    </Grid>
-                                    <hr/>
-                                    <Grid container xs="12">
-                                        <Grid item xs="7">
-                                        <font style={{alignText:'left'}}>{this.state.selPlan.description}</font>
-                                        </Grid>
-                                        <Grid item xs="5" style={{textAlign:"right"}}>
-                                        <font class='float-right' style={{marginRight:20,textAlign:'right'}}>
-                                            ${parseFloat(this.state.selPlan.upfront_cost * this.state.selPlan.duration).toFixed(2)}</font>
-                                        </Grid>
-                                    </Grid>
-                                    {(this.state.selPlan.coupons.length > 0) && (
-                                    <Grid container xs="12">
-                                        <Grid item xs="7">
-                                            <input 
-                                                style={{marginLeft:0,paddingLeft:0}} 
-                                                value={this.state.coupon} 
-                                                onInput={this.couponChange} 
-                                                onChange={this.couponChange} placeholder="Enter Coupon Code" />
-                                        </Grid>
-                                        <Grid item xs="5" style={{textAlign:"right"}}>
-                                            <font class="float-right" style={{textAlign:"right",marginRight:20}}>
-                                                {this.state.couponRed}</font>
-                                        </Grid>
-                                    </Grid>
-                                    )}
-                                    <hr/>
-                                    <Grid container xs="12">
-                                        <Grid item xs="7">
-                                        {(this.state.coupon_id !== null) && (     
-                                            <font style={{alignText:'left'}}>Total:</font>
-                                        )}
-                                        {(this.state.coupon_id === null) && (     
-                                            <font style={{marginRight:20,alignText:'left'}}>Total:</font>
-                                        )}
-                                        </Grid>
-                                        <Grid item xs="5" style={{textAlign:"right"}}>
-                                            {(this.state.coupon_id !== null) && (     
-                                                <font class='float-right' style={{marginRight:20,alignText:'left'}}>{this.calculatePrice()}</font>
-                                            )}
-                                            {(this.state.coupon_id === null) && (     
-                                                <font class='float-right' style={{marginRight:20,alignText:'left'}}>{this.calculatePrice()}</font>
-                                            )}
-                                        </Grid>
-                                    </Grid>
-                                </Container>
-                            </Grid>
-                            </Grid> 
-                        </div>
-                        <div style={{marginTop:20}}>
-                        <Grid container xs="12">
-                            <Grid item xs="12" sx="3">
-                                <PaymentForm style={{margin:10,display:'grid',justifyContent:'center',alignContent:'center'}}
-                                    applicationId={squareAppKey()}
-                                    locationId={squareLocationKey()}
-                                    cardTokenizeResponseReceived={(token,verifiedBuyer) => { 
-                                            this.saveCard({token:token});
-                                    }}>
+            <ThemeProvider theme={defaultTheme}>
+                <Navbar />
+                <CssBaseline />
+                {(registerProvider.isReceiving || searchProvider.isReceiving) && <AppSpinner />}
+                <Pricing />
+                {landingData.data && (
+                    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(to right, #fff7e6, #ffffff)', display: 'flex', alignItems: 'center', justifyContent: 'center', px: 2 }}>
+                        <Container maxWidth="md">
+                            <Paper
+                                elevation={12}
+                                sx={{
+                                    width: '100%',
+                                    padding: { xs: 2, sm: 4, md: 6 },
+                                    borderRadius: '30px',
+                                    boxShadow: '0 5px 15px rgba(0, 0, 0, 0.35)',
+                                    backgroundColor: '#fff',
+                                }}
+                            >
+                                {selPlan && (
                                     <>
-                                        <CreditCard>Register</CreditCard>
+                                        {page === 0 && (
+                                            <Box component="form" noValidate sx={{ mt: 1 }}>
+                                                <Typography variant="h6" align="center" gutterBottom>
+                                                    Please enter the information below to register
+                                                </Typography>
+                                                {error_message && (
+                                                    <Typography color="error" gutterBottom>
+                                                        {error_message}
+                                                    </Typography>
+                                                )}
+                                                <Grid container spacing={3}>
+                                                    <Grid item xs={12}>
+                                                        <TextField
+                                                            fullWidth
+                                                            required
+                                                            label="Practice Name"
+                                                            name="name"
+                                                            onChange={this.handleInputChange}
+                                                            margin="normal"
+                                                            sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                                                        />
+                                                    </Grid>
+                                                    <Grid item xs={12} sm={6}>
+                                                        <TextField
+                                                            fullWidth
+                                                            required
+                                                            label="First Name"
+                                                            name="first"
+                                                            onChange={this.handleInputChange}
+                                                            margin="normal"
+                                                            sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                                                        />
+                                                    </Grid>
+                                                    <Grid item xs={12} sm={6}>
+                                                        <TextField
+                                                            fullWidth
+                                                            required
+                                                            label="Last Name"
+                                                            name="last"
+                                                            onChange={this.handleInputChange}
+                                                            margin="normal"
+                                                            sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                                                        />
+                                                    </Grid>
+                                                    <Grid item xs={12}>
+                                                        <TextField
+                                                            fullWidth
+                                                            required
+                                                            label="Email"
+                                                            name="email"
+                                                            onChange={this.handleInputChange}
+                                                            margin="normal"
+                                                            sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                                                        />
+                                                    </Grid>
+                                                    <Grid item xs={12}>
+                                                        <TextField
+                                                            fullWidth
+                                                            required
+                                                            label="Phone"
+                                                            name="phone"
+                                                            value={phone}
+                                                            onChange={this.handlePhoneChange}
+                                                            margin="normal"
+                                                            sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                                                        />
+                                                    </Grid>
+                                                </Grid>
+                                                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+                                                    <Button
+                                                        variant="contained"
+                                                        color="primary"
+                                                        onClick={this.nextPage}
+                                                        sx={{ borderRadius: 8, backgroundColor: '#FF5733', color: '#fff', padding: '10px 45px', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase' }}
+                                                    >
+                                                        {landingData.data.do_billing_charge !== 0 ? 'Next' : 'Register'}
+                                                    </Button>
+                                                </Box>
+                                            </Box>
+                                        )}
+                                        {page === 1 && landingData.data.do_billing_charge !== 0 && (
+                                            <Box sx={{ mt: 3 }}>
+                                                <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
+                                                    <Typography variant="h6" gutterBottom>
+                                                        Checkout
+                                                    </Typography>
+                                                    <Grid container spacing={2} sx={{ mt: 1 }}>
+                                                        <Grid item xs={7}>
+                                                            <Typography variant="body1">Description</Typography>
+                                                        </Grid>
+                                                        <Grid item xs={5} textAlign="right">
+                                                            <Typography variant="body1">Price</Typography>
+                                                        </Grid>
+                                                        <Grid item xs={12}>
+                                                            <Typography variant="body2">{selPlan.description}</Typography>
+                                                        </Grid>
+                                                        <Grid item xs={12} textAlign="right">
+                                                            <Typography variant="body2">${parseFloat(selPlan.upfront_cost * selPlan.duration).toFixed(2)}</Typography>
+                                                        </Grid>
+                                                        {selPlan.coupons.length > 0 && (
+                                                            <>
+                                                                <Grid item xs={7}>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        placeholder="Enter Coupon Code"
+                                                                        value={this.state.coupon}
+                                                                        onChange={this.handleCouponChange}
+                                                                        sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                                                                    />
+                                                                </Grid>
+                                                                <Grid item xs={5} textAlign="right">
+                                                                    <Typography variant="body2">{couponRed}</Typography>
+                                                                </Grid>
+                                                            </>
+                                                        )}
+                                                    </Grid>
+                                                    <Grid container spacing={2} sx={{ mt: 2 }}>
+                                                        <Grid item xs={7}>
+                                                            <Typography variant="body1">Total</Typography>
+                                                        </Grid>
+                                                        <Grid item xs={5} textAlign="right">
+                                                            <Typography variant="body1">{this.calculatePrice()}</Typography>
+                                                        </Grid>
+                                                    </Grid>
+                                                </Paper>
+                                                <Box sx={{ mt: 3 }}>
+                                                    <Button
+                                                        variant="contained"
+                                                        color="primary"
+                                                        sx={{ borderRadius: 8, backgroundColor: '#FF5733', color: '#fff', padding: '10px 45px', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase', mb: 2 }}
+                                                        onClick={() => this.setState({ showPaymentForm: true })}
+                                                    >
+                                                        Proceed to Checkout
+                                                    </Button>
+                                                    {this.state.showPaymentForm && (
+                                                        <PaymentForm
+                                                            applicationId={squareAppKey}
+                                                            locationId={squareLocationKey}
+                                                            cardTokenizeResponseReceived={(token, buyer) => {
+                                                                const cardData = {
+                                                                    id: token.token,
+                                                                    brand: buyer.card.brand,
+                                                                    expiration: `${buyer.card.expMonth}/${buyer.card.expYear}`,
+                                                                    lastFour: buyer.card.last4,
+                                                                };
+                                                                this.saveCard(cardData, buyer.intentId);
+                                                            }}
+                                                            createVerificationDetails={() => ({
+                                                                amount: `${parseFloat(this.state.selPlan.upfront_cost * this.state.selPlan.duration).toFixed(2)}`,
+                                                                currencyCode: 'USD',
+                                                                intent: 'CHARGE',
+                                                                billingContact: {
+                                                                    familyName: this.state.last,
+                                                                    givenName: this.state.first,
+                                                                    email: this.state.email,
+                                                                    phone: this.state.phone,
+                                                                },
+                                                            })}
+                                                        >
+                                                            <CreditCard />
+                                                        </PaymentForm>
+                                                    )}
+                                                </Box>
+                                            </Box>
+                                        )}
                                     </>
-                                </PaymentForm>
-                            </Grid>
-                        </Grid>
-                        </div>
-                    </Container>
-                    </>
-                    )}
-                    </>
+                                )}
+                            </Paper>
+                        </Container>
+                    </Box>
                 )}
-                </Grid>
-            </div>
-            )}
-        </>
-        )
+                <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={this.handleCloseSnackbar}>
+                    <Alert onClose={this.handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
+                        {snackbarMessage}
+                    </Alert>
+                </Snackbar>
+            </ThemeProvider>
+        );
     }
 }
 
-function mapStateToProps(store) {
-    return {
-        registerProvider: store.registerProvider,
-        saveCard: store.saveCard,
-        searchProvider: store.searchProvider,
-        landingData: store.landingData,
-        setupIntent: store.setupIntent
-    }
-}
+const mapStateToProps = (state) => ({
+    landingData: state.landingData,
+    registerProvider: state.registerProvider,
+    searchProvider: state.searchProvider,
+});
 
-export default connect(mapStateToProps)(RegisterProvider);
+export default withRouter(connect(mapStateToProps)(RegisterProvider));

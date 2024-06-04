@@ -40,9 +40,9 @@ class HomeHorizontal extends Component {
                 {/*<Download horizontal="horizontal"/>*/}
 
                 {/* Pricing */}
-                <Pricing horizontalpricing=""/>
+                <Pricing  horizontalfeature="horizontal-pricing"/>
 
-                {/* Pricing */}
+                {/* Testimonial */}
                 <Testimonial/>
 
                 {/* Screenshot */}

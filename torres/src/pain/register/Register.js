@@ -58,9 +58,15 @@ class Register extends React.Component {
       const userType = event.target.value;
       this.setState({ userType });
   
+<<<<<<< HEAD
       // if (userType.toLowerCase() === 'provider') {
       //   this.props.history.push('/');
       // }
+=======
+      if (userType.toLowerCase() === 'provider') {
+        this.props.history.push('/register-provider');
+      }
+>>>>>>> 97f1dfe (register provider page update)
     };
 
   handleInputChange = (event, index) => {
