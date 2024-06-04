@@ -1,5 +1,5 @@
 import Blog from '../components/Blog';
-import React, {Component} from "react";
+import React, { Component } from "react";
 import About from '../components/About';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -16,40 +16,39 @@ class HomeHorizontal extends Component {
         return (
             <div>
                 {/* Header Navbar */}
-                <Navbar/>
+                <Navbar />
 
                 {/* Slider */}
-                <HeroOlive horizontal="horizontal" bgshape="bg-shape"/>
+                <HeroOlive horizontal="horizontal" bgshape="bg-shape" />
 
                 {/* About */}
-                <About horizontalabout="horizontal-about"/>
+                <About horizontalabout="horizontal-about" />
 
-                {/*Service */}
-                <Service horizontal="horizontal"/>
+                {/* Service */}
+                <Service horizontal="horizontal" />
 
-                {/*Feature */}
-                <Feature horizontalfeature="horizontal-feature"/>
+                {/* Feature */}
+                <Feature horizontalfeature="horizontal-feature" />
 
                 {/* Download */}
-                <Download horizontal="horizontal"/>
+                <Download horizontal="horizontal" />
 
                 {/* Pricing */}
-                <Pricing horizontalpricing=""/>
+                <Pricing showButton={false} />
 
-                {/* Pricing */}
-                <Testimonial/>
+                {/* Testimonial */}
+                <Testimonial />
 
                 {/* Screenshot */}
-                <Screenshot/>
+                <Screenshot />
 
                 {/* Blog */}
-                <Blog/>
+                <Blog />
 
                 {/* Footer */}
-                <Footer horizontal="horizontal"/>
-
+                <Footer horizontal="horizontal" />
             </div>
-        )
+        );
     }
 }
 

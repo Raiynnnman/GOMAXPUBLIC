@@ -5,35 +5,37 @@ import { makeStyles } from '@mui/styles';
 
 const useStyles = makeStyles((theme) => ({
   pricingTableArea: {
-    paddingTop: theme.spacing(5),
-    paddingBottom: theme.spacing(10),
+    paddingTop: 20,
+    paddingBottom: 20,
     textAlign: 'center',
-    background: 'linear-gradient(to right, #fff7e6, #ffffff)',
   },
   sectionTitle: {
-    marginBottom: theme.spacing(5),
+    marginBottom: 50,
   },
   pricingColumn: {
-    marginTop: theme.spacing(5),
+    marginTop: 20,
   },
   pricePackage: {
-    borderRadius: theme.shape.borderRadius,
     overflow: 'hidden',
+    borderRadius: 25,
     transition: 'transform 0.3s ease, box-shadow 0.3s ease',
     '&:hover': {
       transform: 'translateY(-10px)',
-      boxShadow: '0 10px 20px rgba(255, 165, 0, 0.8)', 
+      boxShadow: '0 20px 20px rgba(255, 165, 0, 0.8)', 
     },
+    marginTop: 25,
+    padding: 0,
   },
   pricePackageTop: {
-    backgroundColor: '#fa6a0a', 
-    color: '#fff',  
-    padding: theme.spacing(2),
+    backgroundColor: '#fa6a0a',
+    color: '#fff',
+    padding: 20,
     textAlign: 'center',
     fontWeight: 'bold',
+    borderRadius: 10,
   },
   pricePackageContent: {
-    padding: theme.spacing(4),
+    padding: 20,
   },
   price: {
     display: 'flex',
@@ -41,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'baseline',
     fontSize: '2.5rem',
     fontWeight: 'bold',
-    marginBottom: theme.spacing(2),
+    marginBottom: 15,
     color: '#333',
   },
   priceTop: {
@@ -54,36 +56,38 @@ const useStyles = makeStyles((theme) => ({
     fontSize: '1rem',
   },
   priceList: {
-    marginBottom: theme.spacing(2),
+    marginBottom: 20,
   },
   button: {
-    marginTop: theme.spacing(2),
+    marginTop: 20,
     backgroundColor: '#fa6a0a',
     color: '#fff',
     '&:hover': {
       backgroundColor: '#e55d00',
     },
+    borderRadius: 10,
   },
   benefitIcon: {
-    marginRight: theme.spacing(1),
+    width: 20,
+    marginRight: 15,
     color: '#fa6a0a',
   },
   benefitText: {
     color: 'gray',
+    fontFamily: 'serif',
   },
   whiteText: {
     color: '#fff',
     fontWeight: 'bold',
   },
+  centerCard: {
+    transform: 'scale(1.1)',
+  },
 }));
 
-const Pricing = () => {
+const Pricing = ({ onSelectPlan, showButton }) => {
   const classes = useStyles();
   const landingData = useSelector((store) => store.landingData);
-
-  const selectPlan = (e) => {
-    window.location = '/register-provider/' + e;
-  };
 
   if (!landingData?.data?.pricing?.length) return null;
 
@@ -98,10 +102,17 @@ const Pricing = () => {
             Pick the right pricing for your team!
           </Typography>
         </div>
-        <Grid container spacing={4}>
+        <Grid container spacing={4} justifyContent="center">
           {landingData.data.pricing.map((plan, index) => (
-            <Grid item key={index} xs={12} sm={6} md={4} className={classes.pricingColumn}>
-              <Paper className={classes.pricePackage} elevation={4}>
+            <Grid
+              item
+              key={index}
+              xs={12}
+              sm={6}
+              md={4}
+              className={classes.pricingColumn}
+            >
+              <Paper className={`${classes.pricePackage} ${index === 1 ? classes.centerCard : ''}`} elevation={4}>
                 <div className={classes.pricePackageTop}>
                   <Typography variant="h6" component="h6" className={classes.whiteText}>
                     {plan.cycle === 'monthly' ? 'Monthly' : 'Annual'} Plan
@@ -135,14 +146,16 @@ const Pricing = () => {
                       </ListItem>
                     ))}
                   </List>
-                  <Button
-                    variant="contained"
-                    className={classes.button}
-                    onClick={() => selectPlan(plan.id)}
-                    fullWidth
-                  >
-                    Sign up
-                  </Button>
+                  {showButton && (
+                    <Button
+                      variant="contained"
+                      className={classes.button}
+                      onClick={() => onSelectPlan(plan.id)}
+                      fullWidth
+                    >
+                      Sign up
+                    </Button>
+                  )}
                 </div>
               </Paper>
             </Grid>

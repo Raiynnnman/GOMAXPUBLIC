@@ -51,6 +51,7 @@ const App = () => {
                     <Route exact path='/register' component={Register}/>
                     <Route exact path='/search' component={Search}/>
                     <Route exact path='/forgot' component={Forgot}/>
+                    <Route exact path='/provider-pricing' component={Pricing}/>
                     <Route exact path='/reset/:token' component={Reset}/>
                     <Route exact path='/register-provider' component={RegisterProvider}/>
                     <Route exact path='/welcome' component={Welcome}/>

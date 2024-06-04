@@ -110,6 +110,47 @@ class Navbar extends Component {
                             </div>
                         </div>
                         {(this.props.currentUser && this.props.currentUser.entitlements && 
+                            this.props.currentUser.entitlements.includes('Customer')) && (
+                        <>
+                            <div className="col-lg-9 d-none d-lg-block">
+                                <div className="mainmenu-wrapper">
+                                    <nav>
+                                        <ul className="main-menu">
+                                            <li className="active"><a href="/app">Home</a></li>
+                                            <li><a href="/app/main/client/appointments">Appointments</a></li>
+                                            <li><a href="/app/main/client/search">Search</a></li>
+                                            <li><a href="#">
+                                                <DropdownMenu currentUser={this.props.currentUser} 
+                                                    title={
+                                                    this.props.currentUser.first_name + " " + this.props.currentUser.last_name
+                                                          } items={profileItems} dispatch={this.props.dispatch}/>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </div>
+                            </div>
+                            <div className="col-sm-9 col-9 d-block d-lg-none">
+                                <div className="mobile-menu">
+                                    <nav>
+                                        <ul>                              
+                                            <li className="active"><a href="/app">Home</a></li>
+                                            <li><a href="/app/main/client/appointments">Appointments</a></li>
+                                            <li><a href="/app/main/client/search">Search</a></li>
+                                            <li><a href="#">
+                                                <DropdownMenu currentUser={this.props.currentUser} 
+                                                    title={
+                                                    this.props.currentUser.first_name + " " + this.props.currentUser.last_name
+                                                          } items={profileItems} dispatch={this.props.dispatch}/>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </div>
+                            </div>
+                        </>
+                        )}
+                        {(this.props.currentUser && this.props.currentUser.entitlements && 
                             this.props.currentUser.entitlements.includes('OfficeAdmin')) && (
                             <>
                             <div className="col-lg-9 d-none d-lg-block">
@@ -204,6 +245,7 @@ class Navbar extends Component {
                                             <li><a href="#about">About</a></li>
                                             <li><a href="#pricing">Pricing</a></li>
                                             <li><a href="#reviews">Reviews</a></li>
+                                            <li><a href="/search">Search</a></li>
                                             <li><a href="#support">Support</a></li>
                                         </ul>
                                     </nav>
@@ -218,6 +260,7 @@ class Navbar extends Component {
                                             <li><a href="#about">About</a></li>
                                             <li><a href="#pricing">Pricing</a></li>
                                             <li><a href="#reviews">Reviews</a></li>
+                                            <li><a href="/search">Search</a></li>
                                             <li><a href="#support">Support</a></li>
                                             <li><a href="/login">Login</a></li>
                                         </ul>
