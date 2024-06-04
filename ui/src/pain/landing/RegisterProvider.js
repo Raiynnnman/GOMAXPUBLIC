@@ -474,66 +474,7 @@ class RegisterProvider extends Component {
                 <img width="20%" height="20%" src='/painlogo.png'/>
             </div>
             )}
-            {(this.props.landingData && this.props.landingData.data && this.props.landingData.data.pricing && 
-              this.props.landingData.data.do_billing_charge===0) && (
-                <>
-            <div style={{height:this.props.match.path.includes("short") ? 620 :'',backgroundColor:"black",display: 'flex', alignItems: 'start', justifyContent: 'center'}}>
-                <Row md="12">
-                    <Widget className="widget-auth mx-auto" 
-                        style={{backgroundColor:"black",color:"white"}} title={<h3 style={{color:"white"}} className="mt-0">Register with POUNDPAIN TECH</h3>}>
-                        <p className="widget-auth-info">
-                            Please enter the information below to register
-                        </p>
-                        <form className="mt" onSubmit={this.doLogin}>
-                            {
-                                this.props.errorMessage && (
-                                    <Alert className="alert-sm" color="danger">
-                                        {this.props.errorMessage}
-                                    </Alert>
-                                )
-                            }
-                            <p for="normal-field" md={12} className="text-md-right">
-                                <font style={{color:"red"}}>
-                                    {this.state.errorMessage}
-                                </font>
-                            </p>
-                            <div style={{marginBottom:10,borderBottom:'1px solid black'}}>
-                                Practice Name:
-                                <input className="form-control no-border" style={{backgroundColor:'white'}} value={this.state.name} onChange={this.nameChange} required name="name" placeholder="Name" />
-                            </div>
-                            <div style={{marginBottom:10,borderBottom:'1px solid black'}}>
-                                Name:
-                                <input className="form-control no-border" style={{backgroundColor:'white'}} value={this.state.first} onChange={this.firstChange} required name="first" placeholder="Name" />
-                            </div>
-                            <div style={{marginBottom:10,borderBottom:'1px solid black'}}>
-                                Email:
-                                <input className="form-control no-border" style={{backgroundColor:'white'}} value={this.state.email} onChange={this.emailChange} type="email" required name="email" placeholder="Email" />
-                            </div>
-                            <div style={{marginBottom:10,borderBottom:'1px solid black'}}>
-                                Phone:
-                                <input className="form-control no-border" style={{backgroundColor:'white'}} value={this.state.phone} onChange={this.phoneChange} type="phone" required name="phone" placeholder="Phone" />
-                                    {/*<MaskedInput style={{backgroundColor:'white',border:'0px solid white'}}
-                                      className="form-control" id="mask-phone" mask="(111) 111-1111"
-                                      onChange={this.phoneChange} value={this.state.phone}
-                                      size="10"
-                                    />*/}
-                            </div>
-                            {/*<div style={{marginBottom:0,borderBottom:'1px solid black'}}>
-                                Postal Code:
-                                <input className="form-control no-border" style={{backgroundColor:'white'}} value={this.state.zipcode} 
-                                    onChange={this.zipcodeChange} placeholder="Postal Code" />
-                            </div>*/}
-                        </form>
-                    </Widget>
-                    <Button type="submit" onClick={this.register} style={{backgroundColor:"#fa6a0a",color:"white"}} 
-                        className="auth-btn mb-3" disabled={
-                          !this.state.isValid} size="lg">Register</Button>
-                </Row>
-            </div>
-                </>
-
-            )}
-            {(this.props.landingData && this.props.landingData.data && this.props.landingData.data.pricing && this.props.landingData.data.do_billing_charge===1) && (
+            {(this.props.landingData && this.props.landingData.data && this.props.landingData.data.pricing) && (
             <div style={{height:this.props.match.path.includes("short") ? 620 :'',backgroundColor:"black",display: 'flex', alignItems: 'start', justifyContent: 'center'}}>
                 <Row md="12">
                 {(this.state.selPlan !== null) && (
@@ -587,14 +528,33 @@ class RegisterProvider extends Component {
                     </Widget>
                     )}
                     {(this.state.page === 0) && (
+                    <>
                         <div style={{marginTop:0,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        <div style={{border:"1px solid black"}}></div>
-                        <Button type="submit" onClick={this.nextPage} style={{backgroundColor:"#fa6a0a",color:"white"}} 
-                            className="auth-btn mb-3" disabled={
-                              !this.state.isValid} size="lg">Next</Button>
+                            {(this.props.landingData.data.do_billing_charge===0) && ( 
+                            <>
+                            <div style={{border:"1px solid black"}}></div>
+                            <Button type="submit" onClick={this.register} style={{backgroundColor:"#fa6a0a",color:"white"}} 
+                                className="auth-btn mb-3" disabled={
+                                  !this.state.isValid} size="lg">Register</Button>
+                            </>
+                            )}
+                            {(this.props.landingData.data.do_billing_charge===1) && ( 
+                            <>
+                            <div style={{border:"1px solid black"}}></div>
+                            <Button type="submit" onClick={this.nextPage} style={{backgroundColor:"#fa6a0a",color:"white"}} 
+                                className="auth-btn mb-3" disabled={
+                                  !this.state.isValid} size="lg">Next</Button>
+                            </>
+                            )}
                         </div>
+                    </>
                     )}
-                    {(this.state.page === 1) && (
+                    {(this.state.page === 1 && this.props.landingData.data.do_billing_charge===0) && (
+                    <>
+                        <h3>ME</h3>
+                    </>
+                    )}
+                    {(this.state.page === 1 && this.props.landingData.data.do_billing_charge===1) && (
                         <>
                         <div style={{marginTop:20}}>
                             <Row md="12">
