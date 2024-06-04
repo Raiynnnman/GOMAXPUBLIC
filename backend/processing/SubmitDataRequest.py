@@ -129,6 +129,7 @@ class SubmitDataRequest(ProcessingBase):
             self.defer(d)
             ret = {"jobid": jobstate.getJobID()}
         else:
+            print(d)
             d['data'] = proc
             ret = self.run(d)
         return ret

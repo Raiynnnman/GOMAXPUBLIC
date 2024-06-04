@@ -409,6 +409,7 @@ class RegisterProvider(RegistrationsBase):
         ret = {}
         ret['success'] = True
         params = args[1][0]
+        print(params)
         db = Query()
         RT = self.getRegistrationTypes()
         OT = self.getOfficeTypes()
@@ -491,18 +492,12 @@ class RegisterProvider(RegistrationsBase):
                 )
             """,(off_id,))
         # db.update("delete from office_addresses where office_id=%s",(off_id,))
-        if 'addresses' not in params or len(params['addresses']) < 1 and \
-            'zipcode' in params:
-            db.update(
-                """
-                    insert into office_addresses (
-                        office_id,name,zipcode
-                    ) values (%s,%s,%s)
-                """,(off_id,params['name'],params['zipcode'])
-            )
+    
         for x in params['addresses']:
+            print(x)
             if x['addr1'] is None:
                 continue
+            print("we made it here")
             db.update(
                 """
                     insert into office_addresses (
