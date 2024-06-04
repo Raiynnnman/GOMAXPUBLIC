@@ -318,9 +318,11 @@ class WelcomeEmailReset(SearchBase):
             data['__LINK__']:"%s/reset/%s" % (url,val.decode('utf-8'))
         if config.getKey("appt_email_override") is not None:
             email = config.getKey("appt_email_override")
-        print("toqueue")
         m = Mail()
-        m.defer(email,"Appointment Scheduled with POUNDPAIN TECH","templates/mail/welcome-reset.html",data)
+        if config.getKey("use_defer") is not None:
+            m.sendEmailQueued(email,"Appointment Scheduled with POUNDPAIN TECH","templates/mail/welcome-reset.html",data)
+        else:
+            m.defer(email,"Appointment Scheduled with POUNDPAIN TECH","templates/mail/welcome-reset.html",data)
         return ret
 
 class WelcomeEmail(SearchBase):
@@ -358,7 +360,10 @@ class WelcomeEmail(SearchBase):
         if config.getKey("appt_email_override") is not None:
             email = config.getKey("appt_email_override")
         m = Mail()
-        m.defer(email,"Appointment Scheduled with POUNDPAIN TECH","templates/mail/appointment.html",data)
+        if config.getKey("use_defer") is not None:
+            m.sendEmailQueued(email,"Appointment Scheduled with POUNDPAIN TECH","templates/mail/appointment.html",data)
+        else:
+            m.defer(email,"Appointment Scheduled with POUNDPAIN TECH","templates/mail/appointment.html",data)
         return ret
 
 class OfficeAppointmentEmail(SearchBase):
@@ -385,7 +390,10 @@ class OfficeAppointmentEmail(SearchBase):
         if config.getKey("appt_email_override") is not None:
             email = config.getKey("appt_email_override")
         m = Mail()
-        m.defer(email,"Client Acquired with POUNDPAIN TECH","templates/mail/office-appointment.html",data)
+        if config.getKey("use_defer") is not None:
+            m.sendEmailQueued(email,"Client Acquired with POUNDPAIN TECH","templates/mail/office-appointment.html",data)
+        else:
+            m.defer(email,"Client Acquired with POUNDPAIN TECH","templates/mail/office-appointment.html",data)
         return ret
 
 class ConsultantAppointmentEmail(SearchBase):
@@ -412,7 +420,10 @@ class ConsultantAppointmentEmail(SearchBase):
         if config.getKey("appt_email_override") is not None:
             email = config.getKey("appt_email_override")
         m = Mail()
-        m.defer(email,"Appointment Scheduled with POUNDPAIN TECH","templates/mail/consultant-appointment.html",data)
+        if config.getKey("use_defer") is not None:
+            m.sendEmailQueued(email,"Appointment Scheduled with POUNDPAIN TECH","templates/mail/consultant-appointment.html",data)
+        else:
+            m.defer(email,"Appointment Scheduled with POUNDPAIN TECH","templates/mail/consultant-appointment.html",data)
         return ret
 
 class SearchRegister(SearchBase):

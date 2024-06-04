@@ -307,7 +307,10 @@ class ResetPasswordGetToken(SubmitDataRequest):
         if self.isUIV2(): 
             data['__LINK__']:"%s/reset/%s" % (url,val.decode('utf-8'))
         m = Mail()
-        m.defer(email,"Reset Password Request","templates/mail/reset-password.html",data)
+        if config.getKey("use_defer") is not None:
+            m.sendEmailQueued(email,"Reset Password Request","templates/mail/reset-password.html",data)
+        else:
+            m.defer(email,"Reset Password Request","templates/mail/reset-password.html",data)
         return ret
 
 class UserLoginTest(unittest.TestCase):

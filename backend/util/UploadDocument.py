@@ -13,7 +13,6 @@ from util import encryption,calcdate
 from util import S3Processing
 from processing import Stripe
 from util.Logging import Logging
-from util.Mail import Mail
 from common import settings
 from util.DBOps import Query
 from processing.SubmitDataRequest import SubmitDataRequest

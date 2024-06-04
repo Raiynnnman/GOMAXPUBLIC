@@ -11,7 +11,6 @@ import mimetypes
 from util import encryption
 from util import S3Processing
 from util.Logging import Logging
-from util.Mail import Mail
 from common import settings
 from util.DBOps import Query
 from processing.SubmitDataRequest import SubmitDataRequest

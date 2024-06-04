@@ -14,7 +14,6 @@ from util import S3Processing
 from util.UploadDocument import uploadDocument
 from processing import Stripe
 from util.Logging import Logging
-from util.Mail import Mail
 from common import settings
 from util.DBOps import Query
 from processing.SubmitDataRequest import SubmitDataRequest

@@ -706,8 +706,12 @@ class CustomAppointmentEmail(MyDayBase):
         if self.isUIV2(): 
             data['__LINK__']:"%s/login" % (url,)
         m = Mail()
-        m.defer(email, "Appointment Scheduled with POUNDPAIN TECH",
-                "templates/mail/appointment.html", data)
+        if config.getKey("use_defer") is not None:
+            m.sendEmailQueued(email, "Appointment Scheduled with POUNDPAIN TECH",
+                    "templates/mail/appointment.html", data)
+        else:
+            m.defer(email, "Appointment Scheduled with POUNDPAIN TECH",
+                    "templates/mail/appointment.html", data)
         return ret
 
 

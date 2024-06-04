@@ -120,7 +120,7 @@ class RegistrationUpdate(RegistrationsBase):
             email = config.getKey("appt_email_override")
         m = Mail()
         if config.getKey("use_defer") is not None:
-            m.defer(email,"Registration with POUNDPAIN TECH","templates/mail/registration-verification.html",data)
+            m.sendEmailQueued(email,"Registration with POUNDPAIN TECH","templates/mail/registration-verification.html",data)
         else:
             m.send_email(email,"Registration with POUNDPAIN TECH","templates/mail/registration-verification.html",data)
         db.commit()
@@ -999,8 +999,8 @@ class RegisterProvider(RegistrationsBase):
         if self.isUIV2(): 
             data['__OFFICE_URL__'] = "%s/app/main/admin/office/%s" % (url,off_id)
         if config.getKey("use_defer") is not None:
-            m.defer(email,"Registration with POUNDPAIN TECH","templates/mail/registration-verification.html",data)
-            m.defer(sysemail,"New Customer Signed Up","templates/mail/office-signup.html",data)
+            m.sendEmailQueued(email,"Registration with POUNDPAIN TECH","templates/mail/registration-verification.html",data)
+            m.sendEmailQueued(sysemail,"New Customer Signed Up","templates/mail/office-signup.html",data)
         else:
             m.send_email(email,"Registration with POUNDPAIN TECH","templates/mail/registration-verification.html",data)
             m.send_email(sysemail,"New Customer Signed Up","templates/mail/office-signup.html",data)
@@ -1244,8 +1244,8 @@ class RegisterReferrer(RegistrationsBase):
             data['__OFFICE_URL__'] = "%s/app/main/admin/office/%s" % (url,insid)
         sysemail = config.getKey("support_email")
         if config.getKey("use_defer") is not None:
-            m.defer(email,"Registration with POUNDPAIN TECH","templates/mail/registration-verification.html",data)
-            m.defer(sysemail,"New Referrer Signed Up","templates/mail/office-signup.html",data)
+            m.sendEmailQueued(email,"Registration with POUNDPAIN TECH","templates/mail/registration-verification.html",data)
+            m.sendEmailQueued(sysemail,"New Referrer Signed Up","templates/mail/office-signup.html",data)
         else:
             m.send_email(email,"Registration with POUNDPAIN TECH","templates/mail/registration-verification.html",data)
             m.send_email(sysemail,"New Referrer Signed Up","templates/mail/office-signup.html",data)

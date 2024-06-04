@@ -699,8 +699,12 @@ class WelcomeEmail(AdminBase):
         } 
         if self.isUIV2(): 
             data['__LINK__']:"%s/login" % (url,)
+        
         m = Mail()
-        m.defer(email,"Welcome to POUNDPAIN TECH","templates/mail/welcome.html",data)
+        if config.getKey("use_defer") is not None:
+            m.sendEmailQueued(email,"Welcome to POUNDPAIN TECH","templates/mail/welcome.html",data)
+        else:
+            m.defer(email,"Welcome to POUNDPAIN TECH","templates/mail/welcome.html",data)
         return ret
 
 class PlansList(AdminBase):
@@ -1447,13 +1451,16 @@ class WelcomeEmailReset(AdminBase):
             email = config.getKey("appt_email_override")
         sysemail = config.getKey("support_email")
         m = Mail()
-        m.defer(email,"Welcome to POUNDPAIN TECH","templates/mail/welcome-reset.html",data)
         data['__OFFICE_NAME__'] = params['name']
         data['__OFFICE_URL__'] = "%s/#/app/main/admin/office/%s" % (url,off_id)
         if self.isUIV2(): 
             data['__OFFICE_URL__'] = "%s/app/main/admin/office/%s" % (url,off_id)
-        m.defer(email,"Welcome to POUNDPAIN TECH","templates/mail/welcome-reset.html",data)
-        m.defer(sysemail,"New Customer Signed Up","templates/mail/office-signup.html",data)
+        if config.getKey("use_defer") is not None:
+            m.sendEmailQueued(email,"Welcome to POUNDPAIN TECH","templates/mail/welcome-reset.html",data)
+            m.sendEmailQueued(sysemail,"New Customer Signed Up","templates/mail/office-signup.html",data)
+        else:
+            m.defer(email,"Welcome to POUNDPAIN TECH","templates/mail/welcome-reset.html",data)
+            m.defer(sysemail,"New Customer Signed Up","templates/mail/office-signup.html",data)
         return ret
 
 class RegistrationList(AdminBase):

@@ -17,7 +17,7 @@ log = Logging()
 @app.task(bind=True)
 def sendEmail(self, *args):
     m = Mail()
-    m.send(*args)
+    m.send_email(*args)
 
 class Mail:
 
@@ -44,6 +44,9 @@ class Mail:
                 future.result(timeout=timeout)
             except TimeoutError:
                 raise TimeoutError("Task exceeded timeout")
+
+    def sendEmailQueued(self,*args):
+        sendEmail.delay(*args)
 
     def send_email(self, to, subject, template, data):
         if config.getKey("email_to_override") is not None:
