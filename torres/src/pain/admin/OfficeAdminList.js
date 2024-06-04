@@ -837,7 +837,7 @@ class OfficeList extends Component {
                                   data={this.state.selected.history} 
                                   columns={ historyheads }/>
                         )}
-                        {(this.state.subTab === 'history') && (
+                        {(this.state.subTab === 'potentials') && (
                               <PainTable
                                   keyField="id"
                                   data={this.state.selected.potential} 

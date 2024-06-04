@@ -17,7 +17,7 @@ export const handleError = function(er,callback,args) {
         localStorage.removeItem("CONTEXT");
         if (!window.location.toString().includes("login")) { 
             if (!window.location.toString().includes("password")) { 
-                window.location = "/index.html?login=true";
+                window.location = "/login";
             }
         } 
     } else { 

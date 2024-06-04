@@ -94,10 +94,11 @@ class CommissionAdminList extends Component {
     }
 
     componentDidMount() {
-        if (this.props.currentUser.entitlements && 
+        console.log("p",this.props);
+        if (this.props.currentUser && this.props.currentUser.entitlements && 
             this.props.currentUser.entitlements.includes('BusinessDevelopmentRepresentative')) { 
             this.props.dispatch(getCommissionUserAdmin({page:this.state.page,limit:this.state.pageSize}))
-        } else if (this.props.currentUser.entitlements && 
+        } else if (this.props.currentUser && this.props.currentUser.entitlements && 
             this.props.currentUser.entitlements.includes('AccountExecutive')) { 
             this.props.dispatch(getCommissionUserAdmin({page:this.state.page,limit:this.state.pageSize}))
         } else {  

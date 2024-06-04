@@ -506,28 +506,21 @@ class InvoiceAdminList extends Component {
                     <h5>Details</h5>
                 </Grid>
                 <Grid item xs="7">
-                    <h5>Stripe Status</h5>
+                    <h5>Provider Status</h5>
                 </Grid>
             </Grid>
             <hr/>
             <Grid container xs="12">
                 <Grid item xs="5">
                     <Grid container xs="12" style={{marginBottom: 5}}>
-                        <Grid item xs="4">
-                            ID:
-                        </Grid>
                         <Grid item xs="7">
-                            {this.state.selected.id} 
+                            <TemplateTextField label='ID' readOnly value={this.state.selected.id}/>
                         </Grid>
                     </Grid>
                     <Grid container xs="12" style={{marginBottom: 5}}>
-                        <Grid item xs="4">
-                            Status
-                        </Grid>
                         <Grid item xs="7">
                               <TemplateSelect
-                                  closeMenuOnSelect={true}
-                                  isSearchable={false}
+                                  label='Status'
                                   onChange={this.onInvoiceStatusChange}
                                   value={{label:this.props.invoiceAdmin.data.config.status.filter((e) => e.id === 
                                                 this.state.selected.invoice_status_id)[0].name
@@ -536,7 +529,7 @@ class InvoiceAdminList extends Component {
                                     return (
                                         { 
                                         label: e.name,
-                                        value: e.id
+                                        value: e.name
                                         }
                                     )
                                   })}
