@@ -87,6 +87,9 @@ class Reset extends React.Component {
       <>
         <Navbar/>
         <div style={{marginTop:20}} className="row align-items-center">
+            {this.props.errorMessage && ( 
+                <h4 style={{color:'red'}}>{this.props.errorMessage}</h4>
+            )}
             <div style={{display:'flex',alignItems:'center',justifyContent:'center'}}> 
                 <TemplateTextFieldPassword style={{width:400}} label='Password' helpText='Password' onChange={this.changePassword}/>
             </div>

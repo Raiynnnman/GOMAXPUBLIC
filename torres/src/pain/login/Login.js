@@ -52,6 +52,9 @@ class Login extends React.Component {
     });
   };
 
+  componentWillReceiveProps(p) {
+        console.log('cwrp',p);
+  } 
   componentDidMount() {
     const params = new URLSearchParams(this.props.location.search);
     const token = params.get('token');
@@ -62,6 +65,8 @@ class Login extends React.Component {
   }
 
   render() {
+    console.log("p",this.props);
+    console.log("s",this.state);
     return (
       <ThemeProvider theme={defaultTheme}>
         <Navbar />
@@ -81,6 +86,9 @@ class Login extends React.Component {
               <Grid container spacing={2}>
                 <Grid item xs={12} md={6} sx={{ borderRight: { md: '1px solid #eee' }, pr: { xs: 0, md: 2 } }}>
                   <Box component="form" noValidate onSubmit={this.handleSubmit} sx={{ mt: 1 }}>
+                    {this.props.errorMessage && ( 
+                        <h4 style={{color:'red'}}>{this.props.errorMessage}</h4>
+                    )}
                     <Typography variant="h6" align="center" gutterBottom>
                       Login
                     </Typography>
@@ -144,6 +152,13 @@ class Login extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => ({});
+function mapStateToProps(state) {
+    return {
+        isFetching: state.auth.isFetching,
+        isAuthenticated: state.auth.isAuthenticated,
+        errorMessage: state.auth.errorMessage,
+        auth: state.auth
+    };
+}
 
 export default withRouter(connect(mapStateToProps)(Login));

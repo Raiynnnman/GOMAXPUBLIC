@@ -73,7 +73,7 @@ export function doInit() {
 }
 
 export function logoutUser() {
-    window.location.href='/#/login';
+    window.location.href='/login';
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     axios.defaults.headers.common['Authorization'] = "";
