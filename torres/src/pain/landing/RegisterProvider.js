@@ -22,18 +22,8 @@ import AppSpinner from '../utils/Spinner';
 import formatPhoneNumber from '../utils/formatPhone';
 import { getLandingData } from '../../actions/landingData';
 import { registerProvider } from '../../actions/registerProvider';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-
-const defaultTheme = createTheme({
-    palette: {
-        primary: {
-            main: '#FF5733',
-        },
-    },
-    typography: {
-        fontFamily: "'Montserrat', sans-serif",
-    },
-});
+import { ThemeProvider } from '@mui/material/styles';
+import theme from '../../theme';
 
 class RegisterProvider extends Component {
     formRef = createRef();
@@ -72,11 +62,16 @@ class RegisterProvider extends Component {
         const { id, pq_id } = this.props.match.params;
         this.setState({ plan: id, pq_id });
         this.props.dispatch(getLandingData({ type: this.state.provtype, pq_id }));
+
+        const { location } = this.props;
+        if (location.state && location.state.selectedPlan) {
+            this.setState({ selPlan: location.state.selectedPlan });
+        }
     }
 
     componentDidUpdate(prevProps) {
         if (this.props.landingData !== prevProps.landingData && this.props.landingData.data) {
-            const { pq, pricing } = this.props.landingData.data;
+            const { pq, pricing, system_settings } = this.props.landingData.data;
             if (pq && this.state.pq_id && !this.state.phone) {
                 this.setState({
                     phone: formatPhoneNumber(pq.phone),
@@ -84,12 +79,17 @@ class RegisterProvider extends Component {
                     name: pq.name,
                     email: pq.email,
                     showAddresses: pq.addr,
-                    selPlan: pricing.find((e) => parseInt(pq.plan) === e.id) || null,
+                    selPlan: this.state.selPlan || pricing.find((e) => parseInt(pq.plan) === e.id) || null,
                 });
             } else if (pricing && !this.state.selPlan) {
                 this.setState({
                     selPlan: pricing.find((e) => parseInt(this.state.plan) === e.id) || null,
                 });
+            }
+
+            // Skip the credit card details step if do_billing_charge is 0 -- Tedy Yoahnes
+            if (system_settings?.do_billing_charge === 0 && this.state.page === 0) {
+                this.setState({ page: 1 });
             }
         }
     }
@@ -293,7 +293,7 @@ class RegisterProvider extends Component {
                                 onClick={this.nextPage}
                                 sx={{ borderRadius: 8, backgroundColor: '#FF5733', color: '#fff', padding: '10px 45px', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase' }}
                             >
-                                {landingData.data.do_billing_charge !== 0 ? 'Next' : 'Register'}
+                                {landingData.data.system_settings?.do_billing_charge !== 0 ? 'Next' : 'Register'}
                             </Button>
                         </Box>
                     </Box>
@@ -368,7 +368,7 @@ class RegisterProvider extends Component {
         const steps = ['Register Information', 'Payment Details'];
 
         return (
-            <ThemeProvider theme={defaultTheme}>
+            <ThemeProvider theme={theme}>
                 <Navbar />
                 <Pricing onSelectPlan={this.handleSelectPlan} showButton={true} />
                 <CssBaseline />

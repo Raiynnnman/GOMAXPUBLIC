@@ -34,7 +34,7 @@ class HomeHorizontal extends Component {
                 <Download horizontal="horizontal" />
 
                 {/* Pricing */}
-                <Pricing showButton={false} />
+                <Pricing   />
 
                 {/* Testimonial */}
                 <Testimonial />
