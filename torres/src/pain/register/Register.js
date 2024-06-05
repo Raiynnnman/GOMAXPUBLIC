@@ -122,7 +122,6 @@ class Register extends React.Component {
         this.props.dispatch(registerProvider(providerCreds));
         break;
       case 'legal':
-        console.log(creds.userType);
         break;
       default:
         console.error("Invalid user type");
@@ -171,11 +170,11 @@ class Register extends React.Component {
                   sx={{ marginTop: 2, marginBottom: 2, backgroundColor: '#eee', borderRadius: '8px' }}
                 >
                   <MenuItem value="" disabled>
-                    Who are you?
+                    Provider or Customer?
                   </MenuItem>
-                  <MenuItem value="Legal">Legal</MenuItem>
                   <MenuItem value="Provider">Provider</MenuItem>
-                  <MenuItem value="User">User</MenuItem>
+                  <MenuItem value="Legal">Legal</MenuItem>
+                  <MenuItem value="User">Customer</MenuItem>
                 </Select>
                 <TextField
                   margin="normal"

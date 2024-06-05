@@ -94,7 +94,6 @@ class CommissionAdminList extends Component {
     }
 
     componentDidMount() {
-        console.log("p",this.props);
         if (this.props.currentUser && this.props.currentUser.entitlements && 
             this.props.currentUser.entitlements.includes('BusinessDevelopmentRepresentative')) { 
             this.props.dispatch(getCommissionUserAdmin({page:this.state.page,limit:this.state.pageSize}))

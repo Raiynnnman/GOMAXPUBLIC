@@ -52,9 +52,6 @@ class Login extends React.Component {
     });
   };
 
-  componentWillReceiveProps(p) {
-        console.log('cwrp',p);
-  } 
   componentDidMount() {
     const params = new URLSearchParams(this.props.location.search);
     const token = params.get('token');
@@ -65,8 +62,6 @@ class Login extends React.Component {
   }
 
   render() {
-    console.log("p",this.props);
-    console.log("s",this.state);
     return (
       <ThemeProvider theme={defaultTheme}>
         <Navbar />

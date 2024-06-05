@@ -28,6 +28,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--dryrun', dest="dryrun", action="store_true")
 parser.add_argument('--debug', dest="debug", action="store_true")
 parser.add_argument('--no_commit', dest="no_commit", action="store_true")
+parser.add_argument('--check_pq', dest="check_pq", action="store_true")
 parser.add_argument('--limit', dest="limit", action="store")
 args = parser.parse_args()
 
@@ -39,13 +40,14 @@ q = """
     from 
         office 
     where 
-    (active = 1) or (sm_id is not null)
+        active = 1 
     """
 
 off = db.query(q)
 
 CONTACT_OBJ = SM_Contacts()
 COMPANY_OBJ = SM_Companies()
+COMPANY_OBJ.setDebug(True)
 DEALS_OBJ = SM_Deals()
 ST = getIDs.getLeadStrength()
 BS = getIDs.getBillingSystem()
@@ -60,16 +62,25 @@ DUPS = 0
 COMPANIES = sm_util.getCompanies(debug=args.debug)
 CONTACTS = sm_util.getContacts(debug=args.debug)
 DEALS = sm_util.getDeals(debug=args.debug)
+COMPANY_HASH = {}
+
+for x in COMPANIES:
+    j = COMPANIES[x]
+    myid = j['textCustomField1']
+    if myid is None or len(myid) < 1:
+        continue
+    myid = str(myid)
+    COMPANY_HASH[myid] = j
+
+print("COMPHASHLEN=%s" % len(COMPANY_HASH))
 
 CNTR = 0
-EXCEPT_LIST = []
-for x in COMPANIES:
+for x in off:
     j = x
-    newj = json.loads(json.dumps(j))
-    origj = json.loads(json.dumps(j))
+    print(json.dumps(j,indent=4))
     users = db.query("""
         select
-            first_name,last_name,email,phone
+            id,first_name,last_name,email,phone
         from 
             users u,
             office_user ou
@@ -82,13 +93,15 @@ for x in COMPANIES:
         users = users[0]
     else:
         users = {
+            'id': 0,
+            'email': '',
             'first_name':'',
             'last_name':'',
             'phone':''
         } 
     addr = db.query("""
         select
-            addr1,addr2,city,state,zipcode
+            addr1,addr2,city,state,zipcode,phone
         from 
             office o,
             office_addresses oa
@@ -103,36 +116,79 @@ for x in COMPANIES:
         addr = { 
            'phone': '' 
         } 
-    try:
-        if x['sm_id'] is None:
-            # create new
-            pass
-        else:
-            pass
+    myid = j['id']
+    if str(myid) in COMPANY_HASH:
+        print(json.dumps(COMPANY_HASH[str(myid)]))
+        cid = COMPANY_HASH[str(myid)]['id']
+        h = COMPANY_HASH[str(myid)]
+        if args.check_pq:
+            off = db.query("""
+                select office_id from provider_queue where id=%s
+                """,(cid,)
+            )
+            if len(off) < 1:
+                raise Exception("ERROR: didnt find office for pq=%s" % cid)
+                continue
+            myid=off[0]['office_id']
+            print("newid=%s" % myid)
+        print("Found %s,%s,%s" % (myid,j['id'],cid))
+        u = '%s/#/app/main/admin/office/%s' % (config.getKey("host_url"),myid)
+        if h['name'] == x['name'] and h['textCustomField2'] == u and \
+           h['checkboxCustomField1'] == x['active'] and h['textCustomField1'] == str(myid):
+            print("%s: All values match, skipping" % x['name'])
+            continue
+        db.update("""
+            update office set sm_id = null where sm_id = %s
+            """,(cid,)
+        )
+        db.update("""
+            update office set sm_id = %s where id = %s
+            """,(cid,myid)
+        )
         comp = {
-            'company': j['email'],
+            'id': cid,
+            'name': x['name'],
+            'textCustomField2': u,
+            'textCustomField1': myid,
+            'checkboxCustomField1': x['active']
+        }
+        r = COMPANY_OBJ.update(comp,dryrun=args.no_commit,raw=True)
+    else:
+        print("didnt find %s (%s)" % (myid,x['name']))
+        u = '%s/#/app/main/admin/office/%s' % (config.getKey("host_url"),myid)
+        comp = {
             'checkboxCustomField1': j['active'],
+            'textCustomField2': u,
+            'textCustomField1': j['id'],
+            'tags': 'Import Platform',
             'name': j['name'],
-            'phone': u['phone']
+            'phone': users['phone']
         } 
-        #r = COMPANY_OBJ.update(comp,dryrun=args.no_commit,raw=True)
+        r = COMPANY_OBJ.update(comp,dryrun=args.no_commit,raw=True)
         company_sm_id = r['id']
         contact = { 
-            'email': j['email'],
+            'email': users['email'],
             'company': company_sm_id,
-            'firstName': j['first'],
-            'lastName': j['last'],
-            'tags': 'Darius Warm',
-            'phone': j['phone'],
-            'website': j['website']
+            'firstName': users['first_name'],
+            'lastName': users['last_name'],
+            'tags': 'Import Platform',
+            'phone': users['phone']
         } 
-        #r = CONTACT_OBJ.update(contact,dryrun=args.no_commit,raw=True)
-        user_sm_id = r['id']
-    except Exception as e:
-        print(str(e))
+        r = CONTACT_OBJ.update(contact,dryrun=args.no_commit,raw=True)
+        contact_sm_id = r['id']
+        db.update("""
+            update office set sm_id=%s where id=%s
+            """,(company_sm_id,myid)
+        )
+        db.update("""
+            update users set sm_id=%s where id=%s
+            """,(company_sm_id,users['id'])
+        )
 
     CNTR += 1
     if args.limit is not None and CNTR >= int(args.limit):
         break
     print("cntr=%s" % CNTR)
+
+db.commit()
 

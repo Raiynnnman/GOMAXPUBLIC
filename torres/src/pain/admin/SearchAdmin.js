@@ -194,7 +194,6 @@ class SearchAdmin extends Component {
     }
 
     render() {
-        console.log("p",this.props);
         return (
         <>
             <Navbar/>

@@ -410,6 +410,10 @@ class SM_Contacts(SM_Base):
                     toset[v] = upd[x]
             for x in additional:
                 toset[x] = upd[x]
+        if 'id' in toset:
+            if self.__DEBUG__:
+                print("setting to PUT")
+            self.setType('PUT')
         if dryrun:
             print("CONTACTSET:%s" % json.dumps(toset,indent=4))
             return {'id':None}
@@ -454,6 +458,7 @@ class SM_Companies(SM_Base):
             "company.wonDealCount",
             "company.lostDealCount",
             "company.openDealCount",
+            "company.phone",
             "company.photo",
             "company.createdAt",
             "company.id"
@@ -506,11 +511,20 @@ class SM_Companies(SM_Base):
                     toset[v] = upd[x]
             for x in additional:
                 toset[x] = upd[x]
+        if 'id' in toset:
+            if self.__DEBUG__:
+                print("setting to PUT")
+            self.setCall('/apis/company/v4/%s' % toset['id'])
+            self.setType('PUT')
+            self.setIsUpdate(True)
         if dryrun:
             print("COMPANYSET:%s" % json.dumps(toset,indent=4))
             return {'id':None}
         else:
-            return self.getData(payload=json.dumps(toset))
+            ret = self.getData(payload=json.dumps(toset))
+            if self.__DEBUG__:
+                print(ret)
+            return ret
 
 class SM_Deals(SM_Base):
     def __init__(self):
@@ -556,6 +570,7 @@ class SM_Deals(SM_Base):
             "deal.lastActivityAt",
             "deal.primaryCompany.name",
             "deal.primaryCompany.id",
+            "deal.primaryCompany.phone",
             "deal.primaryCompany.photo",
             "deal.lostReason",
             "deal.currency",
@@ -602,7 +617,7 @@ class SM_Deals(SM_Base):
         j = self.getData(payload=toget)
         return j
 
-    def update(self,args,dryrun=False):
+    def update(self,args,dryrun=False,raw=False):
         self.setCall('/apis/deal/v4')
         self.setType('POST')
         upd = args
@@ -611,26 +626,33 @@ class SM_Deals(SM_Base):
             self.setType('PUT')
             self.setIsUpdate(True)
         toset = {}
-        additional = [
-            'primaryContact',
-            'primaryCompany',
-            'owner',
-            'tags',
-            'stage',
-            'title'
-        ]
-        for x in upd:
-            if x in DEAL_MAPPING:
-                v = DEAL_MAPPING[x] 
-                toset[v] = upd[x]
-                if 'checkbox' in v:
-                    if toset[v]:
-                        toset[v] = True
-                    else:
-                        toset[v] = False
-        for x in additional:
-            if x in upd:
-                toset[x] = upd[x]
+        if raw:
+            toset = args
+        else:
+            additional = [
+                'primaryContact',
+                'primaryCompany',
+                'owner',
+                'tags',
+                'stage',
+                'title'
+            ]
+            for x in upd:
+                if x in DEAL_MAPPING:
+                    v = DEAL_MAPPING[x] 
+                    toset[v] = upd[x]
+                    if 'checkbox' in v:
+                        if toset[v]:
+                            toset[v] = True
+                        else:
+                            toset[v] = False
+            for x in additional:
+                if x in upd:
+                    toset[x] = upd[x]
+        if 'id' in toset:
+            if self.__DEBUG__:
+                print("setting to PUT")
+            self.setType('PUT')
         if dryrun:
             print("DEALSET:%s" % json.dumps(toset,indent=4))
             return {'id':None}
