@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, createRef } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import {
@@ -11,18 +11,17 @@ import {
     Box,
     CssBaseline,
     Snackbar,
-    Alert
+    Alert,
+    Stepper,
+    Step,
+    StepLabel
 } from '@mui/material';
 import Navbar from '../../components/Navbar';
 import Pricing from '../../components/Pricing';
-import { PaymentForm, CreditCard } from 'react-square-web-payments-sdk';
 import AppSpinner from '../utils/Spinner';
 import formatPhoneNumber from '../utils/formatPhone';
 import { getLandingData } from '../../actions/landingData';
-import { searchProvider } from '../../actions/searchProvider';
 import { registerProvider } from '../../actions/registerProvider';
-
-import { squareAppKey, squareLocationKey } from '../../squareConfig';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const defaultTheme = createTheme({
@@ -37,10 +36,11 @@ const defaultTheme = createTheme({
 });
 
 class RegisterProvider extends Component {
+    formRef = createRef();
+
     state = {
         page: 0,
         plan: 0,
-        selectedAddrId: null,
         card: null,
         currentName: '',
         currentPhone: '',
@@ -57,14 +57,12 @@ class RegisterProvider extends Component {
         coupon_id: null,
         couponRed: '$0.00',
         couponRedValue: 0,
-        addresses: [],
         showAddresses: [],
         intentid: '',
         selPlan: null,
         license: '',
         provtype: 1,
         provtypeSel: ['Chiropractor'],
-        showPaymentForm: false,
         snackbarOpen: false,
         snackbarMessage: '',
         snackbarSeverity: 'success'
@@ -73,16 +71,11 @@ class RegisterProvider extends Component {
     componentDidMount() {
         const { id, pq_id } = this.props.match.params;
         this.setState({ plan: id, pq_id });
-        this.props.dispatch(
-            getLandingData({ type: this.state.provtype, pq_id })
-        );
+        this.props.dispatch(getLandingData({ type: this.state.provtype, pq_id }));
     }
 
     componentDidUpdate(prevProps) {
-        if (
-            this.props.landingData !== prevProps.landingData &&
-            this.props.landingData.data
-        ) {
+        if (this.props.landingData !== prevProps.landingData && this.props.landingData.data) {
             const { pq, pricing } = this.props.landingData.data;
             if (pq && this.state.pq_id && !this.state.phone) {
                 this.setState({
@@ -97,17 +90,6 @@ class RegisterProvider extends Component {
                 this.setState({
                     selPlan: pricing.find((e) => parseInt(this.state.plan) === e.id) || null,
                 });
-            }
-        }
-
-        if (this.props.searchProvider !== prevProps.searchProvider && this.state.page === 1 && !this.state.pq_id) {
-            const potentialAddresses = this.props.searchProvider.data.potentials;
-            if (potentialAddresses) {
-                const newAddresses = potentialAddresses.map((e) => e.id).sort();
-                const currentAddresses = this.state.showAddresses.map((e) => e.id).sort();
-                if (JSON.stringify(newAddresses) !== JSON.stringify(currentAddresses)) {
-                    this.setState({ showAddresses: potentialAddresses });
-                }
             }
         }
     }
@@ -164,20 +146,15 @@ class RegisterProvider extends Component {
     };
 
     nextPage = () => {
-        this.setState((prevState) => ({ page: prevState.page + 1 }), this.searchProvider);
+        this.setState((prevState) => ({ page: prevState.page + 1 }));
     };
 
-    searchProvider = () => {
-        const { name, phone, email } = this.state;
-        this.props.dispatch(searchProvider({ n: name, p: phone, e: email }));
-    };
-
-    saveCard = (card, intentid) => {
-        this.setState({ card, intentid }, this.registerProvider);
+    prevPage = () => {
+        this.setState((prevState) => ({ page: prevState.page - 1 }));
     };
 
     registerProvider = () => {
-        const { email, first, name, phone, selPlan, card, last, zipcode, showAddresses, coupon_id, pq_id, provtype } = this.state;
+        const { email, first, name, phone, selPlan, last, zipcode, showAddresses, coupon_id, pq_id, provtype } = this.state;
         const verifiedAddresses = showAddresses.filter((e) => e.verified);
         const registrationData = {
             email,
@@ -186,7 +163,6 @@ class RegisterProvider extends Component {
             phone,
             plan: selPlan.id,
             provtype,
-            card,
             last,
             zipcode,
             addresses: verifiedAddresses,
@@ -218,28 +194,187 @@ class RegisterProvider extends Component {
     handleSelectPlan = (planId) => {
         const { landingData } = this.props;
         const selectedPlan = landingData.data.pricing.find(plan => plan.id === planId);
-        this.setState({ selPlan: selectedPlan });
+        this.setState({ selPlan: selectedPlan, page: 0 }, () => {
+            if (this.formRef.current) {
+                this.formRef.current.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    };
+
+    renderStepContent = (step) => {
+        const { selPlan, phone, couponRed, error_message, snackbarOpen, snackbarMessage, snackbarSeverity } = this.state;
+        const { registerProvider, landingData } = this.props;
+        switch (step) {
+            case 0:
+                return (
+                    <Box component="form" noValidate sx={{ mt: 1 }}>
+                        <Typography variant="h6" align="center" gutterBottom>
+                            Please enter the information below to register
+                        </Typography>
+                        {error_message && (
+                            <Typography color="error" gutterBottom>
+                                {error_message}
+                            </Typography>
+                        )}
+                        <Grid container spacing={3}>
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    required
+                                    label="Practice Name"
+                                    name="name"
+                                    onChange={this.handleInputChange}
+                                    margin="normal"
+                                    sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    fullWidth
+                                    required
+                                    label="First Name"
+                                    name="first"
+                                    onChange={this.handleInputChange}
+                                    margin="normal"
+                                    sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    fullWidth
+                                    required
+                                    label="Last Name"
+                                    name="last"
+                                    onChange={this.handleInputChange}
+                                    margin="normal"
+                                    sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    required
+                                    label="Email"
+                                    name="email"
+                                    onChange={this.handleInputChange}
+                                    margin="normal"
+                                    sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    required
+                                    label="Phone"
+                                    name="phone"
+                                    value={phone}
+                                    onChange={this.handlePhoneChange}
+                                    margin="normal"
+                                    sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                                    InputLabelProps={{ shrink: true }}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    required
+                                    label="Zipcode"
+                                    name="zipcode"
+                                    onChange={this.handleInputChange}
+                                    margin="normal"
+                                    sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                                />
+                            </Grid>
+                        </Grid>
+                        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={this.nextPage}
+                                sx={{ borderRadius: 8, backgroundColor: '#FF5733', color: '#fff', padding: '10px 45px', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase' }}
+                            >
+                                {landingData.data.do_billing_charge !== 0 ? 'Next' : 'Register'}
+                            </Button>
+                        </Box>
+                    </Box>
+                );
+            case 1:
+                return (
+                    <Box sx={{ mt: 3 }}>
+                        <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
+                            <Typography variant="h6" gutterBottom>
+                                Checkout
+                            </Typography>
+                            <Grid container spacing={2} sx={{ mt: 1 }}>
+                                <Grid item xs={7}>
+                                    <Typography variant="body1">Description</Typography>
+                                </Grid>
+                                <Grid item xs={5} textAlign="right">
+                                    <Typography variant="body1">Price</Typography>
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <Typography variant="body2">{selPlan.description}</Typography>
+                                </Grid>
+                                <Grid item xs={12} textAlign="right">
+                                    <Typography variant="body2">${parseFloat(selPlan.upfront_cost * selPlan.duration).toFixed(2)}</Typography>
+                                </Grid>
+                                {selPlan.coupons.length > 0 && (
+                                    <>
+                                        <Grid item xs={7}>
+                                            <TextField
+                                                fullWidth
+                                                placeholder="Enter Coupon Code"
+                                                value={this.state.coupon}
+                                                onChange={this.handleCouponChange}
+                                                sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                                            />
+                                        </Grid>
+                                        <Grid item xs={5} textAlign="right">
+                                            <Typography variant="body2">{couponRed}</Typography>
+                                        </Grid>
+                                    </>
+                                )}
+                            </Grid>
+                            <Grid container spacing={2} sx={{ mt: 2 }}>
+                                <Grid item xs={7}>
+                                    <Typography variant="body1">Total</Typography>
+                                </Grid>
+                                <Grid item xs={5} textAlign="right">
+                                    <Typography variant="body1">{this.calculatePrice()}</Typography>
+                                </Grid>
+                            </Grid>
+                        </Paper>
+                        <Box sx={{ mt: 3 }}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                sx={{ borderRadius: 8, backgroundColor: '#FF5733', color: '#fff', padding: '10px 45px', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase', mb: 2 }}
+                                onClick={this.registerProvider}
+                            >
+                                Register
+                            </Button>
+                        </Box>
+                    </Box>
+                );
+            default:
+                return 'Unknown step';
+        }
     };
 
     render() {
-        const { page, selPlan, phone, couponRed, error_message, snackbarOpen, snackbarMessage, snackbarSeverity } = this.state;
-        const { registerProvider, searchProvider, landingData } = this.props;
+        const { page, selPlan, snackbarOpen, snackbarMessage, snackbarSeverity } = this.state;
+        const { registerProvider, landingData } = this.props;
+
+        const steps = ['Register Information', 'Payment Details'];
 
         return (
             <ThemeProvider theme={defaultTheme}>
                 <Navbar />
                 <Pricing onSelectPlan={this.handleSelectPlan} showButton={true} />
                 <CssBaseline />
-                {(registerProvider.isReceiving || searchProvider.isReceiving) && <AppSpinner />}
+                {registerProvider.isReceiving && <AppSpinner />}
                 {landingData.data && (
-                    <Box 
-                    sx={{
-                            minHeight: '100vh', 
-                            display: 'flex',
-                            alignItems: 'center', 
-                            justifyContent: 'center', 
-                            px: 2 
-                    }}>
+                    <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', px: 2 }}>
                         <Container maxWidth="md">
                             {selPlan ? (
                                 <Paper
@@ -251,188 +386,29 @@ class RegisterProvider extends Component {
                                         boxShadow: '0 5px 15px rgba(0, 0, 0, 0.35)',
                                         backgroundColor: '#fff',
                                     }}
+                                    ref={this.formRef}
                                 >
-                                    <>
-                                        {page === 0 && (
-                                            <Box component="form" noValidate sx={{ mt: 1 }}>
-                                                <Typography variant="h6" align="center" gutterBottom>
-                                                    Please enter the information below to register
-                                                </Typography>
-                                                {error_message && (
-                                                    <Typography color="error" gutterBottom>
-                                                        {error_message}
-                                                    </Typography>
-                                                )}
-                                                <Grid container spacing={3}>
-                                                    <Grid item xs={12}>
-                                                        <TextField
-                                                            fullWidth
-                                                            required
-                                                            label="Practice Name"
-                                                            name="name"
-                                                            onChange={this.handleInputChange}
-                                                            margin="normal"
-                                                            sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
-                                                        />
-                                                    </Grid>
-                                                    <Grid item xs={12} sm={6}>
-                                                        <TextField
-                                                            fullWidth
-                                                            required
-                                                            label="First Name"
-                                                            name="first"
-                                                            onChange={this.handleInputChange}
-                                                            margin="normal"
-                                                            sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
-                                                        />
-                                                    </Grid>
-                                                    <Grid item xs={12} sm={6}>
-                                                        <TextField
-                                                            fullWidth
-                                                            required
-                                                            label="Last Name"
-                                                            name="last"
-                                                            onChange={this.handleInputChange}
-                                                            margin="normal"
-                                                            sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
-                                                        />
-                                                    </Grid>
-                                                    <Grid item xs={12}>
-                                                        <TextField
-                                                            fullWidth
-                                                            required
-                                                            label="Email"
-                                                            name="email"
-                                                            onChange={this.handleInputChange}
-                                                            margin="normal"
-                                                            sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
-                                                        />
-                                                    </Grid>
-                                                    <Grid item xs={12}>
-                                                        <TextField
-                                                            fullWidth
-                                                            required
-                                                            label="Phone"
-                                                            name="phone"
-                                                            value={phone}
-                                                            onChange={this.handlePhoneChange}
-                                                            margin="normal"
-                                                            sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
-                                                        />
-                                                    </Grid>
-                                                    <Grid item xs={12}>
-                                                        <TextField
-                                                            fullWidth
-                                                            required
-                                                            label="Zipcode"
-                                                            name="zipcode"
-                                                            onChange={this.handleInputChange}
-                                                            margin="normal"
-                                                            sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
-                                                        />
-                                                    </Grid>
-                                                </Grid>
-                                                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-                                                    <Button
-                                                        variant="contained"
-                                                        color="primary"
-                                                        onClick={this.nextPage}
-                                                        sx={{ borderRadius: 8, backgroundColor: '#FF5733', color: '#fff', padding: '10px 45px', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase' }}
-                                                    >
-                                                        {landingData.data.do_billing_charge !== 0 ? 'Next' : 'Register'}
-                                                    </Button>
-                                                </Box>
-                                            </Box>
-                                        )}
-                                        {page === 1 && landingData.data.do_billing_charge !== 0 && (
-                                            <Box sx={{ mt: 3 }}>
-                                                <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
-                                                    <Typography variant="h6" gutterBottom>
-                                                        Checkout
-                                                    </Typography>
-                                                    <Grid container spacing={2} sx={{ mt: 1 }}>
-                                                        <Grid item xs={7}>
-                                                            <Typography variant="body1">Description</Typography>
-                                                        </Grid>
-                                                        <Grid item xs={5} textAlign="right">
-                                                            <Typography variant="body1">Price</Typography>
-                                                        </Grid>
-                                                        <Grid item xs={12}>
-                                                            <Typography variant="body2">{selPlan.description}</Typography>
-                                                        </Grid>
-                                                        <Grid item xs={12} textAlign="right">
-                                                            <Typography variant="body2">${parseFloat(selPlan.upfront_cost * selPlan.duration).toFixed(2)}</Typography>
-                                                        </Grid>
-                                                        {selPlan.coupons.length > 0 && (
-                                                            <>
-                                                                <Grid item xs={7}>
-                                                                    <TextField
-                                                                        fullWidth
-                                                                        placeholder="Enter Coupon Code"
-                                                                        value={this.state.coupon}
-                                                                        onChange={this.handleCouponChange}
-                                                                        sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
-                                                                    />
-                                                                </Grid>
-                                                                <Grid item xs={5} textAlign="right">
-                                                                    <Typography variant="body2">{couponRed}</Typography>
-                                                                </Grid>
-                                                            </>
-                                                        )}
-                                                    </Grid>
-                                                    <Grid container spacing={2} sx={{ mt: 2 }}>
-                                                        <Grid item xs={7}>
-                                                            <Typography variant="body1">Total</Typography>
-                                                        </Grid>
-                                                        <Grid item xs={5} textAlign="right">
-                                                            <Typography variant="body1">{this.calculatePrice()}</Typography>
-                                                        </Grid>
-                                                    </Grid>
-                                                </Paper>
-                                                <Box sx={{ mt: 3 }}>
-                                                    <Button
-                                                        variant="contained"
-                                                        color="primary"
-                                                        sx={{ borderRadius: 8, backgroundColor: '#FF5733', color: '#fff', padding: '10px 45px', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase', mb: 2 }}
-                                                        onClick={() => this.setState({ showPaymentForm: true })}
-                                                    >
-                                                        Proceed to Checkout
-                                                    </Button>
-                                                    {this.state.showPaymentForm && (
-                                                        <PaymentForm
-                                                            applicationId={squareAppKey}
-                                                            locationId={squareLocationKey}
-                                                            cardTokenizeResponseReceived={(token, buyer) => {
-                                                                const cardData = {
-                                                                    id: token.token,
-                                                                    brand: buyer.card.brand,
-                                                                    expiration: `${buyer.card.expMonth}/${buyer.card.expYear}`,
-                                                                    lastFour: buyer.card.last4,
-                                                                };
-                                                                this.saveCard(cardData, buyer.intentId);
-                                                            }}
-                                                            createVerificationDetails={() => ({
-                                                                amount: `${parseFloat(this.state.selPlan.upfront_cost * this.state.selPlan.duration).toFixed(2)}`,
-                                                                currencyCode: 'USD',
-                                                                intent: 'CHARGE',
-                                                                billingContact: {
-                                                                    familyName: this.state.last,
-                                                                    givenName: this.state.first,
-                                                                    email: this.state.email,
-                                                                    phone: this.state.phone,
-                                                                },
-                                                            })}
-                                                        >
-                                                            <CreditCard />
-                                                        </PaymentForm>
-                                                    )}
-                                                </Box>
-                                            </Box>
-                                        )}
-                                    </>
+                                    <Stepper activeStep={page} alternativeLabel>
+                                        {steps.map((label) => (
+                                            <Step key={label}>
+                                                <StepLabel>{label}</StepLabel>
+                                            </Step>
+                                        ))}
+                                    </Stepper>
+                                    {this.renderStepContent(page)}
+                                    <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+                                        <Button
+                                            color="inherit"
+                                            disabled={page === 0}
+                                            onClick={this.prevPage}
+                                            sx={{ mr: 1 }}
+                                        >
+                                            Back
+                                        </Button>
+                                    </Box>
                                 </Paper>
                             ) : (
-                                <Box 
+                                <Box
                                     sx={{
                                         display: 'flex',
                                         flexDirection: 'column',
@@ -449,8 +425,8 @@ class RegisterProvider extends Component {
                                         height="100"
                                         fill="#FF5733"
                                     >
-                                        <path d="M12 0a12 12 0 100 24 12 12 0 000-24zm0 22a10 10 0 110-20 10 10 0 010 20z"/>
-                                        <path d="M11 6h2v7h-2zM11 15h2v2h-2z"/>
+                                        <path d="M12 0a12 12 0 100 24 12 12 0 000-24zm0 22a10 10 0 110-20 10 10 0 010 20z" />
+                                        <path d="M11 6h2v7h-2zM11 15h2v2h-2z" />
                                     </svg>
                                     <Typography variant="h6" color="textSecondary" sx={{ mt: 2 }}>
                                         Please select a pricing plan to proceed.
@@ -473,7 +449,6 @@ class RegisterProvider extends Component {
 const mapStateToProps = (state) => ({
     landingData: state.landingData,
     registerProvider: state.registerProvider,
-    searchProvider: state.searchProvider,
 });
 
 export default withRouter(connect(mapStateToProps)(RegisterProvider));

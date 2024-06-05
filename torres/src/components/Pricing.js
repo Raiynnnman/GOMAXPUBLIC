@@ -25,6 +25,7 @@ const useStyles = makeStyles((theme) => ({
     },
     marginTop: 25,
     padding: 0,
+    marginBottom: 30,
   },
   pricePackageTop: {
     backgroundColor: '#fa6a0a',
@@ -32,7 +33,6 @@ const useStyles = makeStyles((theme) => ({
     padding: 20,
     textAlign: 'center',
     fontWeight: 'bold',
-    borderRadius: 10,
   },
   pricePackageContent: {
     padding: 20,
