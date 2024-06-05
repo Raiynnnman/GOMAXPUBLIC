@@ -127,7 +127,7 @@ for x in off:
                 """,(cid,)
             )
             if len(off) < 1:
-                raise Exception("ERROR: didnt find office for pq=%s" % cid)
+                print("ERROR: didnt find office for pq=%s" % cid)
                 continue
             myid=off[0]['office_id']
             print("newid=%s" % myid)
