@@ -154,6 +154,10 @@ for x in off:
         }
         r = COMPANY_OBJ.update(comp,dryrun=args.no_commit,raw=True)
     else:
+        if users['first_name'] is None or len(users['first_name']) < 1:
+            users['first_name'] = "Unknown"
+        if users['last_name'] is None or len(users['last_name']) < 1:
+            users['last_name'] = "Unknown"
         print("didnt find %s (%s)" % (myid,x['name']))
         u = '%s/#/app/main/admin/office/%s' % (config.getKey("host_url"),myid)
         comp = {
@@ -177,6 +181,10 @@ for x in off:
         r = CONTACT_OBJ.update(contact,dryrun=args.no_commit,raw=True)
         contact_sm_id = r['id']
         db.update("""
+            update office set sm_id = null where sm_id = %s
+            """,(company_sm_id,)
+        )
+        db.update("""
             update office set sm_id=%s where id=%s
             """,(company_sm_id,myid)
         )
@@ -185,6 +193,7 @@ for x in off:
             """,(company_sm_id,users['id'])
         )
 
+    db.commit()
     CNTR += 1
     if args.limit is not None and CNTR >= int(args.limit):
         break
