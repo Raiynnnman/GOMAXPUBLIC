@@ -1,29 +1,18 @@
 import React, { Component } from 'react';
-import Select from 'react-select';
-import { Form, FormGroup, Label, Input, InputGroup, InputGroupText } from 'reactstrap';
-import { Button } from 'reactstrap';
-import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
 import { connect } from 'react-redux';
-import SearchIcon from '@mui/icons-material/Search';
-import { Col, Grid } from 'reactstrap';
-import { TabContent, TabPane } from 'reactstrap';
 import cx from 'classnames';
 import classnames from 'classnames';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import Navbar from '../../components/Navbar';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import { getLandingData } from '../../actions/landingData';
-import createDOMPurify from 'dompurify'
-import { JSDOM } from 'jsdom'
-import AliceCarousel from 'react-alice-carousel';
-import { Nav, NavItem, NavLink } from 'reactstrap';
-import 'react-alice-carousel/lib/alice-carousel.css';
 import './Landing.scss';
-import Home from './Home';
-import Join from './Join';
+import Grid from '@mui/material/Grid';
+import Container from '@mui/material/Container';
 
 const handleDragStart = (e) => e.preventDefault();
 
@@ -82,9 +71,9 @@ class Landing extends Component {
         this.setState(this.state);
     } 
     save() { 
-        this.props.dispatch(register(this.state.selected)).then((e) => {
+        /*this.props.dispatch(register(this.state.selected)).then((e) => {
             window.location = '/thankyou';
-        }); 
+        });*/ 
     } 
     login() { 
             window.location = '/login';
@@ -220,33 +209,15 @@ class Landing extends Component {
         }
         return (
         <>
+        <Navbar/>
             {(this.props.landingData && this.props.landingData.data && this.props.landingData.data.pricing) && (
             <>
-            <div style={{backgroundColor:'black',display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                <img width="330px" height="330px" src='/painlogo.png'/>
-            </div>
-            <div style={{height:800,backgroundColor:"black"}}>
-                <div style={{backgroundColor:"black",display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+            <div>
+                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                     <>
                     <Grid container xs="12">
-                        {/*<Grid item xs="6" sx="6" style={{paddingLeft:0,marginLeft:0}}>
-                            <div style={{backgroundColor:"black",display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                                <iframe 
-                                    src={
-                                        this.props.landingData.data.introduction.length > 0 ? 
-                                            this.props.landingData.data.introduction[0].url : 
-                                            "https://player.vimeo.com/video/939097958?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" 
-                                    }
-                                    allow="autoplay; fullscreen; picture-in-picture; clipboard-write" 
-                                    style={{width:window.innerWidth < 500 ? window.innerWidth : "800px",
-                                            height:window.innerWidth < 500 ? "100%vw" : "600px",
-                                            }}
-                                    title="PoundPain Sample">
-                                </iframe>
-                            </div>
-                        </Grid>*/}
                         <Grid item xs="12" sx="12" style={{marginTop:10,paddingRight:0,marginRight:0}}>
-                            <div style={{backgroundColor:"black",display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                 <iframe 
                                     src={
                                         this.props.landingData.data.introduction.length > 0 ? 

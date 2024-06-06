@@ -241,12 +241,12 @@ class Navbar extends Component {
                                 <div className="mainmenu-wrapper">
                                     <nav>
                                         <ul className="main-menu">
-                                            <li className="active"><a href="#home">Home</a></li>
-                                            <li><a href="#about">About</a></li>
-                                            <li><a href="#pricing">Pricing</a></li>
-                                            <li><a href="#reviews">Reviews</a></li>
+                                            <li className="active"><a href="/#home">Home</a></li>
+                                            <li><a href="/#about">About</a></li>
+                                            <li><a href="/#pricing">Pricing</a></li>
+                                            <li><a href="/#reviews">Reviews</a></li>
                                             <li><a href="/search">Search</a></li>
-                                            <li><a href="#support">Support</a></li>
+                                            <li><a href="/#support">Support</a></li>
                                         </ul>
                                     </nav>
                                     <button onClick={this.doLogin} className="button-default button-olive" type="button">Login</button>

@@ -121,9 +121,9 @@ const Pricing = ({ onSelectPlan, showButton }) => {
                   </Typography>
                 </div>
                 <div className={classes.pricePackageContent}>
-                  <div className={classes.price}>
+                  <div className={classes.upfront_cost}>
                     <Typography component="span" className={classes.priceTop}>$</Typography>
-                    <Typography component="span" className={classes.priceLarge}>{plan.price}</Typography>
+                    <Typography component="span" className={classes.priceLarge}>{plan.upfront_cost}</Typography>
                     <Typography component="span" className={classes.priceBottom}>/month</Typography>
                   </div>
                   <List className={classes.priceList}>

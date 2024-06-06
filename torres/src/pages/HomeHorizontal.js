@@ -14,6 +14,7 @@ import Blog from '../components/Blog';
 import FooterHome from '../components/FooterHome';
 import { getLandingData } from '../actions/landingData';
 import theme from '../theme';  
+import siteType from '../siteType';
 
 class HomeHorizontal extends Component {
     componentDidMount() {
@@ -29,6 +30,7 @@ class HomeHorizontal extends Component {
     render() {
         return (
             <ThemeProvider theme={theme}>
+                {(siteType() === 'provider') && (
                 <div>
                     <Navbar />
                     <HeroOlive horizontal="horizontal" bgshape="bg-shape" />
@@ -42,6 +44,22 @@ class HomeHorizontal extends Component {
                     <Blog />
                     <FooterHome horizontal="horizontal" />
                 </div>
+                )}
+                {(siteType() === 'customer') && (
+                <div>
+                    <Navbar />
+                    <HeroOlive horizontal="horizontal" bgshape="bg-shape" />
+                    <div style={{ marginTop: 30 }}></div>
+                    <About horizontalabout="horizontal-about" />
+                    <Service horizontal="horizontal" />
+                    <Feature horizontalfeature="horizontal-feature" />
+                    <Pricing showButton={true} onSelectPlan={this.handleSelectPlan} horizontalfeature="horizontal-pricing" />
+                    <Testimonial />
+                    <Screenshot />
+                    <Blog />
+                    <FooterHome horizontal="horizontal" />
+                </div>
+                )}
             </ThemeProvider>
         );
     }

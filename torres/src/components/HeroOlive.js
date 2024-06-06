@@ -10,17 +10,21 @@ class HeroOlive extends Component {
                         <div className="col-lg-7 h-100">
                             <div className="banner-text">
                                 <div className="banner-table-cell">
-                                    <h1>AWESOME <br /> <span style={{color:'black'}} className="theme-color">apnew</span> MOBILE APP.</h1>
-                                    <p>There are many variations of passages of Lorem Ipsum available, but the majorityhave suffered alteration in some form, by injected humour, or randomised words which don't look even There are many variations of passages of Lorem Ipsum available</p>
-                                    <div className="banner-buttons">
-                                        <button type="button" className="button-default button-olive">Download</button>
+                                    <h1>Revolutionizing <span style={{color:'black'}} className="theme-color">Patient Referrals</span><br/> for Care Providers Across the U.S.</h1>
+                                    <h3>Effortlessly connect with new patients and grow your practice with Pound Pain Technology.</h3>
+                                    <p>Welcome to Pound Pain Technology, your ultimate solution for seamless patient referrals and practice growth. In today’s fast-paced healthcare environment, connecting with the right patients at the right time can be challenging. That's where we come in.
+                                    </p>
+                                    {(false) && (<div className="banner-buttons">
+                                        <button type="button" className="button-default button-olive">Sign Up!</button>
                                         <a className="button-default button-white" href="/" role="button">Learn more</a>
                                     </div>
+                                    )}
                                 </div>
                             </div>
 
-                            <div className="banner-apps">
-                                {/* Start Sinhle app */}
+                            {(false) && (
+                            <>
+                            <div className="banner-apps"> 
                                 <div className="single-app">
                                     <div className="single-app-table-cell">
                                         <i className="zmdi zmdi-apple"></i>
@@ -29,7 +33,6 @@ class HeroOlive extends Component {
                                     </div>
                                 </div>
 
-                                {/* Start Sinhle app */}
                                 <div className="single-app">
                                     <div className="single-app-table-cell">
                                         <i className="zmdi zmdi-cloud-download"></i>
@@ -38,7 +41,6 @@ class HeroOlive extends Component {
                                     </div>
                                 </div>
 
-                                {/* Start Single app */}
                                 <div className="single-app">
                                     <div className="single-app-table-cell">
                                         <i className="zmdi zmdi-android"/>
@@ -47,12 +49,12 @@ class HeroOlive extends Component {
                                     </div>
                                 </div>
                             </div>
+                            </>
+                            )}
                         </div>
                         <div className="col-lg-5">
                             <div className="banner-product-image text-right">
-                                <img className="image-1" src={require('../assets/images/app/banner-mobile.png')} alt="App Landing"/>
-                                <img className="image-2" src={require('../assets/images/app/banner-mobile-2.png')} alt="App Landing"/>
-                                <img className="image-3" src={require('../assets/images/app/banner-mobile-3.png')} alt="App Landing"/>
+                                <img className="image-1" src={require('../assets/main_page/banner-mobile-provider.png')} alt="App Landing"/>
                             </div>
                         </div>
                     </div>

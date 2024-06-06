@@ -31,6 +31,7 @@ import OfficeAddresses from './pain/office/OfficeAddresses';
 import Customers from './pain/office/Customers';
 import Search from './pain/search/Search';
 import Appointments from './pain/clients/Appointments';
+import Landing from './pain/landing/Landing.js';
 
 import Pricing from './components/Pricing';
 const CloseButton = ({closeToast}) => <i onClick={closeToast} className="la la-close notifications-close"/>
@@ -50,6 +51,7 @@ const App = () => {
                     <Route exact path='/login' component={Login}/>
                     <Route exact path='/register' component={Register}/>
                     <Route exact path='/search' component={Search}/>
+                    <Route exact path='/demo' component={Landing}/>
                     <Route exact path='/forgot' component={Forgot}/>
                     <Route exact path='/provider-pricing' component={Pricing}/>
                     <Route exact path='/reset/:token' component={Reset}/>
