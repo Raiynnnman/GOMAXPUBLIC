@@ -3,20 +3,20 @@ import { createTheme } from '@mui/material/styles';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#FFA500', // Orange color
+      main: '#FFA500', 
     },
   },
   components: {
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: '20px', // Rounded corners
-          textTransform: 'none', // Prevent uppercase transformation
-          padding: '10px 20px', // Add padding for better appearance
+          borderRadius: '20px', 
+          textTransform: 'none',  
+          padding: '10px 20px', 
           backgroundColor: '#FFA500',
           color: '#fff',
           '&:hover': {
-            backgroundColor: '#e59400', // Darker shade on hover
+            backgroundColor: '#e59400', 
           },
         },
       },

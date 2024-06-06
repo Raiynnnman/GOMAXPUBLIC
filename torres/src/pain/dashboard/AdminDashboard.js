@@ -1,78 +1,113 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import cx from 'classnames';
-import classnames from 'classnames';
 import Grid from '@mui/material/Grid';
-import translate from '../utils/translate';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
 import AppSpinner from '../utils/Spinner';
 import { getAdminDashboard } from '../../actions/adminDashboard';
-import TrendHeroWithStats from './components/TrendHeroWithStats';
-import MainChart from './components/charts/MainChart';
-
+import UniqueVisitorCard from './components/cards/UniqueVisitorCard';
+import MonthlyBarChart from './components/charts/MonthlyBarChart';
+import MainCard from './components/cards/MainCard';
+import AnalyticEcommerce from './components/cards/AnalyticCard';
 class AdminDashboard extends Component {
-    constructor(props) { 
+    constructor(props) {
         super(props);
-        this.state = { 
-        }
-    } 
-
-    componentWillReceiveProps(p) { 
+        this.state = {};
     }
 
     componentDidMount() {
-        this.props.dispatch(getAdminDashboard())
+        this.props.dispatch(getAdminDashboard());
     }
 
     render() {
-        return (
-        <>
-            {(this.props.adminDashboard && this.props.adminDashboard.isReceiving) && (
-                <AppSpinner/>
-            )}
-            {(this.props.adminDashboard && this.props.adminDashboard.data && this.props.adminDashboard.data.visits) && (
-            <>
-            <Grid container spacing={1}>
-                <>
-                <Grid item xs={0} md={3}>
-                    <TrendHeroWithStats data={this.props.adminDashboard.data.visits}
-                        title="Visits Today" num2title="Logins Today" num3title="Conversion" num3ispercent={true}
-                        num4title="Appointments"/>
+        const { adminDashboard } = this.props;
+        console.log(adminDashboard);
+
+        if (adminDashboard && adminDashboard.isReceiving) {
+            return <AppSpinner />;
+        }
+
+        if (adminDashboard && adminDashboard.data) {
+            const { data } = adminDashboard;
+            const {
+                website_stats = {},
+                visits = {},
+                revenue_month = {},
+                revenue_leads_month = {}
+            } = data;
+
+            return (
+                <Grid container rowSpacing={4.5} columnSpacing={2.75}>
+                    {/* Row 1 */}
+                    <Grid item xs={12} sx={{ mb: -2.25 }}>
+                        <Typography variant="h5">Dashboard</Typography>
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4} lg={3}>
+                        <AnalyticEcommerce 
+                            title="Total Page Views"
+                            count={`${website_stats.num1 || 0}`}  
+                            percentage={(website_stats.num2 || 0) * 100}  
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4} lg={3}>
+                        <AnalyticEcommerce 
+                            title="Total Visits"
+                            count={`${visits.num1 || 0}`}
+                            percentage={(visits.num3 || 0) * 100}  
+                            extra={`${visits.num4 || 0}`}  
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4} lg={3}>
+                        <AnalyticEcommerce 
+                            title="Total PoundPain Revenue"
+                            count={`${revenue_month.num1 || 0}`}  
+                            percentage={(revenue_month.num2 || 0) * 100}  
+                            isLoss={revenue_month.num2 < 0}  
+                            color={revenue_month.num2 < 0 ? 'warning' : 'success'}
+                            extra={`${revenue_month.num3 || 'N/A'}`}  
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4} lg={3}>
+                        <AnalyticEcommerce 
+                            title="Total Sales"
+                            count={`$${revenue_leads_month.num1 || 0}`}  
+                            percentage={(revenue_leads_month.num2 || 0) * 100}  
+                            isLoss={revenue_leads_month.num2 < 0}  
+                            color={revenue_leads_month.num2 < 0 ? 'warning' : 'success'}
+                            extra={`$${revenue_leads_month.num3 || 0}`}  
+                        />
+                    </Grid>
+
+                    <Grid item md={8} sx={{ display: { sm: 'none', md: 'block', lg: 'none' } }} />
+
+                    {/* Row 2 */}
+                    <Grid item xs={12} md={7} lg={8}>
+                        <UniqueVisitorCard data={data.website_stats} />
+                    </Grid>
+                    <Grid item xs={12} md={5} lg={4}>
+                        <Grid container alignItems="center" justifyContent="space-between">
+                            <Grid item>
+                                <Typography variant="h5"> User Traffic Overview</Typography>
+                            </Grid>
+                            <Grid item />
+                        </Grid>
+                        <MainCard sx={{ mt: 2 }} content={false}>
+                            <Box sx={{ p: 3, pb: 0 }}>
+                                <Stack spacing={2}>
+                                    <Typography variant="h6" color="text.secondary">
+                                        This Weeks Statistics
+                                    </Typography>
+                                </Stack>
+                            </Box>
+                            <MonthlyBarChart data={data.traffic} />
+                        </MainCard>
+                    </Grid>
                 </Grid>
-                <Grid item xs={0} md={3}>
-                    <TrendHeroWithStats data={this.props.adminDashboard.data.revenue_month}
-                        title="PAIN Revenue this month" num1isdollar={true} 
-                        num2title="Paid" num2isdollar={true} num3title="Sent" num3isdollar={true}
-                        num4title="Error" num4isdollar={true}/>
-                </Grid>
-                <Grid item xs={0} md={3}>
-                    <TrendHeroWithStats data={this.props.adminDashboard.data.lead_status}
-                        title="Network Information" num1isdollar={false} num2title="Preferred" num2isdollar={false} 
-                            num3title="In-Network" num3isdollar={false} num4title="Potential"/>
-                </Grid>
-                <Grid item xs={0} md={3}>
-                    <TrendHeroWithStats data={this.props.adminDashboard.data.traffic}
-                        title="Traffic Stats" num1isdollar={false} num2title="Today" num2isdollar={false} 
-                            num3title="Month" num3isdollar={false} num4title="Year"/>
-                </Grid>
-                <Grid item xs={0} md={3}>
-                    <TrendHeroWithStats data={this.props.adminDashboard.data.commissions}
-                        title="Commissions" 
-                            num1isdollar={true} num2title="Paid" num2isdollar={true} 
-                            num3title="Sent" num3isdollar={true} num4isdollar={true} 
-                            num4title="Void"/>
-                </Grid>
-                <Grid item xs={0} md={3}>
-                    <TrendHeroWithStats data={this.props.adminDashboard.data.website_stats}
-                        title="Platform Stats Today" num2pure={true} num3pure={true} num4pure={true}
-                            num1isdollar={false} num2title="Avg" num2isdollar={false} 
-                            num3title="Max" num3isdollar={false} num4title="Min"/>
-                </Grid>
-                </>
-            </Grid >
-            </>
-            )}
-        </>
-        )
+            );
+        }
+
+        return null;
     }
 }
 
@@ -80,7 +115,7 @@ function mapStateToProps(store) {
     return {
         currentUser: store.auth.currentUser,
         adminDashboard: store.adminDashboard
-    }
+    };
 }
 
 export default connect(mapStateToProps)(AdminDashboard);
