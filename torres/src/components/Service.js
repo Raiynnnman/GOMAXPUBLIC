@@ -3,14 +3,23 @@ import React, { Component } from "react";
 
 
 class Service extends Component{
+    constructor(props) { 
+        super(props);
+        this.state = { 
+            showVideo:false
+        } 
+        this.showVideo = this.showVideo.bind(this);
+    }
     requestDemo() { 
         window.location = '/demo';
     }
     signUp() { 
-        window.location = '/register-provider';
+        window.location = '/#pricing';
     }
     showVideo() { 
-        window.location = 'https://pain-public.s3.amazonaws.com/videos/PoundPain_video_V1_2.mp4';
+        console.log("show");
+        this.state.showVideo = true;
+        this.setState(this.state);
     } 
     render(){
         let data = [
@@ -51,6 +60,15 @@ class Service extends Component{
 
         return (
             <div>
+                {(this.state.showVideo) && (
+                    <div style={{padding:'56.25% 0 0 0',position:'relative'}}>
+                        <iframe src="https://player.vimeo.com/video/954405043?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" 
+                            frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write" 
+                            style={{position:'absolute',top:0,left:0,width:'50%',height:'50%'}}
+                            title="PoundPain_video_V1_2">
+                        </iframe>
+                    </div>
+                )}
                 {/* Start Service Area */}
                 <div className={`service-area ${this.props.horizontal}`}>
                     <div className="container">
