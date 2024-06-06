@@ -14,9 +14,11 @@ const iconSX = { fontSize: '0.75rem', color: 'inherit', marginLeft: 0, marginRig
 function AnalyticEcommerce({ color = 'primary', title, count, percentage, isLoss, extra }) {
     return (
         <MainCard 
-            contentSX={{ p: 2.25, }}  
+            contentSX={{ p: 2.25 }}  
             sx={{
                 transition: '0.3s',
+                border: '1px solid #d3d3d3', // Added thin border here
+                borderRadius: '4px', // Optional: adds rounded corners
                 '&:hover': {
                     boxShadow: '0px 0px 15px 2px rgba(255, 165, 0, 0.7)'  
                 }
