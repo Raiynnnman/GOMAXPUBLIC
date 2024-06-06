@@ -1,6 +1,5 @@
 import React, { Component } from "react";
-
-
+import TemplateButton from '../pain/utils/TemplateButton';
 
 class Service extends Component{
     constructor(props) { 
@@ -9,6 +8,7 @@ class Service extends Component{
             showVideo:false
         } 
         this.showVideo = this.showVideo.bind(this);
+        this.closeVideo = this.closeVideo.bind(this);
     }
     requestDemo() { 
         window.location = '/demo';
@@ -16,8 +16,11 @@ class Service extends Component{
     signUp() { 
         window.location = '/#pricing';
     }
+    closeVideo() { 
+        this.state.showVideo = false;
+        this.setState(this.state);
+    } 
     showVideo() { 
-        console.log("show");
         this.state.showVideo = true;
         this.setState(this.state);
     } 
@@ -61,13 +64,18 @@ class Service extends Component{
         return (
             <div>
                 {(this.state.showVideo) && (
-                    <div style={{padding:'56.25% 0 0 0',position:'relative'}}>
-                        <iframe src="https://player.vimeo.com/video/954405043?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" 
-                            frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write" 
-                            style={{position:'absolute',top:0,left:0,width:'50%',height:'50%'}}
-                            title="PoundPain_video_V1_2">
-                        </iframe>
+                <>
+                    <TemplateButton label='close' onClick={this.closeVideo}/>
+                    <div style={{display:'flex',alignItems:'center',justifyItems:'end'}}>
+                        <div style={{padding:'56.25% 0 0 0',position:'relative'}}>
+                            <iframe src="https://player.vimeo.com/video/954405043?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" 
+                                frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write" 
+                                style={{position:'absolute',top:0,left:0,width:'50%',height:'50%'}}
+                                title="PoundPain_video_V1_2">
+                            </iframe>
+                        </div>
                     </div>
+                </>
                 )}
                 {/* Start Service Area */}
                 <div className={`service-area ${this.props.horizontal}`}>
