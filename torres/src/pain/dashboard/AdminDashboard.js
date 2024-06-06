@@ -110,6 +110,7 @@ class AdminDashboard extends Component {
         }
 
         return <AppSpinner />;
+        
     }
 }
 
