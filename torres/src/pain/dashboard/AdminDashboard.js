@@ -10,6 +10,7 @@ import UniqueVisitorCard from './components/cards/UniqueVisitorCard';
 import MonthlyBarChart from './components/charts/MonthlyBarChart';
 import MainCard from './components/cards/MainCard';
 import AnalyticEcommerce from './components/cards/AnalyticCard';
+
 class AdminDashboard extends Component {
     constructor(props) {
         super(props);
@@ -34,7 +35,8 @@ class AdminDashboard extends Component {
                 website_stats = {},
                 visits = {},
                 revenue_month = {},
-                revenue_leads_month = {}
+                revenue_leads_month = {},
+                traffic = {}
             } = data;
 
             return (
@@ -88,7 +90,7 @@ class AdminDashboard extends Component {
                     <Grid item xs={12} md={5} lg={4}>
                         <Grid container alignItems="center" justifyContent="space-between">
                             <Grid item>
-                                <Typography variant="h5"> User Traffic Overview</Typography>
+                                <Typography variant="h5">User Traffic Overview</Typography>
                             </Grid>
                             <Grid item />
                         </Grid>
@@ -96,18 +98,18 @@ class AdminDashboard extends Component {
                             <Box sx={{ p: 3, pb: 0 }}>
                                 <Stack spacing={2}>
                                     <Typography variant="h6" color="text.secondary">
-                                        This Weeks Statistics
+                                        This Week's Statistics
                                     </Typography>
                                 </Stack>
                             </Box>
-                            <MonthlyBarChart data={data.traffic} />
+                            <MonthlyBarChart data={traffic} />
                         </MainCard>
                     </Grid>
                 </Grid>
             );
         }
 
-        return null;
+        return <AppSpinner />;
     }
 }
 
