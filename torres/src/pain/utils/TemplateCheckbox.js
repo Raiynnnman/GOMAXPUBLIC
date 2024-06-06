@@ -7,7 +7,7 @@ function TemplateCheckbox({label,onClick,checked,disabled,style}) {
 
     return (
         <FormGroup>
-              <FormControlLabel disabled={disabled} onClick={onClick}
+              <FormControlLabel style={style} disabled={disabled} onClick={onClick}
                 control={<Checkbox defaultChecked={checked} />} label={label} />
         </FormGroup>
     )

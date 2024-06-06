@@ -3,17 +3,17 @@ import apiBaseUrl from '../globalConfig.js';
 import 'react-toastify/dist/ReactToastify.css';
 import handleError from './handleError';
 
-export const RECEIVED_BUND_DATA_SUCCESS = 'RECEIVED_BUND_DATA_SUCCESS';
-export const RECEIVING_BUND_DATA = 'RECEIVING_BUND_DATA';
+export const RECEIVED_CONTUS_DATA_SUCCESS = 'RECEIVED_CONTUS_DATA_SUCCESS';
+export const RECEIVING_CONTUS_DATA = 'RECEIVING_CONTUS_DATA';
 
 export function receiveDataSuccess(payload) {
     return {
-        type: RECEIVED_BUND_DATA_SUCCESS,
+        type: RECEIVED_CONTUS_DATA_SUCCESS,
         payload
     }
 }
 
-export function getBundles(params,callback,args) { 
+export function contactus(params,callback,args) { 
   return async (dispatch) => {
     dispatch(receivingData(params,callback,args));
   };
@@ -22,7 +22,7 @@ export function getBundles(params,callback,args) {
 export function receivingData(params,callback,args) {
   return async (dispatch) => {
     dispatch({
-        type: RECEIVING_BUND_DATA
+        type: RECEIVING_CONTUS_DATA
     });
     const response = await axios.create({ //eslint-disable-line no-unused-vars
             baseURL: apiBaseUrl(),
@@ -31,10 +31,10 @@ export function receivingData(params,callback,args) {
               Accept: "application/json",
               "Content-Type": "application/json",
             },
-        }).post('/office/bundle/list',params)
+        }).post('/contactus',params)
       .then((e) => { 
           dispatch({
-                type: RECEIVED_BUND_DATA_SUCCESS,
+                type: RECEIVED_CONTUS_DATA_SUCCESS,
                 payload: e.data.data
             });
           if (callback) {

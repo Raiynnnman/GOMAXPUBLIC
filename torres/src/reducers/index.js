@@ -1,5 +1,7 @@
 import { combineReducers } from 'redux';
 import auth from './auth';
+import contactus from './contactus';
+import subscribe from './subscribe';
 import referralResponse from './referralResponse';
 import customersSave from './customersSave';
 import officeLocations from './officeLocations';
@@ -61,9 +63,7 @@ import invoiceAdmin from './invoiceAdmin';
 import chat from './chat';
 import offices from './offices';
 import legal from './legal';
-import bundles from './bundles';
 import setupIntent from './setupIntent';
-import bundleSave from './bundleSave';
 import officeSave from './officeSave';
 import userDocumentsUpdate from './userDocumentsUpdate';
 import phy from './phy';
@@ -82,8 +82,6 @@ import leadsSave from './leadsSave';
 import adminDashboard from './adminDashboard';
 import mydayApptSave from './mydayApptSave';
 import mydayApproveInvoice from './mydayApproveInvoice';
-import bundleAdmin from './bundleAdmin';
-import bundleAdminUpdate from './bundleAdminUpdate';
 import userAdmin from './userAdmin';
 import legalAdmin from './legalAdmin';
 import legalAdminUpdate from './legalAdminUpdate';
@@ -110,10 +108,6 @@ export default combineReducers({
     chatUser,
     chatOffice,
     transfers,
-    bundleAdmin,
-    bundleAdminUpdate,
-    bundleSave,
-    bundles,
     legalAdmin,
     legalAdminUpdate,
     legalBilling,
@@ -192,6 +186,8 @@ export default combineReducers({
     customers,
     customersSave,
     referralResponse,
+    contactus,
+    subscribe,
     registerReferrer,
     userDocumentsUpdate,
     chat,

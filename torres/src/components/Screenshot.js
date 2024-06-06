@@ -8,22 +8,16 @@ class Screenshot extends Component {
                 <div className="container">
                     <div className="row">
                         <div className="col-lg-12">
-                            <div className="section-title text-center mb--80">
+                            <div className="section-title text-center">
                                 <h2>APP <span className="theme-color">SCREENSHOTS</span></h2>
-                                <img className="image-1" src={require('../assets/images/app/title-icon.png')} alt="App Landing"/>
-                                <img className="image-2" src={require('../assets/images/app/title-icon-2.png')} alt="App Landing"/>
-                                <img className="image-3" src={require('../assets/images/app/title-icon-3.png')} alt="App Landing"/>
-                                <p>There are many variations of passages of Lorem Ipsum available, but the majorityhave suffered alteration in some form, by injected humour,available</p>
+                                <img className="image-1" src={require('../assets/images/app/title-icon-3.png')} alt="App Landing"/>
                             </div>
                         </div>
                         <div className="col-lg-10 offset-lg-1">
-                            <div className="screenshot-carousel" id="screenshot-carousel" data-carousel-3d>
-                                <img className="image-1" src={require('../assets/images/app/screenshot-01.png')} alt="App Screenshot"/>
-                                <img className="image-1" src={require('../assets/images/app/screenshot-01.png')} alt="App Screenshot"/>
-                                <img className="image-1" src={require('../assets/images/app/screenshot-01.png')} alt="App Screenshot"/>
-                                <img className="image-1" src={require('../assets/images/app/screenshot-01.png')} alt="App Screenshot"/>
-                                <img className="image-1" src={require('../assets/images/app/screenshot-01.png')} alt="App Screenshot"/>
-                                <img className="image-1" src={require('../assets/images/app/screenshot-01.png')} alt="App Screenshot"/>
+                            <div className="screenshot-carousel" id="screenshot-carousel" >
+                                <img className="image-1" src={require('../assets/main_page/screenshot-1.png')} alt="App Screenshot"/>
+                                <img className="image-1" src={require('../assets/main_page/screenshot-2.png')} alt="App Screenshot"/>
+                                <img className="image-1" src={require('../assets/main_page/screenshot-3.png')} alt="App Screenshot"/>
                             </div>
                         </div>
                     </div>

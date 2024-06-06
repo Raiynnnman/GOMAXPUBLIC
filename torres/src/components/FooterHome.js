@@ -1,5 +1,72 @@
-import React , { Component } from "react";
-class Footer extends Component {
+import React, { Component } from "react";
+import {contactus} from '../actions/contactus';
+import { connect } from 'react-redux';
+import {subscribe} from '../actions/subscribe';
+import TemplateCheckbox from '../pain/utils/TemplateCheckbox';
+import TemplateButton from '../pain/utils/TemplateButton';
+import TemplateTextArea from '../pain/utils/TemplateTextArea';
+import TemplateTextField from '../pain/utils/TemplateTextField';
+class FooterHome extends Component {
+    constructor(props) { 
+        super(props);
+        this.state = { 
+            contactus:{
+                name:'',
+                email:'',
+                agree:false,
+                message:''
+            },
+            contact_us_sent:false,
+            subscribe_sent:false,
+            maillist:'',
+        } 
+        this.agreeChange = this.agreeChange.bind(this);
+        this.contactus = this.contactus.bind(this);
+        this.mailinglist = this.mailinglist.bind(this);
+        this.nameChange = this.nameChange.bind(this);
+        this.emailChange = this.emailChange.bind(this);
+        this.messageChange = this.messageChange.bind(this);
+        this.subscribeChange = this.subscribeChange.bind(this);
+    }
+    agreeChange(e) { 
+        this.state.contactus.agree = e.target.value;
+        this.setState(this.state);
+    } 
+    nameChange(e) { 
+        this.state.contactus.name = e.target.value;
+        this.setState(this.state);
+    } 
+    emailChange(e) {  
+        this.state.contactus.email = e.target.value;
+        this.setState(this.state);
+    } 
+    messageChange(e) {  
+        this.state.contactus.message = e.target.value;
+        this.setState(this.state);
+    } 
+    subscribeChange(e) {  
+        this.state.maillist = e.target.value;
+        this.setState(this.state);
+    } 
+
+    contactus() { 
+
+        this.props.dispatch(contactus(this.state.contactus,function(err,args) { 
+            args.state.contact_us_sent = true;
+            args.setState(args.state);
+        },this));
+
+    } 
+
+    mailinglist() { 
+
+        this.props.dispatch(subscribe({email:this.state.maillist},function(err,args) { 
+            args.state.subscribe_sent = true;
+            args.setState(args.state);
+        },this));
+
+    } 
+    
     render(){
         return(
             <div>
@@ -9,35 +76,36 @@ class Footer extends Component {
                         <div className="row">
                             <div className="col-lg-12">
                                 <div className="section-title text-center mb--40">
-                                    <h2 className="text-white">GET <span className="theme-color">IN TOUCH</span></h2>
-                                    <img className="image-1" src={require('../assets/images/app/title-icon.png')} alt="App Landing"/>
-                                    <img className="image-2" src={require('../assets/images/app/title-icon-2.png')} alt="App Landing"/>
-                                    <img className="image-3" src={require('../assets/images/app/title-icon-3.png')} alt="App Landing"/>
-                                    <p className="text-white">There are many variations of passages of Lorem Ipsum available, but the majorityhave suffered alteration in some form, by injected humour,available</p>
+                                    <h2 className="text-white">GET <span style={{color:'black'}}>IN TOUCH</span></h2>
+                                    <img className="image-1" src={require('../assets/images/app/title-icon-3.png')} alt="App Landing"/>
                                 </div>
                             </div>
                         </div>
                         <div className="row">
                             <div className="col-lg-5 col-xl-4 offset-xl-1">
                                 <div className="contact-inner">
+                                <>
+                                    {(this.state.contact_us_sent) && ( 
+                                    <h3 className="title">Inquiry Sent!</h3>
+                                    )}
+                                    {(!this.state.contact_us_sent) && ( 
+                                    <>
                                     <h3 className="title">Say Hello!</h3>
                                     <form className="contact-form" action="/">
-                                        <div className="input-box">
-                                            <input type="text" placeholder="Name"/>
-                                        </div>
-
-                                        <div className="input-box">
-                                            <input type="text" placeholder="Email"/>
-                                        </div>
-
-                                        <div className="input-box">
-                                            <textarea placeholder="Message"></textarea>
-                                        </div>
-
-                                        <div className="input-box">
-                                            <button className="submite-button" type="submit">Submit</button>
-                                        </div>
+                                            <TemplateTextField type="text" style={{color:'black'}} label="Name" onChange={this.nameChange}/>
+                                            <TemplateTextField type="text" style={{color:'black'}} label="Email" onChange={this.emailChange}/>
+                                            <TemplateTextArea rows={5} style={{color:'black'}} label="Message" onChange={this.messageChange}/>
+                                            <TemplateCheckbox style={{color:'black'}} checked={this.state.contactus.agree} 
+                                                onClick={this.agreeChange}
+                                            label='By submitting this form, I acknowledge and agree to receive communications from PoundPain Tech via email, SMS, and phone call. I consent to PoundPain Tech contacting me for future updates, promotions, and other information.'/>
+                                            <TemplateButton
+                                                disabled={!this.state.contactus.agree}
+                                                style={{marginTop:10,color:"white",width:'100%',backgroundColor:'black'}} onClick={this.contactus} 
+                                                label='Contact Us'/>
                                     </form>
+                                    </>
+                                    )}
+                                </>
                                 </div>
                             </div>
                             <div className="col-lg-5 offset-lg-2 col-xl-4 offset-xl-2 mt_md--40 mt_sm--40">
@@ -49,8 +117,8 @@ class Footer extends Component {
                                                 <i className="zmdi zmdi-phone"></i>
                                             </div>
                                             <div className="contact-text">
-                                                <span>+012 345 678 102<br />
-                                                +012 345 678 102</span>
+                                                <span>(407) 305-7241<br />(407) 305-7241
+                                                </span>
                                             </div>
                                         </div>
                                         <div className="single-contact-info">
@@ -58,8 +126,8 @@ class Footer extends Component {
                                                 <i className="zmdi zmdi-globe-alt"></i>
                                             </div>
                                             <div className="contact-text">
-                                                <span>mailto:support@devitems.com<br />
-                                                https://devitems.com/</span>
+                                                <span>mailto:info@poundpain.com<br />
+                                                https://poundpain.com/</span>
                                             </div>
                                         </div>
                                         <div className="single-contact-info">
@@ -67,7 +135,7 @@ class Footer extends Component {
                                                 <i className="zmdi zmdi-pin"></i>
                                             </div>
                                             <div className="contact-text">
-                                                <span>Dev Items address goes here,<br /> street,Crossroad123.</span>
+                                                <span>121 S Orange Ave. Suite. 1220<br /> Orlando, FL 32801</span>
                                             </div>
                                         </div>
                                     </div>
@@ -78,12 +146,15 @@ class Footer extends Component {
                             <div className="col-lg-8 offset-lg-2 col-xl-6 offset-xl-3">
                                 <div className="newsletter text-center">
                                     <h3 className="text-white title">SUBSCRIBE FOR OUR NEWSLETTER</h3>
-                                    <p className="text-white">There are many variations of passages of Lorem Ipsum available,<br />
-                                        but the majorityhave alteration in some form, by injected humour,available</p>
                                     <form action="/" method="post" id="newsletter">
-                                        <div className="newsletter-content">
-                                            <input type="text" name="email" placeholder="Enter your Email address" />
-                                            <button type="submit" className="button"><span>Subscribe</span></button>
+                                        <div className="newsletter-content" style={{display:'flex',justifyContent:'space-around'}}>
+                                            <TemplateTextField onChange={this.subscribeChange} type="text" name="email" 
+                                                label="Enter your Email address" />
+                                            <TemplateButton 
+                                                disabled={this.state.maillist.length < 1}
+                                                style={{color:"white",backgroundColor:'black'}}
+                                                onClick={this.mailinglist}
+                                                label='Subscribe'/>
                                         </div>
                                     </form>
                                 </div>
@@ -92,15 +163,11 @@ class Footer extends Component {
                         <div className="row">
                             <div className="col-lg-8 offset-lg-2 col-xl-4 offset-xl-4">
                                 <div className="footer-links text-center">
-                                    <a href="/"><i className="zmdi zmdi-facebook"></i></a>
-                                    <a href="/"><i className="zmdi zmdi-twitter"></i></a>
-                                    <a href="/"><i className="zmdi zmdi-google"></i></a>
-                                    <a href="/"><i className="zmdi zmdi-linkedin"></i></a>
-                                    <a href="/"><i className="zmdi zmdi-pinterest"></i></a>
-                                    <a href="/"><i className="zmdi zmdi-youtube"></i></a>
+                                    <a href="https://www.facebook.com/poundpainusa" target='_blank'><i className="zmdi zmdi-facebook"></i></a>
+                                    <a href="https://www.instagram.com/poundpain/" target='_blank'><i className="zmdi zmdi-instagram"></i></a>
                                 </div>
                                 <div className="footer-text text-center">
-                                    <span>Copyright © {new Date().getFullYear()} <a href="https://hasthemes.com">HasThemes</a></span>
+                                    <span>Copyright © {new Date().getFullYear()} <a href="https://hasthemes.com">POUNDPAIN TECH</a></span>
                                 </div>
                             </div>
                         </div>
@@ -115,8 +182,15 @@ class Footer extends Component {
         )
     }
 }
-export default Footer
 
+function mapStateToProps(store) {
+    return {
+        contactus: store.contactus,
+        subscribe: store.subscribe
+    }
+}
+
+export default connect(mapStateToProps)(FooterHome);
 
 
 

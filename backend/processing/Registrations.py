@@ -1251,3 +1251,80 @@ class RegisterReferrer(RegistrationsBase):
             m.send_email(sysemail,"New Referrer Signed Up","templates/mail/office-signup.html",data)
         db.commit()
         return ret
+
+class ContactUs(RegistrationsBase):
+
+    def __init__(self):
+        super().__init__()
+
+    def isDeferred(self):
+        return False
+
+    def execute(self, *args, **kwargs):
+        ret = {}
+        ret['success'] = True
+        params = args[1][0]
+        print(params)
+        db = Query()
+        db.update("""
+            insert into contactus_emails (name,email,message) 
+                values (%s,%s,%s)
+            """,(params['name'],params['email'],params['message'])
+        )
+        sysemail = config.getKey("contact_us_email")
+        url = config.getKey("host_url")
+        data = { 
+            '__LINK__':"%s/#/login" % (url,),
+            '__BASE__':url
+        } 
+        if self.isUIV2(): 
+            data['__LINK__']:"%s/login" % (url,)
+        m = Mail()
+        data['__NAME__'] = params['name']
+        data['__EMAIL__'] = params['email']
+        data['__MESSAGE__'] = params['message']
+        if config.getKey("use_defer") is not None:
+            m.sendEmailQueued(sysemail,"Information Inquiry","templates/mail/information-inquiry.html",data)
+        else:
+            m.send_email(sysemail,"Information Inquiry","templates/mail/information-inquiry.html",data)
+        db.commit()
+        return {'success':True}
+
+class Subscribe(RegistrationsBase):
+
+    def __init__(self):
+        super().__init__()
+
+    def isDeferred(self):
+        return False
+
+    def execute(self, *args, **kwargs):
+        ret = {}
+        ret['success'] = True
+        params = args[1][0]
+        db = Query()
+        print(params)
+        sysemail = config.getKey("contact_us_email")
+        url = config.getKey("host_url")
+        db.update("""
+            insert into subscribe_emails (email) 
+                values (%s)
+            """,(params['email'],)
+        )
+        data = { 
+            '__LINK__':"%s/#/login" % (url,),
+            '__BASE__':url
+        } 
+        if self.isUIV2(): 
+            data['__LINK__']:"%s/login" % (url,)
+        m = Mail()
+        data['__EMAIL__'] = params['email']
+        if config.getKey("use_defer") is not None:
+            m.sendEmailQueued(sysemail,"Subscribe to mail list","templates/mail/subscribe.html",data)
+        else:
+            m.send_email(sysemail,"Subscribe to mail list","templates/mail/subscribe.html",data)
+        db.commit()
+        return {'success':True}
+
+
+

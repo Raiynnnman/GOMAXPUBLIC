@@ -50,3 +50,15 @@ def searchprov(*args, **kwargs):
 def registerreferrer(*args, **kwargs):
     po = RegistrationRest.RegisterReferrerRest()
     return po.postWrapper(*args,**kwargs)
+
+@registrations.route('/contactus', methods=['POST'])
+@swag_from(docs_dir + 'registerprovider.yaml')
+def contactus(*args, **kwargs):
+    po = RegistrationRest.ContactUsRest()
+    return po.postWrapper(*args,**kwargs)
+
+@registrations.route('/subscribe', methods=['POST'])
+@swag_from(docs_dir + 'registerprovider.yaml')
+def subscribe(*args, **kwargs):
+    po = RegistrationRest.SubscribeRest()
+    return po.postWrapper(*args,**kwargs)

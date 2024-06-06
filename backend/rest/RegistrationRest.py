@@ -57,3 +57,17 @@ class RegisterReferrerRest(RestBase):
         u = Registrations.RegisterReferrer()
         ret = u.process(args[0])
         return ret
+
+class ContactUsRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Registrations.ContactUs()
+        ret = u.process(args[0])
+        return ret
+
+class SubscribeRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Registrations.Subscribe()
+        ret = u.process(args[0])
+        return ret

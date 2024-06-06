@@ -41,7 +41,7 @@ class HomeHorizontal extends Component {
                     <Pricing showButton={true} onSelectPlan={this.handleSelectPlan} horizontalfeature="horizontal-pricing" />
                     <Testimonial />
                     <Screenshot />
-                    <Blog />
+                    {/*<Blog />*/}
                     <FooterHome horizontal="horizontal" />
                 </div>
                 )}

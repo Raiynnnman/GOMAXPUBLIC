@@ -45,7 +45,8 @@
         }
     }
     .footer-bg {
-        background: rgba(45, 62, 80, 0.85) none repeat scroll 0 0;
+        // background: rgba(45, 62, 80, 0.85) none repeat scroll 0 0;
+        background:#fa6a0a;
         content: "";
         height: 100%;
         left: 0;
@@ -129,7 +130,8 @@
     Contact Address 
 ========================*/
 .contact-icon {
-    background-color: #7a9757;
+    // background-color: #7a9757;
+    background-color: black;
     border-radius: 21px 21px 0;
     color: #ffffff;
     display: inline-table;

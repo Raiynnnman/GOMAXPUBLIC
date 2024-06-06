@@ -9,7 +9,7 @@ function TemplateButton({label,onClick,disabled,style}) {
     } 
 
     return (
-        <Button style={style} className="button-default button-olive" variant="contained" 
+        <Button style={style} variant="contained" 
             onClick={doClick} disabled={disabled}>{label}</Button>
     )
 }
