@@ -5,6 +5,7 @@ import PushPinIcon from '@mui/icons-material/PushPin';
 import './Map.scss';
 import moment from 'moment';
 import formatPhoneNumber from '../utils/formatPhone';
+import googleKey from '../../googleConfig';
 
 class MapContainer extends React.Component {
   constructor(props) {
@@ -696,6 +697,6 @@ class MapContainer extends React.Component {
 }
 
 export default GoogleApiWrapper({
-  apiKey: "AIzaSyCjn4U7o_J0AHbNBvkyijucaX_KgTU-46w",
+  apiKey: googleKey(),
   libraries: ['visualization']
 })(MapContainer);

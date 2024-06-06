@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { HeatMap, Map, Circle, Marker, GoogleApiWrapper } from "google-maps-react";
+import googleKey from '../../googleConfig';
 import { Col, Row } from 'reactstrap';
 import './Map.scss';
 import moment from 'moment';
@@ -313,6 +314,6 @@ class MapContainer extends React.Component {
 }
 
 export default GoogleApiWrapper({
-  apiKey: "AIzaSyCjn4U7o_J0AHbNBvkyijucaX_KgTU-46w",
+  apiKey: googleKey(),
   libraries: ['visualization']
 })(MapContainer);

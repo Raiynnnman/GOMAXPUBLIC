@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Map, Circle, Marker, GoogleApiWrapper } from "google-maps-react";
 import { Col, Grid } from 'reactstrap';
+import googleKey from '../../googleConfig';
 
 class MapContainer extends React.Component {
   constructor(props) {
@@ -357,6 +358,6 @@ class MapContainer extends React.Component {
 }
 
 export default GoogleApiWrapper({
-  apiKey: "AIzaSyCjn4U7o_J0AHbNBvkyijucaX_KgTU-46w",
+  apiKey: googleKey(),
   libraries: ['visualization']
 })(MapContainer);
