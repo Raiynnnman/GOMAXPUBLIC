@@ -83,7 +83,7 @@ class RegisterProvider extends Component {
                 });
             } else if (pricing && !this.state.selPlan) {
                 this.setState({
-                    selPlan: pricing.find((e) => parseInt(this.state.plan) === e.id) || null,
+                    selPlan: pricing.find((e) => parseInt(this.state.plan) === e.id) || null
                 });
             }
 
@@ -290,10 +290,10 @@ class RegisterProvider extends Component {
                             <Button
                                 variant="contained"
                                 color="primary"
-                                onClick={this.nextPage}
+                                onClick={landingData.data.do_billing_charge !== 0 ? this.nextPage : this.registerProvider}
                                 sx={{ borderRadius: 8, backgroundColor: '#FF5733', color: '#fff', padding: '10px 45px', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase' }}
                             >
-                                {landingData.data.system_settings?.do_billing_charge !== 0 ? 'Next' : 'Register'}
+                                {landingData.data.do_billing_charge !== 0 ? 'Next' : 'Register'}
                             </Button>
                         </Box>
                     </Box>
@@ -365,75 +365,53 @@ class RegisterProvider extends Component {
         const { page, selPlan, snackbarOpen, snackbarMessage, snackbarSeverity } = this.state;
         const { registerProvider, landingData } = this.props;
 
-        const steps = ['Register Information', 'Payment Details'];
+    
+        var steps = ['Register Information', 'Payment Details'];
+        if (this.props.landingData.data && this.props.landingData.data.do_billing_charge === 0) { 
+            steps = ['Register Information'];
+        } 
 
-        console.log("p",this.props);
         return (
             <ThemeProvider theme={theme}>
                 <Navbar />
-                <Pricing onSelectPlan={this.handleSelectPlan} showButton={true} />
+                {(!selPlan) && (
+                    <Pricing onSelectPlan={this.handleSelectPlan} showButton={true} />
+                )}
                 <CssBaseline />
                 {registerProvider.isReceiving && <AppSpinner />}
                 {landingData.data && (
                     <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', px: 2 }}>
                         <Container maxWidth="md">
-                            {selPlan && this.props.landingData.data.do_billing_charge === 1? (
-                                <Paper
-                                    elevation={12}
-                                    sx={{
-                                        width: '100%',
-                                        padding: { xs: 2, sm: 4, md: 6 },
-                                        borderRadius: '30px',
-                                        boxShadow: '0 5px 15px rgba(0, 0, 0, 0.35)',
-                                        backgroundColor: '#fff',
-                                    }}
-                                    ref={this.formRef}
-                                >
-                                    <Stepper activeStep={page} alternativeLabel>
-                                        {steps.map((label) => (
-                                            <Step key={label}>
-                                                <StepLabel>{label}</StepLabel>
-                                            </Step>
-                                        ))}
-                                    </Stepper>
-                                    {this.renderStepContent(page)}
-                                    <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-                                        <Button
-                                            color="inherit"
-                                            disabled={page === 0}
-                                            onClick={this.prevPage}
-                                            sx={{ mr: 1 }}
-                                        >
-                                            Back
-                                        </Button>
-                                    </Box>
-                                </Paper>
-                            ) : (
-                                <Box
-                                    sx={{
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        textAlign: 'center',
-                                        py: 4
-                                    }}
-                                >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 24 24"
-                                        width="100"
-                                        height="100"
-                                        fill="#FF5733"
+                            <Paper
+                                elevation={12}
+                                sx={{
+                                    width: '100%',
+                                    padding: { xs: 2, sm: 4, md: 6 },
+                                    borderRadius: '30px',
+                                    boxShadow: '0 5px 15px rgba(0, 0, 0, 0.35)',
+                                    backgroundColor: '#fff',
+                                }}
+                                ref={this.formRef}
+                            >
+                                <Stepper activeStep={page} alternativeLabel>
+                                    {steps.map((label) => (
+                                        <Step key={label}>
+                                            <StepLabel>{label}</StepLabel>
+                                        </Step>
+                                    ))}
+                                </Stepper>
+                                {this.renderStepContent(page)}
+                                <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+                                    <Button
+                                        color="inherit"
+                                        disabled={page === 0}
+                                        onClick={this.prevPage}
+                                        sx={{ mr: 1 }}
                                     >
-                                        <path d="M12 0a12 12 0 100 24 12 12 0 000-24zm0 22a10 10 0 110-20 10 10 0 010 20z" />
-                                        <path d="M11 6h2v7h-2zM11 15h2v2h-2z" />
-                                    </svg>
-                                    <Typography variant="h6" color="textSecondary" sx={{ mt: 2 }}>
-                                        Please select a pricing plan to proceed.
-                                    </Typography>
+                                        Back
+                                    </Button>
                                 </Box>
-                            )}
+                            </Paper>
                         </Container>
                     </Box>
                 )}

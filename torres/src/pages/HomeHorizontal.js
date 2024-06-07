@@ -28,7 +28,7 @@ class HomeHorizontal extends Component {
     handleSelectPlan = (planId) => {
         const { landingData, history } = this.props;
         const selectedPlan = landingData.data.pricing.find(plan => plan.id === planId);
-        history.push('/register-provider', { selectedPlan });
+        history.push('/register-provider/' + selectedPlan.id);
     };
 
     render() {
