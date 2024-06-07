@@ -76,7 +76,7 @@ class FooterHome extends Component {
                         <div className="row">
                             <div className="col-lg-12">
                                 <div className="section-title text-center mb--40">
-                                    <h2 className="text-white">GET <span style={{color:'black'}}>IN TOUCH</span></h2>
+                                    <h2 className="text-white">GET <span style={{color:'#fa6a0a'}}>IN TOUCH</span></h2>
                                     <img className="image-1" src={require('../assets/images/app/title-icon-3.png')} alt="App Landing"/>
                                 </div>
                             </div>
