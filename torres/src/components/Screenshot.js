@@ -14,7 +14,7 @@ class Screenshot extends Component {
                             </div>
                         </div>
                         <div className="col-lg-10 offset-lg-1">
-                            <div className="screenshot-carousel" id="screenshot-carousel" >
+                            <div className="screenshot-carousel" id="screenshot-carousel" data-carousel-3d>
                                 <img className="image-1" src={require('../assets/main_page/screenshot-1.png')} alt="App Screenshot"/>
                                 <img className="image-1" src={require('../assets/main_page/screenshot-2.png')} alt="App Screenshot"/>
                                 <img className="image-1" src={require('../assets/main_page/screenshot-3.png')} alt="App Screenshot"/>

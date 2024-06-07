@@ -80,7 +80,7 @@ class Service extends Component{
                 {/* Start Service Area */}
                 <div className={`service-area ${this.props.horizontal}`}>
                     <div className="container">
-                        <div className="row">
+                        <div className="row" style={{color:'black'}}>
                             {DataList}
                         </div>
                     </div>

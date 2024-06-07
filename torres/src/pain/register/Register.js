@@ -17,6 +17,7 @@ import { MuiTelInput } from 'mui-tel-input';
 import { registerUser } from '../../actions/registerUser';
 import Navbar from '../../components/Navbar';
 import { registerProvider } from '../../actions/registerProvider';
+import {siteType} from '../../siteType';
 
 function Copyright(props) {
   return (
@@ -117,7 +118,7 @@ class Register extends React.Component {
           phone: this.state.value,
           email: data.get('email'),
           name: name.name,
-          addresses: addressObj,
+          // addresses: addressObj, // Dont include address object
         };
         this.props.dispatch(registerProvider(providerCreds));
         break;
@@ -154,7 +155,7 @@ class Register extends React.Component {
               }}
             >
               <Typography variant="h6" align="center" gutterBottom>
-                Sign up to Pound Pain Tech
+                Sign up to POUNDPAIN TECH
               </Typography>
               <Typography variant="body1" align="center" paragraph>
                 Please fill out this form, and we'll send you a welcome email so you can verify your email address and sign in.
@@ -172,9 +173,9 @@ class Register extends React.Component {
                   <MenuItem value="" disabled>
                     Provider or Customer?
                   </MenuItem>
-                  <MenuItem value="Provider">Provider</MenuItem>
-                  <MenuItem value="Legal">Legal</MenuItem>
-                  <MenuItem value="User">Customer</MenuItem>
+                  <MenuItem value="provider">Provider</MenuItem>
+                  <MenuItem value="legal">Legal</MenuItem>
+                  <MenuItem value="user">Customer</MenuItem>
                 </Select>
                 <TextField
                   margin="normal"

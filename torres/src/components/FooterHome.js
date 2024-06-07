@@ -92,10 +92,10 @@ class FooterHome extends Component {
                                     <>
                                     <h3 className="title">Say Hello!</h3>
                                     <form className="contact-form" action="/">
-                                            <TemplateTextField type="text" style={{color:'black'}} label="Name" onChange={this.nameChange}/>
-                                            <TemplateTextField type="text" style={{color:'black'}} label="Email" onChange={this.emailChange}/>
-                                            <TemplateTextArea rows={5} style={{color:'black'}} label="Message" onChange={this.messageChange}/>
-                                            <TemplateCheckbox style={{color:'black'}} checked={this.state.contactus.agree} 
+                                            <TemplateTextField style={{backgroundColor:"white"}} label="Name" onChange={this.nameChange}/>
+                                            <TemplateTextField style={{backgroundColor:'white'}} label="Email" onChange={this.emailChange}/>
+                                            <TemplateTextArea rows={5} style={{backgroundColor:'white'}} label="Message" onChange={this.messageChange}/>
+                                            <TemplateCheckbox boxColor='white' checkColor='black' style={{color:"white"}} checked={this.state.contactus.agree} 
                                                 onClick={this.agreeChange}
                                             label='By submitting this form, I acknowledge and agree to receive communications from PoundPain Tech via email, SMS, and phone call. I consent to PoundPain Tech contacting me for future updates, promotions, and other information.'/>
                                             <TemplateButton
@@ -148,7 +148,7 @@ class FooterHome extends Component {
                                     <h3 className="text-white title">SUBSCRIBE FOR OUR NEWSLETTER</h3>
                                     <form action="/" method="post" id="newsletter">
                                         <div className="newsletter-content" style={{display:'flex',justifyContent:'space-around'}}>
-                                            <TemplateTextField onChange={this.subscribeChange} type="text" name="email" 
+                                            <TemplateTextField style={{backgroundColor:'white',width:"100%"}} onChange={this.subscribeChange} name="email" 
                                                 label="Enter your Email address" />
                                             <TemplateButton 
                                                 disabled={this.state.maillist.length < 1}

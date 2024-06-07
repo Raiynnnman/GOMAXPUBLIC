@@ -113,18 +113,20 @@ const Pricing = ({ onSelectPlan, showButton }) => {
             >
               <Paper className={`${classes.pricePackage} ${index === 1 ? classes.centerCard : ''}`} elevation={4}>
                 <div className={classes.pricePackageTop}>
-                  <Typography variant="h6" component="h6" className={classes.whiteText}>
-                    {plan.cycle === 'monthly' ? 'Monthly' : 'Annual'} Plan
-                  </Typography>
-                  <Typography variant="h5" component="h3" className={classes.whiteText}>
+                  <Typography variant="h4" component="h4" className={classes.whiteText}>
                     {plan.description}
+                  </Typography>
+                  <Typography variant="h6" component="h6" className={classes.whiteText}>
+                    {plan.plan_summary}
                   </Typography>
                 </div>
                 <div className={classes.pricePackageContent}>
                   <div className={classes.upfront_cost}>
-                    <Typography component="span" className={classes.priceTop}>$</Typography>
-                    <Typography component="span" className={classes.priceLarge}>{plan.upfront_cost}</Typography>
-                    <Typography component="span" className={classes.priceBottom}>/month</Typography>
+                    <h3>
+                    <Typography component="span" className={classes.priceTop} style={{fontSize:24,fontWeight:"bold"}}>$</Typography>
+                    <Typography component="span" className={classes.priceLarge} style={{fontSize:24,fontWeight:"bold"}}>{plan.upfront_cost}</Typography>
+                    <Typography component="span" className={classes.priceBottom} style={{fontSize:24,fontWeight:"bold"}}>/month</Typography>
+                    </h3>
                   </div>
                   <List className={classes.priceList}>
                     {plan.benefits.map((benefit, idx) => (

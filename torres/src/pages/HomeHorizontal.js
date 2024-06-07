@@ -39,7 +39,7 @@ class HomeHorizontal extends Component {
                     <Navbar />
                     <HeroOlive horizontal="horizontal" bgshape="bg-shape" />
                     <div style={{ marginTop: 30 }}></div>
-                    <AboutCustomer horizontalabout="horizontal-about" />
+                    <About horizontalabout="horizontal-about" />
                     <Service horizontal="horizontal" />
                     <Feature horizontalfeature="horizontal-feature" />
                     <Pricing showButton={true} onSelectPlan={this.handleSelectPlan} horizontalfeature="horizontal-pricing" />

@@ -249,7 +249,7 @@ class RegistrationLandingData(RegistrationsBase):
             select 
                 p.id, p.trial, p.price,
                 p.locations, p.duration,p.upfront_cost,
-                p.description,p.toshow,
+                p.description,p.toshow,p.plan_summary,
                 p.start_date,p.end_date,p.active,p.slot
             from
                 pricing_data p

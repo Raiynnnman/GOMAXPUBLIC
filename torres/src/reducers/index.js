@@ -31,7 +31,6 @@ import trafficData from './trafficGet';
 import registerUser from './registerUser';
 import registerVerify from './registerVerify';
 import landingData from './landingData';
-import myDayApptSave from './mydayApptSave';
 import mydayReceiptSave from './mydayReceiptSave';
 import corporationUsers from './corporationUsers';
 import corporationAdmin from './corporationAdmin';
@@ -59,7 +58,6 @@ import navigation from './navigation';
 import officeInvoices from './officeInvoices';
 import alerts from './alerts';
 import invoiceAdmin from './invoiceAdmin';
-// import layout from './layout';
 import chat from './chat';
 import offices from './offices';
 import legal from './legal';
@@ -89,7 +87,6 @@ import legalBilling from './legalBilling';
 import legalBillingDownloadDoc from './legalBillingDownloadDoc';
 import saveCard from './saveCard';
 import providerDashboard from './providerDashboard';
-import { connectRouter } from 'connected-react-router';
 import chatUser from './chatUser';
 import chatOffice from './chatOffice';
 import mydayGetOfficePatients from './mydayGetOfficePatients';
@@ -188,6 +185,7 @@ export default combineReducers({
     referralResponse,
     contactus,
     subscribe,
+    referrerUpload,
     registerReferrer,
     userDocumentsUpdate,
     chat,

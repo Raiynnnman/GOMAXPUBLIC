@@ -367,6 +367,7 @@ class RegisterProvider extends Component {
 
         const steps = ['Register Information', 'Payment Details'];
 
+        console.log("p",this.props);
         return (
             <ThemeProvider theme={theme}>
                 <Navbar />
@@ -376,7 +377,7 @@ class RegisterProvider extends Component {
                 {landingData.data && (
                     <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', px: 2 }}>
                         <Container maxWidth="md">
-                            {selPlan ? (
+                            {selPlan && this.props.landingData.data.do_billing_charge === 1? (
                                 <Paper
                                     elevation={12}
                                     sx={{

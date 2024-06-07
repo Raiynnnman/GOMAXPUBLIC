@@ -29,7 +29,7 @@ class Testimonial extends React.Component {
                             <div className="testimonial-activation">
                                 <div className="section-title text-center mb--80">
                                     <h2>What our clients are <span style={{color:'#fa6a0a'}}>Saying</span></h2>
-                                    <p>Real Stories from Care Providers and Patients Who Have Transformed Their Healthcare Experience with Pound Pain Technology</p>
+                                    <p style={{color:'black'}}>Real Stories from Care Providers and Patients Who Have Transformed Their Healthcare Experience with Pound Pain Technology</p>
                                 </div>
                                 <div className="row">
                                     <div className="col-lg-8 offset-lg-2 col-xl-6 offset-xl-3">
