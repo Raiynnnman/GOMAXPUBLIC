@@ -23,7 +23,6 @@ class AdminDashboard extends Component {
 
     render() {
         const { adminDashboard } = this.props;
-        console.log(adminDashboard);
 
         if (adminDashboard && adminDashboard.isReceiving) {
             return <AppSpinner />;
