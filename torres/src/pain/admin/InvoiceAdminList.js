@@ -446,7 +446,7 @@ class InvoiceAdminList extends Component {
             <Grid container xs="12">
                 {(this.state.statusSelected && this.state.statusSelected.length > 0) && (
                 <>
-                <Grid item xs="6" style={{marginBottom:10}}>
+                <Grid item xs="5" style={{margin:10}}>
                       <TemplateSelectMulti
                           label='Status'
                           onChange={this.onStatusChange}
@@ -468,14 +468,16 @@ class InvoiceAdminList extends Component {
                           })}
                         />
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={3} style={{margin:10}}>
                     <TemplateTextField type="text" id="normal-field" onChange={this.search}
                     label="Search" value={this.state.search}/>
                 </Grid>
-                <Grid item xs={3}>
-                    <div class='pull-right'>
-                        <TemplateButton onClick={() => this.reload()} style={{marginRight:5,height:35}} outline 
-                            label={<AutorenewIcon/>}/>
+                <Grid item xs={3} style={{margin:10}}>
+                    <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
+                        <div style={{justifyContent:'spread-evenly'}}>
+                            <TemplateButton onClick={() => this.reload()} style={{marginRight:5,height:35}} outline 
+                                label={<AutorenewIcon/>}/>
+                        </div>
                     </div>
                 </Grid>
                 </>

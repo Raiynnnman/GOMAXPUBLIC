@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
+import { 
+    Paper,
+    Box
+} from '@mui/material';
 import Navbar from '../../components/Navbar';
 import Container from '@mui/material/Container';
 import { connect } from 'react-redux';
@@ -221,9 +224,8 @@ class SearchAdmin extends Component {
                         return (
                             <>
                             <Grid item xs="4" onClick={() => this.setProviderType(e.id)} style={{cursor:'pointer'}}>
-                                <Container>
-                                    <Box style={{border:"1px solid black",
-                                        borderRadius:"25px 25px 25px 25px",margin:20,width:400,height:300}}>
+                                <Box sx={{ mt: 3 }}>
+                                    <Paper elevation={3} sx={{ m:10, p: 3, mb: 3 }}>
                                         <Grid container xs="12">
                                             <Grid item xs="12">
                                             <div style={{textAlign:'center',
@@ -235,8 +237,8 @@ class SearchAdmin extends Component {
                                             </div>
                                             </Grid>
                                         </Grid>
-                                    </Box>
-                                </Container>
+                                    </Paper>
+                                </Box>
                             </Grid>
                             </>
                         )

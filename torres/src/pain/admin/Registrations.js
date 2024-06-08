@@ -690,12 +690,14 @@ class Registrations extends Component {
                         <>
                             {(this.state.selected === null) && (
                             <>
-                            <Grid container xs="12" style={{margin:10}}>
-                                <Grid item xs="1">
-                                    <TemplateButton onClick={this.add} style={{margin:10,width:50}}
-                                        color="primary" label={<AddBoxIcon/>}/>
+                            <Grid container xs="12" style={{marginTop:10}}>
+                                <Grid item xs={.5} style={{margin:10}}>
+                                    <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
+                                        <TemplateButton onClick={this.add} style={{width:50}}
+                                            label={<AddBoxIcon/>}/>
+                                    </div>
                                 </Grid>
-                                <Grid item xs="4">
+                                <Grid item xs="3" style={{margin:10}}>
                                     {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
                                     this.props.registrationsAdminList.data.config &&
                                     this.props.registrationsAdminList.data.config.status && this.state.statusSelected !== null) && (
@@ -721,7 +723,7 @@ class Registrations extends Component {
                                         />
                                     )}
                                 </Grid>
-                                <Grid item xs="4">
+                                <Grid item xs="3" style={{margin:10}}>
                                     {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
                                     this.props.registrationsAdminList.data.config &&
                                     this.props.registrationsAdminList.data.config.type && this.state.statusSelected !== null) && (
@@ -747,15 +749,15 @@ class Registrations extends Component {
                                         />
                                     )}
                                 </Grid>
-                                <Grid item xs={2}>
+                                <Grid item xs={2} style={{margin:10}}>
                                     <TemplateTextField type="text" id="normal-field" onChange={this.search}
                                     label="Search" value={this.state.search}/>
                                 </Grid>
-                                <Grid item xs={1}>
-                                    <div class='pull-right'>
+                                <Grid item xs={2} style={{margin:10}}>
+                                    <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                                         <div style={{display:'flex',justifyContent:"spread-evenly"}}>
-                                            <TemplateButton onClick={this.providerReport} label={<AssessmentIcon/>}/>
-                                            <TemplateButton onClick={() => this.reload()} style={{marginLeft:5,height:35}} 
+                                            <TemplateButton onClick={this.providerReport} style={{width:50}} label={<AssessmentIcon/>}/>
+                                            <TemplateButton onClick={() => this.reload()} style={{marginLeft:5,width:50}} 
                                                 label={<AutorenewIcon/>}/>
                                         </div>
                                     </div>

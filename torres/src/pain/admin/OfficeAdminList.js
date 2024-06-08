@@ -488,6 +488,11 @@ class OfficeList extends Component {
                 )
             },
             {
+                dataField:'office_type',
+                align:'center',
+                text:'Office Type'
+            },
+            {
                 dataField:'last_paid',
                 sort:true,
                 align:'center',
@@ -691,8 +696,7 @@ class OfficeList extends Component {
                     this.props.offices.data.config.provider_status && this.state.statusSelected !== null) && (
                       <TemplateSelectMulti
                           closeMenuOnSelect={true}
-                          isSearchable={false}
-                          isMulti
+                          label='Status'
                           onChange={this.onStatusFilter}
                           value={this.state.statusSelected.map((g) => { 
                             return (
@@ -718,11 +722,11 @@ class OfficeList extends Component {
                     label="Search" value={this.state.search}/>
                 </Grid>
                 <Grid item xs={4}>
-                    <div style={{display:'flex',alignItems:'center',justifyItems:'end'}}>
+                    <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                         <div style={{justifyContent:'spread-evenly'}}>
-                            <TemplateButton onClick={() => this.reload()} style={{marginRight:5,height:35}} outline 
+                            <TemplateButton onClick={() => this.reload()} style={{width:50}}
                                 label={<AutorenewIcon/>}/>
-                            <TemplateButton onClick={this.officeReport} label={<AssessmentIcon/>}/>
+                            <TemplateButton onClick={this.officeReport} style={{width:50,marginLeft:5}} label={<AssessmentIcon/>}/>
                         </div>
                     </div>
                 </Grid>

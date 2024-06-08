@@ -783,9 +783,8 @@ class OfficeList(AdminBase):
                     left outer join users comu on comu.id = o.commission_user_id
                     left join  users u on u.id = o.user_id
                 where 
-                    o.office_type_id <> %s and
                     o.office_type_id <> %s 
-            """ % (OT['Customer'],OT['Legal'])
+            """ % (OT['Customer'],)
         stat_params = []
         count_par = []
         search_par = [

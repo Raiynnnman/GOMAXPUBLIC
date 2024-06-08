@@ -397,9 +397,13 @@ class Referrers extends Component {
                                         label="Search" value={this.state.search}/>
                                     </Grid>
                                     <Grid item xs={3}>
-                                        <div class='pull-right'>
-                                            <TemplateButton onClick={() => this.reload()} style={{marginRight:5,height:35}} outline 
-                                                label={<AutorenewIcon/>}/>
+                                        <div>
+                                            <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
+                                                <div style={{justifyContent:'spread-evenly'}}>
+                                                    <TemplateButton onClick={() => this.reload()} style={{marginRight:5,width:50}} outline 
+                                                        label={<AutorenewIcon/>}/>
+                                                </div>
+                                            </div>
                                         </div>
                                     </Grid>
                                 </Grid>
