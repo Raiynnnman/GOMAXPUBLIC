@@ -9,9 +9,9 @@ function GoogleAutoComplete({onChange}) {
     useEffect(() => { 
         if (value.value && value.value.terms) { 
             var t = value.value.terms
-            var c = t[t.length-2].value ? t[t.length-2].value : ''
-            var s = t[t.length-3].value ? t[t.length-3].value : ''
-            onChange('address',{
+            var s = t[t.length-2].value ? t[t.length-2].value : ''
+            var c = t[t.length-3].value ? t[t.length-3].value : ''
+            onChange({
                 verified: 1,
                 places_id:value.value.place_id,
                 addr1:value.value.structured_formatting.main_text,

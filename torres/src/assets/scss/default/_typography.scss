@@ -12,6 +12,7 @@ html {
 	overflow: hidden;
 	overflow-y: auto;
 }
+
 body {
 	overflow: hidden;
 	font-size: $body-font-size;
@@ -19,7 +20,7 @@ body {
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	font-family: $body-font;
-	color: $body-color;
+	color: black;
 	font-weight: 400;
 }
 

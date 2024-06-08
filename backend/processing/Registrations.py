@@ -250,7 +250,8 @@ class RegistrationLandingData(RegistrationsBase):
                 p.id, p.trial, p.price,
                 p.locations, p.duration,p.upfront_cost,
                 p.description,p.toshow,p.plan_summary,
-                p.start_date,p.end_date,p.active,p.slot
+                p.start_date,p.end_date,p.active,p.slot,
+                p.placeholder
             from
                 pricing_data p
             where 
@@ -269,6 +270,7 @@ class RegistrationLandingData(RegistrationsBase):
         j = []
         o = db.query(q,p)
         ret['pricing'] = []
+
         for x in o:
             x['benefits'] = db.query("""
                 select
@@ -293,6 +295,23 @@ class RegistrationLandingData(RegistrationsBase):
                 """,(x['id'],)
             )
             ret['pricing'].append(x)
+        q = """
+            select 
+                p.id, p.trial, p.price,
+                p.locations, p.duration,p.upfront_cost,
+                p.description,p.toshow,p.plan_summary,
+                p.start_date,p.end_date,p.active,p.slot,
+                p.placeholder
+            from
+                pricing_data p
+            where 
+                1 = 1
+            """
+        p = []
+        if 'type' in params and params['type'] is not None:
+            q += " and office_type_id = %s " 
+            p = [params['type']]
+        ret['all_plans'] = db.query(q,p)
         l = db.query("""
             select ot.id,otd.name,otd.description,otd.signup_description
             from 
@@ -494,10 +513,8 @@ class RegisterProvider(RegistrationsBase):
         # db.update("delete from office_addresses where office_id=%s",(off_id,))
     
         for x in params['addresses']:
-            print(x)
             if x['addr1'] is None:
                 continue
-            print("we made it here")
             db.update(
                 """
                     insert into office_addresses (

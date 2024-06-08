@@ -4,7 +4,6 @@ import { withRouter } from 'react-router-dom';
 import {
     Container,
     Grid,
-    TextField,
     Button,
     Typography,
     Paper,
@@ -24,6 +23,9 @@ import { getLandingData } from '../../actions/landingData';
 import { registerProvider } from '../../actions/registerProvider';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../../theme';
+import TemplateTextFieldPhone from '../utils/TemplateTextFieldPhone';
+import TemplateTextField from '../utils/TemplateTextField';
+import TemplateButton from '../utils/TemplateButton';
 
 class RegisterProvider extends Component {
     formRef = createRef();
@@ -71,7 +73,7 @@ class RegisterProvider extends Component {
 
     componentDidUpdate(prevProps) {
         if (this.props.landingData !== prevProps.landingData && this.props.landingData.data) {
-            const { pq, pricing, system_settings } = this.props.landingData.data;
+            const { pq, pricing, do_billing_charge, all_plans } = this.props.landingData.data;
             if (pq && this.state.pq_id && !this.state.phone) {
                 this.setState({
                     phone: formatPhoneNumber(pq.phone),
@@ -87,17 +89,34 @@ class RegisterProvider extends Component {
                 });
             }
 
-            // Skip the credit card details step if do_billing_charge is 0 -- Tedy Yoahnes
-            if (system_settings?.do_billing_charge === 0 && this.state.page === 0) {
-                this.setState({ page: 1 });
+            if (do_billing_charge === 0 && this.state.page === 0) {
+                this.setState({ 
+                    selPlan: all_plans.find((e) => e.placeholder === 1) || null,
+                    page: 0 
+                });
             }
         }
     }
 
-    handleInputChange = (event) => {
+    handleNameChange = (event) => {
         const { name, value } = event.target;
-        this.setState({ [name]: value }, this.checkValid);
-    };
+        this.setState({ name: value }, this.checkValid);
+    }
+
+    handleFirstChange = (event) => {
+        const { name, value } = event.target;
+        this.setState({ first: value }, this.checkValid);
+    }
+
+    handleLastChange = (event) => {
+        const { name, value } = event.target;
+        this.setState({ last: value }, this.checkValid);
+    }
+
+    handleEmailChange = (event) => {
+        const { name, value } = event.target;
+        this.setState({ email: value }, this.checkValid);
+    }
 
     handlePhoneChange = (event) => {
         const phone = formatPhoneNumber(event.target.value);
@@ -110,7 +129,7 @@ class RegisterProvider extends Component {
 
     getCoupon = () => {
         const { coupon, selPlan } = this.state;
-        const matchingCoupon = selPlan.coupons.find((e) => coupon === e.name);
+        const matchingCoupon = selPlan?.coupons.find((e) => coupon === e.name);
         if (matchingCoupon) {
             const discountValue = this.calculateDiscount(matchingCoupon);
             this.setState({
@@ -218,51 +237,51 @@ class RegisterProvider extends Component {
                         )}
                         <Grid container spacing={3}>
                             <Grid item xs={12}>
-                                <TextField
+                                <TemplateTextField
                                     fullWidth
                                     required
                                     label="Practice Name"
                                     name="name"
-                                    onChange={this.handleInputChange}
+                                    onChange={this.handleNameChange}
                                     margin="normal"
                                     sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
-                                <TextField
+                                <TemplateTextField
                                     fullWidth
                                     required
                                     label="First Name"
                                     name="first"
-                                    onChange={this.handleInputChange}
+                                    onChange={this.handleLastChange}
                                     margin="normal"
                                     sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
-                                <TextField
+                                <TemplateTextField
                                     fullWidth
                                     required
                                     label="Last Name"
                                     name="last"
-                                    onChange={this.handleInputChange}
+                                    onChange={this.handleLastChange}
                                     margin="normal"
                                     sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
                                 />
                             </Grid>
                             <Grid item xs={12}>
-                                <TextField
+                                <TemplateTextField
                                     fullWidth
                                     required
                                     label="Email"
                                     name="email"
-                                    onChange={this.handleInputChange}
+                                    onChange={this.handleEmailChange}
                                     margin="normal"
                                     sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
                                 />
                             </Grid>
                             <Grid item xs={12}>
-                                <TextField
+                                <TemplateTextFieldPhone
                                     fullWidth
                                     required
                                     label="Phone"
@@ -274,27 +293,14 @@ class RegisterProvider extends Component {
                                     InputLabelProps={{ shrink: true }}
                                 />
                             </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    fullWidth
-                                    required
-                                    label="Zipcode"
-                                    name="zipcode"
-                                    onChange={this.handleInputChange}
-                                    margin="normal"
-                                    sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
-                                />
-                            </Grid>
                         </Grid>
                         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-                            <Button
+                            <TemplateButton
                                 variant="contained"
                                 color="primary"
                                 onClick={landingData.data.do_billing_charge !== 0 ? this.nextPage : this.registerProvider}
                                 sx={{ borderRadius: 8, backgroundColor: '#FF5733', color: '#fff', padding: '10px 45px', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase' }}
-                            >
-                                {landingData.data.do_billing_charge !== 0 ? 'Next' : 'Register'}
-                            </Button>
+                                label={landingData.data.do_billing_charge !== 0 ? 'Next' : 'Register'}/>
                         </Box>
                     </Box>
                 );
@@ -318,10 +324,10 @@ class RegisterProvider extends Component {
                                 <Grid item xs={12} textAlign="right">
                                     <Typography variant="body2">${parseFloat(selPlan.upfront_cost * selPlan.duration).toFixed(2)}</Typography>
                                 </Grid>
-                                {selPlan.coupons.length > 0 && (
+                                {selPlan.coupons && selPlan.coupons.length > 0 && (
                                     <>
                                         <Grid item xs={7}>
-                                            <TextField
+                                            <TemplateTextField
                                                 fullWidth
                                                 placeholder="Enter Coupon Code"
                                                 value={this.state.coupon}

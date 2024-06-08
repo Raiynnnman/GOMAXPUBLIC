@@ -12,6 +12,7 @@ import {Redirect, BrowserRouter, Switch, Route} from 'react-router-dom';
 import Login from './pain/login/Login';
 import Dashboard from './pain/dashboard/Dashboard';
 import RegisterProvider from './pain/landing/RegisterProvider';
+import RegisterLegal from './pain/landing/RegisterLegal';
 import Welcome from './pain/welcome/Welcome';
 import Forgot from './pain/forgot/Forgot';
 import Reset from './pain/reset/Reset';
@@ -36,6 +37,9 @@ import Landing from './pain/landing/Landing.js';
 import Pricing from './components/Pricing';
 const CloseButton = ({closeToast}) => <i onClick={closeToast} className="la la-close notifications-close"/>
 const App = () => {
+    if (window.location.hash.startsWith('#/')) {
+        window.location = window.location.hash.replace('#', '')
+    }
     return (
         <div className="App">
             <ToastContainer
@@ -53,11 +57,12 @@ const App = () => {
                     <Route exact path='/search' component={Search}/>
                     <Route exact path='/demo' component={Landing}/>
                     <Route exact path='/forgot' component={Forgot}/>
-                    <Route exact path='/provider-pricing' component={Pricing}/>
                     <Route exact path='/reset/:token' component={Reset}/>
                     <Route exact path='/register-provider' component={RegisterProvider}/>
                     <Route exact path='/welcome' component={Welcome}/>
                     <Route exact path='/register-provider/:id' component={RegisterProvider}/>
+                    <Route exact path='/register-legal' component={RegisterLegal}/>
+                    <Route exact path='/register-legal/:id' component={RegisterLegal}/>
                     <Route path="/app" exact render={() => <Redirect to="/app/main"/>}/>
                     <Route path="/app/main" exact render={() => <Redirect to="/app/main/dashboard"/>}/>
                     <Route exact path='/app/main/dashboard' component={Dashboard}/>

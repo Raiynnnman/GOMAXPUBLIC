@@ -630,16 +630,6 @@ class Registrations extends Component {
                 )
             },
             {
-                dataField:'start_date',
-                sort:true,
-                text:'Plan Start',
-                formatter:(cellContent,row) => (
-                    <div>
-                        {row['start_date'] ? moment(row['start_date']).format('LL') : ''} 
-                    </div>
-                )
-            },
-            {
                 dataField:'actions',
                 sort:true,
                 text:'Actions',

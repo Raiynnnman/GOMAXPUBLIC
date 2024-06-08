@@ -946,6 +946,7 @@ class LocationUpdate(OfficeBase):
             params['fulladdr'] = ''
         if 'addr2' not in params:
             params['addr2'] = ''
+        print(params)
         if 'id' in params:
             db.update("""
                 update office_addresses set name = %s,

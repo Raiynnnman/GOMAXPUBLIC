@@ -95,6 +95,9 @@ class OfficeAddresses extends Component {
             {(this.props.officeLocations && this.props.officeLocations.isReceiving) && (
                 <AppSpinner/>
             )}
+            {(this.props.officeLocationSave && this.props.officeLocationSave.isReceiving) && (
+                <AppSpinner/>
+            )}
             {(this.state.selected !== null) && (
             <>
             <Grid container xs="12">
@@ -148,7 +151,8 @@ class OfficeAddresses extends Component {
 function mapStateToProps(store) {
     return {
         currentUser: store.auth.currentUser,
-        officeLocations: store.officeLocations
+        officeLocations: store.officeLocations,
+        officeLocationSave: store.officeLocationSave
     }
 }
 

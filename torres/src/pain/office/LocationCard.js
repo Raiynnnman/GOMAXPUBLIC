@@ -9,6 +9,9 @@ import formatPhoneNumber from '../utils/formatPhone';
 import Grid from '@mui/material/Grid';
 import Container from '@mui/material/Container';
 import TemplateButton from '../utils/TemplateButton';
+import TemplateTextFieldPhone from '../utils/TemplateTextFieldPhone';
+import TemplateTextField from '../utils/TemplateTextField';
+import { Typography, Paper, Box } from '@mui/material';
 
 class LocationCard extends Component {
     constructor(props) { 
@@ -27,7 +30,10 @@ class LocationCard extends Component {
         this.save = this.save.bind(this);
         this.cancel = this.cancel.bind(this);
         this.getDate = this.getDate.bind(this);
-        this.changeValue = this.changeValue.bind(this);
+        this.changeName = this.changeName.bind(this);
+        this.changeAddr1 = this.changeAddr1.bind(this);
+        this.changeAddr2 = this.changeAddr2.bind(this);
+        this.changePhone = this.changePhone.bind(this);
         this.scheduleAppt = this.scheduleAppt.bind(this);
         this.selectDay = this.selectDay.bind(this);
     } 
@@ -73,22 +79,26 @@ class LocationCard extends Component {
         this.setState(this.state)
     } 
 
-    changeValue(e,t) { 
-        if (t.target && t.target.value) { 
-            this.state.selected[e] = t.target.value;
-        } else { 
-            this.state.selected = {...this.state.selected, ...t};
-        } 
-        if (e === 'phone') { 
-            let val = t.target.value.replace(/\D/g, "")
-            .match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
-            let validPhone = !val[2] ? val[1]: "(" + val[1] + ") " + val[2] + (val[3] ? "-" + val[3] : "");
-            this.state.selected.phone = validPhone;
-            this.setState(this.state);
-        } 
-        this.props.onUpdate(this.state.selected);
+    changeName(e) { 
+        this.state.selected.name = e.target.value;
         this.setState(this.state);
-    } 
+        this.props.onUpdate(this.state.selected);
+    }
+    changeAddr1(e,t) { 
+        this.state.selected = {...this.state.selected, ...e}
+        this.setState(this.state);
+        this.props.onUpdate(this.state.selected);
+    }
+    changeAddr2(e) { 
+        this.state.selected.addr2 = e.target.value;
+        this.setState(this.state);
+        this.props.onUpdate(this.state.selected);
+    }
+    changePhone(e) { 
+        this.state.selected.phone = e.target.value;
+        this.setState(this.state);
+        this.props.onUpdate(this.state.selected);
+    }
 
     scheduleAppt(e) { 
         this.moreToggle(this.props.provider.phy_id);
@@ -110,17 +120,16 @@ class LocationCard extends Component {
         return (
         <>
         {(this.props.provider) && (
-            <Container style={{
-                margin:20,
-                borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}} className="mb-xlg border-1">
+            <Box sx={{mt:3}}>
+                <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
                     <Grid container xs="12">
                         <Grid item xs="12">
                         <>
                             {(this.props.edit && this.state.selected !== null) && (
                                 <div> 
-                                <input className="form-control no-border" style={{border:'1px solid black',backgroundColor:'white'}} 
-                                    value={this.state.selected.name} onChange={(e) => this.changeValue('name',e)} 
-                                    required name="name" placeholder="Name" />
+                                <TemplateTextField 
+                                    value={this.state.selected.name} onChange={this.changeName} 
+                                    label="Name" />
                                 </div>
                             )}
                             {(!this.props.edit) && (
@@ -133,11 +142,11 @@ class LocationCard extends Component {
                     </Grid>
                     <hr/>
                     <Grid container xs="12" style={{marginTop:20}}> 
-                        <Grid item xs="12">
+                        <Grid item xs="12" style={{marginLeft:10}}>
                         <>
                             {(this.props.edit && this.state.selected !== null) && (
                                 <div> 
-                                <GoogleAutoComplete onChange={this.changeValue}/>
+                                <GoogleAutoComplete onChange={this.changeAddr1}/>
                                 </div>
                             )}
                             {(!this.props.edit) && (
@@ -157,14 +166,9 @@ class LocationCard extends Component {
                         <>
                             {(this.props.edit && this.state.selected !== null) && (
                                 <div> 
-                                <input className="form-control no-border" style={{border:'1px solid black',backgroundColor:'white'}} 
-                                    value={this.state.selected.addr2} onChange={(e) => this.changeValue('addr2',e)} 
-                                    required placeholder="Address 2" />
-                                </div>
-                            )}
-                            {(!this.props.edit) && (
-                                <div>
-                                {this.props.provider.addr2} 
+                                <TemplateTextField 
+                                    value={this.state.selected.addr2} onChange={this.changeAddr2} 
+                                    label="Address 2" />
                                 </div>
                             )}
                         </>
@@ -175,13 +179,13 @@ class LocationCard extends Component {
                         <>
                             {(this.props.edit && this.state.selected !== null) && (
                                 <div> 
-                                <input className="form-control no-border" style={{border:'1px solid black',backgroundColor:'white'}} 
-                                    value={this.state.selected.phone} onChange={(e) => this.changeValue('phone',e)} 
-                                    required name="phone" placeholder="Phone" />
+                                <TemplateTextFieldPhone 
+                                    value={this.state.selected.phone} onChange={this.changePhone} 
+                                    label="Phone" />
                                 </div>
                             )}
                             {(!this.props.edit) && (
-                                <div>
+                                <div style={{marginLeft:10}}>
                                 {formatPhoneNumber(this.props.provider.phone)} 
                                 </div>
                             )}
@@ -200,7 +204,8 @@ class LocationCard extends Component {
                         </>
                         </Grid>
                     </Grid>
-            </Container>
+                </Paper>
+            </Box>
         )}
         </>
         )
