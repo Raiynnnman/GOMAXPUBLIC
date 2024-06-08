@@ -809,15 +809,16 @@ class OfficeList extends Component {
                 </Grid>
                 <Grid container xs="12">
                     <Grid item xs="12">
-                        <Tabs style={{marginBottom:20}} value={this.state.subTab} onChange={this.toggleSubTab}>
-                            <Tab value='plans' label='Plans'/>
-                            <Tab value='offices' label='Offices'/>
-                            <Tab value='invoices' label='Invoices'/>
-                            <Tab value='potentials' label='Potentials'/>
-                            <Tab value='history' label='History'/>
-                            <Tab value='cards' label='Cards'/>
-                            <Tab value='clients' label='Clients'/>
-                            <Tab value='comments' label='Comments'/>
+                        <Tabs style={{marginBottom:30}} value={this.state.subTab} onChange={this.toggleSubTab}>
+                            <Tab value='plans' label='Plans'  sx={{ color: 'black' }}/>
+                            <Tab value='offices' label='Offices' sx={{ color: 'black' }}/>
+                            <Tab value='invoices' label='Invoices' sx={{ color: 'black' }} />
+                            <Tab value='potentials' label='Potentials' sx={{ color: 'black' }}/>
+                            <Tab value='history' label='History' sx={{ color: 'black' }}/>
+                            <Tab value='cards' label='Cards' sx={{ color: 'black' }}/>
+                            <Tab value='clients' label='clients' sx={{ color: 'black' }}/>
+                            <Tab value='comments' label='Comments' sx={{ color: 'black' }}/>
+                            
                         </Tabs>
                         {(this.state.subTab === 'clients') && (
                           <PainTable
