@@ -4,15 +4,16 @@ import React, { Component } from "react";
 class HeroOlive extends Component {
     render(){
         return(
-            <div className={`slider-area bg-color ${this.props.horizontal} ${this.props.bgshape}`} id="home"  style={{background:'#fa6a0a'}}>
-                <div className="container h-100">
+            <div className={`header-area ${this.props.horizontal} ${this.props.bgshape}`} id="home" >
+                <div className="header-bg"/>
+                <div className="container h-100 ">
                     <div className="row">
-                        <div className="col-lg-7 h-100">
+                        <div className="col-lg-12 h-100">
                             <div className="banner-text">
                                 <div className="banner-table-cell">
-                                    <h1>Revolutionizing <span style={{color:'black'}} className="theme-color">Patient Referrals</span><br/> for Care Providers Across the U.S.</h1>
-                                    <h3>Effortlessly connect with new patients and grow your practice with Pound Pain Technology.</h3>
-                                    <p>Welcome to Pound Pain Technology, your ultimate solution for seamless patient referrals and practice growth. In today’s fast-paced healthcare environment, connecting with the right patients at the right time can be challenging. That's where we come in.
+                                    <h1 style={{color:"white"}}>Revolutionizing <span style={{color:'#fa6a0a'}} className="theme-color">Patient Referrals</span><br/> Nationwide</h1>
+                                    <h3 style={{color:"white"}}>Effortlessly connect with new patients and grow your practice with Pound Pain Technology.</h3>
+                                    <p style={{color:"white"}}>Welcome to Pound Pain Technology, your ultimate solution for seamless patient referrals and practice growth. In today’s fast-paced healthcare environment, connecting with the right patients at the right time can be challenging. That's where we come in.
                                     </p>
                                     {(false) && (<div className="banner-buttons">
                                         <button type="button" className="button-default button-olive">Sign Up!</button>
@@ -51,11 +52,6 @@ class HeroOlive extends Component {
                             </div>
                             </>
                             )}
-                        </div>
-                        <div className="col-lg-5">
-                            <div className="banner-product-image text-right">
-                                <img className="image-1" src={require('../assets/main_page/banner-mobile-provider.png')} alt="App Landing"/>
-                            </div>
                         </div>
                     </div>
                 </div>
