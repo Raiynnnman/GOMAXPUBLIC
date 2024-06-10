@@ -182,10 +182,10 @@ class InvoiceAdminList extends Component {
                                 label:e.name
                                 }
                             )
+                          })}
                           value={
                             label: this.props.officeInvoices.data.config.status.filter((e) => e.id === row.id)[0].name 
                           }
-                          })}
                         />
                     </div>
                 )

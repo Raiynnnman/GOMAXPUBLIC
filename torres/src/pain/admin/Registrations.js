@@ -943,7 +943,7 @@ class Registrations extends Component {
                                                 </Tabs>
                                                 {(this.state.subTab === 'history') && (
                                                 <>
-                                                    {(this.state.selected.history && this.state.selected.history) && (
+                                                    {(this.state.selected.history && this.state.selected.history.length > 0) && (
                                                     <>
                                                     <PainTable 
                                                         keyField='id' data={this.state.selected.history} 
@@ -957,7 +957,7 @@ class Registrations extends Component {
                                                 <>
                                                     <TemplateButton style={{marginBottom:10}} onClick={this.addAddress} 
                                                         color="primary" label='Add'/>
-                                                    {(this.state.selected.addr && this.state.selected.addr) && (
+                                                    {(this.state.selected.addr && this.state.selected.addr.length > 0) && (
                                                     <>
                                                     <PainTable 
                                                         keyField='id' data={this.state.selected.addr} 

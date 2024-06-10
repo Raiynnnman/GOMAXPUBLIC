@@ -209,13 +209,13 @@ class UserRegistration extends Component {
             )}
             </>
             {(this.props.error_message) && (
-            <Grid container xs="12" xs="12" style={{marginTop:20}}>
+            <Grid container xs="12" style={{marginTop:20}}>
                 <Grid item xs="12">
                     <font style={{color:'red'}}>{this.props.error_message}</font>       
                 </Grid>
             </Grid>
             )}
-                <Grid container xs="12" xs="12" style={{margin:20}}>
+                <Grid container xs="12" style={{margin:20}}>
                     <Grid item xs="2" style={{color:'black'}}>
                         <Box>
                         Name: Full Name
@@ -237,7 +237,7 @@ class UserRegistration extends Component {
                         <TemplateButton label={<ContentCopyIcon/>} onClick={this.copyContent}/>
                     </Grid>
                 </Grid>
-            <Grid container xs="12" xs="12" style={{margin:20}}>
+            <Grid container xs="12" style={{margin:20}}>
                 <Grid item xs="12">
                     <TemplateTextArea 
                       rows={10} style={{color:'black',width:500}}
@@ -246,8 +246,8 @@ class UserRegistration extends Component {
                     />
                 </Grid>
             </Grid>
-            <Grid container xs="12" xs="12" style={{marginTop:20}}>
-                <Grid item xs="12" xs="12">
+            <Grid container xs="12" style={{marginTop:20}}>
+                <Grid item xs="12">
                 <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                     <TemplateButton onClick={this.save} style={{marginRight:10}} label="Save" color="primary">{translate('Save')}</TemplateButton>
                     <TemplateButton outline onClick={this.cancel} label="Cancel" color="primary">{translate('Cancel')}</TemplateButton>

@@ -43,7 +43,6 @@ class CouponAdminList extends Component {
         this.edit = this.edit.bind(this);
         this.cancel = this.cancel.bind(this);
         this.save = this.save.bind(this);
-        this.pageChange = this.pageChange.bind(this);
         this.planChange = this.planChange.bind(this);
         this.reductionChange = this.reductionChange.bind(this);
         this.totalChange = this.totalChange.bind(this);
@@ -161,17 +160,6 @@ class CouponAdminList extends Component {
     } 
     planChange(e) { 
         this.state.selected.pricing_data_id = e.value;
-        this.setState(this.state);
-    } 
-    pageChange(e,t) { 
-        if (e === '>') { 
-            this.state.page = this.state.page + 1;
-        } else { 
-            this.state.page = e - 1;
-        }
-        this.props.dispatch(getCouponAdmin(
-            {limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
-        ));
         this.setState(this.state);
     } 
 
@@ -303,7 +291,7 @@ class CouponAdminList extends Component {
                 formatter:(cellContent,row) => (
                     <div>
                         {moment(row['end_date']).isValid() ?  
-                         moment(row['end_date']).format('LLL') : moment(row['end_date']).format('LLL')}
+                         moment(row['end_date']).format('LLL') : row['end_date']}
                     </div>
                 )
             },

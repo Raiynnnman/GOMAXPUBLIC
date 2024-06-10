@@ -24,12 +24,12 @@ install: build
 	if [ -f requirements.txt ]; then cp requirements.txt pre; fi
 	if [ -d pre/pre ]; then rm -rf pre/pre; fi
 	if [ -d rest/roles ] ; then cp -r rest/roles pre/rest ; fi
-	if [ -d templates ] ; then cp -r templates pre ; fi
 	if [ -f version.sh ]; then cp version.sh pre; fi
 	if [ -d bin ]; then cp -r bin pre; rm -f pre/bin/dev*; fi
 	if [ -d docs ]; then cp -r docs pre; fi
 	cp stripe/doall.sh pre/stripe
 	cp data_import/doall.sh pre/data_import
+	cp -r ../backend/templates pre/
 	mkdir -p pre/tests
 	cp tests/*.xlsx tests/*.json pre/tests
 	(cd pre && tar cfz ../targets/install.tar.gz  --exclude p \

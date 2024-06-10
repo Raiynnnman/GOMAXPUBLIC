@@ -22,7 +22,6 @@ class Jenkins:
         pass
 
     def process(*args,**kwargs):
-        return 
         cls = args[1][0]
         myid = ''
         if len(args[1]) > 1:

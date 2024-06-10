@@ -362,7 +362,7 @@ class UsersUpdate(OfficeBase):
             )
             insid = params['id']
         else:
-            self.addUser(params,db)
+            self.addUser(params,off_id,db)
         if 'entitlements' in params:    
             db.update("delete from user_entitlements where user_id=%s",(insid,))
             db.update("delete from user_permissions where user_id=%s",(insid,))

@@ -184,7 +184,7 @@ class MyHealthDocuments extends Component {
                     <Grid container xs="12" style={{marginTop:5}}>
                         <Grid item xs="12">
                             <font style={{height:30,display:"flex",fontSize:40,alignItems: 'center', justifyContent: 'center',
-                                fontWeight:"bold",fontSize:16}}>
+                                fontWeight:"bold"}}>
                             HIPAA AUTHORIZATION FOR USE OR DISCLOSURE OF HEALTH INFORMATION
                             </font>
                         </Grid>
@@ -678,7 +678,7 @@ class MyHealthDocuments extends Component {
                     <Grid container xs="12" style={{marginTop:5}}>
                         <Grid item xs="12">
                             <font style={{height:30,display:"flex",fontSize:40,alignItems: 'center', justifyContent: 'center',
-                                fontWeight:"bold",fontSize:16}}>
+                                fontWeight:"bold"}}>
                             (IF THE PATIENT IS UNABLE TO SIGN, USE THE SIGNATURE AREA BELOW)
                             </font>
                         </Grid>
@@ -790,7 +790,7 @@ class MyHealthDocuments extends Component {
                     <Grid container xs="12" style={{marginTop:5}}>
                         <Grid item xs="12">
                             <font style={{height:30,display:"flex",fontSize:40,alignItems: 'center', justifyContent: 'center',
-                                fontWeight:"bold",fontSize:16}}>
+                                fontWeight:"bold"}}>
                             ADDITIONAL CONSENT FOR CERTAIN CONDITIONS
                             </font>
                         </Grid>

@@ -241,7 +241,7 @@ class CustomerView extends Component {
             )}
             {this.state.inputs.map((t) => {
                 return (
-                <Grid container xs="12" xs="12" style={{marginTop:5}}>
+                <Grid container xs="12" style={{marginTop:5}}>
                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'spread-evenly'}}>
                           <font style={{width:25}}>{cntr++}.</font>
                         {t.t === 'text' && (
@@ -280,8 +280,8 @@ class CustomerView extends Component {
                 )
             })}
             </>
-            <Grid container xs="12" xs="12" style={{marginTop:20}}>
-                <Grid item xs="12" xs="12">
+            <Grid container xs="12" style={{marginTop:20}}>
+                <Grid item  xs="12">
                 <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                     <TemplateButton onClick={this.save} style={{marginRight:10}} label={translate('Save')}/>
                     <TemplateButton onClick={this.cancel} label={translate('Cancel')}/>

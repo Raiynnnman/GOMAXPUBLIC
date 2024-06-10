@@ -54,9 +54,6 @@ class ClientList extends Component {
         this.state.activeTab = e;
     } 
 
-    cancel() { 
-    } 
-
     edit(row) { 
         var r = {}
         if (row.id === 'new') { 

@@ -51,7 +51,7 @@
   [data-carousel-3d] [data-next-button]:before {
       height: 25px;
       width: 16px;
-      content: "";
+      /* content: ""; */
       right: 0;
       top: 0;
       position: absolute;    
@@ -231,7 +231,7 @@
     right:0;top:0;
     z-index:2;
     font-weight:700;
-    background:rgba(255,255,255,.1);
+    #background:rgba(255,255,255,.1);
     border:0!important;
     background: #F8F8F8;
     }

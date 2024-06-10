@@ -879,7 +879,7 @@ class OfficeList extends Component {
                         <>
                                 <TemplateButton style={{marginBottom:10}} onClick={this.addAddress} 
                                     label={<AddBoxIcon/>}/>
-                                {(this.state.selected.addr && this.state.selected.addr) && (
+                                {(this.state.selected.addr && this.state.selected.addr.length > 0) && (
                                 <>
                                 <PainTable
                                     keyField='id' data={this.state.selected.addr} 
@@ -890,7 +890,7 @@ class OfficeList extends Component {
                         )}
                         {(this.state.subTab === 'invoices') && (
                         <>
-                                {(this.state.selected.invoices && this.state.selected.invoices) && (
+                                {(this.state.selected.invoices && this.state.selected.invoices.length > 0) && (
                                     <PainTable
                                         keyField='id' data={this.state.selected.invoices} 
                                         columns={invheads}/>

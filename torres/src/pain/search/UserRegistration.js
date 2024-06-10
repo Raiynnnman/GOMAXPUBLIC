@@ -113,50 +113,50 @@ class UserRegistration extends Component {
                 <AppSpinner/>
             )}
             {(false) && ( 
-            <Grid container xs="12" xs="12">
-                <Grid item xs="12" xs="12">
+            <Grid container  xs="12">
+                <Grid item  xs="12">
                     <div style={{border:"1px solid black",height:150,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                     <h1>Physician Video Here</h1>
                     </div>
                 </Grid>
             </Grid>
             )}
-            <Grid container xs="12" xs="12" style={{marginTop:20,marginLeft:10}}>
-                <Grid item xs="12" xs="12">
+            <Grid container xs="12" style={{marginTop:20,marginLeft:10}}>
+                <Grid item xs="12">
                 <>
                 {(!this.props.currentUser) && (
                     <>
                     <div style={{height:300,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                         <div>
-                        <Grid container xs="12" xs="12">
+                        <Grid container  xs="12">
                             <Grid item xs="12" style={{marginLeft:0}}>
                               <TemplateTextField style={{width:"100%"}}
                                 onChange={this.setEmail} value={this.state.register.email} 
                                 label="Email" />
                             </Grid>
                         </Grid>
-                        <Grid container xs="12" xs="12">
+                        <Grid container xs="12">
                             <Grid item xs="12" style={{marginLeft:0}}>
                               <TemplateTextField type="text" id="normal-field" style={{width:"100%"}}
                                 onChange={this.setFirst} value={this.state.register.first_name} 
                                 label="First Name" />
                             </Grid>
                         </Grid>
-                        <Grid container xs="12" xs="12">
+                        <Grid container xs="12">
                             <Grid item xs="12" style={{marginLeft:0}}>
                               <TemplateTextField type="text" id="normal-field" style={{width:"100%"}}
                                 onChange={this.setLast} value={this.state.register.last_name} 
                                 label="Last Name" />
                             </Grid>
                         </Grid>
-                        <Grid container xs="12" xs="12">
+                        <Grid container xs="12">
                             <Grid item xs="12" style={{marginLeft:0}}>
                               <TemplateTextField type="text" id="normal-field" style={{width:"100%"}}
                                 onChange={this.setPhone} value={this.state.register.phone} 
                                 label="Phone" />
                             </Grid>
                         </Grid>
-                        <Grid container xs="12" xs="12">
+                        <Grid container xs="12">
                             <Grid item xs="12" >
                             <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                 <TemplateButton onClick={this.schedule} style={{marginRight:10}}  

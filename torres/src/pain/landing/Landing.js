@@ -225,7 +225,7 @@ class Landing extends Component {
                                             "https://calendly.com/d/ck2s-xvq-t7n/poundpain-introduction"
                                     }
                                     style={{width:window.innerWidth < 500 ? window.innerWidth : "600px",
-                                            height:window.innerWidth < 500 ? "800px" : "800px",
+                                            height:window.innerWidth < 500 ? "800px" : "600px",
                                             }}
                                     title="PoundPain Invite">
                                 </iframe>

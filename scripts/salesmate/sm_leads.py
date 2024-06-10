@@ -612,7 +612,7 @@ for x in SF_DATA:
             n = {}
             n['Id'] = j['Id']
             n['PainID__c'] = j['PainID__c']
-            n['PainURL__c'] = n['PainURL__c'] 
+            n['PainURL__c'] = j['PainURL__c'] 
             n['Sales_Link__c'] = '%s/#/register-provider/o/%s' % (config.getKey("host_url"),pq_id)
             try:
                 DEALS_OBJ.update(n,dryrun=args.dryrun)

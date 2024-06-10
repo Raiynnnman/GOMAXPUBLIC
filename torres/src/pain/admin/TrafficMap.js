@@ -17,8 +17,7 @@ class MapContainer extends React.Component {
       selected:null,
       sticky:false,
       //center:{lat:0,lng:0},
-      center:null,
-      selected:null
+      center:null
     };
     this.handleMapClick = this.handleMapClick.bind(this);
     this.mapLoaded = this.mapLoaded.bind(this);
@@ -372,7 +371,6 @@ class MapContainer extends React.Component {
                     disableDefaultUI: true, // disable default map UI
                     libraries: ['visualization'],
                     draggable: true, // make map draggable
-                    libraries:['visualization'],
                     keyboardShortcuts: false, // disable keyboard shortcuts
                     scaleControl: true, // allow scale controle
                     scrollwheel: true, // allow scroll wheel
