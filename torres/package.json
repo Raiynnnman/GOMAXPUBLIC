@@ -60,7 +60,9 @@
       "react-app/jest"
     ],
     "rules": {
-      "no-direct-mutation-state": 0
+      "no-direct-mutation-state": 0,
+      "no-unused-vars":0,
+      "react/no-direct-mutation-state": 0
     }
   },
   "browser": {

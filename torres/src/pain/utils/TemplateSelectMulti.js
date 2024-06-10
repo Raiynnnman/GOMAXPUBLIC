@@ -39,7 +39,7 @@ function TemplateSelectMulti({label,onChange,style,value,options}) {
 
   return (
     <div>
-      <FormControl sx={{ m: 1, width: "100%" }}>
+      <FormControl sx={{ m: 1, width: "100%" }} size="small">
         <InputLabel>{label}</InputLabel>
         <Select
           multiple

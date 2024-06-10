@@ -141,7 +141,10 @@ class PainTable extends Component {
 
                                 </TableCell>
                                 )
-                            }})}
+                            } else { 
+                                return(<></>)
+                            }
+                            })}
                           </TableRow>
                         </TableHead>
                         <TableBody>
@@ -158,6 +161,8 @@ class PainTable extends Component {
                                                 {(!e.formatter) && (<div>{row[e.dataField]}</div>)}
                                             </TableCell>
                                         )
+                                    } else { 
+                                        return(<></>)  
                                     }
                                 })}
                             </TableRow>

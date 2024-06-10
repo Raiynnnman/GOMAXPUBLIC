@@ -690,7 +690,7 @@ class OfficeList extends Component {
             <Box style={{margin:20}}>
             {(this.state.selected === null) && (
             <Grid container xs="12">
-                <Grid item xs="5" style={{zIndex:9995}}>
+                <Grid item xs="5" style={{zIndex:9995,margin:10}}>
                   {(this.props.offices && this.props.offices.data && 
                     this.props.offices.data.config &&
                     this.props.offices.data.config.provider_status && this.state.statusSelected !== null) && (
@@ -717,11 +717,11 @@ class OfficeList extends Component {
                         />
                     )}
                 </Grid>                
-                <Grid item xs={3}>
+                <Grid item xs={3} style={{margin:10}}>
                     <TemplateTextField type="text" id="normal-field" onChange={this.search}
                     label="Search" value={this.state.search}/>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={3}>
                     <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                         <div style={{justifyContent:'spread-evenly'}}>
                             <TemplateButton onClick={() => this.reload()} style={{width:50}}

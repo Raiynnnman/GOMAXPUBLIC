@@ -119,7 +119,7 @@ class Navbar extends Component {
                                             <li className="active"><a href="/app">Home</a></li>
                                             <li><a href="/app/main/client/appointments">Appointments</a></li>
                                             <li><a href="/app/main/client/search">Search</a></li>
-                                            <li><a href="#">
+                                            <li><a> 
                                                 <DropdownMenu currentUser={this.props.currentUser} 
                                                     title={
                                                     this.props.currentUser.first_name + " " + this.props.currentUser.last_name
@@ -137,7 +137,7 @@ class Navbar extends Component {
                                             <li className="active"><a href="/app">Home</a></li>
                                             <li><a href="/app/main/client/appointments">Appointments</a></li>
                                             <li><a href="/app/main/client/search">Search</a></li>
-                                            <li><a href="#">
+                                            <li><a href="#"> // eslint-disable-next-line jsx-a11y/anchor-is-valid
                                                 <DropdownMenu currentUser={this.props.currentUser} 
                                                     title={
                                                     this.props.currentUser.first_name + " " + this.props.currentUser.last_name
@@ -204,12 +204,12 @@ class Navbar extends Component {
                                             <li><a href="/app/main/admin/referrals">Referrals</a></li>
                                             <li><a href="/app/main/admin/map">Map</a></li>
                                             <li><a href="/app/main/admin/registrations">Registrations</a></li>
-                                            <li><a href="#">
+                                            <li><a>
                                                 <DropdownMenu currentUser={this.props.currentUser} 
                                                     title='System' items={systemItems} dispatch={this.props.dispatch}/>
                                                 </a>
                                             </li>
-                                            <li><a href="#">
+                                            <li><a>
                                                 <DropdownMenu currentUser={this.props.currentUser} 
                                                     title={
                                                     this.props.currentUser.first_name + " " + this.props.currentUser.last_name

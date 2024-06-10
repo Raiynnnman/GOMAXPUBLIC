@@ -53,7 +53,9 @@ function DropdownMenu({onChange,items,title,currentUser}) {
                                 {e.n}
                             </MenuItem>
                         )
-                    }
+                    } else { 
+                        return (<></>)
+                    } 
                 })} 
               </Box>
             ) : null}

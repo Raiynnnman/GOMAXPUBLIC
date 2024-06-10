@@ -34,7 +34,7 @@ class Welcome extends React.Component {
             <Navbar/>
                 <Container maxWidth="sm">
                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        <img width="20%" height="20%" src='/painlogo.png'/>
+                        <img width="20%" height="20%" src='/painlogo.png' alt='logo'/>
                     </div>
                     <p style={{color:'black',textAlign:'center'}}>
                         Welcome to POUNDPAIN TECH! You will receive an email with details on how to login and get started. 

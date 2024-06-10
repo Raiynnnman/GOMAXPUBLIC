@@ -163,8 +163,8 @@ class FooterHome extends Component {
                         <div className="row">
                             <div className="col-lg-8 offset-lg-2 col-xl-4 offset-xl-4">
                                 <div className="footer-links text-center">
-                                    <a href="https://www.facebook.com/poundpainusa" target='_blank'><i className="zmdi zmdi-facebook"></i></a>
-                                    <a href="https://www.instagram.com/poundpain/" target='_blank'><i className="zmdi zmdi-instagram"></i></a>
+                                    <a href="https://www.facebook.com/poundpainusa" rel="noreferrer" target='_blank'><i className="zmdi zmdi-facebook"></i></a>
+                                    <a href="https://www.instagram.com/poundpain/" rel="noreferrer" target='_blank'><i className="zmdi zmdi-instagram"></i></a>
                                 </div>
                                 <div className="footer-text text-center">
                                     <span>Copyright © {new Date().getFullYear()} <a href="https://hasthemes.com">POUNDPAIN TECH</a></span>

@@ -71,7 +71,8 @@ class UserRegistration extends Component {
     }
 
     copyContent() { 
-        this.state.tarea = 
+        
+        this.state.tarea = // eslint-disable-next-line no-useless-concat
             'Name: Full Name\n' + 'Phone: Phone\n' + 
             'Email: someone@gmail.com\n' + 'DOA:\n' + 
             'Address: Address\n' + 'Attny: Attny\n' + 

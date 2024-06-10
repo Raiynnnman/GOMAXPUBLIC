@@ -9,7 +9,7 @@ function TemplateSelect({label,onChange,style,value,options}) {
 
     return (
     <>
-      <FormControl sx={{ m:1,width: "100%" }} style={style}>
+      <FormControl sx={{ m:1,width: "100%" }} style={style} size="small">
       <InputLabel>{label}</InputLabel>
       <Select
         value={value.label ? value.label : value}

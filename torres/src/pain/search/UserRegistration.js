@@ -164,7 +164,7 @@ class UserRegistration extends Component {
                                   !this.state.isValid ||
                                   !this.state.register.first_name || 
                                   !this.state.register.last_name ||
-                                  this.state.register.phone.length != 14} label={translate('Contact')}/>
+                                  this.state.register.phone.length !== 14} label={translate('Contact')}/>
                                 <TemplateButton outline onClick={this.cancel} label={translate('Cancel')}/>
                             </div>
                             </Grid>
