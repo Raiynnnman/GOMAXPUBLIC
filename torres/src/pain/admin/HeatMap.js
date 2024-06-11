@@ -4,6 +4,7 @@ import Grid from '@mui/material/Grid';
 import './Map.scss';
 import moment from 'moment';
 import googleKey from '../../googleConfig';
+import { display } from "@mui/system";
 
 class MapContainer extends React.Component {
   constructor(props) {
@@ -288,27 +289,28 @@ class MapContainer extends React.Component {
 
   render() {
     return (
-        <Grid container xs="12">
-            <Grid item xs="12" style={{margin:0,padding:0}}>
-                <Map
-                  google={this.props.google}
-                  zoom={4}
-                  options={{
-                    disableDefaultUI: true, // disable default map UI
-                    libraries:['visualization'],
-                    draggable: true, // make map draggable
-                    keyboardShortcuts: false, // disable keyboard shortcuts
-                    scaleControl: true, // allow scale controle
-                    scrollwheel: true, // allow scroll wheel
-                  }}
-                  initialCenter={this.props.data.centerPoint}
-                  onReady={(m,n) => this.mapLoaded(m,n)}
-                  onClick={this.handleMapClick}
-                >
-                    <HeatMap positions={this.props.data.data.heatmap}/>
-                </Map>
-            </Grid>
-        </Grid>
+      <Grid container style={{ display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column", width: "100%" }}>
+      <Grid item xs={12} style={{ width: "100%", height: "60vh", marginBottom: "10px" }}>
+        <Map
+          google={this.props.google}
+          zoom={4}
+          style={{ width: "100%", height: "50%", marginTop:60, borderRadius: "10px",   }}
+          options={{
+            disableDefaultUI: true,
+            libraries: ['visualization'],
+            draggable: true,
+            keyboardShortcuts: false,
+            scaleControl: true,
+            scrollwheel: true,
+          }}
+          initialCenter={this.props.data.centerPoint}
+          onReady={this.mapLoaded}
+          onClick={this.handleMapClick}
+        >
+          <HeatMap positions={this.props.data.data.heatmap} /> 
+        </Map>
+      </Grid> 
+    </Grid>
     );
   }
 }

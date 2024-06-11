@@ -1838,6 +1838,7 @@ class TrafficGet(AdminBase):
                 ti.traffic_categories_id = tcat.id and
         """
         sqlp = []
+        print(params)
         if 'date' in params:
             q += " date(ti.created) = %s and "
             sqlp.append(params['date'])

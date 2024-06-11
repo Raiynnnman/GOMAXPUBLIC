@@ -1,13 +1,10 @@
 import React, { Component } from "react";
-import { InfoWindow, Map, Circle, Marker, GoogleApiWrapper } from "google-maps-react";
-import PushPinIcon from '@mui/icons-material/PushPin';
-import './Map.scss';
-import moment from 'moment';
-import formatPhoneNumber from '../utils/formatPhone';
+import { HeatMap, Map, Marker, GoogleApiWrapper } from "google-maps-react";
 import Grid from '@mui/material/Grid';
 import googleKey from '../../googleConfig';
+import MapMetaData from "../../components/MapMetaData";
 
-class MapContainer extends React.Component {
+class MapContainer extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -21,344 +18,60 @@ class MapContainer extends React.Component {
     };
     this.handleMapClick = this.handleMapClick.bind(this);
     this.mapLoaded = this.mapLoaded.bind(this);
-    this.onMouseout = this.onMouseout.bind(this);
-    this.onMouseover = this.onMouseover.bind(this);
     this.handleMarkerClick = this.handleMarkerClick.bind(this);
   }
-  componentWillReceiveProps(p) { 
-    if (this.state.center === null) { 
-        this.state.center = this.props.centerPoint;
-        this.setState(this.state);
-    } 
-    if (this.state.mapRef !== null) { 
-        this.state.center = this.props.centerPoint;
-        this.state.mapRef.panTo(this.state.center);
-        this.setState(this.state);
-    } 
+
+  componentDidUpdate(prevProps) {
+    if (this.props.centerPoint !== prevProps.centerPoint) {
+      this.setState({ center: this.props.centerPoint });
+      if (this.state.mapRef) {
+        this.state.mapRef.panTo(this.props.centerPoint);
+      }
+    }
   }
 
-  onMouseover(e) { 
-    if (this.state.sticky) { return; }
-    if (!e.data) { return; }
-    this.state.selected = e.data;
-    this.state.showInfoWindow = true;
-    this.setState(this.state)
+  handleMarkerClick(ref, map, ev) {
+    const location = { lat: ref.data.lat, lng: ref.data.lng };
+    this.setState({
+      selected: ref.data,
+      locations: [...this.state.locations, location]
+    });
   }
 
-  onMouseout(e) { 
-    if (this.state.sticky) { return; }
-    this.state.selected = null;
-    this.state.showInfoWindow = false;
-    this.setState(this.state)
+  mapLoaded(map, maps) { 
+    this.setState({ mapRef: map });
   }
 
-  handleMarkerClick(ref,map,ev) { 
-    var location = {lat:ref.data.lat,lng:ref.data.lng};
-    this.state.selected = ref.data;
-    this.state.sticky = this.state.sticky ? false : true;
-    this.setState(this.state);
-    this.setState(prevState => ({
-      locations: [...prevState.locations, location]
-    }));
-  }
-
-  mapLoaded(m,n) { 
-    var styles = 
-        [
-          {
-            "elementType": "geometry",
-            "stylers": [
-              {
-                "color": "white"
-              }
-            ]
-          },
-          {
-            "elementType": "labels.text.fill",
-            "stylers": [
-              {
-                "visibility": "off"
-              }
-            ]
-          },
-          {
-            "elementType": "labels.text.stroke",
-            "stylers": [
-              {
-                "visibility": "on"
-              }
-            ]
-          },
-          {
-            "featureType": "administrative.country",
-            "elementType": "geometry.stroke",
-            "stylers": [
-              {
-                "visibility": "#4b6878"
-              }
-            ]
-          },
-          {
-            "featureType": "administrative.land_parcel",
-            "elementType": "labels.text.fill",
-            "stylers": [
-              {
-                "color": "#64779e"
-              }
-            ]
-          },
-          {
-            "featureType": "administrative.province",
-            "elementType": "geometry.stroke",
-            "stylers": [
-              {
-                "color": "#4b6878"
-              }
-            ]
-          },
-          {
-            "featureType": "landscape.man_made",
-            "elementType": "geometry.stroke",
-            "stylers": [
-              {
-                "color": "#334e87"
-              }
-            ]
-          },
-          {
-            "featureType": "landscape.natural",
-            "elementType": "geometry",
-            "stylers": [
-              {
-                "color": "#023e58"
-              }
-            ]
-          },
-          {
-            "featureType": "poi",
-            "elementType": "geometry",
-            "stylers": [
-              {
-                "color": "#283d6a"
-              }
-            ]
-          },
-          {
-            "featureType": "poi",
-            "elementType": "labels.text.fill",
-            "stylers": [
-              {
-                "color": "#6f9ba5"
-              }
-            ]
-          },
-          {
-            "featureType": "poi",
-            "elementType": "labels.text.stroke",
-            "stylers": [
-              {
-                "color": "#1d2c4d"
-              }
-            ]
-          },
-          {
-            "featureType": "poi.park",
-            "elementType": "geometry.fill",
-            "stylers": [
-              {
-                "color": "#023e58"
-              }
-            ]
-          },
-          {
-            "featureType": "poi.park",
-            "elementType": "labels.text.fill",
-            "stylers": [
-              {
-                "color": "#3C7680"
-              }
-            ]
-          },
-          {
-            "featureType": "road",
-            "elementType": "geometry",
-            "stylers": [
-              {
-                "color": "#304a7d"
-              }
-            ]
-          },
-          {
-            "featureType": "road",
-            "elementType": "labels.text.fill",
-            "stylers": [
-              {
-                "color": "#98a5be"
-              }
-            ]
-          },
-          {
-            "featureType": "road",
-            "elementType": "labels.text.stroke",
-            "stylers": [
-              {
-                "color": "#1d2c4d"
-              }
-            ]
-          },
-          {
-            "featureType": "road.highway",
-            "elementType": "geometry",
-            "stylers": [
-              {
-                "color": "#2c6675"
-              }
-            ]
-          },
-          {
-            "featureType": "road.highway",
-            "elementType": "geometry.stroke",
-            "stylers": [
-              {
-                "color": "#255763"
-              }
-            ]
-          },
-          {
-            "featureType": "road.highway",
-            "elementType": "labels.text.fill",
-            "stylers": [
-              {
-                "color": "#b0d5ce"
-              }
-            ]
-          },
-          {
-            "featureType": "road.highway",
-            "elementType": "labels.text.stroke",
-            "stylers": [
-              {
-                "color": "#023e58"
-              }
-            ]
-          },
-          {
-            "featureType": "transit",
-            "elementType": "labels.text.fill",
-            "stylers": [
-              {
-                "color": "#98a5be"
-              }
-            ]
-          },
-          {
-            "featureType": "transit",
-            "elementType": "labels.text.stroke",
-            "stylers": [
-              {
-                "color": "#1d2c4d"
-              }
-            ]
-          },
-          {
-            "featureType": "transit.line",
-            "elementType": "geometry.fill",
-            "stylers": [
-              {
-                "color": "#283d6a"
-              }
-            ]
-          },
-          {
-            "featureType": "transit.station",
-            "elementType": "geometry",
-            "stylers": [
-              {
-                "color": "#3a4762"
-              }
-            ]
-          },
-          {
-            "featureType": "water",
-            "elementType": "geometry",
-            "stylers": [
-              {
-                "color": "#0e1626"
-              }
-            ]
-          },
-          {
-            "featureType": "water",
-            "elementType": "labels.text.fill",
-            "stylers": [
-              {
-                "color": "#4e6d70"
-              }
-            ]
-          }
-        ]
-    n.setOptions({styles:styles})
-    this.state.center = this.props.centerPoint;
-    this.state.center.lng += 5;
-    n.disableDefaultUI = true;
-    n.scrollwheel = true;
-    n.panTo(this.state.center);
-    this.state.mapRef = n;
-    this.setState(this.state);
-  }
-
-  handleMapClick(ref,map,ev) { 
+  handleMapClick(ref, map, ev) {
     const location = ev.latLng;
     this.setState(prevState => ({
       locations: [...prevState.locations, location]
     }));
     map.panTo(location);
-  }; 
+  }
 
   render() {
-      const accidentMarker = {
-        // path: "M-1.547 12l6.563-6.609-1.406-1.406-5.156 5.203-2.063-2.109-1.406 1.406zM0 0q2.906 0 4.945 2.039t2.039 4.945q0 1.453-0.727 3.328t-1.758 3.516-2.039 3.070-1.711 2.273l-0.75 0.797q-0.281-0.328-0.75-0.867t-1.688-2.156-2.133-3.141-1.664-3.445-0.75-3.375q0-2.906 2.039-4.945t4.945-2.039z",
-        path:  'M -2,0 0,-2 2,0 0,2 z',
-        fillColor: "#dc1a1a",
-        fillOpacity: 1,
-        strokeWeight: 0,
-        rotation: 0,
-        scale: 2,
-        //anchor: new google.maps.Point(0, 20),
-     };
-      const locationMarkerPref = {
-        //path: "M-1.547 12l6.563-6.609-1.406-1.406-5.156 5.203-2.063-2.109-1.406 1.406zM0 0q2.906 0 4.945 2.039t2.039 4.945q0 1.453-0.727 3.328t-1.758 3.516-2.039 3.070-1.711 2.273l-0.75 0.797q-0.281-0.328-0.75-0.867t-1.688-2.156-2.133-3.141-1.664-3.445-0.75-3.375q0-2.906 2.039-4.945t4.945-2.039z",
-        //#path:"M0,0h100v100h-100v-100M60,50a10,10 0 0 0 -20,0a10,10 0 0 0 20,0",
-        path:  'M -2,0 0,-2 2,0 0,2 z',
-        fillOpacity: 1,
-        fillColor: "#2cad01",
-        strokeWeight: 0,
-        rotation: 0,
-        scale: 2,
-        //anchor: new google.maps.Point(0, 20),
-     };
-      const locationMarkerInNet = {
-        //path: "M-1.547 12l6.563-6.609-1.406-1.406-5.156 5.203-2.063-2.109-1.406 1.406zM0 0q2.906 0 4.945 2.039t2.039 4.945q0 1.453-0.727 3.328t-1.758 3.516-2.039 3.070-1.711 2.273l-0.75 0.797q-0.281-0.328-0.75-0.867t-1.688-2.156-2.133-3.141-1.664-3.445-0.75-3.375q0-2.906 2.039-4.945t4.945-2.039z",
-        //#path:"M0,0h100v100h-100v-100M60,50a10,10 0 0 0 -20,0a10,10 0 0 0 20,0",
-        path:  'M -2,0 0,-2 2,0 0,2 z',
-        fillOpacity: 1,
-        fillColor: "#f84404",
-        strokeWeight: 0,
-        rotation: 0,
-        scale: 2,
-        //anchor: new google.maps.Point(0, 20),
-     };
-      const locationMarkerPotent = {
-        //path: "M-1.547 12l6.563-6.609-1.406-1.406-5.156 5.203-2.063-2.109-1.406 1.406zM0 0q2.906 0 4.945 2.039t2.039 4.945q0 1.453-0.727 3.328t-1.758 3.516-2.039 3.070-1.711 2.273l-0.75 0.797q-0.281-0.328-0.75-0.867t-1.688-2.156-2.133-3.141-1.664-3.445-0.75-3.375q0-2.906 2.039-4.945t4.945-2.039z",
-        //#path:"M0,0h100v100h-100v-100M60,50a10,10 0 0 0 -20,0a10,10 0 0 0 20,0",
-        path:  'M -2,0 0,-2 2,0 0,2 z',
-        fillOpacity: 1,
-        fillColor: "yellow",
-        strokeWeight: 0,
-        rotation: 0,
-        scale: 2,
-        //anchor: new google.maps.Point(0, 20),
-     };
+    const styles = {
+      mapContainer: {
+        justifyContent: 'center',
+        marginTop: { xs: '20px', md: '100px' },
+      },
+      mapItem: {
+        height: { xs: '60vh', md: '50vh' },
+        justifyContent: 'center',
+        display: 'flex'
+      },
+      map: {
+        width: '95%',
+        height: '95%',
+        maxWidth: '900px',
+        maxHeight: '600px',
+        borderRadius: '10px',
+        marginLeft:'auto',
+        marginRight: 'auto',
+      }
+    };
+
     return (
       <div style={{zIndex:1,borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}} className="map-container">
         <Grid container xs="12">
@@ -689,7 +402,7 @@ class MapContainer extends React.Component {
                 </div>
             </Grid>
         </Grid>
-      </div>
+      </Grid>
     );
   }
 }
