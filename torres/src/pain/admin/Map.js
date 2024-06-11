@@ -141,7 +141,7 @@ class Map extends Component {
                                 />
                             )}
                         </Grid>
-                        <Grid item xs={12} m={1} md={2}>
+                        <Grid item xs={8} m={1} md={2}>
                             {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.config &&
                                 this.props.trafficData.data.config.avail && this.state.dateSelected !== null) && (
                                 <TemplateTextField
@@ -154,7 +154,7 @@ class Map extends Component {
                                 />
                             )}
                         </Grid>
-                        <Grid item m={1} xs={11} md={8}>
+                        <Grid item m={0.5} xs={11} md={6}>
                             {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.config &&
                                 this.props.trafficData.data.config.avail && this.state.dateSelected !== null) && (
                                 <TemplateSelectMulti
