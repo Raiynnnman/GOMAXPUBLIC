@@ -125,6 +125,12 @@ class RegisterProvider extends Component {
                 this.state.selPlan = null;
             } 
             this.setState(this.state);
+            if (p.landingData.data.do_billing_charge === 0 && this.state.page === 0 && !this.props.match.path.includes("short")) {
+                this.setState({ 
+                    selPlan: p.landingData.data.all_plans.find((e) => e.placeholder === 1) || null,
+                    page: 0 
+                });
+            }
         } 
         var relList = false;
         if (p.searchProvider.data && p.searchProvider.data.potentials && this.state.page === 1 && this.state.pq_id === null) {  

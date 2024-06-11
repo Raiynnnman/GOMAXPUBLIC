@@ -301,6 +301,23 @@ class RegistrationLandingData(RegistrationsBase):
                 otd.office_type_id = ot.id
             """)
         ret['roles'] = l
+        q = """
+            select
+                p.id, p.trial, p.price,
+                p.locations, p.duration,p.upfront_cost,
+                p.description,p.toshow,p.plan_summary,
+                p.start_date,p.end_date,p.active,p.slot,
+                p.placeholder
+            from
+                pricing_data p
+            where
+                1 = 1
+            """
+        p = []
+        if 'type' in params and params['type'] is not None:
+            q += " and office_type_id = %s "
+            p = [params['type']]
+        ret['all_plans'] = db.query(q,p)
         ret['introduction'] = db.query("""
             select url,slot from landing_configuration
             where active = 1
