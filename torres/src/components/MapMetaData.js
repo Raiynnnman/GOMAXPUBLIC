@@ -10,19 +10,19 @@ const MapMetaData = ({ selected }) => {
         backgroundColor: 'white',
         backgroundColor: 'white',
         p: 2,
-        mt: { xs: 19, md: 20 },
-        mb:{xs:2,md:12},
+        mt: { xs:19, md: 20 },
+        mb:{xs:3,md:12},
         mr: { xs: 5, md: 25 },
         height: { xs:'auto',md: 'auto' },
         width: { md: '70%' },
-        ml: {  xs: 2, md: 0  },
+        ml: {  xs: 2, md: 13  },
         boxShadow: 4,
         borderRadius: 1,
       }}
     >
       {selected === null ? (
         <Typography variant="h6" fontWeight="500">No marker selected!</Typography>
-      ) : (
+        ) : (
         <>
           <Grid container spacing={2} justifyContent="space-between">
             <Grid item xs={12} sm={8}>
@@ -83,7 +83,8 @@ const MapMetaData = ({ selected }) => {
               />
             </Grid>
           </Grid>
-        </> 
+        </>
+      )}
     </Box>
   );
 };
