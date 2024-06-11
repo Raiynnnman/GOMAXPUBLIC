@@ -1,21 +1,33 @@
 import React, { Component } from "react";
+import Box from '@mui/material/Box';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 import TemplateButton from '../pain/utils/TemplateButton';
+import CloseIcon from '@mui/icons-material/Close';
 
 class Service extends Component{
     constructor(props) { 
         super(props);
         this.state = { 
-            showVideo:false
+            showVideo:false,
+            showCalendar:false,
         } 
         this.showVideo = this.showVideo.bind(this);
+        this.showCalendar = this.showCalendar.bind(this);
+        this.closeCalendar = this.closeCalendar.bind(this);
         this.closeVideo = this.closeVideo.bind(this);
-    }
-    requestDemo() { 
-        window.location = '/demo';
     }
     signUp() { 
         window.location = '/#pricing';
     }
+    closeCalendar() { 
+        this.state.showCalendar = false;
+        this.setState(this.state);
+    } 
+    showCalendar() { 
+        this.state.showCalendar = true;
+        this.setState(this.state);
+    } 
     closeVideo() { 
         this.state.showVideo = false;
         this.setState(this.state);
@@ -27,22 +39,25 @@ class Service extends Component{
     render(){
         let data = [
             {
-                icon: 'zmdi zmdi-settings',
+                icon: 'zmdi zmdi-account-o',
                 title: 'Get Started Today!',
+                btn_title:'Sign up',
                 desc: 'Join the network of successful care providers who have transformed their practices with Pound Pain Technology. Sign up now and see the difference.',
                 click:this.signUp
             },
 
             {
-                icon: 'zmdi zmdi-favorite',
+                icon: 'zmdi zmdi-calendar',
                 title: 'Request a Demo',
+                btn_title:'Book a call',
                 desc: 'See our platform in action. Request a personalized demo to explore how Pound Pain Technology can benefit your practice.',
-                click:this.requestDemo
+                click:this.showCalendar
             },
 
             {
-                icon: 'zmdi zmdi-time',
+                icon: 'zmdi zmdi-collection-video',
                 title: 'Watch How',
+                btn_title:'Watch',
                 desc: 'Curious to see how it all works? Watch our demo video to learn more about the features and benefits of our platform.',
                 click:this.showVideo
             }
@@ -56,6 +71,7 @@ class Service extends Component{
                         </div>
                         <h4 className="title">{val.title}</h4>
                         <p className="desc">{val.desc}</p>
+                        <TemplateButton label={val.btn_title} style={{backgroundColor:'#e59400'}} onClick={val.click}/>
                     </div>
                 </div>
             )
@@ -63,17 +79,31 @@ class Service extends Component{
 
         return (
             <div>
+                {(this.state.showCalendar) && (
+                <>
+                    <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                        <iframe 
+                            src={
+                                this.props.landingData.data.introduction.length > 0 ? 
+                                    this.props.landingData.data.introduction[1].url : 
+                                    "https://calendly.com/d/ck2s-xvq-t7n/poundpain-introduction"
+                            }
+                            style={{overflow:"hidden",width:window.innerWidth < 500 ? window.innerWidth : "600px",
+                                    height:900
+                                    }}
+                            title="PoundPain Invite">
+                        </iframe>
+                    </div>
+                </>
+                )}
                 {(this.state.showVideo) && (
                 <>
-                    <TemplateButton label='close' onClick={this.closeVideo}/>
-                    <div style={{display:'flex',alignItems:'center',justifyItems:'end'}}>
-                        <div style={{padding:'56.25% 0 0 0',position:'relative'}}>
-                            <iframe src="https://player.vimeo.com/video/954405043?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" 
-                                frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write" 
-                                style={{position:'absolute',top:0,left:0,width:'50%',height:'50%'}}
-                                title="PoundPain_video_V1_2">
-                            </iframe>
-                        </div>
+                    <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                        <iframe src="https://player.vimeo.com/video/954405043?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" 
+                            frameBorder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write" 
+                            style={{height:800,width:800}}
+                            title="PoundPain_video_V1_2">
+                        </iframe>
                     </div>
                 </>
                 )}
@@ -90,6 +120,12 @@ class Service extends Component{
         )
     }
 }
+function mapStateToProps(store) {
+    return {
+        landingData: store.landingData
+    }
+}
 
-export default Service;
+
+export default withRouter(connect(mapStateToProps)(Service));
 

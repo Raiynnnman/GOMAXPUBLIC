@@ -95,10 +95,10 @@ const Pricing = ({ onSelectPlan, showButton }) => {
       <Container>
         <div className={classes.sectionTitle}>
           <Typography variant="h2" component="h2">
-            Pricing plans for teams of all sizes
+            Pricing plans for offices of all sizes
           </Typography>
           <Typography variant="body1" color="textSecondary">
-            Pick the right pricing for your team!
+            Pick the right pricing for your office!
           </Typography>
         </div>
         <Grid container spacing={4} justifyContent="center">
@@ -127,9 +127,12 @@ const Pricing = ({ onSelectPlan, showButton }) => {
                     <Typography component="span" className={classes.priceLarge} style={{fontSize:24,fontWeight:"bold"}}>{plan.upfront_cost}</Typography>
                     <Typography component="span" className={classes.priceBottom} style={{fontSize:24,fontWeight:"bold"}}>/month</Typography>
                     </h3>
+                    <h3>
+                    <Typography component="span" className={classes.priceBottom} style={{fontSize:18}}>{plan.benefits[0].description}</Typography>
+                    </h3>
                   </div>
                   <List className={classes.priceList}>
-                    {plan.benefits.map((benefit, idx) => (
+                    {plan.benefits.slice(1).map((benefit, idx) => (
                       <ListItem key={idx} disableGutters>
                         <svg
                           className={`h-5 w-5 shrink-0 ${classes.benefitIcon}`}

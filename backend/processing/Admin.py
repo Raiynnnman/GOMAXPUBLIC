@@ -2383,6 +2383,8 @@ class ReferrerList(AdminBase):
                 left join referrer_users_status rs on ru.referrer_users_status_id=rs.id
                 left join office ro on ru.referrer_id=ro.id
                 left outer join office o on o.id = ru.office_id
+            where 
+                1 = 1
             """
         p = []
         if 'status' in params:
@@ -2392,6 +2394,7 @@ class ReferrerList(AdminBase):
                 arr.append("referrer_users_status_id = %s " % z)
             q += " or ".join(arr)
             q += ")"
+        print(q)
         p.append(limit)
         p.append(offset*limit)
         cnt = db.query("select count(id) as cnt from (%s) as t" % (q,))

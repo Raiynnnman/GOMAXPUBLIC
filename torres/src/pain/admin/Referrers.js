@@ -67,15 +67,18 @@ class Referrers extends Component {
             p.referrerAdminList.data.config.status && this.state.statusSelected === null) { 
             var c = 0;
             var t = [];
+            var t1 = [];
             for (c = 0; c < p.referrerAdminList.data.config.status.length; c++) { 
                 if (p.referrerAdminList.data.config.status[c].name === 'COMPLETED') { continue; }
-                t.push(p.referrerAdminList.data.config.status[c].id); 
+                t.push(p.referrerAdminList.data.config.status[c]); 
+                t1.push(p.referrerAdminList.data.config.status[c].id); 
+                
             } 
             this.state.statusSelected = t;
-            this.state.filter = t;
+            this.state.filter = t1;
             this.setState(this.state);
             this.props.dispatch(getReferrers(
-                {limit:this.state.pageSize,offset:this.state.page,status:t}
+                {limit:this.state.pageSize,offset:this.state.page,status:t1}
             ));
         } 
     }
@@ -132,14 +135,19 @@ class Referrers extends Component {
         } 
     } 
     onStatusFilter(e,t) { 
-        if (e.length <2 ) { return; }
+        if (e.length < 1) { return; }
         var c = 0;
         var t = [];
+        var t1 = [];
+        console.log("p",this.props);
         for (c = 0; c < e.length; c++) { 
-            t.push(e[c].value); 
+            t.push(e[c]); 
+            var v = this.props.referrerAdminList.data.config.status.filter((f) => f.name === e[c].value)
+            t1.push(v[0].id);
         } 
+        console.log("t1",t1)
         this.state.statusSelected = t;
-        this.state.filter = t;
+        this.state.filter = t1;
         this.props.dispatch(getReferrers(
             {search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
         ));
@@ -269,6 +277,7 @@ class Referrers extends Component {
     } 
 
     render() {
+        console.log("s",this.state);
         var regheads = [
             {
                 dataField:'id',
@@ -374,10 +383,11 @@ class Referrers extends Component {
                                               label="Status"
                                               onChange={this.onStatusFilter}
                                               value={this.state.statusSelected.map((g) => { 
+                                                console.log(g)
                                                 return (
                                                     {
-                                                    label:this.props.referrerAdminList.data.config.status.filter((f) => f.id === g)[0].name,
-                                                    value:this.props.referrerAdminList.data.config.status.filter((f) => f.id === g)[0].name
+                                                     label: g.label ? g.label : g.name, 
+                                                     value: g.label ? g.label : g.name 
                                                     }
                                                 )
                                               })}

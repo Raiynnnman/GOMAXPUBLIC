@@ -15,13 +15,18 @@ function TemplateSelectMulti({label,onChange,style,value,options}) {
   } 
   const [selected, setSelected] = React.useState(sel);
 
+  console.log("sel",sel);
+
   const handleDelete = (e) => { 
+    console.log("e",e);
     var o = value.filter((f) => f.label !== e);
     var t = sel.filter((f) => f !== e);
     setSelected(t);
     onChange(o);
   }
+
   const handleChange = (e,t) => {
+    console.log("hc",e,t);
     setSelected(e.target.value);
     var c = 0;
     var n = []
@@ -40,7 +45,7 @@ function TemplateSelectMulti({label,onChange,style,value,options}) {
   return (
     <div>
       <FormControl sx={{ m: 1, width: "100%" }} size="small">
-        <InputLabel>{label}</InputLabel>
+        <InputLabel key={label}>{label}</InputLabel>
         <Select
           multiple
           value={selected}
@@ -48,7 +53,9 @@ function TemplateSelectMulti({label,onChange,style,value,options}) {
           renderValue={(e) => { 
             return ( 
                 e.map((f) => { 
-                    return <Chip label={f} onDelete={() => handleDelete(f)} />
+                    return <Chip key={f} 
+                        onMouseDown={(event) => { event.stopPropagation(); }}
+                        label={f} onDelete={() => handleDelete(f)} />
                 })
             )
 
@@ -56,7 +63,7 @@ function TemplateSelectMulti({label,onChange,style,value,options}) {
         >
           {options.map((n) => {
             return (
-                <MenuItem key={n.id} value={n.label} >
+                <MenuItem key={n.label} value={n.label} >
                   {n.label}
                 </MenuItem>
             )

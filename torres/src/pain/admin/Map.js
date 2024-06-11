@@ -73,6 +73,7 @@ class Map extends Component {
         var d = [];
         var c = 0;
         for (c = 0; c < this.state.categories.length; c++) {
+            console.log(this.state.categories[c]);
             if (this.state.categories[c].id) {
                 d.push(this.state.categories[c].id);
             } else {

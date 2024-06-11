@@ -23,13 +23,12 @@ class Feature extends Component{
             title: 'Maximize ROI',
             desc: 'Leverage high ROI models tailored to support and grow your practice.'
         },
-
         {
             icon: 'zmdi zmdi-desktop-mac',
             title: 'Automated Appointment Reminders',
-            desc: 'Reduce no-shows and improve appointment adherence with our automated reminder system. Patients receive timely notifications via email, SMS, or in-app alerts about upcoming appointments, ensuring they stay on track with their care plans.'
+            desc: 'Reduce no-shows and improve appointment adherence with our automated reminder system.'
         },
-        {
+        /*{
             icon: 'zmdi zmdi-language-html5',
             title: 'Secure Patient Messaging',
             desc: 'Enhance communication between you and your patients with our secure messaging feature. Patients can easily reach out with questions or concerns, and you can provide timely responses, ensuring better patient engagement and satisfaction.'
@@ -38,7 +37,7 @@ class Feature extends Component{
             icon: 'zmdi zmdi-language-html5',
             title: 'Integrated Telehealth Services',
             desc: 'Our platform includes built-in telehealth capabilities, allowing providers to offer virtual consultations and follow-ups. This feature ensures patients can access care from the comfort of their homes, expanding the reach of your practice and enhancing patient convenience.'
-        }
+        }*/
        ] 
 
        let DataList = data.map((val , i) => {

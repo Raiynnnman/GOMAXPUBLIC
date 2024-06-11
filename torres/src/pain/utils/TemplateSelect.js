@@ -18,7 +18,7 @@ function TemplateSelect({label,onChange,style,value,options}) {
       >
         {options.map((e) => { 
             return (
-                <MenuItem value={e.value}>{e.label}</MenuItem>
+                <MenuItem key={e.value} value={e.value}>{e.label}</MenuItem>
             )
         })}
       </Select>

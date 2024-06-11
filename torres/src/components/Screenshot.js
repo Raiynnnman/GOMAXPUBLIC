@@ -18,6 +18,9 @@ class Screenshot extends Component {
                                 <img className="image-1" src={require('../assets/main_page/screenshot-1.png')} alt="App Screenshot"/>
                                 <img className="image-1" src={require('../assets/main_page/screenshot-2.png')} alt="App Screenshot"/>
                                 <img className="image-1" src={require('../assets/main_page/screenshot-3.png')} alt="App Screenshot"/>
+                                <img className="image-1" src={require('../assets/main_page/screenshot-1.png')} alt="App Screenshot"/>
+                                <img className="image-1" src={require('../assets/main_page/screenshot-2.png')} alt="App Screenshot"/>
+                                <img className="image-1" src={require('../assets/main_page/screenshot-3.png')} alt="App Screenshot"/>
                             </div>
                         </div>
                     </div>

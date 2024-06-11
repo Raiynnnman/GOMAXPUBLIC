@@ -39,7 +39,247 @@ class MapContainer extends Component {
   }
 
   mapLoaded(map, maps) { 
-    this.setState({ mapRef: map });
+    var styles = 
+        [
+          {
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "white"
+              }
+            ]
+          },
+          {
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "visibility": "off"
+              }
+            ]
+          },
+          {
+            "elementType": "labels.text.stroke",
+            "stylers": [
+              {
+                "visibility": "on"
+              }
+            ]
+          },
+          {
+            "featureType": "administrative.country",
+            "elementType": "geometry.stroke",
+            "stylers": [
+              {
+                "visibility": "#4b6878"
+              }
+            ]
+          },
+          {
+            "featureType": "administrative.land_parcel",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#64779e"
+              }
+            ]
+          },
+          {
+            "featureType": "administrative.province",
+            "elementType": "geometry.stroke",
+            "stylers": [
+              {
+                "color": "#4b6878"
+              }
+            ]
+          },
+          {
+            "featureType": "landscape.man_made",
+            "elementType": "geometry.stroke",
+            "stylers": [
+              {
+                "color": "#334e87"
+              }
+            ]
+          },
+          {
+            "featureType": "landscape.natural",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#023e58"
+              }
+            ]
+          },
+          {
+            "featureType": "poi",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#283d6a"
+              }
+            ]
+          },
+          {
+            "featureType": "poi",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#6f9ba5"
+              }
+            ]
+          },
+          {
+            "featureType": "poi",
+            "elementType": "labels.text.stroke",
+            "stylers": [
+              {
+                "color": "#1d2c4d"
+              }
+            ]
+          },
+          {
+            "featureType": "poi.park",
+            "elementType": "geometry.fill",
+            "stylers": [
+              {
+                "color": "#023e58"
+              }
+            ]
+          },
+          {
+            "featureType": "poi.park",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#3C7680"
+              }
+            ]
+          },
+          {
+            "featureType": "road",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#304a7d"
+              }
+            ]
+          },
+          {
+            "featureType": "road",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#98a5be"
+              }
+            ]
+          },
+          {
+            "featureType": "road",
+            "elementType": "labels.text.stroke",
+            "stylers": [
+              {
+                "color": "#1d2c4d"
+              }
+            ]
+          },
+          {
+            "featureType": "road.highway",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#2c6675"
+              }
+            ]
+          },
+          {
+            "featureType": "road.highway",
+            "elementType": "geometry.stroke",
+            "stylers": [
+              {
+                "color": "#255763"
+              }
+            ]
+          },
+          {
+            "featureType": "road.highway",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#b0d5ce"
+              }
+            ]
+          },
+          {
+            "featureType": "road.highway",
+            "elementType": "labels.text.stroke",
+            "stylers": [
+              {
+                "color": "#023e58"
+              }
+            ]
+          },
+          {
+            "featureType": "transit",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#98a5be"
+              }
+            ]
+          },
+          {
+            "featureType": "transit",
+            "elementType": "labels.text.stroke",
+            "stylers": [
+              {
+                "color": "#1d2c4d"
+              }
+            ]
+          },
+          {
+            "featureType": "transit.line",
+            "elementType": "geometry.fill",
+            "stylers": [
+              {
+                "color": "#283d6a"
+              }
+            ]
+          },
+          {
+            "featureType": "transit.station",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#3a4762"
+              }
+            ]
+          },
+          {
+            "featureType": "water",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#0e1626"
+              }
+            ]
+          },
+          {
+            "featureType": "water",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#4e6d70"
+              }
+            ]
+          }
+        ]
+    maps.setOptions({styles:styles})
+    this.state.center = this.props.centerPoint;
+    this.state.center.lng += 5;
+    maps.disableDefaultUI = true;
+    maps.scrollwheel = true;
+    maps.panTo(this.state.center);
+    this.setState({ mapRef: maps });
   }
 
   handleMapClick(ref, map, ev) {
@@ -94,15 +334,76 @@ class MapContainer extends Component {
             onReady={this.mapLoaded}
             onClick={this.handleMapClick}
           >
-            <HeatMap positions={this.props.data.data.heatmap} />
-            {this.props.data.data.data.map((e, index) => (
-              <Marker
-                key={`marker-${index}`}
-                onClick={this.handleMarkerClick}
-                data={e}
-                position={e.coords[0]}
-              />
-            ))}
+            {this.props.data.data.data.map((e) => {
+                if (e.category_id === 2) {
+                        return (
+                          <Marker onClick={this.handleMarkerClick}
+                            onMouseover={this.onMouseover} onMouseout={this.onMouseout}
+                            data={e}
+                            icon="http://maps.google.com/mapfiles/ms/icons/red-dot.png"
+                            position={e.coords[0]}/>
+                        )
+                    }
+                if (e.category_id === 99) {
+                        if (e.lead_strength_id === 1) { 
+                            return (
+                              <Marker onClick={this.handleMarkerClick}
+                                onMouseover={this.onMouseover} onMouseout={this.onMouseout}
+                                data={e}
+                                icon="http://maps.google.com/mapfiles/ms/icons/orange-dot.png"
+                                position={e.coords[0]}/>
+                            )
+                        }
+                        if (e.lead_strength_id === 2) { 
+                            return (
+                              <Marker onClick={this.handleMarkerClick}
+                                onMouseover={this.onMouseover} onMouseout={this.onMouseout}
+                                data={e}
+                                icon="http://maps.google.com/mapfiles/ms/icons/oranige-dot.png"
+                                position={e.coords[0]}/>
+                            )
+                        }
+                        if (e.lead_strength_id === 3) { 
+                            return (
+                              <Marker onClick={this.handleMarkerClick}
+                                onMouseover={this.onMouseover} onMouseout={this.onMouseout}
+                                icon="http://maps.google.com/mapfiles/ms/icons/purple-dot.png"
+                                data={e}
+                                position={e.coords[0]}/>
+                            )
+                        }
+                    }
+                if (e.category_id === 101) {
+                        return (
+                          <Marker icon="http://maps.google.com/mapfiles/ms/icons/purple-dot.png"
+                                onMouseover={this.onMouseover} onMouseout={this.onMouseout}
+                                data={e} onClick={this.handleMarkerClick}
+                                position={e.coords[0]}/>
+                        )
+                    }
+                if (e.category_id === 104) {
+                        return (
+                          <Marker icon="http://maps.google.com/mapfiles/ms/icons/red-dot.png"
+                                onMouseover={this.onMouseover} onMouseout={this.onMouseout}
+                                data={e} onClick={this.handleMarkerClick}
+                                position={e.coords[0]}/>
+                        )
+                    }
+                if (e.category_id === 103) {
+                        return (
+                          <Marker icon="http://maps.google.com/mapfiles/ms/icons/purple-dot.png"
+                                onMouseover={this.onMouseover} onMouseout={this.onMouseout}
+                                data={e} onClick={this.handleMarkerClick}
+                                position={e.coords[0]}/>
+                        )
+                    }
+                if (e.category_id === 100) {
+                        return (
+                          <Marker position={e.coords[0]}
+                                onMouseover={this.onMouseover} onMouseout={this.onMouseout}/>
+                        )
+                    }
+            })}
           </Map>
         </Grid>
       </Grid>
