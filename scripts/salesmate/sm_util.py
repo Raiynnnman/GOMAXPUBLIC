@@ -512,6 +512,7 @@ class SM_Companies(SM_Base):
             for x in additional:
                 toset[x] = upd[x]
         if 'id' in toset:
+            print("foundid")
             if self.__DEBUG__:
                 print("setting to PUT")
             self.setCall('/apis/company/v4/%s' % toset['id'])

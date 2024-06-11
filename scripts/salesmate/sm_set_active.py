@@ -38,9 +38,10 @@ q = """
     select 
         id,sm_id,active,name,email 
     from 
-        office 
+        office o
     where 
-        active = 1 
+        active = 1 and
+        o.office_type_id = 1
     """
 
 off = db.query(q)
