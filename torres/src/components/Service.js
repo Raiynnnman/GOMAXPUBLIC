@@ -108,6 +108,7 @@ class Service extends Component{
                 </>
                 )}
                 {/* Start Service Area */}
+                {(!this.state.showVideo && !this.state.showCalendar) && (
                 <div className={`service-area ${this.props.horizontal}`}>
                     <div className="container">
                         <div className="row" style={{color:'black'}}>
@@ -115,6 +116,7 @@ class Service extends Component{
                         </div>
                     </div>
                 </div>
+                )}
                 {/* End Service Area */}
             </div>
         )
