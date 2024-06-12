@@ -1,11 +1,11 @@
 
-
 export const getVersion = function() { 
-    const MAJOR="3";
-    const MINOR="0";
-    const RELEASE="0";
-    const BUILD="dev";
-    return MAJOR + "." + MINOR + "." + RELEASE + "-" + BUILD;
+    var MAJOR=3;
+    var MINOR=1;
+    var RELEASE=0;
+    var COMMIT="64588b9f";
+    var BUILD="dev";
+    return MAJOR + "." + MINOR + "." + RELEASE + "." + BUILD + "-" + COMMIT; 
 }
 
 export default getVersion;
