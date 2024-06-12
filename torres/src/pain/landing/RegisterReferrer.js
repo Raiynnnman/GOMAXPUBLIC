@@ -1,228 +1,440 @@
-import React, { Component } from 'react';
-import { Card, CardBody, CardTitle, CardText, CardImg, } from 'reactstrap';
-import { toast } from 'react-toastify';
-import Widget from '../../components/Widget';
-import MaskedInput from 'react-maskedinput';
-import { Container, Alert, Button } from 'reactstrap';
-import getVersion from '../../version.js';
+import React, { Component, createRef } from 'react';
 import { connect } from 'react-redux';
-import { getLandingData } from '../../actions/landingData';
-import { Col, Grid } from 'reactstrap';
-import { Nav, NavItem, NavLink } from 'reactstrap';
-import { TabContent, TabPane } from 'reactstrap';
-import cx from 'classnames';
-import classnames from 'classnames';
-import translate from '../utils/translate';
+import { withRouter } from 'react-router-dom';
+import {
+    Container,
+    Grid,
+    Button,
+    Typography,
+    Paper,
+    Box,
+    CssBaseline,
+    Snackbar,
+    Alert,
+    Stepper,
+    Step,
+    StepLabel
+} from '@mui/material';
+import Navbar from '../../components/Navbar';
+import Pricing from '../../components/Pricing';
 import AppSpinner from '../utils/Spinner';
-import { registerReferrer } from '../../actions/registerReferrer';
+import formatPhoneNumber from '../utils/formatPhone';
+import { getLandingData } from '../../actions/landingData';
+import { registerProvider } from '../../actions/registerProvider';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from '../../theme';
+import TemplateTextFieldPhone from '../utils/TemplateTextFieldPhone';
+import TemplateTextField from '../utils/TemplateTextField';
+import TemplateButton from '../utils/TemplateButton';
 
-class RegisterReferrer extends Component {
-    constructor(props) { 
-        super(props);
-        this.state = { 
-            page:0,
-            plan:0,
-            first:'',
-            last:'',
-            phone:'',
-            email:'',
-            provtype:null,
-            provtypeId:0,
-        }
-        this.setSignupType = this.setSignupType.bind(this);
-        this.nameChange = this.nameChange.bind(this);
-        this.nextPage = this.nextPage.bind(this);
-        this.officeChange = this.officeChange.bind(this);
-        this.firstChange = this.firstChange.bind(this);
-        this.zipChange = this.zipChange.bind(this);
-        this.phoneChange = this.phoneChange.bind(this);
-        this.lastChange = this.lastChange.bind(this);
-        this.emailChange = this.emailChange.bind(this);
-        this.provtypeChange = this.provtypeChange.bind(this);
-        this.checkValid = this.checkValid.bind(this);
-        this.register = this.register.bind(this);
-    } 
+class RegisterProvider extends Component {
+    formRef = createRef();
 
-    componentWillReceiveProps(p) { 
-    }
+    state = {
+        page: 0,
+        plan: 0,
+        card: null,
+        currentName: '',
+        currentPhone: '',
+        first: '',
+        last: '',
+        phone: '',
+        email: '',
+        zipcode: '',
+        error_message: null,
+        pq_id: null,
+        coupon: null,
+        setPrice: 0,
+        calculatedPrice: 0,
+        coupon_id: null,
+        couponRed: '$0.00',
+        couponRedValue: 0,
+        showAddresses: [],
+        intentid: '',
+        selPlan: null,
+        license: '',
+        provtype: 5,
+        provtypeSel: ['Referrer'],
+        snackbarOpen: false,
+        snackbarMessage: '',
+        snackbarSeverity: 'success'
+    };
 
     componentDidMount() {
-        this.props.dispatch(getLandingData({}));
+        const { id, pq_id } = this.props.match.params;
+        this.setState({ plan: id, pq_id });
+        this.props.dispatch(getLandingData({ type: this.state.provtype, pq_id }));
+
+        const { location } = this.props;
+        if (location.state && location.state.selectedPlan) {
+            this.setState({ selPlan: location.state.selectedPlan });
+        }
     }
 
-    checkValid() { 
-        /* Implement checks */
-        this.state.isValid = true;
-        this.setState(this.state);
-    } 
+    componentDidUpdate(prevProps) {
+        if (this.props.landingData !== prevProps.landingData && this.props.landingData.data) {
+            const { pq, pricing, do_billing_charge, all_plans } = this.props.landingData.data;
+            if (pq && this.state.pq_id && !this.state.phone) {
+                this.setState({
+                    phone: formatPhoneNumber(pq.phone),
+                    first: `${pq.first_name} ${pq.last_name}`,
+                    name: pq.name,
+                    email: pq.email,
+                    showAddresses: pq.addr,
+                    selPlan: this.state.selPlan || pricing.find((e) => parseInt(pq.plan) === e.id) || null,
+                });
+            } else if (pricing && !this.state.selPlan) {
+                this.setState({
+                    selPlan: pricing.find((e) => parseInt(this.state.plan) === e.id) || null
+                });
+            }
 
-    cancel() { 
-    } 
-
-    setSignupType(e) { 
-        this.state.provtypeId = e;
-        this.setState(this.state);
-        var t = this.props.landingData.data.roles.filter((g) => g.id === e)
-        if (t.length < 1) { return; }
-        this.state.provtype = t[0].name
-        if (this.state.provtype === 'Chiropractor') { 
-            window.location = "https://www.poundpain.com/book-online"
-        } 
-    } 
-
-    register() { 
-        var tosend = { 
-            email: this.state.email,
-            first: this.state.first,
-            name: this.state.name,
-            phone: this.state.phone,
-            last: this.state.last
-        } 
-        this.props.dispatch(registerReferrer(tosend,function(err,args) { 
-              toast.success('Successfully registered.',
-                {
-                    position:"top-right",
-                    autoClose:3000,
-                    hideProgressBar:true
-                }
-              );
-            window.location = "/welcome";
-        },this));
-    } 
-
-    nextPage() { 
-        this.state.page += 1;
-        this.setState(this.state);
-        this.checkValid();
+            if (do_billing_charge === 0 && this.state.page === 0) {
+                this.setState({ 
+                    selPlan: all_plans.find((e) => e.placeholder === 1) || null,
+                    page: 0 
+                });
+            }
+        }
     }
 
-    zipChange(e) { 
-        this.state.zipcode = e.target.value;
-        this.setState(this.state);
-        this.checkValid();
-    }
-    phoneChange(e) { 
-        this.state.phone = e.target.value;
-        this.setState(this.state);
-        this.checkValid();
+    handleNameChange = (event) => {
+        const { name, value } = event.target;
+        this.setState({ name: value }, this.checkValid);
     }
 
-    nameChange(e) { 
-        this.state.name = e.target.value;
-        this.setState(this.state);
-        this.checkValid();
+    handleFirstChange = (event) => {
+        const { name, value } = event.target;
+        this.setState({ first: value }, this.checkValid);
     }
 
-    licenseChange(e) { 
-        this.state.license = e.target.value;
-        this.setState(this.state);
-        this.checkValid();
-
+    handleLastChange = (event) => {
+        const { name, value } = event.target;
+        this.setState({ last: value }, this.checkValid);
     }
 
-    officeChange(e) { 
-        this.state.name = e.target.value;
-        this.setState(this.state);
-        this.checkValid();
-    } 
-    emailChange(e) { 
-
-        this.state.email = e.target.value;
-        this.setState(this.state);
-        this.checkValid();
+    handleEmailChange = (event) => {
+        const { name, value } = event.target;
+        this.setState({ email: value }, this.checkValid);
     }
-    provtypeChange(e) { 
 
-    } 
-    firstChange(e) { 
-        this.state.first = e.target.value;
-        this.setState(this.state);
-        this.checkValid();
-    }
-    lastChange(e) { 
-        this.state.last = e.target.value;
-        this.setState(this.state);
-        this.checkValid();
-    } 
 
+    handlePhoneChange = (event) => {
+        const phone = formatPhoneNumber(event.target.value);
+        this.setState({ phone });
+    };
+
+    handleCouponChange = (event) => {
+        this.setState({ coupon: event.target.value }, this.getCoupon);
+    };
+
+    getCoupon = () => {
+        const { coupon, selPlan } = this.state;
+        const matchingCoupon = selPlan?.coupons.find((e) => coupon === e.name);
+        if (matchingCoupon) {
+            const discountValue = this.calculateDiscount(matchingCoupon);
+            this.setState({
+                coupon_id: matchingCoupon.id,
+                couponRed: `($${discountValue.toFixed(2)})`,
+                couponRedValue: -discountValue.toFixed(2),
+            });
+        } else {
+            this.setState({ couponRed: '$0.00', couponRedValue: 0.00 });
+        }
+    };
+
+    calculateDiscount = (coupon) => {
+        const totalCost = this.state.selPlan.upfront_cost * this.state.selPlan.duration;
+        if (coupon.perc) {
+            return totalCost * coupon.perc;
+        } else if (coupon.total) {
+            return totalCost - coupon.total;
+        } else if (coupon.reduction) {
+            return coupon.reduction;
+        }
+        return 0;
+    };
+
+    calculatePrice = () => {
+        const { selPlan, couponRedValue } = this.state;
+        if (selPlan) {
+            const totalCost = selPlan.upfront_cost * selPlan.duration;
+            const finalPrice = totalCost + parseFloat(couponRedValue);
+            return `$${finalPrice.toFixed(2)}`;
+        }
+        return '$0.00';
+    };
+
+    nextPage = () => {
+        this.setState((prevState) => ({ page: prevState.page + 1 }));
+    };
+
+    prevPage = () => {
+        this.setState((prevState) => ({ page: prevState.page - 1 }));
+    };
+
+    registerProvider = () => {
+        const { email, first, name, phone, selPlan, last, zipcode, showAddresses, coupon_id, pq_id, provtype } = this.state;
+        const verifiedAddresses = showAddresses.filter((e) => e.verified);
+        const registrationData = {
+            email,
+            first,
+            name,
+            phone,
+            plan: selPlan.id,
+            provtype,
+            last,
+            zipcode,
+            addresses: verifiedAddresses,
+            coupon_id,
+            pq_id,
+        };
+
+        this.props.dispatch(registerProvider(registrationData, (err, args) => {
+            if (err) {
+                this.setState({
+                    snackbarOpen: true,
+                    snackbarMessage: err.message,
+                    snackbarSeverity: 'error'
+                });
+                return;
+            }
+            window.location = '/welcome';
+        }));
+    };
+
+    checkValid = () => {
+        this.setState({ isValid: true });
+    };
+
+    handleCloseSnackbar = () => {
+        this.setState({ snackbarOpen: false });
+    };
+
+    handleSelectPlan = (planId) => {
+        const { landingData } = this.props;
+        const selectedPlan = landingData.data.pricing.find(plan => plan.id === planId);
+        this.setState({ selPlan: selectedPlan, page: 0 }, () => {
+            if (this.formRef.current) {
+                this.formRef.current.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    };
+
+    renderStepContent = (step) => {
+        const { selPlan, phone, couponRed, error_message, snackbarOpen, snackbarMessage, snackbarSeverity } = this.state;
+        const { registerProvider, landingData } = this.props;
+        switch (step) {
+            case 0:
+                return (
+                    <Box component="form" noValidate sx={{ mt: 1 }}>
+                        <Typography variant="h6" align="center" gutterBottom>
+                            Please enter the information below to register
+                        </Typography>
+                        {error_message && (
+                            <Typography color="error" gutterBottom>
+                                {error_message}
+                            </Typography>
+                        )}
+                        <Grid container spacing={3}>
+                            <Grid item xs={12}>
+                                <TemplateTextField
+                                    fullWidth
+                                    required
+                                    label="Company Name"
+                                    name="name"
+                                    onChange={this.handleNameChange}
+                                    margin="normal"
+                                    sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TemplateTextField
+                                    fullWidth
+                                    required
+                                    label="First Name"
+                                    name="first"
+                                    onChange={this.handleFirstChange}
+                                    margin="normal"
+                                    sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TemplateTextField
+                                    fullWidth
+                                    required
+                                    label="Last Name"
+                                    name="last"
+                                    onChange={this.handleLastChange}
+                                    margin="normal"
+                                    sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TemplateTextField
+                                    fullWidth
+                                    required
+                                    label="Email"
+                                    name="email"
+                                    onChange={this.handleEmailChange}
+                                    margin="normal"
+                                    sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TemplateTextFieldPhone
+                                    fullWidth
+                                    required
+                                    label="Phone"
+                                    name="phone"
+                                    value={phone}
+                                    onChange={this.handlePhoneChange}
+                                    margin="normal"
+                                    sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                                    InputLabelProps={{ shrink: true }}
+                                />
+                            </Grid>
+                        </Grid>
+                        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+                            <TemplateButton
+                                variant="contained"
+                                color="primary"
+                                onClick={landingData.data.do_billing_charge !== 0 ? this.nextPage : this.registerProvider}
+                                sx={{ borderRadius: 8, backgroundColor: '#FF5733', color: '#fff', padding: '10px 45px', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase' }}
+                                label={landingData.data.do_billing_charge !== 0 ? 'Next' : 'Register'}/>
+                        </Box>
+                    </Box>
+                );
+            case 1:
+                return (
+                    <Box sx={{ mt: 3 }}>
+                        <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
+                            <Typography variant="h6" gutterBottom>
+                                Checkout
+                            </Typography>
+                            <Grid container spacing={2} sx={{ mt: 1 }}>
+                                <Grid item xs={7}>
+                                    <Typography variant="body1">Description</Typography>
+                                </Grid>
+                                <Grid item xs={5} textAlign="right">
+                                    <Typography variant="body1">Price</Typography>
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <Typography variant="body2">{selPlan.description}</Typography>
+                                </Grid>
+                                <Grid item xs={12} textAlign="right">
+                                    <Typography variant="body2">${parseFloat(selPlan.upfront_cost * selPlan.duration).toFixed(2)}</Typography>
+                                </Grid>
+                                {selPlan.coupons && selPlan.coupons.length > 0 && (
+                                    <>
+                                        <Grid item xs={7}>
+                                            <TemplateTextField
+                                                fullWidth
+                                                placeholder="Enter Coupon Code"
+                                                value={this.state.coupon}
+                                                onChange={this.handleCouponChange}
+                                                sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                                            />
+                                        </Grid>
+                                        <Grid item xs={5} textAlign="right">
+                                            <Typography variant="body2">{couponRed}</Typography>
+                                        </Grid>
+                                    </>
+                                )}
+                            </Grid>
+                            <Grid container spacing={2} sx={{ mt: 2 }}>
+                                <Grid item xs={7}>
+                                    <Typography variant="body1">Total</Typography>
+                                </Grid>
+                                <Grid item xs={5} textAlign="right">
+                                    <Typography variant="body1">{this.calculatePrice()}</Typography>
+                                </Grid>
+                            </Grid>
+                        </Paper>
+                        <Box sx={{ mt: 3 }}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                sx={{ borderRadius: 8, backgroundColor: '#FF5733', color: '#fff', padding: '10px 45px', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase', mb: 2 }}
+                                onClick={this.registerProvider}
+                            >
+                                Register
+                            </Button>
+                        </Box>
+                    </Box>
+                );
+            default:
+                return 'Unknown step';
+        }
+    };
 
     render() {
+        const { page, selPlan, snackbarOpen, snackbarMessage, snackbarSeverity } = this.state;
+        const { registerProvider, landingData } = this.props;
+
+    
+        var steps = ['Register Information', 'Payment Details'];
+        if (this.props.landingData.data && this.props.landingData.data.do_billing_charge === 0) { 
+            steps = ['Register Information'];
+        } 
+
         return (
-        <>
-            {(this.props.registerReferrer && this.props.registerReferrer.isReceiving) && (
-                <AppSpinner/>
-            )}
-            <div className="auth-page">
-                <Container>
-                    <h5 className="auth-logo">
-                        <i className="la la-circle text-primary" />
-                        POUNDPAIN TECH
-                        <i className="la la-circle text-danger" />
-                    </h5>
-                    <Widget className="widget-auth mx-auto" title={<h3 className="mt-0">Register with POUNDPAIN TECH</h3>}>
-                        <p className="widget-auth-info">
-                            Please enter the information below to register
-                        </p>
-                        <form className="mt" onSubmit={this.doLogin}>
-                            {
-                                this.props.errorMessage && (
-                                    <Alert className="alert-sm" color="danger">
-                                        {this.props.errorMessage}
-                                    </Alert>
-                                )
-                            }
-                            <p for="normal-field" md={12} className="text-md-right">
-                                <font style={{color:"red"}}>
-                                    {this.state.errorMessage}
-                                </font>
-                            </p>
-                            <div className="form-group mb-0">
-                                Office Name:
-                                <input className="form-control no-border" value={this.state.name} onChange={this.officeChange} required name="first" placeholder="Office Name" />
-                            </div>
-                            <div className="form-group mb-0">
-                                First Name:
-                                <input className="form-control no-border" value={this.state.first} onChange={this.firstChange} required name="first" placeholder="First Name" />
-                            </div>
-                            <div className="form-group mb-0">
-                                Last Name:
-                                <input className="form-control no-border" value={this.state.last} onChange={this.lastChange} type="last" required name="last" placeholder="Last Name" />
-                            </div>
-                            <div className="form-group mb-0">
-                                Email:
-                                <input className="form-control no-border" value={this.state.email} onChange={this.emailChange} type="email" required name="email" placeholder="Email" />
-                            </div>
-                            <div className="form-group mb-0">
-                                Phone:
-                                <MaskedInput style={{backgroundColor:'white',border:'0px solid white'}}
-                                  className="form-control" id="mask-phone" mask="(111) 111-1111"
-                                  onChange={this.phoneChange} value={this.state.phone}
-                                  size="10"
-                                />
-                            </div>
-                            <div style={{marginTop:20,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                                <div style={{border:"1px solid black"}}></div>
-                                <Button color="primary" className="auth-btn mb-3" onClick={this.register} disabled={
-                                      !this.state.isValid} size="sm">{this.props.registerReferrer.isReceiving ? 'Saving...' : 'Register'}</Button>
-                            </div>
-                        </form>
-                    </Widget>
-                </Container>
-            </div>
-            <footer className="auth-footer">
-              {getVersion()} - {new Date().getFullYear()} &copy; <a rel="noopener noreferrer" target="_blank" href="https://www.poundpain.com">POUNDPAIN TECH</a>
-            </footer>
-        </>
-        )
+            <ThemeProvider theme={theme}>
+                <Navbar />
+                {(!selPlan) && (
+                    <Pricing onSelectPlan={this.handleSelectPlan} showButton={true} />
+                )}
+                <CssBaseline />
+                {registerProvider.isReceiving && <AppSpinner />}
+                {landingData.data && (
+                    <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', px: 2 }}>
+                        <Container maxWidth="md">
+                            <Paper
+                                elevation={12}
+                                sx={{
+                                    width: '100%',
+                                    padding: { xs: 2, sm: 4, md: 6 },
+                                    borderRadius: '30px',
+                                    boxShadow: '0 5px 15px rgba(0, 0, 0, 0.35)',
+                                    backgroundColor: '#fff',
+                                }}
+                                ref={this.formRef}
+                            >
+                                <Stepper activeStep={page} alternativeLabel>
+                                    {steps.map((label) => (
+                                        <Step key={label}>
+                                            <StepLabel>{label}</StepLabel>
+                                        </Step>
+                                    ))}
+                                </Stepper>
+                                {this.renderStepContent(page)}
+                                <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+                                    <Button
+                                        color="inherit"
+                                        disabled={page === 0}
+                                        onClick={this.prevPage}
+                                        sx={{ mr: 1 }}
+                                    >
+                                        Back
+                                    </Button>
+                                </Box>
+                            </Paper>
+                        </Container>
+                    </Box>
+                )}
+                <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={this.handleCloseSnackbar}>
+                    <Alert onClose={this.handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
+                        {snackbarMessage}
+                    </Alert>
+                </Snackbar>
+            </ThemeProvider>
+        );
     }
 }
 
-function mapStateToProps(store) {
-    return {
-        currentUser: store.auth.currentUser,
-        registerReferrer: store.registerReferrer,
-        landingData: store.landingData
-    }
-}
+const mapStateToProps = (state) => ({
+    landingData: state.landingData,
+    registerProvider: state.registerProvider,
+});
 
-export default connect(mapStateToProps)(RegisterReferrer);
+export default withRouter(connect(mapStateToProps)(RegisterProvider));

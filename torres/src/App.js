@@ -12,6 +12,7 @@ import {Redirect, BrowserRouter, Switch, Route} from 'react-router-dom';
 import Login from './pain/login/Login';
 import Dashboard from './pain/dashboard/Dashboard';
 import RegisterProvider from './pain/landing/RegisterProvider';
+import RegisterReferrer from './pain/landing/RegisterReferrer';
 import RegisterLegal from './pain/landing/RegisterLegal';
 import Welcome from './pain/welcome/Welcome';
 import Forgot from './pain/forgot/Forgot';
@@ -59,6 +60,7 @@ const App = () => {
                     <Route exact path='/forgot' component={Forgot}/>
                     <Route exact path='/reset/:token' component={Reset}/>
                     <Route exact path='/register-provider' component={RegisterProvider}/>
+                    <Route exact path='/register-referrer' component={RegisterReferrer}/>
                     <Route exact path='/welcome' component={Welcome}/>
                     <Route exact path='/register-provider/:id' component={RegisterProvider}/>
                     <Route exact path='/register-legal' component={RegisterLegal}/>
