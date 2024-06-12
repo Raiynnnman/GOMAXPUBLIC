@@ -98,6 +98,7 @@ class Navbar extends Component {
              }
             },
         ];
+        console.log("p",this.props);
         return(
             <div style={{backgroundColor:'black'}} className="app-header header--transparent sticker" id="main-menu">
                 <div className="container">
@@ -105,7 +106,8 @@ class Navbar extends Component {
                         <div className="col-lg-3 col-sm-3 col-3">
                             <div className="logo">
                                 <a href='/'>
-                                    <img className="logo-1" style={{height:'200px'}} src={require('../assets/images/logo/logo.png')} alt="app landing"/>
+                                    <img className="logo-1" style={{height:this.props.currentUser !== null ? '100px': '200px'}} 
+                                        src={require('../assets/images/logo/logo.png')} alt="app landing"/>
                                 </a>
                             </div>
                         </div>
