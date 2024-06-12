@@ -306,8 +306,7 @@ class RegistrationLandingData(RegistrationsBase):
                 p.id, p.trial, p.price,
                 p.locations, p.duration,p.upfront_cost,
                 p.description,p.toshow,
-                p.start_date,p.end_date,p.active,p.slot,
-                p.placeholder
+                p.start_date,p.end_date,p.active,p.slot
             from
                 pricing_data p
             where

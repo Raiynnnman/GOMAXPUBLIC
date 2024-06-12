@@ -127,7 +127,7 @@ class RegisterProvider extends Component {
             this.setState(this.state);
             if (p.landingData.data.do_billing_charge === 0 && this.state.page === 0 && !this.props.match.path.includes("short")) {
                 this.setState({ 
-                    selPlan: p.landingData.data.all_plans.find((e) => e.placeholder === 1) || null,
+                    selPlan: p.landingData.data.all_plans.find((e) => e.placeholder === 1) || {},
                     page: 0 
                 });
             }
