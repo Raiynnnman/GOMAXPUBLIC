@@ -27,9 +27,18 @@ Our innovative platform is designed to bridge the gap between patients in need a
                         <div className="col-lg-6 mt--40">
                             <div className="about-content">
                                 {(false) && (<h2 className="title">How <span className="theme-color"> it works:</span></h2>)}
-                                <p style={{textAlign:'center',color:'black'}}>1. Easy Registration: Care providers can quickly sign up and create a profile, showcasing their specialties and availability.</p>
-                                <p style={{textAlign:'center',color:'black'}}>2. Patient Matching: Our advanced algorithms match patients with the best-suited care providers based on their unique needs and preferences.</p>
-                                <p style={{textAlign:'center',color:'black'}}>3. Seamless Referrals: We connect with patients and can easily book appointments through the app, ensuring timely and efficient care delivery.</p>
+                                <p style={{textAlign:'center',color:'black'}}>
+Discover the transformative impact of Pound Pain Technology and learn how our innovative platform can revolutionize your practice while supporting rapid patient acquisition. Our software serves as a vital bridge between patients in need of specific care and legal support, connecting them seamlessly with practitioners and care providers.
+                                </p>
+                                <p style={{textAlign:'center',color:'black'}}>
+With easy registration, care providers can quickly sign up and create a profile, showcasing their specialties and availability. This streamlined process allows for immediate visibility within our network. Our advanced patient matching algorithms ensure that patients are paired with the best-suited care providers based on their unique needs and preferences, enhancing the likelihood of successful outcomes.
+                                </p>
+                                <p style={{textAlign:'center',color:'black'}}>
+In addition to patient matching, our platform facilitates seamless referrals. Patients can book appointments effortlessly through our app, ensuring timely and efficient care delivery. This process not only improves patient satisfaction but also optimizes the workflow for care providers, allowing them to focus more on delivering quality care rather than administrative tasks
+                                </p>
+                                <p style={{textAlign:'center',color:'black'}}>
+Schedule a call for a personalized consultation and discover how Pound Pain Technology can benefit your practice. See firsthand how our platform can enhance your service delivery, improve patient outcomes, and streamline your operations.
+                                </p>
                             </div>
                         </div>
                     </div>
