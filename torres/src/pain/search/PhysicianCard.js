@@ -1,194 +1,83 @@
 import React, { Component } from 'react';
 import StarOutlineRoundedIcon from '@mui/icons-material/StarOutlineRounded';
 import { connect } from 'react-redux';
-import cx from 'classnames';
-import classnames from 'classnames';
-import translate from '../utils/translate';
-import AppSpinner from '../utils/Spinner';
-import AppSpinnerInternal from '../utils/SpinnerInternal';
-import formatPhoneNumber from '../utils/formatPhone';
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import Container from '@mui/material/Container';
-import TemplateButton from '../utils/TemplateButton';
+import { Box, Grid, Card, CardContent, CardMedia, Typography, Button } from '@mui/material';
 
 class PhysicianCard extends Component {
-    constructor(props) { 
-        super(props);
-        this.state = { 
-            more: {},
-            inMore:0,
-            lastMore:0,
-            dateSelected:'',
-            pickDay: false,
-            dateSelectedForRest:'',
-            selected:null
+    scheduleAppt = () => {
+        this.props.onScheduleAppt(this.props.provider);
+    };
+
+    renderStars = (rating) => {
+        const stars = [];
+        for (let i = 1; i <= 5; i++) {
+            stars.push(
+                <StarOutlineRoundedIcon key={i} style={{ color: i <= rating ? 'gold' : 'lightgrey' }} />
+            );
         }
-        this.getDate = this.getDate.bind(this);
-        this.scheduleAppt = this.scheduleAppt.bind(this);
-        this.selectDay = this.selectDay.bind(this);
-    } 
-
-    componentWillReceiveProps(np) { 
-        if (this.state.selected === null && np.provider && np.provider.about) { 
-            this.state.selected = np.provider;
-            this.setState(this.state);
-        }
-    }
-
-    componentDidMount() {
-        var j = new Date()
-        var date = j.toISOString()
-        var date2 = j.toDateString()
-        date = date.substring(0,10)
-        date2 = date2.substring(0,15)
-        this.state.dateSelected = date2
-        this.state.dateSelectedForRest = date;
-        this.setState(this.state)
-    }
-
-    selectDay() { 
-        this.state.pickDay = true;
-        this.setState(this.state)
-    } 
-    onSelected(e,t) { 
-        //this.props.onSelected(e,t);
-        this.state.loaded=true;
-        this.setState(this.state)
-    } 
-
-    scheduleAppt(e) { 
-        this.props.onScheduleAppt(this.props.provider,e)
-    } 
-
-    getDate() { 
-        var j = new Date();
-        var q = j.toDateString()
-        return q.substring(0,10);
-    } 
+        return stars;
+    };
 
     render() {
-        if (this.state.inMore > 0 && !this.props.moreSchedules.isReceiving)  {
-            this.state.more[this.props.provider.phy_id] = true;
-            this.state.inMore = 0;
-            this.setState(this.state)
-        } 
+        const { provider } = this.props;
+
         return (
-        <>
-        {(this.props.provider) && (
-            <Container style={{
-                marginTop:20,height:320,color:'black',
-                borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}}>
-                <Grid container xs="12">
-                    <Grid item xs="12">
-                        <font style={{fontSize:"14pt",fontWeight:"bold"}}>
-                        {this.props.provider.office_name} 
-                        </font>
-                        <br/>
-                        <font style={{fontSize:"14pt",fontWeight:"bold"}}>
-                        {this.props.provider.profile.title ? this.props.provider.profile.title + " ": ''} 
-                        {this.props.provider.profile.first_name + " " + 
-                            this.props.provider.profile.last_name}
-                        </font>
-                        <br/>
-                        {(this.props.provider.rating === 5) && (
-                        <>
-                            <StarOutlineRoundedIcon style={{color:"gold"}} className="fa fa-star me-2" />
-                            <StarOutlineRoundedIcon style={{color:"gold"}} className="fa fa-star me-2" />
-                            <StarOutlineRoundedIcon style={{color:"gold"}} className="fa fa-star me-2" />
-                            <StarOutlineRoundedIcon style={{color:"gold"}} className="fa fa-star me-2" />
-                            <StarOutlineRoundedIcon style={{color:"gold"}} className="fa fa-star me-2" />
-                        </>
-                        )}
-                        {(this.props.provider.rating >= 4) && (
-                        <>
-                            <StarOutlineRoundedIcon style={{color:"gold"}} className="fa fa-star me-2" />
-                            <StarOutlineRoundedIcon style={{color:"gold"}} className="fa fa-star me-2" />
-                            <StarOutlineRoundedIcon style={{color:"gold"}} className="fa fa-star me-2" />
-                            <StarOutlineRoundedIcon style={{color:"gold"}} className="fa fa-star me-2" />
-                            <StarOutlineRoundedIcon style={{color:"lightgrey"}} className="fa fa-star me-2" />
-                        </>
-                        )}
-                        {(this.props.provider.rating >= 3 && this.props.provider.rating < 4) && (
-                        <>
-                            <StarOutlineRoundedIcon style={{color:"gold"}} className="fa fa-star me-2" />
-                            <StarOutlineRoundedIcon style={{color:"gold"}} className="fa fa-star me-2" />
-                            <StarOutlineRoundedIcon style={{color:"gold"}} className="fa fa-star me-2" />
-                            <StarOutlineRoundedIcon style={{color:"lightgrey"}} className="fa fa-star me-2" />
-                            <StarOutlineRoundedIcon style={{color:"lightgrey"}} className="fa fa-star me-2" />
-                        </>
-                        )}
-                        {(this.props.provider.rating >= 2 && this.props.provider.rating < 3) && (
-                        <>
-                            <StarOutlineRoundedIcon style={{color:"gold"}} className="fa fa-star me-2" />
-                            <StarOutlineRoundedIcon style={{color:"gold"}} className="fa fa-star me-2" />
-                            <StarOutlineRoundedIcon style={{color:"lightgrey"}} className="fa fa-star me-2" />
-                            <StarOutlineRoundedIcon style={{color:"lightgrey"}} className="fa fa-star me-2" />
-                            <StarOutlineRoundedIcon style={{color:"lightgrey"}} className="fa fa-star me-2" />
-                        </>
-                        )}
-                        {(this.props.provider.rating >= 1 && this.props.provider.rating < 2) && (
-                        <>
-                            <StarOutlineRoundedIcon style={{color:"gold"}} className="fa fa-star me-2" />
-                            <StarOutlineRoundedIcon style={{color:"lightgrey"}} className="fa fa-star me-2" />
-                            <StarOutlineRoundedIcon style={{color:"lightgrey"}} className="fa fa-star me-2" />
-                            <StarOutlineRoundedIcon style={{color:"lightgrey"}} className="fa fa-star me-2" />
-                            <StarOutlineRoundedIcon style={{color:"lightgrey"}} className="fa fa-star me-2" />
-                            <StarOutlineRoundedIcon style={{color:"lightgrey"}} className="fa fa-star me-2" />
-                        </>
-                        )}
-                        {(this.props.provider.rating >= 0 && this.props.provider.rating < 1) && (
-                        <>
-                            <StarOutlineRoundedIcon style={{color:"lightgrey"}} className="fa fa-star me-2" />
-                            <StarOutlineRoundedIcon style={{color:"lightgrey"}} className="fa fa-star me-2" />
-                            <StarOutlineRoundedIcon style={{color:"lightgrey"}} className="fa fa-star me-2" />
-                            <StarOutlineRoundedIcon style={{color:"lightgrey"}} className="fa fa-star me-2" />
-                            <StarOutlineRoundedIcon style={{color:"lightgrey"}} className="fa fa-star me-2" />
-                            <StarOutlineRoundedIcon style={{color:"lightgrey"}} className="fa fa-star me-2" />
-                        </>
-                        )}
-                        {this.props.provider.rating.toFixed(1)}
-                    </Grid>
-                    <Grid item xs="2"></Grid>
-                    <Grid item xs="4" class="pull-right">
-                    </Grid>
-                </Grid>
-                <hr/>
-                <div style={{height:130,marginBottom:10,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                <>
-                    {(this.props.provider.headshot) && (<img style={{width:140,height:130,objectFit:"fill"}} src={this.props.provider.headshot}/>)}
-                    {(!this.props.provider.headshot) && (<img style={{width:140,height:130,objectFit:"fill"}} src="/headshot.png"/>)}
-                </>
-                </div>
-                <Grid container xs="12"> <Grid item xs="12">{this.props.provider.miles.toFixed(2)} miles</Grid> </Grid>
-                {(false) && ( <Grid container xs="12"> 
-                    <Grid item xs="4">
-                        <TemplateButton color="secondary" label='See Reviews'/>
-                    </Grid>
-                    <Grid item xs="4">
-                        <TemplateButton color="secondary" label='See Video'/>
-                    </Grid>
-                </Grid>
-                )}
-                <hr/>
-                <Grid container xs="12"> 
-                    <Grid item xs="12">
-                        <div style={{height:30,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                            <TemplateButton color="primary" onClick={this.scheduleAppt} label='Contact'/>
-                        </div>
-                    </Grid>
-                </Grid>
-            </Container>
-        )}
-        </>
-        )
+            <Card
+                sx={{
+                    maxWidth: 400,
+                    m: 2,
+                    borderRadius: 2,
+                    boxShadow: 3,
+                    transition: 'transform 0.3s, background-color 0.3s',
+                    ':hover': {
+                        transform: 'translateY(-10px)',
+                        backgroundColor: '#FFA500',
+                        color: 'white',
+                    },
+                }}
+            >
+                <CardMedia
+                    component="img"
+                    height="180"
+                    image={provider.headshot || "/headshot.png"}
+                    alt="Provider headshot"
+                />
+                <CardContent>
+                    <Typography gutterBottom variant="h5" component="div">
+                        {provider.office_name}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                        {provider.profile.title ? `${provider.profile.title} ` : ''}{provider.profile.first_name} {provider.profile.last_name}
+                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
+                        {this.renderStars(provider.rating)}
+                        <Typography variant="body2" sx={{ ml: 1 }}>
+                            {provider.rating.toFixed(1)}
+                        </Typography>
+                    </Box>
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                        {provider.miles.toFixed(2)} miles
+                    </Typography>
+                    <Box sx={{ textAlign: 'center', mt: 2 }}>
+                        <Button
+                            variant="contained"
+                            sx={{
+                                backgroundColor: '#FFA500',
+                                ':hover': { backgroundColor: '#FF8C00' }
+                            }}
+                            onClick={this.scheduleAppt}
+                        >
+                            Contact
+                        </Button>
+                    </Box>
+                </CardContent>
+            </Card>
+        );
     }
 }
 
-function mapStateToProps(store) {
-    return {
-        currentUser: store.auth.currentUser
-    }
-}
+const mapStateToProps = (store) => ({
+    currentUser: store.auth.currentUser
+});
 
 export default connect(mapStateToProps)(PhysicianCard);

@@ -3,260 +3,181 @@ import { connect } from 'react-redux';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
-import googleKey from '../../googleConfig';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 import { push } from 'connected-react-router';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
-import TemplateButton from '../utils/TemplateButton';
-import TemplateTextArea from '../utils/TemplateTextArea';
 
 class UserRegistration extends Component {
-
-    constructor(props) { 
+    constructor(props) {
         super(props);
-        this.state = { 
-            address:null,
-            status_id:0,
-            inputs: [ 
-                {l:'Name',f:'name',t:'text',v:''},
-                {l:'Phone',f:'phone',t:'text',v:''},
-                {l:'Email',f:'email',t:'text',v:''},
-                {l:'DOA',f:'doa',t:'text',v:''},
-                {l:'Address',f:'addr',t:'addr_search',v:''},
-                {l:'Attny',f:'attorney_name',t:'addr_search',v:''},
-                {l:'Language',f:'language',t:'addr_search',v:''},
-              ]
-        }
-        this.markComplete = this.markComplete.bind(this);
-        this.markScheduled = this.markScheduled.bind(this);
-        this.markNoShow = this.markNoShow.bind(this);
-        this.copyContent = this.copyContent.bind(this);
-        this.cancel = this.cancel.bind(this);
-        this.onSearch = this.onSearch.bind(this);
-        this.setValue = this.setValue.bind(this);
-        this.save = this.save.bind(this);
-        this.setVPassword = this.setVPassword.bind(this);
-        this.setPassword = this.setPassword.bind(this);
-        this.setPhone = this.setPhone.bind(this);
-        this.updateAddress = this.updateAddress.bind(this);
-        this.setConsultant = this.setConsultant.bind(this);
-        this.setEmail= this.setEmail.bind(this);
-        this.setFirst = this.setFirst.bind(this);
-        this.setLast = this.setLast.bind(this);
-    } 
-
-    componentWillReceiveProps(p) { 
+        this.state = {
+            address: null,
+            status_id: 0,
+            tarea: '',
+            inputs: [
+                { l: 'Name', f: 'name', t: 'text', v: '' },
+                { l: 'Phone', f: 'phone', t: 'text', v: '' },
+                { l: 'Email', f: 'email', t: 'text', v: '' },
+                { l: 'DOA', f: 'doa', t: 'text', v: '' },
+                { l: 'Address', f: 'addr', t: 'addr_search', v: '' },
+                { l: 'Attny', f: 'attorney_name', t: 'addr_search', v: '' },
+                { l: 'Language', f: 'language', t: 'addr_search', v: '' },
+            ]
+        };
     }
 
     componentDidMount() {
-        if (this.props.data && this.props.filled !== undefined && this.props.filled === true) { 
-            for (let [key, value] of Object.entries(this.props.data)) { 
-                var c = 0;
-                for (c = 0; c < this.state.inputs.length; c++) { 
-                    if (this.state.inputs[c].f === key) { 
-                        this.state.inputs[c].v = value;
-                    } 
-                    if (key === 'addr') { 
-                        this.state.address = {};
-                        this.state.address.fulladdr = value;
-                    } 
-                    if (key === 'status_id') { 
-                        this.state.status_id = value;
-                    } 
-                } 
+        if (this.props.data && this.props.filled !== undefined && this.props.filled === true) {
+            for (let [key, value] of Object.entries(this.props.data)) {
+                for (let i = 0; i < this.state.inputs.length; i++) {
+                    if (this.state.inputs[i].f === key) {
+                        this.state.inputs[i].v = value;
+                    }
+                    if (key === 'addr') {
+                        this.setState({ address: { fulladdr: value } });
+                    }
+                    if (key === 'status_id') {
+                        this.setState({ status_id: value });
+                    }
+                }
             }
-            this.setState(this.state);
-        } 
-    }
-
-    copyContent() { 
-        
-        this.state.tarea = // eslint-disable-next-line no-useless-concat
-            'Name: Full Name\n' + 'Phone: Phone\n' + 
-            'Email: someone@gmail.com\n' + 'DOA:\n' + 
-            'Address: Address\n' + 'Attny: Attny\n' + 
-            'Language: English\n' 
-        this.setState(this.state);
-    } 
-
-
-    cancel() { 
-        this.props.onCancel()
-    } 
-
-    setValue(e,t) { 
-        this.state.tarea = e.target.value;
-        this.setState(this.state)
-    } 
-
-    updateAddress(e,t,v) { 
-        var t = e.value.terms
-        var c = t[t.length-2].value ? t[t.length-2].value : ''
-        var s = t[t.length-3].value ? t[t.length-3].value : ''
-        this.state.address = {
-            places_id:e.value.place_id,
-            addr1:e.value.structured_formatting.main_text,
-            fulladdr:e.label,
-            name: this.state.currentName,
-            phone: this.state.currentPhone,
-            city:c,
-            state:s,
-            zipcode:0
-        }
-        this.setState(this.state);
-    }
-
-    save() { 
-        this.props.onRegister({'value': this.state.tarea})
-    } 
-    onSearch() { 
-    } 
-    setVPassword(e) {
-        this.state.register.verify = e.target.value;
-        this.setState(this.state)
-    }
-    setConsultant(e) { 
-        this.state.register.consultant = this.state.register.consultant ? 0 : 1
-        this.setState(this.state)
-    }
-    setPhone(e) { 
-        let val = e.target.value.replace(/\D/g, "")
-        .match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
-        let validPhone = !val[2] ? val[1]: "(" + val[1] + ") " + val[2] + (val[3] ? "-" + val[3] : "");
-        this.setState(prevState => ({
-          register: {
-            ...prevState.register,
-            phone: validPhone
-          }
-        }));
-        if (validPhone.length < 14 && validPhone.length > 0) {
-          this.setState({ phoneMessage: 'Please add a 10 digit phone number' });
-      } else {
-          this.setState({ phoneMessage: '' });
-      }
-    }
-    setPassword(e) { 
-        this.state.register.password = e.target.value;
-        this.setState(this.state)
-    }
-    setEmail(e) {
-        this.state.register.email = e.target.value;
-        this.setState(this.state)
-        //validate email 
-        const emailRegex = /^[A-Za-z0-9._-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/;
-        this.state.isValid = emailRegex.test(this.state.register.email);
-        if (this.state.isValid) {
-          this.setState(prevState => ({
-            register: {
-              ...prevState.register,
-              email: this.state.register.email
-            },
-            errorMessage: '',
-          }));
-        } else {
-          this.setState({ errorMessage: 'Invalid email format' });
         }
     }
-    setFirst(e) {
-        this.state.register.first_name = e.target.value;
-        this.setState(this.state)
-    }
-    setLast(e) { 
-        this.state.register.last_name = e.target.value;
-        this.setState(this.state)
-    }
-    markScheduled() { 
-        var t = this.props.config.status.filter((g) => g.name === 'SCHEDULED')
+
+    copyContent = () => {
+        this.setState({
+            tarea: 'Name: Full Name\nPhone: Phone\nEmail: someone@gmail.com\nDOA:\nAddress: Address\nAttny: Attny\nLanguage: English\n'
+        });
+    };
+
+    cancel = () => {
+        this.props.onCancel();
+    };
+
+    setValue = (e) => {
+        this.setState({ tarea: e.target.value });
+    };
+
+    updateAddress = (e) => {
+        const terms = e.value.terms;
+        const city = terms[terms.length - 2]?.value || '';
+        const state = terms[terms.length - 3]?.value || '';
+        this.setState({
+            address: {
+                places_id: e.value.place_id,
+                addr1: e.value.structured_formatting.main_text,
+                fulladdr: e.label,
+                city,
+                state,
+                zipcode: 0
+            }
+        });
+    };
+
+    save = () => {
+        this.props.onRegister({ value: this.state.tarea });
+    };
+
+    markScheduled = () => {
+        const status = this.props.config.status.find((g) => g.name === 'SCHEDULED');
         this.props.onRegister({
-            id:this.props.data.id,
-            status_id: t[0].id
-        })
-    } 
-    markComplete() { 
-        var t = this.props.config.status.filter((g) => g.name === 'COMPLETED')
+            id: this.props.data.id,
+            status_id: status.id
+        });
+    };
+
+    markComplete = () => {
+        const status = this.props.config.status.find((g) => g.name === 'COMPLETED');
         this.props.onRegister({
-            id:this.props.data.id,
-            status_id: t[0].id
-        })
-    } 
-    markNoShow() { 
-        var t = this.props.config.status.filter((g) => g.name === 'NO_SHOW')
+            id: this.props.data.id,
+            status_id: status.id
+        });
+    };
+
+    markNoShow = () => {
+        const status = this.props.config.status.find((g) => g.name === 'NO_SHOW');
         this.props.onRegister({
-            id:this.props.data.id,
-            status_id: t[0].id
-        })
-    } 
+            id: this.props.data.id,
+            status_id: status.id
+        });
+    };
 
     render() {
-        var value = '';
-        var cntr = 1;
+        const { config, error_message, filled } = this.props;
+
         return (
-        <>
-            {(this.props.offices && this.props.offices.isReceiving) && (
-                <AppSpinner/>
-            )}
             <>
-            {(this.props.config && this.props.filled !== undefined) && (
-                <div style={{marginBottom:20,display: 'flex', alignItems: 'center', justifyContent: 'spread-evenly'}}>
-                  <font style={{width:25}}></font>
-                    {translate('Status')}:
-                    {(this.props.data.status !== 'SCHEDULED') && (
-                        <TemplateButton onClick={this.markScheduled} style={{marginRight:10}} color="primary">{translate('Scheduled')}</TemplateButton>
-                    )}
-                    <TemplateButton onClick={this.markComplete} style={{marginRight:10}} color="primary">{translate('Completed')}</TemplateButton>
-                    <TemplateButton onClick={this.markNoShow} style={{marginRight:10}} color="danger">{translate('No Show')}</TemplateButton>
-                </div>
-            )}
-            </>
-            {(this.props.error_message) && (
-            <Grid container xs="12" style={{marginTop:20}}>
-                <Grid item xs="12">
-                    <font style={{color:'red'}}>{this.props.error_message}</font>       
-                </Grid>
-            </Grid>
-            )}
-                <Grid container xs="12" style={{margin:20}}>
-                    <Grid item xs="2" style={{color:'black'}}>
-                        <Box>
-                        Name: Full Name
-                        <br/>
-                        Phone: Phone
-                        <br/>
-                        Email: Email
-                        <br/>
-                        DOA: date of accident (5/16/24)
-                        <br/>
-                        Address: Address
-                        <br/>
-                        Attny: Attny
-                        <br/>
-                        Language: English | Spanish
+                {this.props.offices?.isReceiving && <AppSpinner />}
+                {config && filled !== undefined && (
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-evenly', mb: 2 }}>
+                        <Typography>{translate('Status')}:</Typography>
+                        {this.props.data.status !== 'SCHEDULED' && (
+                            <Button variant="contained" sx={{ backgroundColor: '#FFA500', color: 'white', mr: 1 }} onClick={this.markScheduled}>
+                                {translate('Scheduled')}
+                            </Button>
+                        )}
+                        <Button variant="contained" sx={{ backgroundColor: '#FFA500', color: 'white', mr: 1 }} onClick={this.markComplete}>
+                            {translate('Completed')}
+                        </Button>
+                        <Button variant="contained" sx={{ backgroundColor: '#FFA500', color: 'white' }} onClick={this.markNoShow}>
+                            {translate('No Show')}
+                        </Button>
+                    </Box>
+                )}
+                {error_message && (
+                    <Grid container sx={{ mt: 2 }}>
+                        <Grid item xs={12}>
+                            <Typography color="error">{error_message}</Typography>
+                        </Grid>
+                    </Grid>
+                )}
+                <Grid container sx={{ mt: 2 }}>
+                    <Grid item xs={12}>
+                        <Box sx={{ color: 'black' }}>
+                            <Typography>Name: Full Name</Typography>
+                            <Typography>Phone: Phone</Typography>
+                            <Typography>Email: Email</Typography>
+                            <Typography>DOA: date of accident (5/16/24)</Typography>
+                            <Typography>Address: Address</Typography>
+                            <Typography>Attny: Attny</Typography>
+                            <Typography>Language: English | Spanish</Typography>
                         </Box>
                     </Grid>
-                    <Grid item xs="2" style={{color:'black'}}>
-                        <TemplateButton label={<ContentCopyIcon/>} onClick={this.copyContent}/>
+                    <Grid item xs={12} sx={{ mt: 2 }}>
+                        <Button variant="contained" startIcon={<ContentCopyIcon />} sx={{ backgroundColor: '#FFA500', color: 'white' }} onClick={this.copyContent}>
+                            Copy
+                        </Button>
                     </Grid>
                 </Grid>
-            <Grid container xs="12" style={{margin:20}}>
-                <Grid item xs="12">
-                    <TemplateTextArea 
-                      rows={10} style={{color:'black',width:500}}
-                      placeholder=""
-                      onChange={this.setValue} value={this.state.tarea}
-                    />
+                <Grid container sx={{ mt: 2 }}>
+                    <Grid item xs={12}>
+                        <TextField
+                            multiline
+                            rows={10}
+                            variant="outlined"
+                            fullWidth
+                            onChange={this.setValue}
+                            value={this.state.tarea}
+                            placeholder=""
+                            sx={{ borderColor: '#FFA500', '& .MuiOutlinedInput-root': { '&.Mui-focused fieldset': { borderColor: '#FFA500' } } }}
+                        />
+                    </Grid>
                 </Grid>
-            </Grid>
-            <Grid container xs="12" style={{marginTop:20}}>
-                <Grid item xs="12">
-                <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                    <TemplateButton onClick={this.save} style={{marginRight:10}} label="Save" color="primary">{translate('Save')}</TemplateButton>
-                    <TemplateButton outline onClick={this.cancel} label="Cancel" color="primary">{translate('Cancel')}</TemplateButton>
-                </div>
+                <Grid container sx={{ mt: 2 }}>
+                    <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center' }}>
+                        <Button variant="contained" sx={{ backgroundColor: '#FFA500', color: 'white', mr: 1 }} onClick={this.save}>
+                            {translate('Save')}
+                        </Button>
+                        <Button variant="outlined" sx={{ color: '#FFA500', borderColor: '#FFA500' }} onClick={this.cancel}>
+                            {translate('Cancel')}
+                        </Button>
+                    </Grid>
                 </Grid>
-            </Grid>
-        </>
-        )
+            </>
+        );
     }
 }
 
@@ -264,7 +185,7 @@ function mapStateToProps(store) {
     return {
         currentUser: store.auth.currentUser,
         searchUser: store.searchUser
-    }
+    };
 }
 
 export default connect(mapStateToProps)(UserRegistration);
