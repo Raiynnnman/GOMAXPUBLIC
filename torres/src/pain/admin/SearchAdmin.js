@@ -107,7 +107,6 @@ class SearchAdmin extends Component {
 
     setLocation = (lat, lon) => {
         this.setState({ mylocation: { lat, lon } });
-        console.log(this.state.mylocation)
     };
 
     getWithoutPermission = () => {
