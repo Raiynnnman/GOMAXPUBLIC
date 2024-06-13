@@ -32,6 +32,7 @@ class HomeHorizontal extends Component {
     };
 
     render() {
+        console.log(this.props)
         return (
             <ThemeProvider theme={theme}>
                 {(siteType() === 'provider') && (
