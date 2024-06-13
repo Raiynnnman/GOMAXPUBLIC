@@ -493,9 +493,9 @@ class SearchRegister(SearchBase):
         ci_id = db.query("select LAST_INSERT_ID()");
         ci_id = ci_id[0]['LAST_INSERT_ID()']
         db.update("""
-           insert into client_intake_offices (client_intake_id,office_id,phy_id) 
-                    values(%s,%s,%s)
-           """,(ci_id,params['office_id'],params['phy_id'])
+           insert into client_intake_offices (client_intake_id,office_id) 
+                    values(%s,%s)
+           """,(ci_id,params['office_id'])
             )
                 
         ret = { 
@@ -520,7 +520,7 @@ class SearchRegister(SearchBase):
             """,(params['office_id'],)
         )
         if config.getKey("appt_email_override") is not None:
-            off['office_email'] = config.getKey("appt_email_override")
+            off[0]['office_email'] = config.getKey("appt_email_override")
         oMail = OfficeAppointmentEmail()
         oMail.execute(off)
         db.commit()

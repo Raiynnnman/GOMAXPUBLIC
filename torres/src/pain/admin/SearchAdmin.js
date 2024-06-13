@@ -198,7 +198,7 @@ class SearchAdmin extends Component {
                         <Grid container spacing={2}>
                             {providerSearchAdmin.data.providers.map((provider) => (
                                 <Grid item xs={12} sm={6} md={4} key={provider.id}>
-                                    <PhysicianCard onScheduleAppt={this.scheduleAppt} provider={provider} />
+                                    <PhysicianCard admin onScheduleAppt={this.scheduleAppt} provider={provider} />
                                 </Grid>
                             ))}
                         </Grid>

@@ -1872,7 +1872,7 @@ class TrafficGet(AdminBase):
                 select 
                     oa.id,oa.name,oa.addr1,'' as uuid,
                     round(st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192,2) as miles,
-                    oa.city,oa.state,oa.zipcode,99 as category_id,pq.website,
+                    oa.city,oa.state,oa.zipcode,99 as category_id,pq.website,oa.phone,
                     'Potential Provider' as category, oa.lat, oa.lon as lng,
                     json_arrayagg(
                         json_object('lat',oa.lat,'lng',oa.lon)) as coords
@@ -1900,16 +1900,20 @@ class TrafficGet(AdminBase):
                 select 
                     oa.id,oa.name,oa.addr1,'' as uuid,
                     oa.city,oa.state,oa.zipcode,104 as category_id,pq.website,
-                    'Pending Provider' as category, oa.lat, oa.lon as lng,
+                    'Pending Provider' as category, oa.lat, oa.lon as lng,oa.phone,
+                    pq.provider_queue_lead_strength_id as lead_strength,
+                    o.office_type_id as office_type_id, ot.name as office_type,
                     json_arrayagg(
                         json_object('lat',oa.lat,'lng',oa.lon)) as coords
                 from 
                     office_addresses oa,office o,
                     provider_queue_lead_strength pqls,
+                    office_type ot,
                     provider_queue pq
                 where
                     lat <> 0 and
                     oa.office_id = o.id and
+                    o.office_type_id = ot.id and
                     pq.provider_queue_lead_strength_id = %s and
                     pq.provider_queue_lead_strength_id = pqls.id and
                     pq.office_id = oa.office_id
@@ -1926,15 +1930,19 @@ class TrafficGet(AdminBase):
                     oa.id,oa.name,oa.addr1,'' as uuid,
                     round(st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192,2) as miles,
                     oa.phone, oa.city,oa.state,oa.zipcode,101 as category_id,
-                    'Potential Provider' as category, oa.lat, oa.lon as lng,
+                    'Potential Provider' as category, oa.lat, oa.lon as lng,oa.phone,
+                    o.office_type_id as office_type_id, ot.name as office_type,
                     json_arrayagg(
                         json_object('lat',oa.lat,'lng',oa.lon)) as coords
                 from 
-                    office_addresses oa,
+                    office_addresses oa, 
                     provider_queue_lead_strength pqls,
+                    office_type ot,
                     provider_queue pq
                 where
                     lat <> 0 and
+                    oa.office_id = o.id and
+                    ot.id = o.office_type_id and 
                     pq.provider_queue_lead_strength_id = %s and
                     round(st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192,2) < 50 and
                     pq.provider_queue_lead_strength_id = pqls.id and

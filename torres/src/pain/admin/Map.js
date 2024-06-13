@@ -73,7 +73,6 @@ class Map extends Component {
         var d = [];
         var c = 0;
         for (c = 0; c < this.state.categories.length; c++) {
-            console.log(this.state.categories[c]);
             if (this.state.categories[c].id) {
                 d.push(this.state.categories[c].id);
             } else {
@@ -173,10 +172,10 @@ class Map extends Component {
                 </div>
                 <Grid container spacing={2} style={{ marginLeft: {xs:4}, marginTop: 0 }}>
                     <Grid item xs={12}>
-                        <Box sx={{ width: '100%' }}>
+                        <Box sx={{ marginLeft:10,marginRight:10,width: '100%' }}>
                             {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.center) && (
                                 <>
-                                    <Tabs value={this.state.activeTab} onChange={this.toggleTab} centered>
+                                    <Tabs value={this.state.activeTab} onChange={this.toggleTab} >
                                         <Tab value='traffic' label='Traffic' />
                                         <Tab value='heatmap' label='HeatMap' />
                                     </Tabs>
@@ -191,7 +190,7 @@ class Map extends Component {
                         </Box>
                     </Grid>
                 </Grid>
-            </>
+        </>
         )
     }
 }

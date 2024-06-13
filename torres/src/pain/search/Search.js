@@ -51,7 +51,6 @@ class SearchAdmin extends Component {
 
     scheduleAppt = (provider, e) => {
         this.setState({ selectedAppt: provider });
-        const params = { id: e.id, procedure: e.proc };
     };
 
     setProviderType = (e) => {
@@ -67,12 +66,11 @@ class SearchAdmin extends Component {
         this.setState({ selectedAppt: null });
     };
 
-    register = (e, d) => {
-        const params = { ...e, phy_id: d.phy_id, office_id: d.office_id };
-        this.props.dispatch(searchRegister(params, () => {
-            toast.success('Successfully saved booking.', { position: "top-right", autoClose: 3000, hideProgressBar: true });
-            this.cancel();
-        }));
+    register = (e) => {
+        const params = { ...e, office_id: this.state.selectedAppt.office_id };
+        this.props.dispatch(searchRegister(params, (err,args) => {
+            window.location = '/welcome';
+        },this));
     };
 
     getWithoutPermission = () => {

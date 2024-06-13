@@ -345,7 +345,7 @@ class MapContainer extends Component {
                         )
                     }
                 if (e.category_id === 99) {
-                        if (e.lead_strength_id === 1) { 
+                        if (e.lead_strength_id === 1 && e.office_type_id===1) { 
                             return (
                               <Marker onClick={this.handleMarkerClick}
                                 onMouseover={this.onMouseover} onMouseout={this.onMouseout}
@@ -354,16 +354,16 @@ class MapContainer extends Component {
                                 position={e.coords[0]}/>
                             )
                         }
-                        if (e.lead_strength_id === 2) { 
+                        if (e.lead_strength_id === 2 && e.office_type_id === 1) { 
                             return (
                               <Marker onClick={this.handleMarkerClick}
                                 onMouseover={this.onMouseover} onMouseout={this.onMouseout}
                                 data={e}
-                                icon="http://maps.google.com/mapfiles/ms/icons/oranige-dot.png"
+                                icon="http://maps.google.com/mapfiles/ms/icons/orange-dot.png"
                                 position={e.coords[0]}/>
                             )
                         }
-                        if (e.lead_strength_id === 3) { 
+                        if (e.lead_strength_id === 3 && e.office_type_id === 1) { 
                             return (
                               <Marker onClick={this.handleMarkerClick}
                                 onMouseover={this.onMouseover} onMouseout={this.onMouseout}
@@ -382,12 +382,22 @@ class MapContainer extends Component {
                         )
                     }
                 if (e.category_id === 104) {
-                        return (
-                          <Marker icon="http://maps.google.com/mapfiles/ms/icons/red-dot.png"
-                                onMouseover={this.onMouseover} onMouseout={this.onMouseout}
-                                data={e} onClick={this.handleMarkerClick}
-                                position={e.coords[0]}/>
-                        )
+                        if (e.office_type_id === 1) { 
+                            return (
+                              <Marker icon="https://maps.gstatic.com/mapfiles/ms2/micons/red-pushpin.png"
+                                    onMouseover={this.onMouseover} onMouseout={this.onMouseout}
+                                    data={e} onClick={this.handleMarkerClick}
+                                    position={e.coords[0]}/>
+                            )
+                        }
+                        if (e.office_type_id === 6) { 
+                            return (
+                              <Marker icon="https://maps.gstatic.com/mapfiles/ms2/micons/ylw-pushpin.png"
+                                    onMouseover={this.onMouseover} onMouseout={this.onMouseout}
+                                    data={e} onClick={this.handleMarkerClick}
+                                    position={e.coords[0]}/>
+                            )
+                        }
                     }
                 if (e.category_id === 103) {
                         return (

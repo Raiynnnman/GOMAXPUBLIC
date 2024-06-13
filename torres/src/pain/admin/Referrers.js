@@ -139,13 +139,11 @@ class Referrers extends Component {
         var c = 0;
         var t = [];
         var t1 = [];
-        console.log("p",this.props);
         for (c = 0; c < e.length; c++) { 
             t.push(e[c]); 
             var v = this.props.referrerAdminList.data.config.status.filter((f) => f.name === e[c].value)
             t1.push(v[0].id);
         } 
-        console.log("t1",t1)
         this.state.statusSelected = t;
         this.state.filter = t1;
         this.props.dispatch(getReferrers(
@@ -277,7 +275,6 @@ class Referrers extends Component {
     } 
 
     render() {
-        console.log("s",this.state);
         var regheads = [
             {
                 dataField:'id',
@@ -383,7 +380,6 @@ class Referrers extends Component {
                                               label="Status"
                                               onChange={this.onStatusFilter}
                                               value={this.state.statusSelected.map((g) => { 
-                                                console.log(g)
                                                 return (
                                                     {
                                                      label: g.label ? g.label : g.name, 

@@ -15,10 +15,8 @@ function TemplateSelectMulti({label,onChange,style,value,options}) {
   } 
   const [selected, setSelected] = React.useState(sel);
 
-  console.log("sel",sel);
 
   const handleDelete = (e) => { 
-    console.log("e",e);
     var o = value.filter((f) => f.label !== e);
     var t = sel.filter((f) => f !== e);
     setSelected(t);
@@ -26,7 +24,6 @@ function TemplateSelectMulti({label,onChange,style,value,options}) {
   }
 
   const handleChange = (e,t) => {
-    console.log("hc",e,t);
     setSelected(e.target.value);
     var c = 0;
     var n = []

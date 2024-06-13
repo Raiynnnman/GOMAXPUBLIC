@@ -1,190 +1,317 @@
-import React, { Component } from 'react';
+import React, { Component, createRef } from 'react';
 import { connect } from 'react-redux';
-import { push } from 'connected-react-router';
-import cx from 'classnames';
-import classnames from 'classnames';
-import translate from '../utils/translate';
-import TemplateButton from '../utils/TemplateButton';
+import { withRouter } from 'react-router-dom';
+import {
+    Container,
+    Grid,
+    Button,
+    Typography,
+    Paper,
+    Box,
+    CssBaseline,
+    Snackbar,
+    Alert,
+    Stepper,
+    Step,
+    StepLabel
+} from '@mui/material';
+import Navbar from '../../components/Navbar';
+import Pricing from '../../components/Pricing';
 import AppSpinner from '../utils/Spinner';
-import Login from '../login';
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import Container from '@mui/material/Container';
+import formatPhoneNumber from '../utils/formatPhone';
+import { getLandingData } from '../../actions/landingData';
+import { registerProvider } from '../../actions/registerProvider';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from '../../theme';
+import TemplateTextFieldPhone from '../utils/TemplateTextFieldPhone';
 import TemplateTextField from '../utils/TemplateTextField';
+import TemplateButton from '../utils/TemplateButton';
 
 class UserRegistration extends Component {
+    formRef = createRef();
 
-    constructor(props) { 
-        super(props);
-        this.state = { 
-            register:{
-              email: '',
-              first_name: '',
-              last_name: '',
-              phone: '',
-            }
-        }
-        this.cancel = this.cancel.bind(this);
-        this.schedule = this.schedule.bind(this);
-        this.setVPassword = this.setVPassword.bind(this);
-        this.setPassword = this.setPassword.bind(this);
-        this.setPhone = this.setPhone.bind(this);
-        this.setConsultant = this.setConsultant.bind(this);
-        this.setEmail= this.setEmail.bind(this);
-        this.setFirst = this.setFirst.bind(this);
-        this.setLast = this.setLast.bind(this);
-    } 
-
-    componentWillReceiveProps(p) { 
-    }
+    state = {
+        page: 0,
+        plan: 0,
+        card: null,
+        currentName: '',
+        currentPhone: '',
+        first_name: '',
+        last_name: '',
+        phone: '',
+        email: '',
+        zipcode: '',
+        error_message: null,
+        pq_id: null,
+        coupon: null,
+        setPrice: 0,
+        calculatedPrice: 0,
+        coupon_id: null,
+        couponRed: '$0.00',
+        couponRedValue: 0,
+        showAddresses: [],
+        intentid: '',
+        selPlan: null,
+        license: '',
+        provtype: 3,
+        provtypeSel: ['Referrer'],
+        snackbarOpen: false,
+        snackbarMessage: '',
+        snackbarSeverity: 'success'
+    };
 
     componentDidMount() {
+        this.props.dispatch(getLandingData({ type: this.state.provtype }));
+        this.state.selPlan = {}
+        this.state.page = 0
     }
-    cancel() { 
-        this.props.onCancel()
-    } 
-    schedule() { 
-        if (Login.isAuthenticated()) { 
-            this.props.onRegister(this.props.currentUser,this.props.data)
-        } else { 
-            this.props.onRegister(this.state.register,this.props.data)
-        } 
-        this.props.dispatch(push('/welcome'));
-    } 
-    setVPassword(e) {
-        this.state.register.verify = e.target.value;
-        this.setState(this.state)
+
+    componentDidUpdate(prevProps) {
     }
-    setConsultant(e) { 
-        this.state.register.consultant = this.state.register.consultant ? 0 : 1
-        this.setState(this.state)
+
+    handleNameChange = (event) => {
+        const { name, value } = event.target;
+        this.setState({ name: value }, this.checkValid);
     }
-    setPhone(e) { 
-        let val = e.target.value.replace(/\D/g, "")
-        .match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
-        let validPhone = !val[2] ? val[1]: "(" + val[1] + ") " + val[2] + (val[3] ? "-" + val[3] : "");
-        this.setState(prevState => ({
-          register: {
-            ...prevState.register,
-            phone: validPhone
-          }
-        }));
-        if (validPhone.length < 14 && validPhone.length > 0) {
-          this.setState({ phoneMessage: 'Please add a 10 digit phone number' });
-      } else {
-          this.setState({ phoneMessage: '' });
-      }
+
+    handleFirstChange = (event) => {
+        const { name, value } = event.target;
+        this.setState({ first: value }, this.checkValid);
     }
-    setPassword(e) { 
-        this.state.register.password = e.target.value;
-        this.setState(this.state)
+
+    handleLastChange = (event) => {
+        const { name, value } = event.target;
+        this.setState({ last: value }, this.checkValid);
     }
-    setEmail(e) {
-        this.state.register.email = e.target.value;
-        this.setState(this.state)
-        //validate email 
-        const emailRegex = /^[A-Za-z0-9._-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/;
-        this.state.isValid = emailRegex.test(this.state.register.email);
-        if (this.state.isValid) {
-          this.setState(prevState => ({
-            register: {
-              ...prevState.register,
-              email: this.state.register.email
-            },
-            errorMessage: '',
-          }));
+
+    handleEmailChange = (event) => {
+        const { name, value } = event.target;
+        this.setState({ email: value }, this.checkValid);
+    }
+
+
+    handlePhoneChange = (event) => {
+        const phone = formatPhoneNumber(event.target.value);
+        this.setState({ phone });
+    };
+
+    handleCouponChange = (event) => {
+        this.setState({ coupon: event.target.value }, this.getCoupon);
+    };
+
+    getCoupon = () => {
+        const { coupon, selPlan } = this.state;
+        const matchingCoupon = selPlan?.coupons.find((e) => coupon === e.name);
+        if (matchingCoupon) {
+            const discountValue = this.calculateDiscount(matchingCoupon);
+            this.setState({
+                coupon_id: matchingCoupon.id,
+                couponRed: `($${discountValue.toFixed(2)})`,
+                couponRedValue: -discountValue.toFixed(2),
+            });
         } else {
-          this.setState({ errorMessage: 'Invalid email format' });
+            this.setState({ couponRed: '$0.00', couponRedValue: 0.00 });
         }
-    }
-    setFirst(e) {
-        this.state.register.first_name = e.target.value;
-        this.setState(this.state)
-    }
-    setLast(e) { 
-        this.state.register.last_name = e.target.value;
-        this.setState(this.state)
-    }
+    };
+
+    calculateDiscount = (coupon) => {
+        const totalCost = this.state.selPlan.upfront_cost * this.state.selPlan.duration;
+        if (coupon.perc) {
+            return totalCost * coupon.perc;
+        } else if (coupon.total) {
+            return totalCost - coupon.total;
+        } else if (coupon.reduction) {
+            return coupon.reduction;
+        }
+        return 0;
+    };
+
+    calculatePrice = () => {
+        const { selPlan, couponRedValue } = this.state;
+        if (selPlan) {
+            const totalCost = selPlan.upfront_cost * selPlan.duration;
+            const finalPrice = totalCost + parseFloat(couponRedValue);
+            return `$${finalPrice.toFixed(2)}`;
+        }
+        return '$0.00';
+    };
+
+    nextPage = () => {
+        this.setState((prevState) => ({ page: prevState.page + 1 }));
+    };
+
+    prevPage = () => {
+        this.setState((prevState) => ({ page: prevState.page - 1 }));
+    };
+
+    registerUser = () => {
+        const { email, first_name, name, phone, last_name, provtype } = this.state;
+        const registrationData = {
+            email,
+            first_name,
+            name,
+            phone,
+            last_name
+        };
+        this.props.onRegister(registrationData);
+
+    };
+
+    checkValid = () => {
+        this.setState({ isValid: true });
+    };
+
+    handleCloseSnackbar = () => {
+        this.setState({ snackbarOpen: false });
+    };
+
+    handleSelectPlan = (planId) => {
+        const { landingData } = this.props;
+        const selectedPlan = landingData.data.pricing.find(plan => plan.id === planId);
+        this.setState({ selPlan: selectedPlan, page: 0 }, () => {
+            if (this.formRef.current) {
+                this.formRef.current.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    };
+
+    renderStepContent = (step) => {
+        const { selPlan, phone, couponRed, error_message, snackbarOpen, snackbarMessage, snackbarSeverity } = this.state;
+        const { registerProvider, landingData } = this.props;
+        switch (step) {
+            case 0:
+                return (
+                    <Box component="form" noValidate sx={{ mt: 1 }}>
+                        <Typography variant="h6" align="center" gutterBottom>
+                            Please enter the information below to register
+                        </Typography>
+                        {error_message && (
+                            <Typography color="error" gutterBottom>
+                                {error_message}
+                            </Typography>
+                        )}
+                        <Grid container spacing={3}>
+                            <Grid item xs={12} sm={6}>
+                                <TemplateTextField
+                                    fullWidth
+                                    required
+                                    label="First Name"
+                                    name="first"
+                                    onChange={this.handleFirstChange}
+                                    margin="normal"
+                                    sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TemplateTextField
+                                    fullWidth
+                                    required
+                                    label="Last Name"
+                                    name="last"
+                                    onChange={this.handleLastChange}
+                                    margin="normal"
+                                    sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TemplateTextField
+                                    fullWidth
+                                    required
+                                    label="Email"
+                                    name="email"
+                                    onChange={this.handleEmailChange}
+                                    margin="normal"
+                                    sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TemplateTextFieldPhone
+                                    fullWidth
+                                    required
+                                    label="Phone"
+                                    name="phone"
+                                    value={phone}
+                                    onChange={this.handlePhoneChange}
+                                    margin="normal"
+                                    sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                                    InputLabelProps={{ shrink: true }}
+                                />
+                            </Grid>
+                        </Grid>
+                        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+                            <TemplateButton
+                                variant="contained"
+                                color="primary"
+                                onClick={this.registerUser}
+                                sx={{ borderRadius: 8, backgroundColor: '#FF5733', color: '#fff', padding: '10px 45px', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase' }}
+                                label='Register'/>
+                        </Box>
+                    </Box>
+                );
+            default:
+                return 'Unknown step';
+        }
+    };
 
     render() {
+        const { page, selPlan, snackbarOpen, snackbarMessage, snackbarSeverity } = this.state;
+        const { registerUser, landingData } = this.props;
+
+        var steps = ['Register Information'];
+
         return (
-        <>
-            {(this.props.offices && this.props.offices.isReceiving) && (
-                <AppSpinner/>
-            )}
-            {(false) && ( 
-            <Grid container  xs="12">
-                <Grid item  xs="12">
-                    <div style={{border:"1px solid black",height:150,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                    <h1>Physician Video Here</h1>
-                    </div>
-                </Grid>
-            </Grid>
-            )}
-            <Grid container xs="12" style={{marginTop:20,marginLeft:10}}>
-                <Grid item xs="12">
-                <>
-                {(!this.props.currentUser) && (
-                    <>
-                    <div style={{height:300,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        <div>
-                        <Grid container  xs="12">
-                            <Grid item xs="12" style={{marginLeft:0}}>
-                              <TemplateTextField style={{width:"100%"}}
-                                onChange={this.setEmail} value={this.state.register.email} 
-                                label="Email" />
-                            </Grid>
-                        </Grid>
-                        <Grid container xs="12">
-                            <Grid item xs="12" style={{marginLeft:0}}>
-                              <TemplateTextField type="text" id="normal-field" style={{width:"100%"}}
-                                onChange={this.setFirst} value={this.state.register.first_name} 
-                                label="First Name" />
-                            </Grid>
-                        </Grid>
-                        <Grid container xs="12">
-                            <Grid item xs="12" style={{marginLeft:0}}>
-                              <TemplateTextField type="text" id="normal-field" style={{width:"100%"}}
-                                onChange={this.setLast} value={this.state.register.last_name} 
-                                label="Last Name" />
-                            </Grid>
-                        </Grid>
-                        <Grid container xs="12">
-                            <Grid item xs="12" style={{marginLeft:0}}>
-                              <TemplateTextField type="text" id="normal-field" style={{width:"100%"}}
-                                onChange={this.setPhone} value={this.state.register.phone} 
-                                label="Phone" />
-                            </Grid>
-                        </Grid>
-                        <Grid container xs="12">
-                            <Grid item xs="12" >
-                            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                                <TemplateButton onClick={this.schedule} style={{marginRight:10}}  
-                                disabled={
-                                  !this.state.isValid ||
-                                  !this.state.register.first_name || 
-                                  !this.state.register.last_name ||
-                                  this.state.register.phone.length !== 14} label={translate('Contact')}/>
-                                <TemplateButton outline onClick={this.cancel} label={translate('Cancel')}/>
-                            </div>
-                            </Grid>
-                        </Grid>
-                    </div>
-                    </div>
-                    </>
+            <ThemeProvider theme={theme}>
+                <CssBaseline />
+                {registerProvider.isReceiving && <AppSpinner />}
+                {landingData.data && (
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', px: 2 }}>
+                        <Container maxWidth="md">
+                            <Paper
+                                elevation={12}
+                                sx={{
+                                    width: '100%',
+                                    padding: { xs: 2, sm: 4, md: 6 },
+                                    borderRadius: '30px',
+                                    boxShadow: '0 5px 15px rgba(0, 0, 0, 0.35)',
+                                    backgroundColor: '#fff',
+                                }}
+                                ref={this.formRef}
+                            >
+                                <Stepper activeStep={page} alternativeLabel>
+                                    {steps.map((label) => (
+                                        <Step key={label}>
+                                            <StepLabel>{label}</StepLabel>
+                                        </Step>
+                                    ))}
+                                </Stepper>
+                                {this.renderStepContent(page)}
+                                <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+                                    <Button
+                                        color="inherit"
+                                        disabled={page === 0}
+                                        onClick={this.prevPage}
+                                        sx={{ mr: 1 }}
+                                    >
+                                        Back
+                                    </Button>
+                                </Box>
+                            </Paper>
+                        </Container>
+                    </Box>
                 )}
-                </>
-                </Grid>                
-            </Grid>
-        </>
-        )
+                <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={this.handleCloseSnackbar}>
+                    <Alert onClose={this.handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
+                        {snackbarMessage}
+                    </Alert>
+                </Snackbar>
+            </ThemeProvider>
+        );
     }
 }
 
-function mapStateToProps(store) {
-    return {
-        currentUser: store.auth.currentUser
-    }
-}
+const mapStateToProps = (state) => ({
+    landingData: state.landingData,
+    registerProvider: state.registerProvider,
+});
 
-export default connect(mapStateToProps)(UserRegistration);
+export default withRouter(connect(mapStateToProps)(UserRegistration));

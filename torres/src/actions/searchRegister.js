@@ -21,13 +21,13 @@ export function receiveDataSuccess(payload) {
     }
 }
 
-export function searchRegister(params) { 
+export function searchRegister(params,callback,args) { 
   return async (dispatch) => {
-    dispatch(receivingData(params));
+    dispatch(receivingData(params,callback,args));
   };
 } 
 
-export function receivingData(params) {
+export function receivingData(params,callback,args) {
   return async (dispatch) => {
     dispatch({
         type: RECEIVING_SR_DATA
@@ -44,7 +44,14 @@ export function receivingData(params) {
           dispatch({
                 type: RECEIVED_SR_DATA_SUCCESS,
                 payload: e.data.data
-            });
+          });
+          if (callback) {
+            if (!e.data.data.success) {
+                callback(e.data.data,args);
+            } else {
+                callback(null,args,e.data.data);
+            }
+          }
       })
       .catch((e) => { 
         handleError(e);
