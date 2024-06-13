@@ -48,9 +48,9 @@ class Service extends Component{
 
             {
                 icon: 'zmdi zmdi-calendar',
-                title: 'Request a Demo',
-                btn_title:'Book a call',
-                desc: 'See our platform in action. Request a personalized demo to explore how Pound Pain Technology can benefit your practice.',
+                title: 'Schedule a Call',
+                btn_title:'Schedule a Call',
+                desc: 'Experience the power of Pound Pain Technology. Schedule a call for a personalized consultation and discover how our platform can transform your practice and support patient acquisition growth.'
                 click:this.showCalendar
             },
 
