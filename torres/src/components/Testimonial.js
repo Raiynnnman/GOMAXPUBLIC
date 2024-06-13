@@ -36,6 +36,9 @@ class Testimonial extends React.Component {
 
                                         <Slider {...testimonial} asNavFor={this.state.nav2} ref={slider => (this.testimonial = slider)} className="testimonial-image-slider text-center">
                                             <div className="sin-testiImage">
+                                                <img src={require('../assets/main_page/headshots/testimonial1.jpeg')} alt="testimonial 1" />
+                                            </div>
+                                            <div className="sin-testiImage">
                                                 <img src={require('../assets/main_page/headshots/a_beautiful_woman_headshot_for_a_website.jpeg')} alt="testimonial 1" />
                                             </div>
                                             <div className="sin-testiImage">
@@ -54,6 +57,19 @@ class Testimonial extends React.Component {
 
                                 <Slider {...testimonial2} style={{color:'black'}} asNavFor={this.state.nav1} 
                                     ref={slider => (this.testimonial2 = slider)} className="testimonial-text-slider text-center">
+                                    <div className="sin-testiText">
+                                        <h2>Dr. Ali Mullanack, Practice Manager</h2>
+                                        <div className="client-rating">
+                                            <i className="zmdi zmdi-star color"></i>
+                                            <i className="zmdi zmdi-star color"></i>
+                                            <i className="zmdi zmdi-star color"></i>
+                                            <i className="zmdi zmdi-star color"></i>
+                                            <i className="zmdi zmdi-star color"></i>
+                                        </div>
+                                        <p>
+Pound Pain is an innovative movement in PI.  Since our 3 locations became part of the network in December we have seen a 20x ROI.  Great combination of technology and human touch.
+                                        </p>
+                                    </div>
                                     <div className="sin-testiText">
                                         <h2>Dr. Samantha Reed, Chiropractor</h2>
                                         <div className="client-rating">
