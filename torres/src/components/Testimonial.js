@@ -36,7 +36,7 @@ class Testimonial extends React.Component {
 
                                         <Slider {...testimonial} asNavFor={this.state.nav2} ref={slider => (this.testimonial = slider)} className="testimonial-image-slider text-center">
                                             <div className="sin-testiImage">
-                                                <img src={require('../assets/main_page/headshots/testimonial1.jpeg')} alt="testimonial 1" />
+                                                <img src={require('../assets/main_page/headshots/testimonial1.png')} alt="testimonial 1" />
                                             </div>
                                             <div className="sin-testiImage">
                                                 <img src={require('../assets/main_page/headshots/a_beautiful_woman_headshot_for_a_website.jpeg')} alt="testimonial 1" />
