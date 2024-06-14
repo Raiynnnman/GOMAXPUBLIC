@@ -34,6 +34,10 @@ import Customers from './pain/office/Customers';
 import Search from './pain/search/Search';
 import Appointments from './pain/clients/Appointments';
 import Landing from './pain/landing/Landing.js';
+import Verified from './pain/landing/Verified';
+import Accept from './pain/referral_accept/Accept';
+import Reject from './pain/referral_accept/Reject';
+
 import Pricing from './components/Pricing';
 import AdminHomeDashboard from './pain/dashboard/AdminHomeDashboard.js';
 const CloseButton = ({closeToast}) => <i onClick={closeToast} className="la la-close notifications-close"/>
