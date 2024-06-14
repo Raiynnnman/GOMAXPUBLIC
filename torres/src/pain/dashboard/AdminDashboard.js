@@ -10,8 +10,8 @@ import UniqueVisitorCard from './components/cards/UniqueVisitorCard';
 import MonthlyBarChart from './components/charts/MonthlyBarChart';
 import MainCard from './components/cards/MainCard';
 import AnalyticEcommerce from './components/cards/AnalyticCard';
-
-class AdminDashboard extends Component {
+import { Button } from '@mui/material';
+ class AdminDashboard extends Component {
     constructor(props) {
         super(props);
         this.state = {};
@@ -20,6 +20,9 @@ class AdminDashboard extends Component {
     componentDidMount() {
         this.props.dispatch(getAdminDashboard());
     }
+
+ 
+
 
     render() {
         const { adminDashboard } = this.props;
@@ -38,13 +41,20 @@ class AdminDashboard extends Component {
                 traffic = {}
             } = data;
 
+            function handlePress() {
+                window.open("/AdminHomeDashboard")
+            }
+
+
             return (
                 <Grid container rowSpacing={4.5} columnSpacing={2.75}>
                     {/* Row 1 */}
-                    <Grid item xs={12} sx={{ mb: -2.25 }}>
-                        <Typography variant="h5">Dashboard</Typography>
+                    <Grid item xs={12} sx={{ mb: 4.25 }}>
+                        <Typography variant="h3">Dashboard</Typography>
+                        <Typography variant="text.secondary">Get an overview of your accound, user interactions, traffic and more!</Typography>
+                        <button item onClick={()=>{handlePress()}}/>
                     </Grid>
-                    <Grid item xs={12} sm={6} md={4} lg={3}>
+                     <Grid item xs={12} sm={6} md={4} lg={3}>
                         <AnalyticEcommerce 
                             title="Total Page Views"
                             count={`${website_stats.num1 || 0}`}  

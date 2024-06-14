@@ -34,11 +34,8 @@ import Customers from './pain/office/Customers';
 import Search from './pain/search/Search';
 import Appointments from './pain/clients/Appointments';
 import Landing from './pain/landing/Landing.js';
-import Verified from './pain/landing/Verified';
-import Accept from './pain/referral_accept/Accept';
-import Reject from './pain/referral_accept/Reject';
-
 import Pricing from './components/Pricing';
+import AdminHomeDashboard from './pain/dashboard/AdminHomeDashboard.js';
 const CloseButton = ({closeToast}) => <i onClick={closeToast} className="la la-close notifications-close"/>
 const App = () => {
     if (window.location.hash.startsWith('#/')) {
@@ -71,6 +68,7 @@ const App = () => {
                     <Route exact path='/register-referrer' component={RegisterReferrer}/>
                     <Route exact path='/welcome' component={Welcome}/>
                     <Route exact path='/register-provider/:id' component={RegisterProvider}/>
+                    <Route exact path='/AdminHomeDashboard' component={AdminHomeDashboard}/>
                     <Route exact path='/register-legal' component={RegisterLegal}/>
                     <Route exact path='/register-legal/:id' component={RegisterLegal}/>
                     <Route exact path='/app/main/dashboard' component={Dashboard}/>
