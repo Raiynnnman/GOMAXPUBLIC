@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Box, Typography, Grid, Paper, Link } from '@mui/material';
 import TeamCard from './components/cards/TeamCard';
 import ActivityCard from './components/cards/ActivityCard';
+import Navbar from '../../components/Navbar';
 
 const hoverEffect = {
   transition: 'transform 0.3s ease-in-out',
@@ -21,6 +22,8 @@ const paperStyle = {
 class AdminHomeDashboard extends Component {
   render() {
     return (
+        <>
+        <Navbar/>
       <Box sx={{ padding: 4 , background:'#fffcfc', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
         <Typography variant="h3" component="h1" fontWeight="bold" gutterBottom>
           Dashboard
@@ -88,6 +91,7 @@ class AdminHomeDashboard extends Component {
           </Box>
         </Box>
       </Box>
+      </>
     );
   }
 }
