@@ -53,7 +53,7 @@ class RegisterProvider extends Component {
         intentid: '',
         selPlan: null,
         license: '',
-        provtype: 2,
+        provtype: 4,
         provtypeSel: ['Legal'],
         snackbarOpen: false,
         snackbarMessage: '',

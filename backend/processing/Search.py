@@ -320,9 +320,9 @@ class WelcomeEmailReset(SearchBase):
             email = config.getKey("appt_email_override")
         m = Mail()
         if config.getKey("use_defer") is not None:
-            m.sendEmailQueued(email,"Appointment Scheduled with POUNDPAIN TECH","templates/mail/welcome-reset.html",data)
+            m.sendEmailQueued(email,"Provider Contacted with POUNDPAIN TECH","templates/mail/welcome-reset.html",data)
         else:
-            m.defer(email,"Appointment Scheduled with POUNDPAIN TECH","templates/mail/welcome-reset.html",data)
+            m.defer(email,"Provider Contacted with POUNDPAIN TECH","templates/mail/welcome-reset.html",data)
         return ret
 
 class WelcomeEmail(SearchBase):
@@ -361,9 +361,9 @@ class WelcomeEmail(SearchBase):
             email = config.getKey("appt_email_override")
         m = Mail()
         if config.getKey("use_defer") is not None:
-            m.sendEmailQueued(email,"Appointment Scheduled with POUNDPAIN TECH","templates/mail/appointment.html",data)
+            m.sendEmailQueued(email,"Provider Contacted with POUNDPAIN TECH","templates/mail/appointment.html",data)
         else:
-            m.defer(email,"Appointment Scheduled with POUNDPAIN TECH","templates/mail/appointment.html",data)
+            m.defer(email,"Provider Contacted with POUNDPAIN TECH","templates/mail/appointment.html",data)
         return ret
 
 class OfficeAppointmentEmail(SearchBase):
@@ -421,9 +421,9 @@ class ConsultantAppointmentEmail(SearchBase):
             email = config.getKey("appt_email_override")
         m = Mail()
         if config.getKey("use_defer") is not None:
-            m.sendEmailQueued(email,"Appointment Scheduled with POUNDPAIN TECH","templates/mail/consultant-appointment.html",data)
+            m.sendEmailQueued(email,"Provider Contacted with POUNDPAIN TECH","templates/mail/consultant-appointment.html",data)
         else:
-            m.defer(email,"Appointment Scheduled with POUNDPAIN TECH","templates/mail/consultant-appointment.html",data)
+            m.defer(email,"Provider Contacted with POUNDPAIN TECH","templates/mail/consultant-appointment.html",data)
         return ret
 
 class SearchRegister(SearchBase):
@@ -477,26 +477,50 @@ class SearchRegister(SearchBase):
         db = Query()
         params = args[1][0]
         user_id = 0
-        needConsultant = False
+        haveUser = False
+        REF = self.getReferrerUserStatus()
         APPT_STATUS=self.getAppointStatus()
         if 'zipcode' not in params:
             params['zipcode'] = ''
         if 'phone' not in params:
             params['phone'] = ''
-        haveUser,user_id = self.createUser(db,
-            params['email'].lower(),params['first_name'],
-            params['last_name'],params['phone'], params['zipcode'])
+        if 'user_id' in params:
+            haveUser = True
+            user_id = params['user_id']
+            g = db.query("""
+                select email,first_name,last_name,phone
+                from users where id = %s
+                """,(user_id,)
+            )
+            params.update(g[0])
+        else:
+            haveUser,user_id = self.createUser(db,
+                params['email'].lower(),params['first_name'],
+                params['last_name'],params['phone'], params['zipcode'])
         db.update("""
-            insert into client_intake (user_id,client_intake_status_id) values (%s,1)
+            insert into client_intake (user_id) values (%s)
             """,(user_id,)
         )
         ci_id = db.query("select LAST_INSERT_ID()");
         ci_id = ci_id[0]['LAST_INSERT_ID()']
         db.update("""
-           insert into client_intake_offices (client_intake_id,office_id) 
+           insert into client_intake_offices (client_intake_id,office_id,client_intake_status_id) 
                     values(%s,%s)
-           """,(ci_id,params['office_id'])
+           """,(ci_id,params['office_id'],1)
             )
+        db.update("""
+            insert into referrer_users(
+                referrer_users_status_id,email,name,phone,
+                office_id,client_intake_id,row_meta,user_id
+            ) values (
+                %s,%s,%s,%s,%s,%s,%s,%s
+            )
+        """,(
+            REF['QUEUED'],params['email'],
+            "%s %s" % (params['first_name'],params['last_name']),
+            params['phone'],params['office_id'],ci_id,json.dumps(params),
+            user_id
+        ))
                 
         ret = { 
             "success":True
@@ -509,20 +533,21 @@ class SearchRegister(SearchBase):
         else:
             r = WelcomeEmailReset()
             r.execute(*args,**kwargs)
-        off = db.query("""
-            select
-                o.id,
-                o.email as office_email
-            from
-                office o
-            where
-                o.id = %s
-            """,(params['office_id'],)
-        )
-        if config.getKey("appt_email_override") is not None:
-            off[0]['office_email'] = config.getKey("appt_email_override")
-        oMail = OfficeAppointmentEmail()
-        oMail.execute(off)
+        if False: # Turn this off for a moment, should go to accept/reject queue
+            off = db.query("""
+                select
+                    o.id,
+                    o.email as office_email
+                from
+                    office o
+                where
+                    o.id = %s
+                """,(params['office_id'],)
+            )
+            if config.getKey("appt_email_override") is not None:
+                off[0]['office_email'] = config.getKey("appt_email_override")
+            oMail = OfficeAppointmentEmail()
+            oMail.execute(off)
         db.commit()
         return ret
 

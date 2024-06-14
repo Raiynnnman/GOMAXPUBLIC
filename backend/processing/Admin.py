@@ -91,7 +91,7 @@ class AdminDashboard(AdminBase):
                     client_intake ci
                     where 
                     cio.client_intake_id=ci.id and hidden=0 and
-                    and client_intake_status_id=%s) as t4
+                    and cio.client_intake_status_id=%s) as t4
             """,(CI['COMPLETED'],))
         return o[0]
 
@@ -407,17 +407,22 @@ class UserList(AdminBase):
         q = """
             select 
                 u.id,u.email,u.first_name,u.last_name,
-                u.phone,u.active
+                u.phone,u.active,ou.office_id
             from 
-                users u
+                users u,
+                user_entitlements ue,
+                office_user ou
             where 
-                id <> 1
+                u.id <> 1 and
+                u.id = ue.user_id and
+                ou.user_id = u.id and 
+                ue.entitlements_id = %s
             order by 
-                updated desc
+                u.updated desc
             """
-        cnt = db.query("select count(id) as cnt from (%s) as t" % (q,))
+        cnt = db.query("select count(id) as cnt from (%s) as t" % (q % ENT['Customer']))
         q += " limit %s offset %s " 
-        o = db.query(q,(limit,offset*limit))
+        o = db.query(q,(ENT['Customer'],limit,offset*limit))
         ret['total'] = cnt[0]['cnt']
         ret['config'] = {}
         ret['config']['permissions'] = self.getPermissionIDs()

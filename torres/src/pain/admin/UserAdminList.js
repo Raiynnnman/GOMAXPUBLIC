@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import LaunchIcon from '@mui/icons-material/Launch';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
@@ -38,6 +39,7 @@ class UserAdminList extends Component {
             pageSize: 10,
             commentAdd:false
         } 
+        this.getContext = this.getContext.bind(this);
         this.edit = this.edit.bind(this);
         this.cancel = this.cancel.bind(this);
         this.save = this.save.bind(this);
@@ -89,6 +91,12 @@ class UserAdminList extends Component {
     emailChange(e) { 
         this.state.selected['email'] = e.target.value;
         this.setState(this.state);
+    } 
+    getContext(e) { 
+        this.props.dispatch(getContext({office:e.office_id},function(err,args) { 
+                localStorage.setItem("context",true);
+                window.location.href = '/app';
+        }))
     } 
     pageChange(e,t) { 
         if (e === '>') { 
@@ -185,19 +193,6 @@ class UserAdminList extends Component {
                 )
             },
             {
-                dataField:'id',
-                editable: false,
-                text:'Roles',
-                formatter: (cellContent,row) => (
-                    <div>
-                        {(row.entitlements.filter((e) => e.name === 'Admin').length > 0) && (<TemplateBadge label='Admin'/>)}
-                        {(row.entitlements.filter((e) => e.name === 'Provider').length > 0)&& (<TemplateBadge label='Provider'/>)}
-                        {(row.entitlements.filter((e) => e.name === 'Legal').length > 0)&& (<TemplateBadge label='Legal</Badge'/>)}
-                        {(row.entitlements.filter((e) => e.name === 'Customer').length > 0) && (<TemplateBadge label='Customer'/>)}
-                    </div>
-                )
-            },
-            {
                 dataField:'updated',
                 sort:true,
                 editable: false,
@@ -212,10 +207,10 @@ class UserAdminList extends Component {
             {
                 dataField:'id',
                 text:'Actions',
-                editable: false,
                 formatter:(cellContent,row) => ( 
                     <div>
-                        {/*<TemplateButton onClick={() => this.edit(row)} style={{marginRight:5,height:35}} color="primary"><EditIcon/></Button>*/}
+                        {/*<TemplateButton onClick={() => this.edit(row)} style={{marginRight:5,height:35}} label={<EditIcon/>}/>*/}
+                        <TemplateButton onClick={() => this.getContext(row)} style={{height:35}} label={<LaunchIcon/>}/>
                     </div>
                 )
             },

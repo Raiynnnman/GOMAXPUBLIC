@@ -87,6 +87,27 @@ class UserDashboard(UserBase):
     def isDeferred(self):
         return False
 
+    def getAppointments(self,user,db):
+        uid = user['id']
+        o = db.query("""
+            select 
+                o.id,o.name,o.email,
+                cio.client_intake_status_id as status_id ,
+                cis.name as status
+            from
+                client_intake ci,
+                office o,office_addresses oa,
+                client_intake_status cis,
+                client_intake_offices cio
+            where
+                ci.id = cio.client_intake_id and
+                cis.id = cio.client_intake_status_id and
+                cio.office_id = o.id and
+                ci.user_id = %s
+            """,(user['id'],)
+        )
+        return o
+
     def execute(self, *args, **kwargs):
         ret = {}
         db = Query()
@@ -96,6 +117,7 @@ class UserDashboard(UserBase):
         else:
             lat = params['location']['lat']
             lon = params['location']['lon']
+        ret['appt'] = self.getAppointments(user,db)
         return ret
             
 class UserRatings(UserBase):

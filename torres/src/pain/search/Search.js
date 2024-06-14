@@ -50,7 +50,13 @@ class SearchAdmin extends Component {
     };
 
     scheduleAppt = (provider, e) => {
-        this.setState({ selectedAppt: provider });
+        console.log(provider,e);
+        this.state.selectedAppt = provider;
+        this.setState(this.state);
+        console.log("here");
+        if (this.props.currentUser.entitlements) { 
+            this.register();
+        } 
     };
 
     setProviderType = (e) => {
@@ -67,9 +73,20 @@ class SearchAdmin extends Component {
     };
 
     register = (e) => {
-        const params = { ...e, office_id: this.state.selectedAppt.office_id };
+        console.log(e);
+        const params = { 
+            ...e, 
+            office_id: this.state.selectedAppt.office_id ? 
+                this.state.selectedAppt.office_id : this.state.selectedAppt.id
+        };
+        if (this.props.currentUser.entitlements) { 
+            params['user_id'] = this.props.currentUser.id;
+        } 
         this.props.dispatch(searchRegister(params, (err,args) => {
-            window.location = '/welcome';
+            console.log("here");
+            if (!args.props.currentUser.entitlements) { 
+                window.location = '/welcome';
+            }
         },this));
     };
 
@@ -112,7 +129,8 @@ class SearchAdmin extends Component {
     render() {
         const { providerSearch, searchConfig } = this.props;
         const { selectedAppt, selectedProvider, zipcode, geo, error } = this.state;
-
+        console.log("p",this.props);
+        console.log("s",this.state);
         return (
             <>
                 <Navbar />
@@ -182,7 +200,14 @@ class SearchAdmin extends Component {
                             <Typography variant="h6">There are currently no service providers in this area.</Typography>
                         </Box>
                     )}
-                    {selectedAppt && (
+                    {selectedAppt && this.props.currentUser.entitlements && (
+                        <Grid container justifyContent="center">
+                            <Grid item xs={12} md={8}>
+                                <Typography variant="h6">The provider has been notified. You should receive contact shortly.</Typography>
+                            </Grid>
+                        </Grid>
+                    )}
+                    {selectedAppt && !this.props.currentUser.entitlements && (
                         <Grid container justifyContent="center">
                             <Grid item xs={12} md={8}>
                                 <UserRegistration data={selectedAppt} onCancel={this.cancel} onRegister={this.register} />

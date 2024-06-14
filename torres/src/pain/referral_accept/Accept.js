@@ -2,16 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withRouter, Link } from 'react-router-dom';
 import config from '../../config';
+import Container from '@mui/material/Container';
+
 import { connect } from 'react-redux';
-import { Container, Alert, Button } from 'reactstrap';
-import Widget from '../../components/Widget';
-import { loginUser, receiveToken, doInit } from '../../actions/auth';
 import jwt from "jsonwebtoken";
-import microsoft from '../../images/microsoft.png';
 import getVersion from '../../version.js';
 import { push } from 'connected-react-router';
 import translate from '../utils/translate';
 import {referralResponse} from '../../actions/referralResponse';
+import Navbar from '../../components/Navbar';
 
 class Accept extends React.Component {
 
@@ -52,14 +51,14 @@ class Accept extends React.Component {
 
     render() {
         return (
-            <div style={{backgroundColor:"black",color:"white"}} className="auth-page">
+        <>
+            <Navbar/>
+            <div>
                 <Container>
-                    <div style={{backgroundColor:'black',display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        <img width="20%" height="20%" src='/painlogo.png'/>
-                    </div>
                     {(this.state.response_received) && (
                     <>
-                    <Widget style={{backgroundColor:"black"}} className="widget-auth mx-auto" title={<h3 style={{color:'white'}} className="mt-0">Client Accepted!</h3>}>
+                    <Container 
+                            style={{backgroundColor:"black"}} className="widget-auth mx-auto" title={<h3 style={{color:'white'}} className="mt-0">Client Accepted!</h3>}>
                         {(this.state.error_message === null) && (
                         <p className="widget-auth-info" style={{color:'white'}}>
                             Client accepted. Click <a onClick={this.loginPage} style={{color:"blue"}} href="/login" to see details>HERE</a> to see details
@@ -74,11 +73,12 @@ class Accept extends React.Component {
                         </p>
                         </>
                         )}
-                    </Widget>
+                    </Container>
                     </>
                     )}
                 </Container>
             </div>
+        </>
         );
     }
 }

@@ -111,18 +111,15 @@ class Register extends React.Component {
 
     switch (creds.userType.toLowerCase()) {
       case 'user':
-        this.props.dispatch(registerUser(creds));
+        this.props.dispatch(registerUser(creds,function(e) { 
+           window.location = '/welcome'; 
+        },this));
         break;
       case 'provider':
-        const providerCreds = {
-          phone: this.state.value,
-          email: data.get('email'),
-          name: name.name,
-          // addresses: addressObj, // Dont include address object
-        };
-        this.props.dispatch(registerProvider(providerCreds));
+        window.location='/register-provider';
         break;
       case 'legal':
+        window.location='/register-legal';
         break;
       default:
         console.error("Invalid user type");
@@ -173,9 +170,9 @@ class Register extends React.Component {
                   <MenuItem value="" disabled>
                     Provider or Customer?
                   </MenuItem>
+                  <MenuItem value="user">Customer</MenuItem>
                   <MenuItem value="provider">Provider</MenuItem>
                   <MenuItem value="legal">Legal</MenuItem>
-                  <MenuItem value="user">Customer</MenuItem>
                 </Select>
                 <TextField
                   margin="normal"

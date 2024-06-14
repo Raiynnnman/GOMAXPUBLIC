@@ -38,7 +38,6 @@ import Navbar from '../../components/Navbar';
 class OfficeList extends Component {
     constructor(props) { 
         super(props);
-        this.getContext = this.getContext.bind(this);
         this.state = { 
             selected: null,
             subTab: "plans",

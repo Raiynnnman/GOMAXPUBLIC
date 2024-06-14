@@ -70,7 +70,7 @@ class OfficeDashboard(OfficeBase):
                     client_intake ci
                     where 
                     cio.client_intake_id=ci.id and office_id = %s and hidden=0
-                    and client_intake_status_id=%s) as t4
+                    and cio.client_intake_status_id=%s) as t4
             """,(off_id,off_id,off_id,off_id,CI['COMPLETED']))
         return o[0]
 
@@ -450,7 +450,7 @@ class ClientList(OfficeBase):
                 oa.office_id = o.id and
                 oa.id = cio.office_addresses_id and
                 cio.client_intake_id = ci.id and
-                cis.id = ci.client_intake_status_id and
+                cis.id = cio.client_intake_status_id and
                 ci.user_id = u.id and
                 hidden = 0 and
                 o.id = cio.office_id and
@@ -491,9 +491,9 @@ class ClientUpdate(OfficeBase):
         REF = self.getReferrerUserStatus()
         CI = self.getClientIntake()
         db.update("""
-            update client_intake set client_intake_status_id = %s
-                where id = %s
-            """,(params['status_id'],params['id'])
+            update client_intake_office set client_intake_status_id = %s
+                where client_intake_id = %s and office_id = %s
+            """,(params['status_id'],params['id'],off_id)
         )
         if params['status_id'] == CI['SCHEDULED']:
             db.update("""
@@ -655,16 +655,16 @@ class ReferralUpdate(OfficeBase):
                     print("couldnt parse date: %s" % q['doa'])
                 db.update("""
                     insert into client_intake 
-                        (user_id,date_of_accident,client_intake_status_id) values (%s,%s,%s)
-                    """,(q['user_id'],doa.strftime('%Y-%m-%d'),CI['ASSIGNED'])
+                        (user_id,date_of_accident) values (%s,%s)
+                    """,(q['user_id'],doa.strftime('%Y-%m-%d'))
                 )
                 clid = db.query("select LAST_INSERT_ID()");
                 clid = clid[0]['LAST_INSERT_ID()']
                 db.update("""
                     insert into client_intake_offices 
-                        (client_intake_id,office_id,office_addresses_id)
-                        values(%s,%s,%s)
-                    """,(clid,o,oa)
+                        (client_intake_id,office_id,office_addresses_id,client_intake_status_id)
+                        values(%s,%s,%s,%s)
+                    """,(clid,o,oa,CI['ASSIGNED'])
                 )
                 db.update("""
                     update referrer_users set client_intake_id=%s where id = %s

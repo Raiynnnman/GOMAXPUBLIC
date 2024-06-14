@@ -3,15 +3,13 @@ import PropTypes from 'prop-types';
 import { withRouter, Link } from 'react-router-dom';
 import config from '../../config';
 import { connect } from 'react-redux';
-import { Container, Alert, Button } from 'reactstrap';
-import Widget from '../../components/Widget';
-import { loginUser, receiveToken, doInit } from '../../actions/auth';
+import Container from '@mui/material/Container';
 import jwt from "jsonwebtoken";
-import microsoft from '../../images/microsoft.png';
 import getVersion from '../../version.js';
 import { push } from 'connected-react-router';
 import translate from '../utils/translate';
 import {referralResponse} from '../../actions/referralResponse';
+import Navbar from '../../components/Navbar';
 
 class Accept extends React.Component {
 
@@ -46,19 +44,22 @@ class Accept extends React.Component {
 
     render() {
         return (
+        <>
+            <Navbar/>
             <div style={{backgroundColor:"black",color:"white"}} className="auth-page">
                 <Container>
                     <div style={{backgroundColor:'black',display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                         <img width="20%" height="20%" src='/painlogo.png'/>
                     </div>
-                    <Widget style={{backgroundColor:"black"}} className="widget-auth mx-auto" title={<h3 style={{color:'white'}} className="mt-0">Client removed from your queue!</h3>}>
+                    <Container style={{backgroundColor:"black"}} className="widget-auth mx-auto" title={<h3 style={{color:'white'}} className="mt-0">Client removed from your queue!</h3>}>
                         <p className="widget-auth-info" style={{color:'white'}}>
                             Thank you for submitting your response.
                         <br/>
                         </p>
-                    </Widget>
+                    </Container>
                 </Container>
             </div>
+        </>
         );
     }
 }
