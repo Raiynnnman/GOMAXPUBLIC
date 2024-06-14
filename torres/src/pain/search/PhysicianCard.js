@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import StarOutlineRoundedIcon from '@mui/icons-material/StarOutlineRounded';
 import { connect } from 'react-redux';
 import { Box, Grid, Card, CardContent, CardMedia, Typography, Button } from '@mui/material';
-import image1 from "../../assets/images/app/pic1.png"
+// import image1 from "../../assets/images/app/pic1.png"
 
 class PhysicianCard extends Component {
     scheduleAppt = () => {
@@ -39,8 +39,7 @@ class PhysicianCard extends Component {
                 <CardMedia
                     component="img"
                     height="180"
-                    // image={provider.headshot || "/headshot.png"}
-                    image={image1}
+                    image={provider.headshot || "/headshot.png"}
                     alt="Provider headshot"
                 />
                 <CardContent>
