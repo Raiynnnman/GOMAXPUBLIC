@@ -96,3 +96,13 @@ def getOfficeTypes():
         i = x['id']
         ret[n] = i
     return ret 
+
+def getOfficeNotificationCategories():
+    db = Query()
+    ret = {}
+    o = db.query("select id, name from office_notifications_category")
+    for x in o:
+        n = x['name']
+        i = x['id']
+        ret[n] = i
+    return ret
