@@ -28,15 +28,15 @@ db = Query()
 
 # Updated query to select office addresses with missing or invalid addresses
 q = """
-    SELECT 
-            oa.id, oa.zipcode, oa.state,
-            oa.city, oa.addr1, o.office_type_id,
-            oa.lat, oa.lon, o.id AS office_id
-        FROM 
-            office_addresses oa
-        LEFT JOIN office o ON oa.office_id = o.id
-        WHERE
-            oa.addr1 IS NOT NULL AND LENGTH(oa.addr1)  <= 1
+SELECT 
+        oa.id, oa.zipcode, oa.state,
+        oa.city, oa.addr1, o.office_type_id,
+        oa.lat, oa.lon, o.id AS office_id
+    FROM 
+        office_addresses oa
+    LEFT JOIN office o ON oa.office_id = o.id
+    WHERE
+        oa.zipcode IS NOT NULL AND LENGTH(oa.zipcode)  <= 1
 """
 
 if not args.force:

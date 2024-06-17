@@ -42,11 +42,9 @@ q = """
         oa.lat, oa.lon, o.id AS office_id
     FROM 
         office_addresses oa
-     JOIN office o ON oa.office_id = o.id
+    LEFT JOIN office o ON oa.office_id = o.id
     WHERE
-        oa.addr1 IS NULL OR LENGTH(oa.addr1) < 5
-        AND oa.lat_attempt_count < 5
-        AND oa.lat = 0
+        oa.addr1 IS NOT NULL AND LENGTH(oa.addr1) >= 5
     """
 
 if not args.force:

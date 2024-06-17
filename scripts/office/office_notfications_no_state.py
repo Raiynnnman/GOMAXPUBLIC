@@ -36,7 +36,7 @@ q = """
             office_addresses oa
         LEFT JOIN office o ON oa.office_id = o.id
         WHERE
-            oa.addr1 IS NOT NULL AND LENGTH(oa.addr1)  <= 1
+            oa.state IS NOT NULL AND LENGTH(oa.state)  <= 1
 """
 
 if not args.force:
