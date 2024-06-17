@@ -291,7 +291,7 @@ for x in PAIN:
         newdata['Phone'] = p
     
     if 'PainURL__c' in newdata:
-        newdata['PainURL__c'] = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),newdata['PainURL__c'])
+        newdata['PainURL__c'] = '%s/app/main/admin/registrations/%s' % (config.getKey("host_url"),newdata['PainURL__c'])
 
     if 'Invoice_Paid__c' in newdata:
         if newdata['Invoice_Paid__c'] == None:
@@ -305,7 +305,7 @@ for x in PAIN:
             newdata['Ready_To_Buy__c'] = False
 
     if 'Sales_Link__c' in newdata and 'Subscription_Plan__c' in newdata and newdata['Subscription_Plan__c'] is not None:
-        newdata['Sales_Link__c'] = '%s/#/register-provider/%s' % (config.getKey("host_url"),x['pq_id'])
+        newdata['Sales_Link__c'] = '%s/register-provider/%s' % (config.getKey("host_url"),x['pq_id'])
 
     if 'LastName' not in newdata or newdata['LastName'] is None or len(newdata['LastName']) < 2 or newdata['LastName'] == 'Unknown':
         if 'Dr' in newdata['Company'] or 'd.c.' in newdata['Company'].lower() or 'dc' in newdata['Company'].lower():
@@ -543,8 +543,8 @@ for x in SF_DATA:
                 """,(user_id,)
             )
             j['PainID__c'] = pq_id
-            j['PainURL__c'] = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),pq_id)
-            j['Sales_Link__c'] = '%s/#/register-provider/%s' % (config.getKey("host_url"),pq_id)
+            j['PainURL__c'] = '%s/app/main/admin/registrations/%s' % (config.getKey("host_url"),pq_id)
+            j['Sales_Link__c'] = '%s/register-provider/%s' % (config.getKey("host_url"),pq_id)
             if not args.dryrun:
                 try:
                     sf.Lead.update(j['Id'],{
@@ -575,7 +575,7 @@ for x in SF_DATA:
                 continue
             off_id = off_id[0]['office_id']
             j['PainID__c'] = pq_id
-            j['PainURL__c'] = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),pq_id)
+            j['PainURL__c'] = '%s/app/main/admin/registrations/%s' % (config.getKey("host_url"),pq_id)
             print("Found %s (%s)" % (j['Id'],pq_id))
             if not args.dryrun:
                 try:
@@ -598,7 +598,7 @@ for x in SF_DATA:
             off_id = off_id[0]['office_id']
             update = False
             t = pq_id
-            u = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),pq_id)
+            u = '%s/app/main/admin/registrations/%s' % (config.getKey("host_url"),pq_id)
             if t != j['PainID__c']:
                 update = True
             if u != j['PainURL__c']:
@@ -607,7 +607,7 @@ for x in SF_DATA:
                 continue
             j['PainID__c'] = t
             j['PainURL__c'] = u
-            j['Sales_Link__c'] = '%s/#/register-provider/o/%s' % (config.getKey("host_url"),pq_id)
+            j['Sales_Link__c'] = '%s/register-provider/o/%s' % (config.getKey("host_url"),pq_id)
             o = db.query("""
                 select id from provider_queue where office_id = %s
                 """,(off_id,)
@@ -654,8 +654,8 @@ for x in SF_DATA:
             """,(j['Id'],int(pq_id))
         )
         if j['Sales_Link__c'] is None:
-            u = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),pq_id)
-            j['Sales_Link__c'] = '%s/#/register-provider/o/%s' % (config.getKey("host_url"),pq_id)
+            u = '%s/app/main/admin/registrations/%s' % (config.getKey("host_url"),pq_id)
+            j['Sales_Link__c'] = '%s/register-provider/o/%s' % (config.getKey("host_url"),pq_id)
             j['PainID__c'] = pq_id
             j['PainURL__c'] = u
             if not args.dryrun:
@@ -826,8 +826,8 @@ for x in SF_DATA:
                     %s,1,'Override payment amount from SF'
                 )
             """,(pq_id,))
-        j['Sales_Link__c'] = '%s/#/register-provider/o/%s' % (config.getKey("host_url"),pq_id)
-        j['PainURL__c'] = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),pq_id)
+        j['Sales_Link__c'] = '%s/register-provider/o/%s' % (config.getKey("host_url"),pq_id)
+        j['PainURL__c'] = '%s/app/main/admin/registrations/%s' % (config.getKey("host_url"),pq_id)
         t = {}
         fie = FIELDS.split(",")
         nd2 = {}

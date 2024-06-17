@@ -75,7 +75,6 @@ class UserLogin(SubmitDataRequest):
         db.commit()
         try:
             val = encryption.decrypt(u1['password'],config.getKey("encryption_key"))
-            print(val,passw)
         except:
             log.info("user %s decryption failed" % email)
             raise InvalidCredentials("INVALID_PASSWORD")

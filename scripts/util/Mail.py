@@ -35,7 +35,10 @@ class Mail:
             aws_access_key_id=access, aws_secret_access_key=secret, use_ssl=True
         )
         for x in data:
-            body = body.replace(x,data[x])
+            j = data[x]
+            if j is None:
+                j = ''
+            body = body.replace(x,j)
         try:
             response = client.send_email(
                 Destination={'ToAddresses':[to]},

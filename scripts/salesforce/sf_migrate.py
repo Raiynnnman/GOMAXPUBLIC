@@ -117,7 +117,7 @@ for x in SF_DATA:
     if j['PainID__c'] is None:
         continue
     t = {}
-    t['PainURL__c'] = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),j['PainID__c'])
+    t['PainURL__c'] = '%s/app/main/admin/registrations/%s' % (config.getKey("host_url"),j['PainID__c'])
     try:
         sf.Lead.update(j['Id'],t)
         db.update("""

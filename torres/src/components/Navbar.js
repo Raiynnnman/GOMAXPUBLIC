@@ -3,17 +3,50 @@ import { connect } from 'react-redux';
 import DropdownMenu from './DropdownMenu';
 import { logoutUser } from '../actions/auth';
 import { delContext } from '../actions/delContext';
+import { locationUpdate } from '../actions/location';
 
 class Navbar extends Component {
 
     constructor(props) { 
         super(props);
+        this.state = { 
+            mylocation: null,
+            delay:10000,
+            geo: false,
+        } 
         this.logout = this.logout.bind(this);
         this.leaveContext = this.leaveContext.bind(this);
+        this.setLocation = this.setLocation.bind(this);
+        this.sendLocation = this.sendLocation.bind(this);
     } 
+
+    componentDidMount() { 
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                this.setLocation(position.coords.latitude, position.coords.longitude);
+            }, this.getWithoutPermission);
+        } else {
+            this.setState({ geo: false });
+        }
+        setTimeout((e) => { e.sendLocation() }, this.state.delay, this)
+    }
     
     doLogin() {  
         window.location = '/login';
+    } 
+
+    setLocation = (lat, lon) => {
+        this.setState({ geo:true, mylocation: { lat, lon } });
+    };
+
+    getWithoutPermission = () => {
+        this.setState({ geo: false });
+    };
+
+    sendLocation() { 
+        setTimeout((e) => { e.sendLocation() }, this.state.delay, this)
+        if (!this.state.geo) { return; } 
+        this.props.dispatch(locationUpdate(this.state.mylocation));
     } 
 
     logout() { 
@@ -98,7 +131,6 @@ class Navbar extends Component {
              }
             },
         ];
-        console.log("p",this.props);
         return(
             <div style={{backgroundColor:'black'}} className="app-header header--transparent sticker" id="main-menu">
                 <div className="container">
@@ -203,7 +235,7 @@ class Navbar extends Component {
                                         <ul className="main-menu">
                                             <li className="active"><a href="/app">Home</a></li>
                                             <li><a href="/app/main/admin/search">Search</a></li>
-                                            <li><a href="/app/main/admin/referrals">Referrals</a></li>
+                                            <li><a href="/app/main/admin/customers">Customers</a></li>
                                             <li><a href="/app/main/admin/map">Map</a></li>
                                             <li><a href="/app/main/admin/registrations">Registrations</a></li>
                                             <li><a>
@@ -228,7 +260,7 @@ class Navbar extends Component {
                                         <ul>                              
                                             <li className="active"><a href="/">Home</a></li>
                                             <li><a href="/app/main/admin/search">Search</a></li>
-                                            <li><a href="/app/main/admin/referrals">Referrals</a></li>
+                                            <li><a href="/app/main/admin/customers">Customers</a></li>
                                             <li><a href="/app/main/admin/map">Map</a></li>
                                             <li><a href="/app/main/admin/registrations">Registrations</a></li>
                                         </ul>

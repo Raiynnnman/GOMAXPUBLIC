@@ -49,7 +49,7 @@ for x in o:
     j = {}
     j['PainID__c'] = x['id']
     i = x['sf_id']
-    j['PainURL__c'] = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),x['id'])
+    j['PainURL__c'] = '%s/app/main/admin/registrations/%s' % (config.getKey("host_url"),x['id'])
     print(i,j)
     if not args.dryrun:
         try:

@@ -74,12 +74,12 @@ for r in o:
         sysemail = config.getKey("support_email")
         url = config.getKey("host_url")
         data = { 
-            '__LINK__':"%s/#/app/main/admin/customers/%s" % (url,x['id']),
+            '__LINK__':"%s/app/main/admin/customers/%s" % (url,x['id']),
             '__BASE__':url
         } 
         data['__USER_NAME__'] = x['name']
         data['__ZIPCODE__'] = x['zipcode']
-        data['__OFFICE_URL__'] = "%s/#/app/main/admin/customers/%s" % (url,x['id'])
+        data['__OFFICE_URL__'] = "%s/app/main/admin/customers/%s" % (url,x['id'])
         m.send(sysemail,"No locations accepted customer referral","templates/mail/no-locations-referrer.html",data)
         db.update("""
             update referrer_users set error_mail_sent = 1 where id = %s

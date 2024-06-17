@@ -71,3 +71,10 @@ class SubscribeRest(RestBase):
         u = Registrations.Subscribe()
         ret = u.process(args[0])
         return ret
+
+class LocationRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Registrations.Location()
+        ret = u.process(args[0])
+        return ret

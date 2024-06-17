@@ -1,6 +1,6 @@
 
 SHELL=/bin/bash
-D=ui backend scripts torres
+D=ui backend scripts torres chat
     
 
 .PHONY: all $D save all-tests

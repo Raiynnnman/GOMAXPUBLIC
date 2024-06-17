@@ -80,7 +80,7 @@ for x in DEALS:
     n= {
     }
     n['Id'] = j['id']
-    n['Sales_Link__c'] = '%s/#/register-provider' % (config.getKey("host_url"),)
+    n['Sales_Link__c'] = '%s/register-provider' % (config.getKey("host_url"),)
     print(j['textCustomField2'])
     pq_id = j['textCustomField1']
     print(pq_id)

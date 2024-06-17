@@ -49,7 +49,6 @@ class CustomerView extends Component {
                 {l:'Name',f:'name',t:'text',v:''},
                 {l:'Phone',f:'phone',t:'text',v:''},
                 {l:'Email',f:'email',t:'text',v:''},
-                {l:'Address',f:'addr',t:'addr_search',v:''},
                 {l:'Date of Accident',f:'date_of_accident',t:'text',v:''}
               ]
         }
@@ -233,17 +232,16 @@ class CustomerView extends Component {
                   <font style={{width:25}}></font>
                     {translate('Status')}:
                     {(this.props.data.status !== 'SCHEDULED') && (
-                        <TemplateButton onClick={this.markScheduled} style={{marginRight:10}} label={translate('Scheduled')}/>
+                        <TemplateButton onClick={this.markScheduled} style={{margin:10}} label={translate('Scheduled')}/>
                     )}
-                    <TemplateButton onClick={this.markComplete} style={{marginRight:10}} label={translate('Completed')}/>
-                    <TemplateButton onClick={this.markNoShow} style={{marginRight:10}} label={translate('No Show')}/>
+                    <TemplateButton onClick={this.markComplete} style={{margin:10}} label={translate('Completed')}/>
+                    <TemplateButton onClick={this.markNoShow} style={{margin:10}} label={translate('No Show')}/>
                 </div>
             )}
             {this.state.inputs.map((t) => {
                 return (
                 <Grid container xs="12" style={{marginTop:5}}>
                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'spread-evenly'}}>
-                          <font style={{width:25}}>{cntr++}.</font>
                         {t.t === 'text' && (
                           <TemplateTextField type="text" style={{backgroundColor:'white'}}
                             onChange={(e) => this.setValue(t,e)} 

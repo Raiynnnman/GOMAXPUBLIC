@@ -79,7 +79,7 @@ const App = () => {
                     <Route exact path='/app/main/admin/search' component={SearchAdmin}/>
                     <Route exact path='/app/main/admin/map' component={Map}/>
                     <Route exact path='/app/main/admin/registrations' component={Registrations}/>
-                    <Route exact path='/app/main/admin/referrals' component={Referrers}/>
+                    <Route exact path='/app/main/admin/customers' component={Referrers}/>
                     <Route exact path='/app/main/admin/providers' component={OfficeAdminList}/>
                     <Route exact path='/app/main/admin/invoices' component={InvoiceAdminList}/>
                     <Route exact path='/app/main/admin/commissions' component={CommissionAdminList}/>
@@ -90,6 +90,7 @@ const App = () => {
                     <Route exact path="/app/main/office/clients"  component={Customers} />
                     <Route exact path="/app/main/client/search" component={Search} />
                     <Route exact path="/app/main/client/appointments" component={Appointments} />
+                    <Route exact path="/app/main/client/appointments/:id" component={Appointments} />
                     <Route exact path={`${process.env.PUBLIC_URL}/tf`} component={DemoTF}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/home-one`} component={HomeOlive}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/home-two`} component={HomeHorizontal}/>

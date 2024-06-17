@@ -2,10 +2,10 @@
     "es": {
     },
     "en": {
-
         "PASSWORD_EIGHT_LENGTH_REQUIRED":"Eight characters required",
         "ALREADY_ACCEPTED_BY_ANOTHER_PROVIDER":"This appointment has been accepted by another provider.",
         "NO_EMAIL_FOUND_FOR_PRACTICE":"We are unable to find your email in our system. Please visit your dashboard.",
+        "INVALID_TOKEN_EXPIRED":"Token has expired. Please request a password reset",
         "INVALID_EMAIL_FOUND_FOR_PRACTICE":"We are unable to find your email in our system. Please visit your dashboard.",
         "OFFICE_ALREADY_ACCEPTED":"Your office has already accepted this patient.",
         "INVALID_TOKEN_EXPIRED":"Token expired. Please request another reset",

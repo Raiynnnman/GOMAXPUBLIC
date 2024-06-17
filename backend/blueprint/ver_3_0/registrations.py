@@ -62,3 +62,9 @@ def contactus(*args, **kwargs):
 def subscribe(*args, **kwargs):
     po = RegistrationRest.SubscribeRest()
     return po.postWrapper(*args,**kwargs)
+
+@registrations.route('/location', methods=['POST'])
+@swag_from(docs_dir + 'registerprovider.yaml')
+def location(*args, **kwargs):
+    po = RegistrationRest.LocationRest()
+    return po.postWrapper(*args,**kwargs)

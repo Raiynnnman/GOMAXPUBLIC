@@ -1409,7 +1409,6 @@ class RegistrationUpdate(AdminBase):
             db.commit()
             # TODO: Send welcome mail here
             if len(u) > 0:
-                print("per")
                 we = WelcomeEmailReset()
                 we.execute(0,[{'email': u[0]['email']}])
         self.setJenkinsID(offid)
@@ -1843,7 +1842,6 @@ class TrafficGet(AdminBase):
                 ti.traffic_categories_id = tcat.id and
         """
         sqlp = []
-        print(params)
         if 'date' in params:
             q += " date(ti.created) = %s and "
             sqlp.append(params['date'])
@@ -2223,7 +2221,6 @@ class AdminBookingRegister(AdminBase):
             if len(addr) < 1:
                 return {'success': False,'message': 'FAILED_TO_PARSE_ADDRESS'}
             addr = addr[0]
-            print(addr)
             lat = addr['geometry']['location']['lat']
             lon = addr['geometry']['location']['lng']
             places_id = addr['place_id']
@@ -2232,7 +2229,6 @@ class AdminBookingRegister(AdminBase):
             state =''
             postal_code = ''
             for y in addr['address_components']:
-                print(y)
                 if 'street_number' in y['types']:
                     street = y['long_name']
                 if 'route' in y['types']:
@@ -2394,7 +2390,7 @@ class ReferrerList(AdminBase):
             from 
                 referrer_users ru
                 left join referrer_users_status rs on ru.referrer_users_status_id=rs.id
-                left join office ro on ru.referrer_id=ro.id
+                left outer join office ro on ru.referrer_id=ro.id
                 left outer join office o on o.id = ru.office_id
             where 
                 1 = 1
@@ -2407,11 +2403,11 @@ class ReferrerList(AdminBase):
                 arr.append("referrer_users_status_id = %s " % z)
             q += " or ".join(arr)
             q += ")"
-        print(q)
         p.append(limit)
         p.append(offset*limit)
         cnt = db.query("select count(id) as cnt from (%s) as t" % (q,))
         ret['total'] = cnt[0]['cnt']
+        q += " order by updated desc " 
         q += " limit %s offset %s " 
         o = db.query(q,p)
         ret['data'] = o

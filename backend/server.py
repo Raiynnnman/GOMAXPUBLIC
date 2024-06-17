@@ -8,6 +8,7 @@ from flask_cors import CORS, cross_origin
 
 from common import settings, version
 from blueprint.ver_3_0.ittools import ittools
+from blueprint.ver_3_0.client import client
 from blueprint.ver_3_0.corporation import corporation
 from blueprint.ver_3_0.users import users
 from blueprint.ver_3_0.legal import legal
@@ -69,6 +70,7 @@ app.config['SWAGGER'] = {
 }
 
 app.register_blueprint(ittools)
+app.register_blueprint(client)
 app.register_blueprint(corporation)
 app.register_blueprint(users)
 app.register_blueprint(legal)

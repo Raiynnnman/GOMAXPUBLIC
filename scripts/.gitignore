@@ -21,3 +21,4 @@ common/version.py
 *.xlsx
 log
 bin/*
+templates/*

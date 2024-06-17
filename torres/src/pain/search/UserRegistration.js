@@ -76,12 +76,12 @@ class UserRegistration extends Component {
 
     handleFirstChange = (event) => {
         const { name, value } = event.target;
-        this.setState({ first: value }, this.checkValid);
+        this.setState({ first_name: value }, this.checkValid);
     }
 
     handleLastChange = (event) => {
         const { name, value } = event.target;
-        this.setState({ last: value }, this.checkValid);
+        this.setState({ last_name: value }, this.checkValid);
     }
 
     handleEmailChange = (event) => {
@@ -153,6 +153,7 @@ class UserRegistration extends Component {
             phone,
             last_name
         };
+        console.log("reg",registrationData);
         this.props.onRegister(registrationData);
 
     };
@@ -257,6 +258,7 @@ class UserRegistration extends Component {
         const { page, selPlan, snackbarOpen, snackbarMessage, snackbarSeverity } = this.state;
         const { registerUser, landingData } = this.props;
 
+        console.log("s",this.state);
         var steps = ['Register Information'];
 
         return (

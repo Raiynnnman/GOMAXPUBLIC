@@ -44,7 +44,7 @@ else:
 
 if args.sf_id is not None and args.painid is not None:
     t = {}
-    t['PainURL__c'] = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),args.painid)
+    t['PainURL__c'] = '%s/app/main/admin/registrations/%s' % (config.getKey("host_url"),args.painid)
     t['PainID__c'] = args.painid
     try:
         sf.Lead.update(args.sf_id,t)

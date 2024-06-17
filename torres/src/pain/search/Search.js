@@ -50,11 +50,10 @@ class SearchAdmin extends Component {
     };
 
     scheduleAppt = (provider, e) => {
-        console.log(provider,e);
+        console.log("prov",provider,e);
         this.state.selectedAppt = provider;
         this.setState(this.state);
-        console.log("here");
-        if (this.props.currentUser.entitlements) { 
+        if (this.props.currentUser && this.props.currentUser.entitlements) { 
             this.register();
         } 
     };
@@ -73,18 +72,16 @@ class SearchAdmin extends Component {
     };
 
     register = (e) => {
-        console.log(e);
         const params = { 
             ...e, 
-            office_id: this.state.selectedAppt.office_id ? 
-                this.state.selectedAppt.office_id : this.state.selectedAppt.id
+            office_id: this.state.selectedAppt.office_id,
+            office_addresses_id: this.state.selectedAppt.id
         };
-        if (this.props.currentUser.entitlements) { 
+        if (this.props.currentUser && this.props.currentUser.entitlements) { 
             params['user_id'] = this.props.currentUser.id;
         } 
         this.props.dispatch(searchRegister(params, (err,args) => {
-            console.log("here");
-            if (!args.props.currentUser.entitlements) { 
+            if (!args.props.currentUser) { 
                 window.location = '/welcome';
             }
         },this));
@@ -200,14 +197,14 @@ class SearchAdmin extends Component {
                             <Typography variant="h6">There are currently no service providers in this area.</Typography>
                         </Box>
                     )}
-                    {selectedAppt && this.props.currentUser.entitlements && (
+                    {selectedAppt && this.props.currentUser && this.props.currentUser.entitlements && (
                         <Grid container justifyContent="center">
                             <Grid item xs={12} md={8}>
                                 <Typography variant="h6">The provider has been notified. You should receive contact shortly.</Typography>
                             </Grid>
                         </Grid>
                     )}
-                    {selectedAppt && !this.props.currentUser.entitlements && (
+                    {selectedAppt && !this.props.currentUser && (
                         <Grid container justifyContent="center">
                             <Grid item xs={12} md={8}>
                                 <UserRegistration data={selectedAppt} onCancel={this.cancel} onRegister={this.register} />

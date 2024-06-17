@@ -89,7 +89,7 @@ class Customers extends Component {
                         <Grid item xs="4" onClick={() => this.selectAppt(e)} style={{cursor:'pointer'}}>
                             <Container style={{
                                 margin:20,
-                                borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}} className="mb-xlg border-1">
+                                borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}}>
                                 <Grid container xs="12">
                                     <Grid item xs="8">
                                         <font style={{fontSize:"14pt",fontWeight:"bold"}}>
@@ -131,14 +131,12 @@ class Customers extends Component {
                                         </div>
                                     </Grid>
                                 </Grid>
-                                <div style={{height:130,marginBottom:10,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                                </div>
                                 <hr/>
                                 <Grid container xs="12"> 
                                     <Grid item xs="12">
-                                        <div style={{height:30,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                                        <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                             <TemplateButton onClick={() => this.selectAppt(e)} 
-                                                style={{marginRight:10}} label={translate('View')}/>
+                                                style={{marginBottom:10}} label={translate('View')}/>
                                         </div>
                                     </Grid>
                                 </Grid>

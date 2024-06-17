@@ -112,7 +112,7 @@ for x in DEALS:
                 update provider_queue set sm_id=%s where office_id=%s
             """,(x,myid)
             )
-            u = '%s/#/app/main/admin/office/%s' % (config.getKey("host_url"),myid)
+            u = '%s/app/main/admin/office/%s' % (config.getKey("host_url"),myid)
             comp = { 
                 'id': compid,
                 'textCustomField2': u,

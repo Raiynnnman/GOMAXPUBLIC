@@ -133,7 +133,7 @@ for x in off:
             myid=off[0]['office_id']
             print("newid=%s" % myid)
         print("Found %s,%s,%s" % (myid,j['id'],cid))
-        u = '%s/#/app/main/admin/office/%s' % (config.getKey("host_url"),myid)
+        u = '%s/app/main/admin/office/%s' % (config.getKey("host_url"),myid)
         if h['name'] == x['name'] and h['textCustomField2'] == u and \
            h['checkboxCustomField1'] == x['active'] and h['textCustomField1'] == str(myid):
             print("%s: All values match, skipping" % x['name'])
@@ -160,7 +160,7 @@ for x in off:
         if users['last_name'] is None or len(users['last_name']) < 1:
             users['last_name'] = "Unknown"
         print("didnt find %s (%s)" % (myid,x['name']))
-        u = '%s/#/app/main/admin/office/%s' % (config.getKey("host_url"),myid)
+        u = '%s/app/main/admin/office/%s' % (config.getKey("host_url"),myid)
         comp = {
             'checkboxCustomField1': j['active'],
             'textCustomField2': u,

@@ -505,21 +505,22 @@ class SearchRegister(SearchBase):
         ci_id = ci_id[0]['LAST_INSERT_ID()']
         db.update("""
            insert into client_intake_offices (client_intake_id,office_id,client_intake_status_id) 
-                    values(%s,%s)
+                    values(%s,%s,%s)
            """,(ci_id,params['office_id'],1)
             )
         db.update("""
             insert into referrer_users(
                 referrer_users_status_id,email,name,phone,
-                office_id,client_intake_id,row_meta,user_id
+                office_id,client_intake_id,row_meta,user_id,
+                office_addresses_id
             ) values (
-                %s,%s,%s,%s,%s,%s,%s,%s
+                %s,%s,%s,%s,%s,%s,%s,%s,%s
             )
         """,(
             REF['QUEUED'],params['email'],
             "%s %s" % (params['first_name'],params['last_name']),
             params['phone'],params['office_id'],ci_id,json.dumps(params),
-            user_id
+            user_id,params['office_addresses_id']
         ))
                 
         ret = { 

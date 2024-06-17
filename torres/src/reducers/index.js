@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 import auth from './auth';
 import contactus from './contactus';
+import appointments from './appointments';
 import subscribe from './subscribe';
 import referralResponse from './referralResponse';
 import customersSave from './customersSave';
@@ -186,6 +187,7 @@ export default combineReducers({
     contactus,
     subscribe,
     referrerUpload,
+    appointments,
     registerReferrer,
     userDocumentsUpdate,
     chat,

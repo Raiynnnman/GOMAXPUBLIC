@@ -54,29 +54,31 @@ class Accept extends React.Component {
         <>
             <Navbar/>
             <div>
-                <Container>
-                    {(this.state.response_received) && (
-                    <>
-                    <Container 
-                            style={{backgroundColor:"black"}} className="widget-auth mx-auto" title={<h3 style={{color:'white'}} className="mt-0">Client Accepted!</h3>}>
+                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                    <img width="20%" height="20%" src='/painlogo.png' alt='logo'/>
+                </div>
+                {(this.state.response_received) && (
+                <>
+                <Container maxWidth="sm">
+                    <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                         {(this.state.error_message === null) && (
-                        <p className="widget-auth-info" style={{color:'white'}}>
+                        <p className="widget-auth-info" style={{color:'black'}}>
                             Client accepted. Click <a onClick={this.loginPage} style={{color:"blue"}} href="/login" to see details>HERE</a> to see details
                         <br/>
                         </p>
                         )}
                         {(this.state.error_message !== null) && (
                         <>
-                        <p className="widget-auth-info" style={{color:'white'}}>
+                        <p className="widget-auth-info" style={{color:'black'}}>
                             {translate(this.state.error_message)}
                         <br/>
                         </p>
                         </>
                         )}
-                    </Container>
-                    </>
-                    )}
+                    </div>
                 </Container>
+                </>
+                )}
             </div>
         </>
         );

@@ -46,19 +46,19 @@ class Accept extends React.Component {
         return (
         <>
             <Navbar/>
-            <div style={{backgroundColor:"black",color:"white"}} className="auth-page">
-                <Container>
-                    <div style={{backgroundColor:'black',display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        <img width="20%" height="20%" src='/painlogo.png'/>
-                    </div>
-                    <Container style={{backgroundColor:"black"}} className="widget-auth mx-auto" title={<h3 style={{color:'white'}} className="mt-0">Client removed from your queue!</h3>}>
-                        <p className="widget-auth-info" style={{color:'white'}}>
-                            Thank you for submitting your response.
-                        <br/>
-                        </p>
-                    </Container>
+            <Container>
+                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                    <img width="20%" height="20%" src='/painlogo.png'/>
+                </div>
+                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                <Container maxWidth="sm"> 
+                    <p style={{color:'black'}}>
+                        Thank you for submitting your response.
+                    <br/>
+                    </p>
                 </Container>
-            </div>
+                </div>
+            </Container>
         </>
         );
     }

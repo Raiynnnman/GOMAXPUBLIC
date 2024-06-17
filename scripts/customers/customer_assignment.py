@@ -34,7 +34,7 @@ REF = getIDs.getReferrerUserStatus()
 
 q = """
     select
-        id,email,name,phone,office_id,
+        id,email,name,phone,office_id,office_addresses_id,
         zipcode,error_mail_sent,accept_mail_sent,
         referrer_id,user_id,zipcode,lat,lon
     from
@@ -56,6 +56,17 @@ for x in o:
     lon = x['lon']
     print(x)
     provtype = 1
+    if x['zipcode'] is None and x['office_addresses_id'] is not None:
+        v = db.query("""
+            select lat,lon,office_id from office_addresses where
+            id = %s
+            """,(x['office_addresses_id'],)
+        )
+        if len(v) < 1:
+            raise Exception("WARNING: Couldnt find oa (%s) in db" % x['office_addresses_id'])
+        v = v[0]
+        lat = v['lat']
+        lon = v['lon']
     limit = 10
     q = """
         select
@@ -79,8 +90,8 @@ for x in o:
             oa.lat <> 0 and
             o.office_type_id = %s
     """
-    if x['office_id'] is not None:
-        q += " and o.id = %s " % x['office_id']
+    if x['office_addresses_id'] is not None:
+        q += " and oa.id = %s " % x['office_addresses_id']
     q += """
         order by
             pq.provider_queue_status_id, 
@@ -97,12 +108,12 @@ for x in o:
             sysemail = config.getKey("support_email")
             url = config.getKey("host_url")
             data = { 
-                '__LINK__':"%s/#/app/main/admin/customers/%s" % (url,x['id']),
+                '__LINK__':"%s/app/main/admin/customers/%s" % (url,x['id']),
                 '__BASE__':url
             } 
             data['__USER_NAME__'] = x['name']
             data['__ZIPCODE__'] = x['zipcode']
-            data['__OFFICE_URL__'] = "%s/#/app/main/admin/customers/%s" % (url,x['id'])
+            data['__OFFICE_URL__'] = "%s/app/main/admin/customers/%s" % (url,x['id'])
             if x['office_id'] is not None:
                 m.send(sysemail,"Office Assigned but not found for customer referral","templates/mail/no-locations-referrer.html",data)
             else:
@@ -132,9 +143,9 @@ for x in o:
         val = base64.b64encode(val.encode('utf-8'))
         
         data = { 
-            '__LINK__':"%s/#/app/main/office/customers/%s" % (url,x['id']),
-            '__ACCEPT__':"%s/#/accept/%s" % (url,val.decode('utf-8')), 
-            '__REJECT__':"%s/#/reject/%s" % (url,val.decode('utf-8')), 
+            '__LINK__':"%s/app/main/office/customers/%s" % (url,x['id']),
+            '__ACCEPT__':"%s/accept/%s" % (url,val.decode('utf-8')), 
+            '__REJECT__':"%s/reject/%s" % (url,val.decode('utf-8')), 
             '__OFFICE__':j['office_name'],
             '__BASE__':url
         } 

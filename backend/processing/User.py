@@ -38,23 +38,18 @@ class UserBase(SubmitDataRequest):
         lat = 0
         lon = 0
         o = db.query(""" 
-            select zipcode from users u,user_addresses ua
-            where user_id=%s""",(user_id,)
-        )
-        if len(o) < 1:
-            return lon,lat
-        d = db.query("""
-            select lon,lat
-            from position_zip 
+            select lat,lon from 
+                user_location 
             where 
-                zipcode = %s
-            limit 1
-            """,(o[0]['zipcode'],)
+                user_id=%s  
+            order by 
+                created desc 
+            limit 1""",(user_id,)
         )
         if len(o) < 1:
             return lon,lat
-        lon = d[0]['lon']
-        lat = d[0]['lat']
+        lon = o[0]['lon']
+        lat = o[0]['lat']
         return lon,lat
         
 
@@ -87,26 +82,66 @@ class UserDashboard(UserBase):
     def isDeferred(self):
         return False
 
-    def getAppointments(self,user,db):
+    def getAppointments(self,user,db,lat,lon):
         uid = user['id']
+        print(uid)
         o = db.query("""
-            select 
-                o.id,o.name,o.email,
-                cio.client_intake_status_id as status_id ,
-                cis.name as status
+            select
+                oa.id,o.id as office_id,
+                o.name as office_name,
+                JSON_OBJECT(
+                    'id',oa.id,'addr1',concat(oa.addr1,' ',ifnull(oa.addr2,'')),'phone',oa.phone,
+                    'lat',oa.lat,'lon',oa.lon, 'city',oa.city,'state',
+                    oa.state,'zipcode',oa.zipcode
+                ) as addr,cio.id as appt_id,
+                st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192 as miles
             from
+                office_addresses oa,
+                office o,
                 client_intake ci,
-                office o,office_addresses oa,
-                client_intake_status cis,
-                client_intake_offices cio
+                referrer_users ru,
+                client_intake_offices cio,
+                provider_queue pq
             where
-                ci.id = cio.client_intake_id and
-                cis.id = cio.client_intake_status_id and
-                cio.office_id = o.id and
-                ci.user_id = %s
-            """,(user['id'],)
+                pq.office_id = o.id and
+                cio.client_intake_id = ci.id and
+                ru.client_intake_id = ci.id and
+                oa.office_id = o.id and
+                oa.id = ru.office_addresses_id and
+                ru.user_id = %s
+            """,(lon,lat,user['id'],)
         )
-        return o
+        ret = []
+        for x in o:
+            x['addr'] = json.loads(x['addr'])
+            if lat == 0:
+                x['miles'] = 0
+            x['profile'] = db.query("""
+            select
+                o.id as office_id,o.name,oa.phone,
+                u.first_name,u.last_name,u.title,
+                pm.headshot,pm.video,u.id as phy_id
+            from
+                users u
+                left join office_user ou on ou.user_id = u.id
+                left join office o on o.id = ou.office_id
+                left join office_addresses oa on oa.office_id=o.id
+                left join provider_queue pq on o.id = pq.office_id 
+                left outer join office_provider_media pm on pm.user_id = u.id
+            where
+                o.id = %s
+            """,(x['office_id'],)
+            )
+            x['rating'] = db.query(
+                "select ifnull(round(avg(rating),2),0) as avg from ratings where office_id=%s",(x['office_id'],)
+            )
+            if len(x['rating']) > 0:
+                x['rating'] = x['rating'][0]['avg']
+            else:
+                x['rating'] = 0
+            ret.append(x)
+            print(ret)
+        return ret
 
     def execute(self, *args, **kwargs):
         ret = {}
@@ -117,7 +152,7 @@ class UserDashboard(UserBase):
         else:
             lat = params['location']['lat']
             lon = params['location']['lon']
-        ret['appt'] = self.getAppointments(user,db)
+        ret['appt'] = self.getAppointments(user,db,lat,lon)
         return ret
             
 class UserRatings(UserBase):

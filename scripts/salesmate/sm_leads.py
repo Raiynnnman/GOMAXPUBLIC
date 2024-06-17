@@ -280,7 +280,7 @@ for x in PAIN:
             p = p[1:]
         newdata['Phone'] = p
     
-    newdata['PainURL__c'] = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),x['pq_id'])
+    newdata['PainURL__c'] = '%s/app/main/admin/registrations/%s' % (config.getKey("host_url"),x['pq_id'])
 
     if 'Invoice_Paid__c' in newdata:
         if newdata['Invoice_Paid__c'] == None:
@@ -293,7 +293,7 @@ for x in PAIN:
         if newdata['Ready_To_Buy__c'] == None:
             newdata['Ready_To_Buy__c'] = False
 
-    newdata['Sales_Link__c'] = '%s/#/register-provider/%s' % (config.getKey("host_url"),x['pq_id'])
+    newdata['Sales_Link__c'] = '%s/register-provider/%s' % (config.getKey("host_url"),x['pq_id'])
 
     if 'LastName' not in newdata or newdata['LastName'] is None or len(newdata['LastName']) < 2 or newdata['LastName'] == 'Unknown':
         if 'Dr' in newdata['Company'] or 'd.c.' in newdata['Company'].lower() or 'dc' in newdata['Company'].lower():
@@ -607,13 +607,13 @@ for x in SF_DATA:
                 """,(user_id,)
             )
             j['PainID__c'] = pq_id
-            j['PainURL__c'] = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),pq_id)
-            j['Sales_Link__c'] = '%s/#/register-provider/%s' % (config.getKey("host_url"),pq_id)
+            j['PainURL__c'] = '%s/app/main/admin/registrations/%s' % (config.getKey("host_url"),pq_id)
+            j['Sales_Link__c'] = '%s/register-provider/%s' % (config.getKey("host_url"),pq_id)
             n = {}
             n['Id'] = j['Id']
             n['PainID__c'] = j['PainID__c']
             n['PainURL__c'] = j['PainURL__c'] 
-            n['Sales_Link__c'] = '%s/#/register-provider/o/%s' % (config.getKey("host_url"),pq_id)
+            n['Sales_Link__c'] = '%s/register-provider/o/%s' % (config.getKey("host_url"),pq_id)
             try:
                 DEALS_OBJ.update(n,dryrun=args.dryrun)
             except Exception as e:
@@ -641,12 +641,12 @@ for x in SF_DATA:
                 continue
             off_id = off_id[0]['office_id']
             j['PainID__c'] = pq_id
-            j['PainURL__c'] = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),pq_id)
+            j['PainURL__c'] = '%s/app/main/admin/registrations/%s' % (config.getKey("host_url"),pq_id)
             n = {}
             n['Id'] = j['Id']
             n['PainID__c'] = pq_id
-            n['PainURL__c'] = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),pq_id)
-            n['Sales_Link__c'] = '%s/#/register-provider/o/%s' % (config.getKey("host_url"),pq_id)
+            n['PainURL__c'] = '%s/app/main/admin/registrations/%s' % (config.getKey("host_url"),pq_id)
+            n['Sales_Link__c'] = '%s/register-provider/o/%s' % (config.getKey("host_url"),pq_id)
             print("Found %s (%s)" % (j['Id'],pq_id))
             try:
                 DEALS_OBJ.update(n,dryrun=args.dryrun)
@@ -667,8 +667,8 @@ for x in SF_DATA:
             off_id = off_id[0]['office_id']
             update = False
             t = pq_id
-            u = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),pq_id)
-            s = '%s/#/register-provider/o/%s' % (config.getKey("host_url"),pq_id)
+            u = '%s/app/main/admin/registrations/%s' % (config.getKey("host_url"),pq_id)
+            s = '%s/register-provider/o/%s' % (config.getKey("host_url"),pq_id)
             if t != j['PainID__c']:
                 update = True
             if u != j['PainURL__c']:
@@ -730,15 +730,15 @@ for x in SF_DATA:
             """,(j['Id'],int(pq_id))
         )
         if j['Sales_Link__c'] is None:
-            u = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),pq_id)
-            j['Sales_Link__c'] = '%s/#/register-provider/o/%s' % (config.getKey("host_url"),pq_id)
+            u = '%s/app/main/admin/registrations/%s' % (config.getKey("host_url"),pq_id)
+            j['Sales_Link__c'] = '%s/register-provider/o/%s' % (config.getKey("host_url"),pq_id)
             j['PainID__c'] = pq_id
             j['PainURL__c'] = u
             n = {}
             n['Id'] = j['Id']
             n['PainID__c'] = j['PainID__c'] 
             n['PainURL__c'] = j['PainURL__c'] 
-            n['Sales_Link__c'] = '%s/#/register-provider/o/%s' % (config.getKey("host_url"),pq_id)
+            n['Sales_Link__c'] = '%s/register-provider/o/%s' % (config.getKey("host_url"),pq_id)
             try:
                 DEALS_OBJ.update(n,dryrun=args.dryrun)
             except Exception as e:
@@ -889,8 +889,8 @@ for x in SF_DATA:
                     %s,1,'Override payment amount from SF'
                 )
             """,(pq_id,))
-        j['Sales_Link__c'] = '%s/#/register-provider/o/%s' % (config.getKey("host_url"),pq_id)
-        j['PainURL__c'] = '%s/#/app/main/admin/registrations/%s' % (config.getKey("host_url"),pq_id)
+        j['Sales_Link__c'] = '%s/register-provider/o/%s' % (config.getKey("host_url"),pq_id)
+        j['PainURL__c'] = '%s/app/main/admin/registrations/%s' % (config.getKey("host_url"),pq_id)
         t = {}
         fie = FIELDS.split(",")
         nd2 = {}
