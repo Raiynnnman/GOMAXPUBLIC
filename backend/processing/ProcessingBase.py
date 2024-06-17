@@ -12,9 +12,16 @@ class ProcessingBase:
 
     __id__ = None
     __ui_ver__ = 1
+    __do_jenkins__ = True
 
     def __init__(self):
         pass
+
+    def doJenkins(self):
+        return True
+
+    def noJenkins(self):
+        self.__do_jenkins__ = False
 
     def setUIVer(self): 
         if 'Ui' in request.headers:
@@ -170,4 +177,5 @@ class ProcessingBase:
 
     def __del__(self):
         if config.getKey("use_defer")is not None:
-            Jenkins.spawnJob.delay(self.__class__.__name__,self.__id__)
+            if self.doJenkins():
+                Jenkins.spawnJob.delay(self.__class__.__name__,self.__id__)

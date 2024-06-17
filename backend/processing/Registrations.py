@@ -1352,20 +1352,30 @@ class Location(RegistrationsBase):
     def isDeferred(self):
         return False
 
+    def doJenkins(self):
+        return False
+
     def execute(self, *args, **kwargs):
         ret = {}
         ret['success'] = True
         params = args[1][0]
+        token = None
+        uid = None
         if 'x-access-token' in request.headers:
             token = request.headers['x-access-token']
         if 'authorization' in request.headers:
             token = request.headers['authorization']
         db = Query()
-        token = token.replace("Bearer ","")
-        data = jwt.decode(token, config.getKey("encryption_key"), algorithms=['HS256'])
-        uid = None
-        if 'user_id' in data:
-            uid = data['user_id']
+
+        if token is not None:
+            token = token.replace("Bearer ","")
+            data = jwt.decode(token, config.getKey("encryption_key"), algorithms=['HS256'])
+            if 'user_id' in data:
+                uid = data['user_id']
+
+        if not uid:
+            return {'success':True}
+
         db.update("""
             insert into user_location (user_id,lat,lon) values (%s,%s,%s)
             """,(uid,params['lat'],params['lon'])
