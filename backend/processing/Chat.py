@@ -202,76 +202,51 @@ class GetCustChat(ChatBase):
             "users":[],
         }
         job,user,off_id,params = self.getArgs(*args,**kwargs)
+        print(params)
         db = Query()
         ENT = self.getEntitlementIDs()
+        if 'appt' not in params or params['appt'] is None:
+            return ret
+        d = db.query("""
+            select office_id from client_intake_offices
+                where id = %s
+            """,(params['appt'],)
+        )
+        if len(d) < 1:
+            return ret
+        dest_off = d[0]['office_id']
         o = db.query("""
             select /* Office */
-                u.id,first_name,last_name,title,email,0 as is_user,
-                ps.id as appt_id
+                o.id,o.name,0 as is_user
             from
-                users u,
-                physician_schedule_scheduled pss,
-                physician_schedule ps, office o,
-                office_user ou
+                office o
             where
-                pss.user_id=u.id and
-                ps.id = pss.physician_schedule_id and
-                ou.user_id = ps.user_id and 
-                o.id = ou.office_id and 
-                pss.user_id=%s
+                o.id = %s
             UNION
             select  /* The user */
-                u.id,first_name,last_name,title,email,1 as is_user,
-                ps.id as appt_id
+                u.id,concat(first_name,' ',last_name),1 as is_user
             from
-                users u,
-                physician_schedule_scheduled pss,
-                physician_schedule ps
+                users u
             where
-                pss.user_id=u.id and
-                ps.id = pss.physician_schedule_id and
                 u.id = %s
             UNION
             select /* Admin Users */
-                u.id,first_name,last_name,title,email,3 as is_user,
-                0 as appt_id
+                u.id,concat(first_name,' ',last_name),2 as is_user
             from
                 users u 
             where
                 u.id in (select user_id from user_entitlements where
                             entitlements_id=%s) 
-            """,(user['user_id'],user['user_id'],ENT['Admin'])
+            """,(dest_off,user['user_id'],ENT['Admin'])
         )
-        ret['users'] = []
-        H = {}
-        for x in o:
-            if x['email'] in H:
-                continue
-            H[x['email']] = 1
-            ret['users'].append(x)
+        ret['users'] = o
         o = db.query("""
             select
                 cr.name as room_name,
                 cr.label as label,
-                cr.id,
-                json_object(
-                    'id',ps.id,
-                    'phy_id',ps.user_id,
-                    'procedure',s.name,
-                    'status',ast.name,
-                    'day',ps.day,
-                    'first_name',u.first_name,
-                    'last_name', u.last_name,
-                    'title', u.title,
-                    'time', ps.time
-                ) as appt
+                cr.id
             from
                 chat_rooms cr
-                left join physician_schedule ps on cr.physician_schedule_id = ps.id
-                left join users u on ps.user_id = u.id 
-                left join physician_schedule_scheduled pss on pss.physician_schedule_id = ps.id
-                left join appt_status ast on ast.id = pss.appt_status_id
-                left join subprocedures s on s.id = pss.subprocedures_id
                 left join chat_room_invited cri on cr.id=cri.chat_rooms_id
             where 
                cri.user_id = %s 
@@ -287,18 +262,14 @@ class GetCustChat(ChatBase):
                     user_upload_documents uud,
                     user_upload_email uue,
                     chat_rooms cr,
-                    physician_schedule ps,
-                    office o, office_user ou,
-                    physician_schedule_scheduled pss
+                    office o, office_user ou
                 where
                     o.id = ou.office_id and
-                    ps.user_id = ou.user_id and
                     uud.user_upload_email_id = uue.id and
-                    ps.id = pss.physician_schedule_id and 
-                    cr.physician_schedule_id = ps.id and
                     uue.user_id = pss.user_id and 
+                    cr.id = %s and
                     uue.user_id = %s
-                """,(user['user_id'],)
+                """,(x['id'],user['user_id'],)
             )
             x['documents'] = doc
             ch = db.query("""

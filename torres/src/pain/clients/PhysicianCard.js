@@ -4,15 +4,13 @@ import { connect } from 'react-redux';
 import { Box, Grid, Card, CardContent, CardMedia, Typography, Button } from '@mui/material';
  
 class PhysicianCard extends Component {
-
     scheduleAppt = () => {
-        this.props.onViewAppt(this.props.provider);
+        this.props.onScheduleAppt(this.props.provider);
     };
 
-    chatAppt = () => {
-        this.props.onChatAppt(this.props.provider);
-    };
-
+    contact(e) { 
+        window.location = '/app/main/client/appointments/' + e;
+    } 
     renderStars = (rating) => {
         const stars = [];
         for (let i = 1; i <= 5; i++) {
@@ -24,7 +22,8 @@ class PhysicianCard extends Component {
     };
 
     render() {
-        const { provider, admin } = this.props;
+        const { provider, admin,showContact } = this.props;
+        console.log("p",this.props);
         return (
             <Card
                 sx={{
@@ -70,21 +69,9 @@ class PhysicianCard extends Component {
                                 backgroundColor: '#FFA500',
                                 ':hover': { backgroundColor: '#FF8C00' }
                             }}
-                            onClick={this.scheduleAppt}
+                            onClick={() => this.contact(provider.appt_id)}
                         >
-                            View
-                        </Button>
-                        <Button
-                            variant="contained"
-                            disabled={true}
-                            sx={{
-                                marginLeft:5,
-                                backgroundColor: '#FFA500',
-                                ':hover': { backgroundColor: '#FF8C00' }
-                            }}
-                            onClick={this.chatAppt}
-                        >
-                            Chat
+                            Contact
                         </Button>
                     </Box>
                 </CardContent>

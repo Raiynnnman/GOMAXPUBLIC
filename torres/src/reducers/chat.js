@@ -23,7 +23,7 @@ const defaultState = {
   openUsersList: false
 };
 
-export default function chatReducer(state = defaultState, action) {
+export default function chatReducer(state = {}, action) {
   switch (action.type) {
     case OPEN_USERS_LIST:
       return {

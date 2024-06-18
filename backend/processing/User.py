@@ -84,7 +84,6 @@ class UserDashboard(UserBase):
 
     def getAppointments(self,user,db,lat,lon):
         uid = user['id']
-        print(uid)
         o = db.query("""
             select
                 oa.id,o.id as office_id,

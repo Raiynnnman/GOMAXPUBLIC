@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { MobileChatStates } from '../reducers/chat';
+//import { MobileChatStates } from '../reducers/chat';
 
 export const CHANGE_MOBILE_STATE = 'CHANGE_MOBILE_STATE';
 export const NEW_MESSAGE_SUCCESS = 'NEW_MESSAGE_SUCCESS';
@@ -48,6 +48,7 @@ export function setActiveChat(payload) {
       type: SET_ACTIVE_CHAT,
       payload
     })
-    dispatch(changeMobileState(MobileChatStates.CHAT));
+    /* TODO: Figure out why this freaks*/
+    //dispatch(changeMobileState(MobileChatStates.CHAT));
   }
 }

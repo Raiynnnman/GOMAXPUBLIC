@@ -13,14 +13,14 @@ from rest import ChatRest
 chat = Blueprint('chat', __name__)
 
 
-@chat.route('/myday/chat/get', methods=['POST'])
+@chat.route('/client/chat/get', methods=['POST'])
 @token_required
 @swag_from(docs_dir + 'myday_chat_get.yaml')
 def chat_off_get(*args, **kwargs):
-    po = ChatRest.GetOfficeChat()
+    po = ChatRest.GetCustChat()
     return po.postWrapper(*args,**kwargs)
 
-@chat.route('/myhealth/chat/get', methods=['POST'])
+@chat.route('/office/chat/get', methods=['POST'])
 @token_required
 @swag_from(docs_dir + 'myhealth_chat_get.yaml')
 def chat_cust_get(*args, **kwargs):

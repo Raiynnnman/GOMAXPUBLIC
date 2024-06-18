@@ -46,6 +46,7 @@ class Navbar extends Component {
     sendLocation() { 
         setTimeout((e) => { e.sendLocation() }, this.state.delay, this)
         if (!this.state.geo) { return; } 
+        if (!this.props.currentUser) { return; }
         this.props.dispatch(locationUpdate(this.state.mylocation));
     } 
 

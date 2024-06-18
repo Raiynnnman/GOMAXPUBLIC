@@ -176,6 +176,6 @@ class ProcessingBase:
         return ret 
 
     def __del__(self):
-        if config.getKey("use_defer")is not None:
+        if config.getKey("use_defer") is not None:
             if self.doJenkins():
                 Jenkins.spawnJob.delay(self.__class__.__name__,self.__id__)

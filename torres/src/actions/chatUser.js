@@ -39,7 +39,7 @@ export function receivingData(params) {
               Accept: "application/json",
               "Content-Type": "application/json",
             },
-        }).post('/myhealth/chat/get',{})
+        }).post('/client/chat/get',params)
       .then((e) => { 
           dispatch({
                 type: RECEIVED_CHATU_DATA_SUCCESS,

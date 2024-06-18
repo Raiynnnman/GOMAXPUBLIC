@@ -17,6 +17,9 @@ class JobStates(ProcessingBase):
     def __init__(self):
         super().__init__()
 
+    def doJenkins(self):
+        return False
+
     def getStatusValues(self):
         STATUS = { }
         query = "select id,value from status order by id"
