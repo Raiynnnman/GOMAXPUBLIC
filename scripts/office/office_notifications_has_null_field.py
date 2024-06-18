@@ -25,7 +25,7 @@ args = parser.parse_args()
 OFN = getIDs.getOfficeNotificationCategories()
 db = Query()
 
-# Updated query to select office addresses with missing or invalid addresses
+# Updated query to select office addresses with null values 
 q = """
 SELECT 
         oa.id, oa.zipcode, oa.state,
