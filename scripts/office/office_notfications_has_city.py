@@ -3,7 +3,6 @@
 import os
 import sys
 import json
-import googlemaps
 from datetime import datetime
 
 sys.path.append(os.getcwd())  # noqa: E402
@@ -14,13 +13,7 @@ from util.notifyExists import notify_if_not_exists
 import argparse
 import requests
 from util.DBOps import Query
-from util.Mail import Mail
-from bs4 import BeautifulSoup
-from selenium import webdriver
-from selenium.webdriver import Chrome
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.common.by import By
-from webdriver_manager.chrome import ChromeDriverManager
+ 
 
 config = settings.config()
 config.read("settings.cfg")

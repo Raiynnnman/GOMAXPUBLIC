@@ -6,18 +6,15 @@ if [ -f office/__init__.pyc ]; then
 fi
 
 T="
-    office/office_notifications__null_addr \
-	office/office_notifications__has_addr \
-    office/office_notifications__no_addr \
-    office/office_notifications__null_city \
-    office/office_notifications__has_city \
-    office/office_notifications__no_city \
-    office/office_notifications__null_state \
-    office/office_notifications__has_state \
-    office/office_notifications__no_state \
-    office/office_notifications__null_zipcode \
-    office/office_notifications__has_zipcode \
-    office/office_notifications__no_zipcode  \
+    office/office_notifications_has_null_field \
+	office/office_notifications_has_addr \
+    office/office_notfications_has_city \
+    office/office_notfications_has_city \
+    office/office_notfications_has_zipcode \
+    office/office_notfications_no_city \
+    office/office_notfications_no_state \
+    office/office_notfications_no_addr \
+    office/office_notfications_no_zipcode \
 "
 
 for x in $T; do

@@ -8,12 +8,11 @@ from datetime import datetime
 sys.path.append(os.getcwd())  # noqa: E402
 
 from common import settings
-from util import encryption, calcdate, getIDs
+from util import getIDs
 from util.notifyExists import notify_if_not_exists
 import argparse
 import requests
 from util.DBOps import Query
-from util.Mail import Mail
 
 config = settings.config()
 config.read("settings.cfg")
@@ -28,7 +27,7 @@ db = Query()
 
 # Updated query to select office addresses with missing or invalid addresses
 q = """
- SELECT 
+SELECT 
         oa.id, oa.zipcode, oa.state,
         oa.city, oa.addr1, o.office_type_id,
         oa.lat, oa.lon, o.id AS office_id
@@ -36,27 +35,29 @@ q = """
         office_addresses oa
     LEFT JOIN office o ON oa.office_id = o.id
     WHERE
-        oa.addr1 IS NULL 
+    oa.addr1 IS NULL or oa.city IS NULL or oa.zipcode IS NULL or oa.state is NULL
 """
-
 if not args.force:
-    q += " AND (oa.nextcheck IS NULL OR oa.nextcheck < NOW()) "
+    q += " AND (oa.nextcheck IS NULL OR oa.nextcheck < NOW())"
 
 offices = db.query(q)
 CNT = 0
 
 for office in offices:
-    # Since the query already filters for NULL or empty addr1, no need for extra check
-    if notify_if_not_exists(db, office['office_id'], OFN['OFFICE_NOTIFICATION_NO_ADDRESS']):
+    if notify_if_not_exists(db, office['office_id'], OFN['OFFICE_NOTIFICATION_DELETE_INVALID_ADDRESS']):
         continue
     
-    # Insert notification for offices without a valid address
-    db.update("""
-        INSERT INTO office_notifications (office_id, office_notifications_category_id, notifiable_id, notifiable_type, acknowledged) 
-        VALUES (%s, %s, %s, 'office', 0)
-    """, (office['office_id'], OFN['OFFICE_NOTIFICATION_NO_ADDRESS'], office['office_id']))
-    db.commit()
+    office_id = office['id']
+    
+    # Delete dependent rows in office_providers
+    delete_providers_query = "DELETE FROM office_providers WHERE office_addresses_id = %s"
+    db.update(delete_providers_query, (office_id,))
+    
+    # Delete the row from office_addresses
+    delete_addresses_query = "DELETE FROM office_addresses WHERE id = %s"
+    db.update(delete_addresses_query, (office_id,))
     
     CNT += 1
 
-print("Updated %s records" % CNT)
+db.commit()
+print("Deleted %s records" % CNT)

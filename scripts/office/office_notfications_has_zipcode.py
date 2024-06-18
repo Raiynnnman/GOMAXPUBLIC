@@ -14,14 +14,7 @@ from util.notifyExists import notify_if_not_exists
 import argparse
 import requests
 from util.DBOps import Query
-from util.Mail import Mail
-from bs4 import BeautifulSoup
-from selenium import webdriver
-from selenium.webdriver import Chrome
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.common.by import By
-from webdriver_manager.chrome import ChromeDriverManager
-
+ 
 config = settings.config()
 config.read("settings.cfg")
 
@@ -30,7 +23,6 @@ parser.add_argument('--dryrun', dest="dryrun", action="store_true")
 parser.add_argument('--force', dest="force", action="store_true")
 args = parser.parse_args()
 
-# cehck for null fields or empty fields in this query
 
 OFN = getIDs.getOfficeNotificationCategories()
 db = Query()

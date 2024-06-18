@@ -13,7 +13,6 @@ from util.notifyExists import notify_if_not_exists
 import argparse
 import requests
 from util.DBOps import Query
-from util.Mail import Mail
 
 config = settings.config()
 config.read("settings.cfg")
