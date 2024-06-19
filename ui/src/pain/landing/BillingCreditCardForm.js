@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { loadStripe } from "@stripe/stripe-js";
+import {stripeKey} from '../../stripeConfig.js';
 import { useDispatch, useSelector } from "react-redux";
 import { CardElement, Elements, useElements, useStripe, } from "@stripe/react-stripe-js";
 import { ElementsConsumer } from "@stripe/react-stripe-js";
@@ -9,7 +10,7 @@ import { saveCard } from "../../actions/saveCard";
 import { State, City } from "country-state-city";
 import {toast} from "react-toastify";
 
-function BillingCreditCardForm({ intentid, onCancel, onSave }) {
+function BillingCreditCardForm({ data, intentid, onCancel, onSave,stripe }) {
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -34,26 +35,23 @@ function BillingCreditCardForm({ intentid, onCancel, onSave }) {
   const [stateIsOpen, setStateIsOpen] = useState(false);
 
   const elements = useElements();
+  const appearance = { clientSecret:stripeKey(), theme:'night',labels:'floating' }
+  //const elements = stripe.elements({appearance});
   const dispatch = useDispatch();
-  const stripe = useStripe();
 
   const handleCancel = function () {
     onCancel();
   };
 
-  const handlePaymentAdd = async (event) => {
+  const handlePaymentAdd = async (event,data) => {
+    console.log(event,data);
     event.preventDefault();
-    let data = {
-      name: name,
-      address_line1: address1,
-      address_line2: address2,
-      address_city: city,
-      address_state: state,
-      address_phone: phone,
-      address_zip: zip,
+    let tosend = {
+      name: data.first + " " + data.last,
+      address_phone: data.phone
     };
     const card = elements.getElement(CardElement);
-    const result = await stripe.createToken(card, data);
+    const result = await stripe.createToken(card, tosend);
     onSave(result,intentid);
     setAddedCard(true);
   };
@@ -175,138 +173,42 @@ function BillingCreditCardForm({ intentid, onCancel, onSave }) {
       <DropdownItem disabled={true}>No city found</DropdownItem>
     );
   }
+    const cardStyle = {
+        style: {
+          base: {
+            color: "black",
+            margin:20,
+            backgroundColor:"white",
+            fontSize: "20px",
+            "::placeholder": {
+              color: "black"
+            }
+          },
+          invalid: {
+            fontSize: "24px",
+            color: "#fa755a",
+            backgroundColor:"white",
+            iconColor: "white"
+          }
+        }
+      };
 
   return (
     <div style={{ margin: 20 }}>
       <Form>
         <Row>
-          <Col md={6}>
-            <FormGroup>
-              <Label for="name">Name</Label>
-              <Input
-                id="name"
-                name="name"
-                placeholder="John Doe"
-                type="text"
-                value={name}
-                onChange={handleChangeName}
-              />
-            </FormGroup>
-          </Col>
-          <Col md={6}>
-            <FormGroup>
-              <Label for="phone">Phone</Label>
-              <Input
-                id="phone"
-                name="phone"
-                placeholder="(212) 555-1234"
-                type="text"
-                value={phone}
-                onChange={handleChangePhone}
-              />
-            </FormGroup>
-          </Col>
-        </Row>
-        <FormGroup>
-          <Label for="address1">Address</Label>
-          <Input
-            id="address1"
-            name="address1"
-            placeholder="1234 Main St"
-            value={address1}
-            onChange={handleChangeAddress1}
-          />
-        </FormGroup>
-        <FormGroup>
-          <Label for="address2">Address 2</Label>
-          <Input
-            id="address2"
-            name="address2"
-            placeholder="Apartment, studio, or floor"
-            value={address2}
-            onChange={handleChangeAddress2}
-          />
-        </FormGroup>
-        <Row>
-          <Col md={6}>
-            <FormGroup>
-              <Label for="city">City</Label>
-              <Dropdown
-                toggle={() => setCityIsOpen(!cityIsOpen)}
-                isOpen={cityIsOpen}
-              >
-                <DropdownToggle data-toggle="dropdown" tag="span">
-                  <Input
-                    id="city"
-                    name="city"
-                    value={city}
-                    onChange={handleChangeCity}
-                  />
-                </DropdownToggle>
-                <DropdownMenu style={{ maxHeight: 300, overflowY: "scroll" }}>
-                  {fetchedCities ? (
-                    cityDropdownFilter()
-                  ) : (
-                    <DropdownItem disabled={true}>
-                      Select a state to see suggestions
-                    </DropdownItem>
-                  )}
-                </DropdownMenu>
-              </Dropdown>
-            </FormGroup>
-          </Col>
-          <Col md={4}>
-            <FormGroup>
-              <Label for="state">State</Label>
-              <Dropdown
-                toggle={() => setStateIsOpen(!stateIsOpen)}
-                isOpen={stateIsOpen}
-              >
-                <DropdownToggle data-toggle="dropdown" tag="span">
-                  <Input
-                    id="state"
-                    name="state"
-                    value={state}
-                    onChange={handleChangeState}
-                  />
-                </DropdownToggle>
-                <DropdownMenu style={{ maxHeight: 300, overflowY: "scroll" }}>
-                  {fetchedStates ? (
-                    stateDropdownFilter()
-                  ) : (
-                    <DropdownItem disabled={true}>
-                      Select a country to see suggestions
-                    </DropdownItem>
-                  )}
-                </DropdownMenu>
-              </Dropdown>
-            </FormGroup>
-          </Col>
-          <Col md={2}>
-            <FormGroup>
-              <Label for="zip">Zip</Label>
-              <Input
-                id="zip"
-                name="zip"
-                value={zip}
-                onChange={handleChangeZip}
-              />
-            </FormGroup>
-          </Col>
-        </Row>
-        <Row>
           <FormGroup>
-            <CardElement elements={elements}/>
+            <CardElement options={cardStyle} elements={elements}/>
           </FormGroup>
         </Row>
         <Row style={{marginTop:10}}>
-            {!addedCard && ( 
-                <FormGroup>
-                <Button color="primary" onClick={handlePaymentAdd} disabled={disableSaveButton} >
-                  Save
+            <FormGroup>
+            <div style={{marginTop:0,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                <Button color="primary" onClick={(e) => handlePaymentAdd(e,data)}>
+                 Register 
                 </Button>
-              </FormGroup>
-            )}
+            </div>
+          </FormGroup>
         </Row>
       </Form>
     </div>

@@ -58,13 +58,20 @@ class Stripe():
             ret = o[0]['stripe_customer_id']
         return ret
 
-    def confirmCard(self,intentid,user_id,stripe_id):
+    def confirmCard(self,intentid,cust_id,stripe_id,card):
         stripe.api_key = config.getKey("stripe_key")
         r = stripe.SetupIntent.confirm(
             intentid,
             payment_method="pm_card_visa"
         )
-        return r
+        env = config.getKey("environment")
+        tok = card['id']
+        if env != 'prod':
+            tok = 'tok_visa'
+        t = stripe.Customer.create_source ( 
+            stripe_id,source=tok
+        ) 
+        return r,t
         
     def createCustomer(self,user_id):
         db = Query()

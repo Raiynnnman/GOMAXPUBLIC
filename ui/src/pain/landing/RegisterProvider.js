@@ -156,6 +156,10 @@ class RegisterProvider extends Component {
             this.state.pq_id = this.props.match.params.pq_id;
         } 
         this.props.dispatch(getLandingData({type:this.state.provtype,pq_id:this.state.pq_id}));
+        this.props.dispatch(setupIntent()).then((e) =>  { 
+            this.state.newcard = {id:0};
+            this.setState(this.state);
+        })
     }
 
     checkValid() { 
@@ -330,6 +334,8 @@ class RegisterProvider extends Component {
         var tosend = { 
             email: this.state.email,
             first: this.state.first,
+            cust_id: this.props.setupIntent.data.data.cust_id,
+            intent_id: this.props.setupIntent.data.data.id,
             name: this.state.name,
             phone: this.state.phone,
             plan: this.state.selPlan ? this.state.selPlan.id : null,
@@ -350,6 +356,11 @@ class RegisterProvider extends Component {
             if (err !== null) { 
                 args.state.error_message = err.message;
                 args.setState(args.state);
+                /* If we fail, get a new setup intent */
+                this.props.dispatch(setupIntent()).then((e) =>  { 
+                    this.state.newcard = {id:0};
+                    this.setState(this.state);
+                })
                 return;
             } 
             window.location = "/#/welcome";
@@ -435,6 +446,8 @@ class RegisterProvider extends Component {
 
 
     render() {
+        console.log("p",this.props);
+        console.log("s",this.state);
         var heads = [
             {
                 dataField:'name',
@@ -540,16 +553,14 @@ class RegisterProvider extends Component {
                             <>
                             <div style={{border:"1px solid black"}}></div>
                             <Button type="submit" onClick={this.register} style={{backgroundColor:"#fa6a0a",color:"white"}} 
-                                className="auth-btn mb-3" disabled={
-                                  !this.state.isValid} size="lg">Register</Button>
+                                disabled={!this.state.isValid} size="lg">Register</Button>
                             </>
                             )}
                             {(this.props.landingData.data.do_billing_charge===1) && ( 
                             <>
                             <div style={{border:"1px solid black"}}></div>
                             <Button type="submit" onClick={this.nextPage} style={{backgroundColor:"#fa6a0a",color:"white"}} 
-                                className="auth-btn mb-3" disabled={
-                                  !this.state.isValid} size="lg">Next</Button>
+                                disabled={!this.state.isValid} size="lg">Next</Button>
                             </>
                             )}
                         </div>
@@ -576,7 +587,7 @@ class RegisterProvider extends Component {
                                             </Col>
                                         </Row>
                                         )}
-                                        <Row md="12" style={{marginBottom:10}}>
+                                        <Row md="12" style={{marginBottom:10,borderBottom:"1px solid white"}}>
                                             <Col md="7">
                                             <font style={{alignText:'left'}}>Description</font>
                                             </Col>
@@ -585,7 +596,7 @@ class RegisterProvider extends Component {
                                             </Col>
                                         </Row>
                                         <hr/>
-                                        <Row md="12">
+                                        <Row md="12" style={{borderBottom:"1px solid white"}}>
                                             <Col md="7">
                                             <font style={{alignText:'left'}}>{this.state.selPlan.description}</font>
                                             </Col>
@@ -594,7 +605,7 @@ class RegisterProvider extends Component {
                                             </Col>
                                         </Row>
                                         {(this.state.selPlan.coupons.length > 0) && (
-                                        <Row md="12">
+                                        <Row md="12" style={{borderBottom:"1px solid white"}}>
                                             <Col md="7">
                                                 <input className="form-control no-border" 
                                                     style={{marginLeft:0,paddingLeft:0,backgroundColor:'black',color:"white"}} 
@@ -608,7 +619,7 @@ class RegisterProvider extends Component {
                                         </Row>
                                         )}
                                         <hr/>
-                                        <Row md="12">
+                                        <Row md="12" style={{borderBottom:"1px solid white"}}>
                                             <Col md="7">
                                             {(this.state.coupon_id !== null) && (     
                                                 <font style={{alignText:'left'}}>Total:</font>
@@ -633,17 +644,19 @@ class RegisterProvider extends Component {
                         </div>
                         <div style={{marginTop:20}}>
                         <Row md="12">
-                            <Col md="12" sx="3">
-                                <PaymentForm style={{margin:10,display:'grid',justifyContent:'center',alignContent:'center'}}
-                                    applicationId={squareAppKey()}
-                                    locationId={squareLocationKey()}
-                                    cardTokenizeResponseReceived={(token,verifiedBuyer) => { 
-                                            this.saveCard({token:token});
-                                    }}>
-                                    <>
-                                        <CreditCard>Register</CreditCard>
-                                    </>
-                                </PaymentForm>
+                            <Col md="12">
+                                <div style={{color:"white"}}>
+                                {(this.props.setupIntent && this.props.setupIntent.data &&
+                                  this.props.setupIntent.data.data &&
+                                  this.props.setupIntent.data.data.id) && (
+                                    <Elements stripe={stripePromise} options={{clientSecret:this.props.setupIntent.data.data.clientSecret}}>
+                                        <ElementsConsumer>
+                                            {(ctx) => <BillingCreditCardForm onSave={this.saveCard} data={this.state} stripe={stripePromise}
+                                                onCancel={this.cancel} intentid={this.props.setupIntent.data.data.id} {...ctx} />}
+                                        </ElementsConsumer>
+                                    </Elements>
+                                )}
+                                </div>
                             </Col>
                         </Row>
                         </div>
