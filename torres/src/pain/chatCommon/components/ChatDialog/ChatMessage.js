@@ -24,7 +24,7 @@ class ChatMessage extends PureComponent {
           ? <div className={`${s.messageAvatar}`}><Avatar user={user} size={size} showStatus={showStatus}/></div>
           :null}
       {message.text ? 
-        <p className={s.messageBody}>
+        <p style={{color:'black'}} className={s.messageBody}>
           {this.decrypt(message.text)}
         </p> :''}
 

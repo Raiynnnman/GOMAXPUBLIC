@@ -11,7 +11,7 @@ class Navbar extends Component {
         super(props);
         this.state = { 
             mylocation: null,
-            delay:10000,
+            delay:60000,
             geo: false,
         } 
         this.logout = this.logout.bind(this);

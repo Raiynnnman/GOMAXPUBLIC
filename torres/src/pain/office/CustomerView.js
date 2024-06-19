@@ -17,6 +17,7 @@ import TemplateButton from '../utils/TemplateButton';
 import TemplateBadge from '../utils/TemplateBadge';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
+import ChatUser from '../chatUser/ChatUser';
 
 class CustomerView extends Component {
 
@@ -219,6 +220,7 @@ class CustomerView extends Component {
     } 
 
     render() {
+        console.log("p",this.props);
         var value = '';
         var cntr = 1;
         return (
@@ -227,65 +229,72 @@ class CustomerView extends Component {
                 <AppSpinner/>
             )}
             <>
-            {(this.props.config && this.props.filled !== undefined) && (
-                <div style={{marginBottom:20,display: 'flex', alignItems: 'center', justifyContent: 'spread-evenly'}}>
-                  <font style={{width:25}}></font>
-                    {translate('Status')}:
-                    {(this.props.data.status !== 'SCHEDULED') && (
-                        <TemplateButton onClick={this.markScheduled} style={{margin:10}} label={translate('Scheduled')}/>
+            <Grid container xs={12}>
+                <Grid item xs={6}>
+                    {(this.props.config && this.props.filled !== undefined) && (
+                        <div style={{marginBottom:20,display: 'flex', alignItems: 'center', justifyContent: 'spread-evenly'}}>
+                          <font style={{width:25}}></font>
+                            {translate('Status')}:
+                            {(this.props.data.status !== 'SCHEDULED') && (
+                                <TemplateButton onClick={this.markScheduled} style={{margin:10}} label={translate('Scheduled')}/>
+                            )}
+                            <TemplateButton onClick={this.markComplete} style={{margin:10}} label={translate('Completed')}/>
+                            <TemplateButton onClick={this.markNoShow} style={{margin:10}} label={translate('No Show')}/>
+                        </div>
                     )}
-                    <TemplateButton onClick={this.markComplete} style={{margin:10}} label={translate('Completed')}/>
-                    <TemplateButton onClick={this.markNoShow} style={{margin:10}} label={translate('No Show')}/>
-                </div>
-            )}
-            {this.state.inputs.map((t) => {
-                return (
-                <Grid container xs="12" style={{marginTop:5}}>
-                    <div style={{display: 'flex', alignItems: 'center', justifyContent: 'spread-evenly'}}>
-                        {t.t === 'text' && (
-                          <TemplateTextField type="text" style={{backgroundColor:'white'}}
-                            onChange={(e) => this.setValue(t,e)} 
-                                value={this.state.inputs.filter((g) => g.f === t.f)[0].v} 
-                            label={t.l} />
-                        )}
-                        {t.t === 'textfield' && (
-                            <TemplateTextArea
-                              rows={5} style={{backgroundColor:'white'}}
-                              placeholder=""
-                              onChange={(e) => this.setValue(t,e)} value={this.state.inputs.filter((g) => g.f === t.f)[0].v} 
-                            />
-                        )}
-                        {t.t === 'checkbox' && (
-                            <input type='checkbox'
-                              onChange={(e) => this.setValue(t,e)} checked={this.state.inputs.filter((g) => g.f === t.f)[0].v} 
-                            />
-                        )}
-                        {(t.t === 'addr_search') && (
-                          <>
-                          {this.state.address === null && (
-                            <div style={{width:'100%'}}>
-                              <GoogleAutoComplete onChange={this.updateAddress}/>
+                    {this.state.inputs.map((t) => {
+                        return (
+                        <Grid container xs="12" style={{marginTop:5}}>
+                            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'spread-evenly'}}>
+                                {t.t === 'text' && (
+                                  <TemplateTextField type="text" style={{backgroundColor:'white'}}
+                                    onChange={(e) => this.setValue(t,e)} 
+                                        value={this.state.inputs.filter((g) => g.f === t.f)[0].v} 
+                                    label={t.l} />
+                                )}
+                                {t.t === 'textfield' && (
+                                    <TemplateTextArea
+                                      rows={5} style={{backgroundColor:'white'}}
+                                      placeholder=""
+                                      onChange={(e) => this.setValue(t,e)} value={this.state.inputs.filter((g) => g.f === t.f)[0].v} 
+                                    />
+                                )}
+                                {t.t === 'checkbox' && (
+                                    <input type='checkbox'
+                                      onChange={(e) => this.setValue(t,e)} checked={this.state.inputs.filter((g) => g.f === t.f)[0].v} 
+                                    />
+                                )}
+                                {(t.t === 'addr_search') && (
+                                  <>
+                                  {this.state.address === null && (
+                                    <div style={{width:'100%'}}>
+                                      <GoogleAutoComplete onChange={this.updateAddress}/>
+                                    </div>
+                                  )}
+                                  {this.state.address !== null && (
+                                  <TemplateTextField type="text" style={{backgroundColor:'white'}}
+                                    value={this.state.address.fulladdr}/>
+                                  )}
+                                  </>
+                                )}
                             </div>
-                          )}
-                          {this.state.address !== null && (
-                          <TemplateTextField type="text" style={{backgroundColor:'white'}}
-                            value={this.state.address.fulladdr}/>
-                          )}
-                          </>
-                        )}
-                    </div>
+                        </Grid>
+                        )
+                    })}
+                    <Grid container xs="12" style={{marginTop:20}}>
+                        <Grid item  xs="12">
+                        <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                            <TemplateButton onClick={this.save} style={{marginRight:10}} label={translate('Save')}/>
+                            <TemplateButton onClick={this.cancel} label={translate('Cancel')}/>
+                        </div>
+                        </Grid>
+                    </Grid>
                 </Grid>
-                )
-            })}
-            </>
-            <Grid container xs="12" style={{marginTop:20}}>
-                <Grid item  xs="12">
-                <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                    <TemplateButton onClick={this.save} style={{marginRight:10}} label={translate('Save')}/>
-                    <TemplateButton onClick={this.cancel} label={translate('Cancel')}/>
-                </div>
+                <Grid item xs={6}>
+                    <ChatUser appt={this.props.data.appt_id}/>
                 </Grid>
             </Grid>
+            </>
         </>
         )
     }

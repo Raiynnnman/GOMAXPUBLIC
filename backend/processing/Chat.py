@@ -237,20 +237,31 @@ class GetCustChat(ChatBase):
         )
         ret['users'] = o
         o = db.query("""
-            select
-                cr.name as room_name,
-                cr.label as label,
-                cr.id
-            from
-                chat_rooms cr
-                left join client_intake_offices cio on cio.id=cr.client_intake_offices_id 
-                left join chat_room_invited cri on cr.id=cri.chat_rooms_id
-            where 
-               cri.user_id = %s and
-               cio.id = %s
-               
-            """,(user['user_id'],appt_id)
+            select distinct room_name,label,id from (
+                select
+                    cr.name as room_name,
+                    cr.label as label,
+                    cr.id
+                from
+                    chat_rooms cr
+                    left join client_intake_offices cio on cio.id=cr.client_intake_offices_id 
+                where 
+                   cio.id = %s
+                UNION ALL
+                select
+                    cr.name as room_name,
+                    cr.label as label,
+                    cr.id
+                from
+                    chat_rooms cr
+                    left join client_intake_offices cio on cio.id=cr.client_intake_offices_id 
+                where 
+                   cio.office_id = %s and
+                   cio.id = %s
+                ) as t
+            """,(appt_id,off_id,appt_id,)
         )
+        print("rooms=%s" % o)
         ret['rooms'] = []
         if len(o) < 1:
             name =  encryption.getSHA256()

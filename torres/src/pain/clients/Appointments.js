@@ -53,7 +53,7 @@ class Appointments extends Component {
 
     render() {
         const WrappedMap = withGoogleMap(DirectionsMap);
-
+        console.log("s",this.state.selected)
         return (
         <>
         <Navbar/>
@@ -74,7 +74,7 @@ class Appointments extends Component {
                             </Grid>
                             <Grid container xs={12}>
                                 <Grid item xs={12}>
-                                    <ChatUser test={true} appt={this.state.selected}/>
+                                    <ChatUser appt={this.state.selected}/>
                                 </Grid>
                             </Grid>
                         </Grid>

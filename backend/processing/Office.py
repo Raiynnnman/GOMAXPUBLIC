@@ -436,7 +436,7 @@ class ClientList(OfficeBase):
                 u.id as user_id,
                 concat(u.first_name,' ', u.last_name) as name,
                 u.email email, u.phone as phone,
-                cis.name as status,
+                cis.name as status,cio.id as appt_id,
                 cis.id as status_id,
                 """ + ','.join(cols) + """
             from
