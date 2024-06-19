@@ -35,7 +35,7 @@ config.read("settings.cfg")
 key = config.getKey("square_api_key")
 key = config.getKey("stripe_key")
 stripe.api_key = key
-j
+
 client = None
 if  config.getKey("environment") == 'prod':
     client = Client(access_token=key,environment='production')
