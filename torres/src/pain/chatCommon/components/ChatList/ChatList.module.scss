@@ -3,8 +3,7 @@
 .chatsSectionWrap {
   flex: 1;
   overflow: auto;
-
-  // @include chat-scrollbar(rgba($text-muted, 0.15), 3px);
+  // @include chat-scrollbar(rgba(black, 0.15), 3px);
 }
 
 .chatList {
@@ -56,7 +55,7 @@
   }
 
   &.active {
-    background: lighten(purple, 15%);
+    background: lighten(white, 15%);
   }
 
   &.active {
@@ -165,7 +164,7 @@
 
   &.active {
     .chatTitle {
-      //font-weight: $font-weight-semi-bold;
+      font-weight: bold;
     }
   }
 }

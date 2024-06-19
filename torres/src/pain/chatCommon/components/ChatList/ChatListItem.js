@@ -32,6 +32,7 @@ class ChatListItem extends Component {
 
   render() {
     const { chat, isActive } = this.props;
+    console.log("chat",chat);
     return (
       <li 
         onClick={this.changeChat}
@@ -46,9 +47,9 @@ class ChatListItem extends Component {
             </ul>
           }
         
-        <section className={`${s.chatItemMain} ms-3`}>
+        <section> 
           <header className="d-flex align-items-center justify-content-between mb-1">
-            <h6 className={`${s.chatTitle}`}>
+            <h6 style={{backgroundColor:'white',color:'black'}}>
             {chat.isGroup ? <img alt="group" className={`${s.groupChatIcon} me-1`} src={people} /> : null}
             {chat.label} 
             {chat.isGroup ? <span>({chat.interlocutors.length})</span> : ''}

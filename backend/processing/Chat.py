@@ -108,8 +108,6 @@ class GetOfficeChat(ChatBase):
                 cr.id,
                 json_object(
                     'id',ps.id,
-                    'phy_id',ps.user_id,
-                    'procedure',s.name,
                     'first_name',u.first_name,
                     'last_name', u.last_name,
                     'title', u.title,
@@ -122,10 +120,7 @@ class GetOfficeChat(ChatBase):
             from
                 chat_rooms cr 
                 left join chat_room_invited cri on cr.id=cri.chat_rooms_id
-                left join physician_schedule ps on cr.physician_schedule_id = ps.id
-                left join physician_schedule_scheduled pss on pss.physician_schedule_id = ps.id
                 left join appt_status ast on ast.id = pss.appt_status_id
-                left join subprocedures s on s.id = pss.subprocedures_id
                 left outer join chat_room_discussions crd on cr.id=crd.chat_rooms_id
                 left join office_user ou on ou.user_id=ps.user_id 
                 left join office o on ou.office_id = o.id 
@@ -207,6 +202,7 @@ class GetCustChat(ChatBase):
         ENT = self.getEntitlementIDs()
         if 'appt' not in params or params['appt'] is None:
             return ret
+        appt_id = params['appt']
         d = db.query("""
             select office_id from client_intake_offices
                 where id = %s
@@ -247,14 +243,44 @@ class GetCustChat(ChatBase):
                 cr.id
             from
                 chat_rooms cr
+                left join client_intake_offices cio on cio.id=cr.client_intake_offices_id 
                 left join chat_room_invited cri on cr.id=cri.chat_rooms_id
             where 
-               cri.user_id = %s 
-            """,(user['user_id'],)
+               cri.user_id = %s and
+               cio.id = %s
+               
+            """,(user['user_id'],appt_id)
         )
         ret['rooms'] = []
+        if len(o) < 1:
+            name =  encryption.getSHA256()
+            l = db.query("""
+                select name from 
+                    office_addresses oa,client_intake_offices cio
+                where 
+                    cio.office_addresses_id = oa.id and
+                    cio.id = %s
+                """,(appt_id,)
+            )
+            lab = dest_off
+            if len(l) > 0:
+                lab = l[0]['name']
+            label = "Chat with %s" % lab
+            db.update("""
+                insert into chat_rooms (name,label,client_intake_offices_id) 
+                    values(%s,%s,%s)
+                """,(name,label,appt_id)
+            )
+            chatid = db.query("select LAST_INSERT_ID()")
+            chatid = chatid[0]['LAST_INSERT_ID()']
+            db.update("""
+                insert into chat_room_invited 
+                    (chat_rooms_id,user_id,office_id)
+                    values (%s,%s,%s)
+                """,(chatid,user['user_id'],dest_off)
+            )
+            ret['rooms'].append({'room_name':name,'label':label,'id':chatid})
         for x in o:
-            x['appt'] = json.loads(x['appt'])
             doc = db.query("""
                 select 
                     uud.id,description
@@ -266,7 +292,6 @@ class GetCustChat(ChatBase):
                 where
                     o.id = ou.office_id and
                     uud.user_upload_email_id = uue.id and
-                    uue.user_id = pss.user_id and 
                     cr.id = %s and
                     uue.user_id = %s
                 """,(x['id'],user['user_id'],)
@@ -283,12 +308,10 @@ class GetCustChat(ChatBase):
                     u.title,
                     crd.created
                 from 
-                    chat_room_discussions crd, users u,
-                    chat_room_invited cri
+                    chat_room_discussions crd, 
+                    users u
                 where 
-                    cri.user_id = u.id and 
-                    cri.chat_rooms_id = crd.chat_rooms_id and
-                    crd.user_id = u.id and 
+                    crd.from_user_id = u.id and
                     crd.chat_rooms_id = %s
                 order by
                     crd.created desc
@@ -296,6 +319,7 @@ class GetCustChat(ChatBase):
             )
             x['chats'] = ch
             ret['rooms'].append(x)
+        db.commit()
         return ret
 
 class CreateRoom(ChatBase):
@@ -316,8 +340,7 @@ class CreateRoom(ChatBase):
                 s.name as proc,
                 date_format(ps.day,'%b %d') as day,
                 time_format(ps.time,'%h:%i%p') as time,
-                u.title,u.first_name,u.last_name,
-                pss.office_id
+                u.title,u.first_name,u.last_name
             from 
                 physician_schedule ps, physician_schedule_scheduled pss,
                 subprocedures s, users u
@@ -384,14 +407,11 @@ class UploadDocumentFromRoom(ChatBase):
                 o.id as office_id,
                 uue.id as uueid
             from
-                office o,physician_schedule_scheduled pss,
-                user_upload_email uue, physician_schedule ps, 
+                office o,
+                user_upload_email uue, 
                 office_user ou 
             where 
-                o.id=ou.office_id and ps.user_id=ou.user_id and 
-                uue.user_id=pss.user_id and 
-                ps.id=pss.physician_schedule_id and 
-                ps.id = %s 
+                o.id=ou.office_id and ps.user_id=ou.user_id 
             """,(appt_id,)
         )
         # TODO: Handle if there is no user_upload_email

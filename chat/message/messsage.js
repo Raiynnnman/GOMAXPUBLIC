@@ -6,9 +6,9 @@ module.exports.saveMessage = function(room_id,to_user,from_user,user_id,message)
     log.debug('savingMessage',room_id);
     db.query(`
         insert into chat_room_discussions 
-            (chat_rooms_id,from_user_id,to_user_id,text,user_id) values
-            (?, ?, ?, ?, ?)
-    `,[room_id,from_user,to_user,message,user_id],
+            (chat_rooms_id,from_user_id,to_user_id,text) values
+            (?, ?, ?, ?)
+    `,[room_id,from_user,to_user,message],
     function(err,res) {
         if (err) { 
             log.debug("err",err);
@@ -28,7 +28,7 @@ module.exports.getMissedMessages = function(last,user_id,room_id,callback) {
             chat_room_discussions crd,
             users u
          where
-            u.id = crd.user_id and
+            u.id = crd.from_user_id and
             crd.chat_rooms_id= ? and
             crd.id > ?
         order by 
@@ -55,11 +55,9 @@ module.exports.verifyRoom = function(user_id,room_id,callback) {
         from 
             chat_room_invited cri,
             chat_rooms cr, office o,
-            office_user ou, physician_schedule ps
+            office_user ou
         where
            ou.office_id = o.id and
-           cr.physician_schedule_id = ps.id and
-           ps.user_id = ou.user_id and
            cr.id = cri.chat_rooms_id and
            cri.chat_rooms_id = ? 
         group by o.id

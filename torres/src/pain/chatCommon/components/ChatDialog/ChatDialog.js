@@ -36,6 +36,7 @@ class ChatDialog extends Component {
     }
 
     componentWillReceiveProps(p) { 
+        console.log("cwrp",p);
         if (p.activeChatId !== this.state.currentChannel) { 
             this.joinChannel(p.activeChatId);
         }
@@ -69,6 +70,7 @@ class ChatDialog extends Component {
     }
 
     joinChannel(aci) { 
+        console.log("aci",aci);
         var t = this.props.data.rooms.filter((e) => e.id === aci)
         if (t.length > 0) { 
             this.state.currentChannel = aci;
@@ -104,6 +106,8 @@ class ChatDialog extends Component {
         if (this.chatDialogBodyRef && this.chatDialogBodyRef.scrollHeight) { 
             this.chatDialogBodyRef.scrollTop = this.chatDialogBodyRef.scrollHeight
         }
+        this.state.message = '';
+        this.setState(this.state);
     }
 
     handleIncomingMessage(e) { 
@@ -135,6 +139,7 @@ class ChatDialog extends Component {
     }
 
   dialogParts = () => {
+    console.log("chat",this.chat());
     if (!this.chat().id) {
       return [];
     }
@@ -147,6 +152,7 @@ class ChatDialog extends Component {
     let firstMessage = mychat.chats[0];
     let dialogParts = [[this.shortCalendarDate(firstMessage.created)],[firstMessage]];
     let messagesLength = mychat.chats.length;
+    console.log("len",messagesLength);
 
     for (let i = 1; i < messagesLength; i++) {
       let lastDialogPart = dialogParts[dialogParts.length - 1];
@@ -173,6 +179,8 @@ class ChatDialog extends Component {
         newOrder.push(dialogParts[c])
     } 
     dialogParts = newOrder
+    this.state.dialogParts = dialogParts;
+    this.setState(this.state);
     return dialogParts;
   }
 
@@ -257,14 +265,15 @@ class ChatDialog extends Component {
     } 
     const { sendingMessage, user } = this.props;
     const { dialogParts } = this.state;
-    console.log("p",this.props);
+    console.log("cdp",this.props);
+    console.log("dp",dialogParts);
     return (
     <>
     {(this.props.chatUploadDoc && this.props.chatUploadDoc.isReceiving) && (
         <AppSpinner/>
     )}
     <div className={`d-flex flex-column chat-dialog-section`} 
-        style={{border:"1px solid #e3e3e3",borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}}>
+        style={{height:300,overflow:"auto",border:"1px solid #e3e3e3",borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}}>
       <header className={s.chatDialogHeader}>
         <div>
           {/* TODO: Put header back in */}

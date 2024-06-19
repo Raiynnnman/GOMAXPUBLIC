@@ -25,7 +25,8 @@ class ChatUser extends Component {
         this.props.dispatch(getChatUser({appt:this.props.appt}))
     }
     componentWillReceiveProps(p) { 
-        if (false && p.chatUser && p.chatUser.data && p.chatUser.data.rooms && !this.state.activeSet) { 
+        console.log("cu",p);
+        if (p.chatUser && p.chatUser.data && p.chatUser.data.rooms && !this.state.activeSet) { 
             this.state.activeSet = true;
             var t = p.chatUser.data.rooms[0].id
             this.props.dispatch(setActiveChat(t))

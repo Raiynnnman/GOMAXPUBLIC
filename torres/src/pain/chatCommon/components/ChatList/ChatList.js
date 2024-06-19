@@ -61,8 +61,8 @@ class ChatList extends Component {
   render() {
   const { activeChatId } = this.props;
   return (
-    <div className={`chat-list-section`} 
-        style={{height:300,border:"1px solid #e3e3e3",borderRadius:"10px",boxShadow:"rgba(0, 0, 0, 0.15) 0px 5px 15px 0px"}}>
+    <div 
+        style={{border:"1px solid #e3e3e3",borderRadius:"10px"}}>
       <ChatSearch />
       <hr/>
       <section className={`chat-section ${s.chatsSectionWrap} ${s.personalChats} d-none d-lg-block mb-0`}>
