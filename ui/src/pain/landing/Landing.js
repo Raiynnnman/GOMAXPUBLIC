@@ -230,23 +230,18 @@ class Landing extends Component {
                 <div style={{backgroundColor:"black",display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                     <>
                     <Row md="12">
-                        {/*<Col md="6" sx="6" style={{paddingLeft:0,marginLeft:0}}>
+                        <Col md="6" sx="6" style={{paddingLeft:0,marginLeft:0}}>
                             <div style={{backgroundColor:"black",display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                                <iframe 
-                                    src={
-                                        this.props.landingData.data.introduction.length > 0 ? 
-                                            this.props.landingData.data.introduction[0].url : 
-                                            "https://player.vimeo.com/video/939097958?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" 
-                                    }
-                                    allow="autoplay; fullscreen; picture-in-picture; clipboard-write" 
-                                    style={{width:window.innerWidth < 500 ? window.innerWidth : "800px",
-                                            height:window.innerWidth < 500 ? "100%vw" : "600px",
+                                <iframe src="https://player.vimeo.com/video/954405043?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" 
+                                    frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write" 
+                                    style={{width:window.innerWidth < 500 ? window.innerWidth : "600px",
+                                            height:window.innerWidth < 500 ? "800px" : "800px",
                                             }}
-                                    title="PoundPain Sample">
+                                    title="POUNDPAIN TECH">
                                 </iframe>
                             </div>
-                        </Col>*/}
-                        <Col md="12" sx="12" style={{marginTop:10,paddingRight:0,marginRight:0}}>
+                        </Col>
+                        <Col md="6" sx="6" style={{marginTop:10,paddingRight:0,marginRight:0}}>
                             <div style={{backgroundColor:"black",display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                 <iframe 
                                     src={
