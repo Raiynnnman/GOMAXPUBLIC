@@ -9,6 +9,7 @@ import unittest
 import jwt
 import base64
 import traceback
+import stripe
 from nameparser import HumanName
 from flask import make_response, request, jsonify
 
@@ -32,6 +33,9 @@ config = settings.config()
 config.read("settings.cfg")
 
 key = config.getKey("square_api_key")
+key = config.getKey("stripe_key")
+stripe.api_key = key
+j
 client = None
 if  config.getKey("environment") == 'prod':
     client = Client(access_token=key,environment='production')
@@ -679,23 +683,30 @@ class RegisterProvider(RegistrationsBase):
                         %s,1,'Created Plan'
                     )
                 """,(off_id,))
+        cust_id = ''
+        card_id = ''
+        stripe_id = ''
         if 'card' in params and params['card'] is not None:
             stripe_id = None
             card_id = 0
             if BS == 1:
                 cust_id = params['cust_id']
-                card = params['card']['card']
-                self.saveStripe(cust_id,card)
+                card = params['card']['token']
                 l = db.query("""
                     select stripe_key from setupIntents where uuid=%s
                 """,(cust_id,))
                 stripe_id = l[0]['stripe_key']
                 db.update("""
                     update office set stripe_cust_id=%s where id=%s
-                    """,(stripe_id,insid)
+                    """,(stripe_id,off_id)
                 )
+                print("CARD----")
+                print(json.dumps(card,indent=4))
                 st = Stripe.Stripe()
-                pid = st.confirmCard(params['intentid'],cust_id,stripe_id)
+                (pid,src) = st.confirmCard(params['intent_id'],cust_id,stripe_id,card)
+                print("p=%s" % pid)
+                print("s=%s" % src)
+                card_id = src['id']
                 db.update("""
                     insert into office_cards(
                         office_id,card_id,last4,exp_month,
@@ -705,11 +716,11 @@ class RegisterProvider(RegistrationsBase):
                     ) values (
                         %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,1
                     )
-                    """,(off_id,card['id'],card['last4'],
-                         card['exp_month'],card['exp_year'],
-                         params['card']['client_ip'],pid['payment_method'],card['address_line1'],
-                         card['address_line2'],card['address_state'],card['address_city'],
-                         card['address_zip'],card['name']
+                    """,(off_id,src['id'],card['card']['last4'],
+                         card['card']['exp_month'],card['card']['exp_year'],
+                         card['client_ip'],pid['payment_method'],card['card']['address_line1'],
+                         card['card']['address_line2'],card['card']['address_state'],card['card']['address_city'],
+                         card['card']['address_zip'],card['card']['name']
                     )
                 )
             elif BS == 2:
@@ -745,6 +756,46 @@ class RegisterProvider(RegistrationsBase):
                     merchantAuth.transactionKey = config.getKey("auth_net_key2")
                     refId = "ref {}".format(time.time())    
                     pass 
+                mode = "charge_automatically"
+                if do_billing and BS==1: # Stripe
+                    items = []
+                    s = stripe.Invoice.create(
+                        auto_advance=True,
+                        customer=stripe_id,
+                        default_payment_method=card_id,
+                        collection_method=mode
+                        )
+                    stripe.InvoiceItem.create(
+                        customer=stripe_id,
+                        description=PL[selplan]['description'],
+                        amount=int(PL[selplan]['upfront_cost']*PL[selplan]['duration']*100),
+                        invoice=s.id
+                    )
+                    print("discount=%s" % discount)
+                    if len(coup) > 0:
+                        stripe.InvoiceItem.create(
+                            customer=stripe_id,
+                            description=coup['name'],
+                            amount=int(discount * 100),
+                            invoice=s.id
+                        )
+                    db.update("""
+                        insert into invoices (office_id,invoice_status_id,
+                            office_plans_id,billing_period,total,billing_system_id) 
+                            values (%s,%s,%s,date(now()),%s,%s)
+                        """,(off_id,INV['CREATED'],planid,plan_total,BS)
+                    )
+                    invid = db.query("select LAST_INSERT_ID()")
+                    invid = invid[0]['LAST_INSERT_ID()']
+                    db.update("""
+                        insert into stripe_invoice_status (office_id,invoices_id,status) values (%s,%s,%s)
+                        """,(off_id,invid,'draft')
+                    )
+                    db.update("""
+                        insert into invoice_history (invoices_id,user_id,text) values 
+                            (%s,%s,%s)
+                        """,(invid,1,'Submitted invoice to stripe' )
+                    )
                 if do_billing and BS==2: # square
                     # Create the customer
                     cust = self.createCustomer(params['name'],params['email'],off_id,db)
@@ -795,13 +846,6 @@ class RegisterProvider(RegistrationsBase):
                             update invoices set order_id = %s where id = %s
                             """,(r['order']['id'],invid)
                         )
-                        #minv = db.query("""
-                        #    select max(stripe_invoice_number)+1 as a from 
-                        #        invoices i,stripe_invoice_status sis
-                        #    where 
-                        #        i.id=sis.invoices_id and billing_system_id=2
-                        #    """)
-                        #minv = int(minv[0]['a'])
                         s = client.invoices.create_invoice(
                             body = {
                                 'invoice': {
