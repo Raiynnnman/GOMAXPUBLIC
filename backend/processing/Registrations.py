@@ -705,6 +705,15 @@ class RegisterProvider(RegistrationsBase):
                 print(json.dumps(card,indent=4))
                 st = Stripe.Stripe()
                 (pid,src) = st.confirmCard(params['intent_id'],cust_id,stripe_id,card)
+                email = params['email']
+                if config.getKey("email_to_override") is not None:
+                    email = config.getKey("email_to_override")
+                stripe.Customer.modify(
+                    stripe_id,
+                    name=params['name'],
+                    email=email,
+                    phone=params['phone']
+                )
                 print("p=%s" % pid)
                 print("s=%s" % src)
                 card_id = src['id']
