@@ -45,6 +45,13 @@ class HomeHorizontal extends Component {
                     <Feature horizontalfeature="horizontal-feature" />
                     <Pricing showButton={true} onSelectPlan={this.handleSelectPlan} horizontalfeature="horizontal-pricing" />
                     <Testimonial />
+                    <div style={{marginTop:20,backgroundColor:"black",display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                        <iframe src="https://player.vimeo.com/video/954405043?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" 
+                            frameBorder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write" 
+                            style={{height:800,width:"100%"}}
+                            title="PoundPain_video_V1_2">
+                        </iframe>
+                    </div>
                     <Screenshot />
                     <FooterHome horizontal="horizontal" />
                 </div>

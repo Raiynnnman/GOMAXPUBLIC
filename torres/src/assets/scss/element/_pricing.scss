@@ -135,6 +135,13 @@
     }
 }
 
+.pricing-table-banner { 
+    background-image: url(/assets/main_page/pricing_background.jpg);
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+}
+
 .pricing-table-area {
     &.vertical-pricing {
         margin-top: -100px;

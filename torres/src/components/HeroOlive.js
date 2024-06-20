@@ -8,7 +8,7 @@ class HeroOlive extends Component {
                 <div className="header-bg"/>
                 <div className="container h-100 ">
                     <div className="row">
-                        <div className="col-lg-12 h-100">
+                        <div className="col-lg-6 h-100">
                             <div className="banner-text">
                                 <div className="banner-table-cell">
                                     <h1 style={{color:"white"}}>Revolutionizing <span style={{color:'#fa6a0a'}} className="theme-color">Patient Referrals</span><br/> Nationwide</h1>

@@ -95,7 +95,7 @@ The integrated telehealth services are a huge benefit for my practice. I can rea
                                         </p>
                                     </div>
                                     <div className="sin-testiText">
-                                        <h2>Dr. Laura Hernandez, Psychiatrist</h2>
+                                        <h2>Laura Hernandez, Patient</h2>
                                         <div className="client-rating">
                                             <i className="zmdi zmdi-star color"></i>
                                             <i className="zmdi zmdi-star color"></i>
@@ -104,11 +104,11 @@ The integrated telehealth services are a huge benefit for my practice. I can rea
                                             <i className="zmdi zmdi-star color"></i>
                                         </div>
                                         <p>
-I appreciate how Pound Pain Technology has simplified the referral process. The secure messaging feature allows me to maintain clear communication with my patients, which is essential in mental health care. My patient base has grown significantly since joining the platform.
+Their professionalism and trustworthiness were evident from the start. After my accident, they went above and beyond to help me find the best care provider. Their dedication and support made a challenging time much easier. I highly recommend their services to anyone in need.
                                         </p>
                                     </div>
                                     <div className="sin-testiText">
-                                        <h2>Dr. Robert Thompson, Emergency Care Physician</h2>
+                                        <h2>Robert Thompson, Patient</h2>
                                         <div className="client-rating">
                                             <i className="zmdi zmdi-star color"></i>
                                             <i className="zmdi zmdi-star color"></i>
@@ -117,7 +117,7 @@ I appreciate how Pound Pain Technology has simplified the referral process. The 
                                             <i className="zmdi zmdi-star color"></i>
                                         </div>
                                         <p>
-The platform's automated appointment reminders have reduced no-shows significantly. The comprehensive analytics dashboard helps me track and optimize my practice’s performance. Pound Pain Technology is a must-have for any busy emergency care provider.”
+I had an excellent experience with this company. They proved to be highly trustworthy and reliable. Following my accident, they went above and beyond to help me find the best chiropractor. Their commitment to customer satisfaction and their efficient service made a significant difference in my recovery process. I highly recommend their services to anyone in need of professional and dependable assistance.
                                         </p>
                                     </div>
                                 </Slider>

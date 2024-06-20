@@ -91,16 +91,8 @@ const Pricing = ({ onSelectPlan, showButton }) => {
   if (!landingData?.data?.pricing?.length) return null;
 
   return (
-    <Box className={classes.pricingTableArea} id="pricing">
+    <Box className='pricing-table-banner' id="pricing">
       <Container>
-        <div className={classes.sectionTitle}>
-          <Typography variant="h2" component="h2">
-            Pricing plans for offices of all sizes
-          </Typography>
-          <Typography variant="body1" color="textSecondary">
-            Pick the right pricing for your office!
-          </Typography>
-        </div>
         <Grid container spacing={4} justifyContent="center">
           {landingData.data.pricing.map((plan, index) => (
             <Grid
@@ -122,12 +114,12 @@ const Pricing = ({ onSelectPlan, showButton }) => {
                 </div>
                 <div className={classes.pricePackageContent}>
                   <div className={classes.upfront_cost}>
-                    <h3>
+                    <h3 style={{display:'flex',justifyContent:'center'}}>
                     <Typography component="span" className={classes.priceTop} style={{fontSize:24,fontWeight:"bold"}}>$</Typography>
                     <Typography component="span" className={classes.priceLarge} style={{fontSize:24,fontWeight:"bold"}}>{plan.upfront_cost}</Typography>
                     <Typography component="span" className={classes.priceBottom} style={{fontSize:24,fontWeight:"bold"}}>/month</Typography>
                     </h3>
-                    <h3>
+                    <h3 style={{display:'flex',justifyContent:'center'}}>
                     <Typography component="span" className={classes.priceBottom} style={{fontSize:18}}>{plan.benefits[0].description}</Typography>
                     </h3>
                   </div>
