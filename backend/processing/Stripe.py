@@ -61,8 +61,7 @@ class Stripe():
     def confirmCard(self,intentid,cust_id,stripe_id,card):
         stripe.api_key = config.getKey("stripe_key")
         r = stripe.SetupIntent.confirm(
-            intentid,
-            payment_method="pm_card_visa"
+            intentid
         )
         env = config.getKey("environment")
         tok = card['id']
