@@ -2,13 +2,13 @@ import React, { useEffect, useState, useRef } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import {stripeKey} from '../../stripeConfig.js';
 import { useDispatch, useSelector } from "react-redux";
+import { Grid } from '@mui/material';
 import { CardElement, Elements, useElements, useStripe, } from "@stripe/react-stripe-js";
 import { ElementsConsumer } from "@stripe/react-stripe-js";
-import { Button, Form, FormGroup, Label, Input, Row, Col, Dropdown, DropdownToggle, DropdownItem, DropdownMenu } from "reactstrap";
 import { PaymentElement } from "@stripe/react-stripe-js";
 import { saveCard } from "../../actions/saveCard";
-import { State, City } from "country-state-city";
 import {toast} from "react-toastify";
+import TemplateButton from '../utils/TemplateButton';
 
 function BillingCreditCardForm({ data, intentid, onCancel, onSave,stripe }) {
 
@@ -114,65 +114,6 @@ function BillingCreditCardForm({ data, intentid, onCancel, onSave,stripe }) {
     );
   }, [name, address1, city, state, zip]);
 
-  useEffect(() => {
-    if (selectedState) {
-      let tempCities = City.getCitiesOfState(
-        selectedState.isoCode
-      );
-      if (tempCities !== undefined) {
-        setFetchedCities(tempCities);
-        setFilteredCities(tempCities);
-      }
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedState]);
-
-  const stateMenuItemClicked = (state) => {
-    setState(state.name);
-    setSelectedState(state);
-    handleChangeState({ target: { value: state.name } });
-  };
-  const cityMenuItemClicked = (city) => {
-    setCity(city.name);
-    setSelectedCity(city);
-    handleChangeCity({ target: { value: city.name } });
-  };
-
-  const stateDropdownFilter = () => {
-    return filteredStates.length > 0 ? (
-      filteredStates.map((item) => (
-        <div key={item}>
-          <DropdownItem
-            onClick={() => {
-              stateMenuItemClicked(item);
-            }}
-          >
-            {item.name}
-          </DropdownItem>
-        </div>
-      ))
-    ) : (
-      <DropdownItem disabled={true}>No states found</DropdownItem>
-    );
-  };
-
-  const cityDropdownFilter = () => {
-    return filteredCities.length > 0 ? (
-      filteredCities.map((item) => (
-        <div key={item}>
-          <DropdownItem
-            onClick={() => {
-              cityMenuItemClicked(item);
-            } }
-          >
-            {item.name}
-          </DropdownItem>
-        </div>
-      ))
-    ) : (
-      <DropdownItem disabled={true}>No city found</DropdownItem>
-    );
-  }
     const cardStyle = {
         style: {
           base: {
@@ -195,22 +136,14 @@ function BillingCreditCardForm({ data, intentid, onCancel, onSave,stripe }) {
 
   return (
     <div style={{ margin: 20 }}>
-      <Form>
-        <Row>
-          <FormGroup>
+        <Grid container xs="12">
             <CardElement options={cardStyle} elements={elements}/>
-          </FormGroup>
-        </Row>
-        <Row style={{marginTop:10}}>
-            <FormGroup>
+        </Grid>
+        <Grid container xs="12">
             <div style={{marginTop:0,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                <Button color="primary" onClick={(e) => handlePaymentAdd(e,data)}>
-                 Register 
-                </Button>
+                <TemplateButton color="primary" onClick={(e) => handlePaymentAdd(e,data)} label='Register'/>
             </div>
-          </FormGroup>
-        </Row>
-      </Form>
+        </Grid>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import React, { Component, createRef } from 'react';
 import { connect } from 'react-redux';
+import { setupIntent } from '../../actions/setupIntent';
 import { withRouter } from 'react-router-dom';
 import {
     Container,
@@ -19,6 +20,7 @@ import Navbar from '../../components/Navbar';
 import Pricing from '../../components/Pricing';
 import AppSpinner from '../utils/Spinner';
 import formatPhoneNumber from '../utils/formatPhone';
+import {loadStripe} from '@stripe/stripe-js';
 import { getLandingData } from '../../actions/landingData';
 import { registerProvider } from '../../actions/registerProvider';
 import { ThemeProvider } from '@mui/material/styles';
@@ -26,7 +28,11 @@ import theme from '../../theme';
 import TemplateTextFieldPhone from '../utils/TemplateTextFieldPhone';
 import TemplateTextField from '../utils/TemplateTextField';
 import TemplateButton from '../utils/TemplateButton';
+import BillingCreditCardForm from './BillingCreditCardForm';
+import {stripeKey} from '../../stripeConfig.js';
+import {CardElement,ElementsConsumer,Elements} from '@stripe/react-stripe-js';
 
+const stripePromise = loadStripe(stripeKey());
 class RegisterProvider extends Component {
     formRef = createRef();
 
@@ -64,11 +70,14 @@ class RegisterProvider extends Component {
         const { id, pq_id } = this.props.match.params;
         this.setState({ plan: id, pq_id });
         this.props.dispatch(getLandingData({ type: this.state.provtype, pq_id }));
-
         const { location } = this.props;
         if (location.state && location.state.selectedPlan) {
             this.setState({ selPlan: location.state.selectedPlan });
         }
+        this.props.dispatch(setupIntent()).then((e) =>  { 
+            this.state.newcard = {id:0};
+            this.setState(this.state);
+        })
     }
 
     componentDidUpdate(prevProps) {
@@ -180,6 +189,8 @@ class RegisterProvider extends Component {
             first,
             name,
             phone,
+            cust_id: this.props.setupIntent.data.data.cust_id,
+            intent_id: this.props.setupIntent.data.data.id,
             plan: selPlan.id,
             provtype,
             last,
@@ -347,6 +358,20 @@ class RegisterProvider extends Component {
                                 </Grid>
                                 <Grid item xs={5} textAlign="right">
                                     <Typography variant="body1">{this.calculatePrice()}</Typography>
+                                </Grid>
+                            </Grid>
+                            <Grid container spacing={2} sx={{ mt: 2 }}>
+                                <Grid item xs={12}>
+                                {(this.props.setupIntent && this.props.setupIntent.data &&
+                                  this.props.setupIntent.data.data &&
+                                  this.props.setupIntent.data.data.id) && (
+                                    <Elements stripe={stripePromise} options={{clientSecret:this.props.setupIntent.data.data.clientSecret}}>
+                                        <ElementsConsumer>
+                                            {(ctx) => <BillingCreditCardForm onSave={this.saveCard} data={this.state} stripe={stripePromise}
+                                                onCancel={this.cancel} intentid={this.props.setupIntent.data.data.id} {...ctx} />}
+                                        </ElementsConsumer>
+                                    </Elements>
+                                )}
                                 </Grid>
                             </Grid>
                         </Paper>

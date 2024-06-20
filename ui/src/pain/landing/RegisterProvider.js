@@ -150,6 +150,10 @@ class RegisterProvider extends Component {
             this.state.pq_id = this.props.match.params.pq_id;
         } 
         this.props.dispatch(getLandingData({type:this.state.provtype,pq_id:this.state.pq_id}));
+        this.props.dispatch(setupIntent()).then((e) =>  {
+            this.state.newcard = {id:0};
+            this.setState(this.state);
+        })
     }
 
     checkValid() { 
@@ -326,6 +330,8 @@ class RegisterProvider extends Component {
             first: this.state.first,
             name: this.state.name,
             phone: this.state.phone,
+            cust_id: this.props.setupIntent.data.data.cust_id,
+            intent_id: this.props.setupIntent.data.data.id,
             plan: this.state.selPlan ? this.state.selPlan.id : null,
             provtype:this.state.provtype,
             card: this.state.card,
@@ -346,6 +352,11 @@ class RegisterProvider extends Component {
                 args.setState(args.state);
                 return;
             } 
+            // get a new token
+            this.props.dispatch(setupIntent()).then((e) =>  {
+                this.state.newcard = {id:0};
+                this.setState(this.state);
+            })
             window.location = "/#/welcome";
         },this));
     } 
@@ -628,16 +639,12 @@ class RegisterProvider extends Component {
                         <div style={{marginTop:20}}>
                         <Row md="12">
                             <Col md="12" sx="3">
-                                <PaymentForm style={{margin:10,display:'grid',justifyContent:'center',alignContent:'center'}}
-                                    applicationId={squareAppKey()}
-                                    locationId={squareLocationKey()}
-                                    cardTokenizeResponseReceived={(token,verifiedBuyer) => { 
-                                            this.saveCard({token:token});
-                                    }}>
-                                    <>
-                                        <CreditCard>Register</CreditCard>
-                                    </>
-                                </PaymentForm>
+                                <Elements stripe={stripePromise} options={{clientSecret:this.props.setupIntent.data.data.clientSecret}}>
+                                    <ElementsConsumer>
+                                        {(ctx) => <BillingCreditCardForm onSave={this.saveCard} data={this.state} stripe={stripePromise}
+                                            onCancel={this.cancel} intentid={this.props.setupIntent.data.data.id} {...ctx} />}
+                                    </ElementsConsumer>
+                                </Elements>
                             </Col>
                         </Row>
                         </div>
