@@ -692,7 +692,7 @@ class RegisterProvider(RegistrationsBase):
             if BS == 1:
                 cust_id = params['cust_id']
                 card = params['card']['token']
-                tok = card['card']['id']
+                tok = card['id']
                 l = db.query("""
                     select stripe_key from setupIntents where uuid=%s
                 """,(cust_id,))
