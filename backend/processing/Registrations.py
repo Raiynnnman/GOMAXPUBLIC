@@ -692,6 +692,7 @@ class RegisterProvider(RegistrationsBase):
             if BS == 1:
                 cust_id = params['cust_id']
                 card = params['card']['token']
+                tok = params['card']['id']
                 # self.saveStripe(cust_id,card)
                 l = db.query("""
                     select stripe_key from setupIntents where uuid=%s
@@ -704,7 +705,7 @@ class RegisterProvider(RegistrationsBase):
                 print("CARD----")
                 print(json.dumps(card,indent=4))
                 st = Stripe.Stripe()
-                (pid,src) = st.confirmCard(params['intent_id'],cust_id,stripe_id,card)
+                (pid,src) = st.confirmCard(params['intent_id'],cust_id,stripe_id,tok)
                 email = params['email']
                 if config.getKey("email_to_override") is not None:
                     email = config.getKey("email_to_override")

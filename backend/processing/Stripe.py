@@ -58,10 +58,9 @@ class Stripe():
             ret = o[0]['stripe_customer_id']
         return ret
 
-    def confirmCard(self,intentid,cust_id,stripe_id,card):
+    def confirmCard(self,intentid,cust_id,stripe_id,tok):
         stripe.api_key = config.getKey("stripe_key")
         env = config.getKey("environment")
-        tok = card['id']
         if env != 'prod':
             tok = 'tok_visa'
         r = stripe.SetupIntent.confirm(
