@@ -60,13 +60,14 @@ class Stripe():
 
     def confirmCard(self,intentid,cust_id,stripe_id,card):
         stripe.api_key = config.getKey("stripe_key")
-        r = stripe.SetupIntent.confirm(
-            intentid
-        )
         env = config.getKey("environment")
         tok = card['id']
         if env != 'prod':
             tok = 'tok_visa'
+        r = stripe.SetupIntent.confirm(
+            intentid,
+            payment_method=tok
+        )
         t = stripe.Customer.create_source ( 
             stripe_id,source=tok
         ) 
