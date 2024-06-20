@@ -55,6 +55,7 @@ class Query(DBBase):
                 C = 100
             except Exception as e:
                 log.error("UPDATE Failed: %s. Attempt %s" % (str(e),C))
+                log.error(query)
                 if C > 4:
                     raise e
             if C < 5:
