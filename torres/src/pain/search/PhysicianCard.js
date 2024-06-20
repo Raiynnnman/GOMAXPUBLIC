@@ -35,13 +35,14 @@ class PhysicianCard extends Component {
                     },
                 }}
             >
-                <CardMedia
-                    component="img"
-                    height="180"
-                    image={provider.headshot || "/headshot.png"}
-                    //image={image1}
-                    alt="Provider headshot"
-                />
+<CardMedia
+    component="img"
+    image={provider.headshot || "/headshot.png"}
+    alt="Provider headshot"
+    style={{ width: '100%', height: 'auto', objectFit: 'contain' }}
+/>
+
+
                 <CardContent>
                     <Typography gutterBottom variant="h5" component="div">
                         {provider.office_name}
