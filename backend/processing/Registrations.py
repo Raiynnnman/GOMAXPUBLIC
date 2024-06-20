@@ -692,16 +692,11 @@ class RegisterProvider(RegistrationsBase):
             if BS == 1:
                 cust_id = params['cust_id']
                 card = params['card']['token']
-                tok = params['id']
-                # self.saveStripe(cust_id,card)
+                tok = card['id']
                 l = db.query("""
                     select stripe_key from setupIntents where uuid=%s
                 """,(cust_id,))
                 stripe_id = l[0]['stripe_key']
-                db.update("""
-                    update office set stripe_cust_id=%s where id=%s
-                    """,(stripe_id,off_id)
-                )
                 print("CARD----")
                 print(json.dumps(card,indent=4))
                 st = Stripe.Stripe()
@@ -718,6 +713,10 @@ class RegisterProvider(RegistrationsBase):
                 print("p=%s" % pid)
                 print("s=%s" % src)
                 card_id = src['id']
+                db.update("""
+                    update office set stripe_cust_id=%s where id=%s
+                    """,(stripe_id,off_id)
+                )
                 db.update("""
                     insert into office_cards(
                         office_id,card_id,last4,exp_month,
