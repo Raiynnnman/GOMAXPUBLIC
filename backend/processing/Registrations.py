@@ -720,15 +720,15 @@ class RegisterProvider(RegistrationsBase):
                 db.update("""
                     insert into office_cards(
                         office_id,card_id,last4,exp_month,
-                        exp_year,client_ip,payment_id,
+                        exp_year,client_ip,
                         address1,address2,state,city,zip,name,
                         is_default
                     ) values (
-                        %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,1
+                        %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,1
                     )
                     """,(off_id,src['id'],card['card']['last4'],
                          card['card']['exp_month'],card['card']['exp_year'],
-                         card['client_ip'],pid['payment_method'],card['card']['address_line1'],
+                         card['client_ip'],card['card']['address_line1'],
                          card['card']['address_line2'],card['card']['address_state'],card['card']['address_city'],
                          card['card']['address_zip'],card['card']['name']
                     )

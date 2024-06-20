@@ -64,6 +64,7 @@ class Stripe():
         env = config.getKey("environment")
         if env != 'prod':
             tok = 'tok_visa'
+        r = {}
         #r = stripe.SetupIntent.confirm(
         #    intentid,
         #    payment_method=tok
