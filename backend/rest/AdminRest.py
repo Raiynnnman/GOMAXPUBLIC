@@ -6,7 +6,9 @@ import unittest
 from flask import request, jsonify
 
 from rest.RestBase import RestBase
-from processing import Admin,Coupons
+from processing import Admin,Coupons,AdminCustomers
+from processing import AdminInvoices,AdminRegistrations
+from processing import AdminTraffic, AdminCommissions
 from processing.Context import GetContext,DelContext
 
 class OfficeListRest(RestBase):
@@ -51,35 +53,6 @@ class AdminDashboard(RestBase):
         ret = u.process(args)
         return ret
 
-class BundleListRest(RestBase):
-
-    def post(self, *args, **kwargs):
-        u = Admin.BundleList()
-        ret = u.process(args[0])
-        return ret
-
-
-class BundleUpdateRest(RestBase):
-
-    def post(self, *args, **kwargs):
-        u = Admin.BundleUpdate()
-        ret = u.process(args[0])
-        return ret
-
-class LegalListRest(RestBase):
-
-    def post(self, *args, **kwargs):
-        u = Admin.LegalList()
-        ret = u.process(args[0])
-        return ret
-
-class LegalUpdateRest(RestBase):
-
-    def post(self, *args, **kwargs):
-        u = Admin.LegalUpdate()
-        ret = u.process(args[0])
-        return ret
-
 class UserListRest(RestBase):
 
     def post(self, *args, **kwargs):
@@ -97,56 +70,35 @@ class UserUpdateRest(RestBase):
 class InvoicesListRest(RestBase):
 
     def post(self, *args, **kwargs):
-        u = Admin.InvoicesList()
+        u = AdminInvoices.InvoicesList()
         ret = u.process(args[0])
         return ret
 
 class InvoicesUpdateRest(RestBase):
 
     def post(self, *args, **kwargs):
-        u = Admin.InvoicesUpdate()
-        ret = u.process(args[0])
-        return ret
-
-class TransfersListRest(RestBase):
-
-    def post(self, *args, **kwargs):
-        u = Admin.TransfersList()
-        ret = u.process(args[0])
-        return ret
-
-class CorporationListRest(RestBase):
-
-    def post(self, *args, **kwargs):
-        u = Admin.CorporationList()
-        ret = u.process(args[0])
-        return ret
-
-class CorporationUpdateRest(RestBase):
-
-    def post(self, *args, **kwargs):
-        u = Admin.CorporationUpdate()
+        u = AdminInvoices.InvoicesUpdate()
         ret = u.process(args[0])
         return ret
 
 class RegistrationUpdateRest(RestBase):
 
     def post(self, *args, **kwargs):
-        u = Admin.RegistrationUpdate()
+        u = AdminRegistrations.RegistrationUpdate()
         ret = u.process(args[0])
         return ret
 
 class RegistrationListRest(RestBase):
 
     def post(self, *args, **kwargs):
-        u = Admin.RegistrationList()
+        u = AdminRegistrations.RegistrationList()
         ret = u.process(args[0])
         return ret
 
 class TrafficGetRest(RestBase):
 
     def post(self, *args, **kwargs):
-        u = Admin.TrafficGet()
+        u = AdminTraffic.TrafficGet()
         ret = u.process(args[0])
         return ret
 
@@ -168,7 +120,7 @@ class AdminReportGetRest(RestBase):
 class AdminBookingRegisterRest(RestBase):
 
     def post(self, *args, **kwargs):
-        u = Admin.AdminBookingRegister()
+        u = AdminRegistrations.AdminBookingRegister()
         ret = u.process(args[0])
         return ret
 
@@ -196,27 +148,27 @@ class CouponListRest(RestBase):
 class CommissionListRest(RestBase):
 
     def post(self, *args, **kwargs):
-        u = Admin.CommissionList()
+        u = AdminCommissions.CommissionList()
         ret = u.process(args[0])
         return ret
 
 class CommissionUserListRest(RestBase):
 
     def post(self, *args, **kwargs):
-        u = Admin.CommissionUserList()
+        u = AdminCommissions.CommissionUserList()
         ret = u.process(args[0])
         return ret
 
 class CustomersUpdateRest(RestBase):
 
     def post(self, *args, **kwargs):
-        u = Admin.CustomerUpdate()
+        u = AdminCustomers.CustomerUpdate()
         ret = u.process(args[0])
         return ret
 
 class CustomersListRest(RestBase):
 
     def post(self, *args, **kwargs):
-        u = Admin.CustomerList()
+        u = AdminCustomers.CustomerList()
         ret = u.process(args[0])
         return ret

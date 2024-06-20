@@ -6,7 +6,8 @@ import unittest
 from flask import request, jsonify
 
 from rest.RestBase import RestBase
-from processing import Office
+from processing import Office, OfficeLocations, OfficeReferrals
+from processing import OfficeClients
 
 class PhysicianListRest(RestBase):
 
@@ -46,7 +47,7 @@ class UsersUpdateRest(RestBase):
 class ClientListRest(RestBase):
 
     def post(self, *args, **kwargs):
-        u = Office.ClientList()
+        u = OfficeClients.ClientList()
         ret = u.process(args[0])
         return ret
 
@@ -59,40 +60,40 @@ class DashboardRest(RestBase):
 class ClientUpdateRest(RestBase):
 
     def post(self, *args, **kwargs):
-        u = Office.ClientUpdate()
+        u = OfficeClients.ClientUpdate()
         ret = u.process(args[0])
         return ret
 
 class ReferrerDashboardRest(RestBase):
     def get(self, *args, **kwargs):
-        u = Office.ReferrerDashboard()
+        u = OfficeReferrals.ReferrerDashboard()
         ret = u.process(args[0])
         return ret
 
 class ReferrerUpdateRest(RestBase):
 
     def post(self, *args, **kwargs):
-        u = Office.ReferrerUpdate()
+        u = OfficeReferrals.ReferrerUpdate()
         ret = u.process(args[0])
         return ret
 
 class LocationsListRest(RestBase):
 
     def post(self, *args, **kwargs):
-        u = Office.LocationList()
+        u = OfficeLocations.LocationList()
         ret = u.process(args[0])
         return ret
 
 class LocationUpdateRest(RestBase):
 
     def post(self, *args, **kwargs):
-        u = Office.LocationUpdate()
+        u = OfficeLocations.LocationUpdate()
         ret = u.process(args[0])
         return ret
 
 class ReferralUpdateRest(RestBase):
 
     def post(self, *args, **kwargs):
-        u = Office.ReferralUpdate()
+        u = OfficeReferrals.ReferralUpdate()
         ret = u.process(args[0])
         return ret
