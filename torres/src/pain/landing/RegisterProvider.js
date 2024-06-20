@@ -37,11 +37,13 @@ class RegisterProvider extends Component {
     formRef = createRef();
 
     state = {
-        page: 0,
+        page: -1,
         plan: 0,
         card: null,
+        cardObj: null,
         currentName: '',
         currentPhone: '',
+        disableRegister:true,
         first: '',
         last: '',
         phone: '',
@@ -106,6 +108,17 @@ class RegisterProvider extends Component {
             }
         }
     }
+
+    onCardChange = (e,card,res) => { 
+        if (e.complete) { 
+            this.state.disableRegister = false;
+            this.state.cardObj = res;
+            this.setState(this.state);
+        } else { 
+            this.state.disableRegister = true;
+            this.setState(this.state);
+        } 
+    } 
 
     handleNameChange = (event) => {
         const { name, value } = event.target;
@@ -182,6 +195,10 @@ class RegisterProvider extends Component {
     };
 
     registerProvider = () => {
+        let tosend = {
+          name: this.state.first + " " + this.state.last,
+          address_phone: this.state.phone
+        };
         const { email, first, name, phone, selPlan, last, zipcode, showAddresses, coupon_id, pq_id, provtype } = this.state;
         const verifiedAddresses = showAddresses.filter((e) => e.verified);
         const registrationData = {
@@ -189,6 +206,7 @@ class RegisterProvider extends Component {
             first,
             name,
             phone,
+            card: this.state.cardObj,
             cust_id: this.props.setupIntent.data.data.cust_id,
             intent_id: this.props.setupIntent.data.data.id,
             plan: selPlan.id,
@@ -235,6 +253,8 @@ class RegisterProvider extends Component {
         const { selPlan, phone, couponRed, error_message, snackbarOpen, snackbarMessage, snackbarSeverity } = this.state;
         const { registerProvider, landingData } = this.props;
         switch (step) {
+            case -1:
+                return(<></>)
             case 0:
                 return (
                     <Box component="form" noValidate sx={{ mt: 1 }}>
@@ -367,7 +387,7 @@ class RegisterProvider extends Component {
                                   this.props.setupIntent.data.data.id) && (
                                     <Elements stripe={stripePromise} options={{clientSecret:this.props.setupIntent.data.data.clientSecret}}>
                                         <ElementsConsumer>
-                                            {(ctx) => <BillingCreditCardForm onSave={this.saveCard} data={this.state} stripe={stripePromise}
+                                            {(ctx) => <BillingCreditCardForm onSave={this.saveCard} onCardChange={this.onCardChange} data={this.state} stripe={stripePromise}
                                                 onCancel={this.cancel} intentid={this.props.setupIntent.data.data.id} {...ctx} />}
                                         </ElementsConsumer>
                                     </Elements>
@@ -375,9 +395,10 @@ class RegisterProvider extends Component {
                                 </Grid>
                             </Grid>
                         </Paper>
-                        <Box sx={{ mt: 3 }}>
+                        <Box sx={{ display:'flex',justifyContent:'center', mt: 3 }}>
                             <Button
                                 variant="contained"
+                                disabled={this.state.disableRegister}
                                 color="primary"
                                 sx={{ borderRadius: 8, backgroundColor: '#FF5733', color: '#fff', padding: '10px 45px', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase', mb: 2 }}
                                 onClick={this.registerProvider}
@@ -410,7 +431,7 @@ class RegisterProvider extends Component {
                 )}
                 <CssBaseline />
                 {registerProvider.isReceiving && <AppSpinner />}
-                {landingData.data && (
+                {landingData.data && this.state.page >= 0 && (
                     <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', px: 2 }}>
                         <Container maxWidth="md">
                             <Paper
@@ -432,7 +453,7 @@ class RegisterProvider extends Component {
                                     ))}
                                 </Stepper>
                                 {this.renderStepContent(page)}
-                                <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+                                <Box sx={{ display: 'flex', justifyContent:'center', flexDirection: 'row', pt: 2 }}>
                                     <Button
                                         color="inherit"
                                         disabled={page === 0}
@@ -459,6 +480,7 @@ class RegisterProvider extends Component {
 const mapStateToProps = (state) => ({
     landingData: state.landingData,
     registerProvider: state.registerProvider,
+    setupIntent: state.setupIntent
 });
 
 export default withRouter(connect(mapStateToProps)(RegisterProvider));

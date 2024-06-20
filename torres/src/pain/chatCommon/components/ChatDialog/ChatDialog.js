@@ -36,7 +36,6 @@ class ChatDialog extends Component {
     }
 
     componentWillReceiveProps(p) { 
-        console.log("cwrp",p);
         if (p.activeChatId !== this.state.currentChannel) { 
             this.joinChannel(p.activeChatId);
         }
@@ -70,7 +69,6 @@ class ChatDialog extends Component {
     }
 
     joinChannel(aci) { 
-        console.log("aci",aci);
         var t = this.props.data.rooms.filter((e) => e.id === aci)
         if (t.length > 0) { 
             this.state.currentChannel = aci;
@@ -123,7 +121,6 @@ class ChatDialog extends Component {
 
 
     handleChange = (e) => {
-        console.log("e",e);
         this.state.message = e.target.value;
         this.setState(this.state)
     }
@@ -139,7 +136,6 @@ class ChatDialog extends Component {
     }
 
   dialogParts = () => {
-    console.log("chat",this.chat());
     if (!this.chat().id) {
       return [];
     }
@@ -152,7 +148,6 @@ class ChatDialog extends Component {
     let firstMessage = mychat.chats[0];
     let dialogParts = [[this.shortCalendarDate(firstMessage.created)],[firstMessage]];
     let messagesLength = mychat.chats.length;
-    console.log("len",messagesLength);
 
     for (let i = 1; i < messagesLength; i++) {
       let lastDialogPart = dialogParts[dialogParts.length - 1];
@@ -265,8 +260,6 @@ class ChatDialog extends Component {
     } 
     const { sendingMessage, user } = this.props;
     const { dialogParts } = this.state;
-    console.log("cdp",this.props);
-    console.log("dp",dialogParts);
     return (
     <>
     {(this.props.chatUploadDoc && this.props.chatUploadDoc.isReceiving) && (

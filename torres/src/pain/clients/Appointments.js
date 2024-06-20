@@ -27,7 +27,6 @@ class Appointments extends Component {
     }
 
     componentDidMount() {
-        console.log("p",this.props);
         const initMap = (e) => { 
             console.log("init",e);
         } 
@@ -53,7 +52,6 @@ class Appointments extends Component {
 
     render() {
         const WrappedMap = withGoogleMap(DirectionsMap);
-        console.log("s",this.state.selected)
         return (
         <>
         <Navbar/>

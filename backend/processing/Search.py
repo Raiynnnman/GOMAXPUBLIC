@@ -504,9 +504,10 @@ class SearchRegister(SearchBase):
         ci_id = db.query("select LAST_INSERT_ID()");
         ci_id = ci_id[0]['LAST_INSERT_ID()']
         db.update("""
-           insert into client_intake_offices (client_intake_id,office_id,client_intake_status_id) 
-                    values(%s,%s,%s)
-           """,(ci_id,params['office_id'],1)
+           insert into client_intake_offices 
+                (client_intake_id,office_id,client_intake_status_id,office_addresses_id) 
+                    values(%s,%s,%s,%s)
+           """,(ci_id,params['office_id'],1,params['office_addresses_id'])
             )
         db.update("""
             insert into referrer_users(

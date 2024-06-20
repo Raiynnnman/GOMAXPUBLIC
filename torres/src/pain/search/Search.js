@@ -50,7 +50,6 @@ class SearchAdmin extends Component {
     };
 
     scheduleAppt = (provider, e) => {
-        console.log("prov",provider,e);
         this.state.selectedAppt = provider;
         this.setState(this.state);
         if (this.props.currentUser && this.props.currentUser.entitlements) { 
@@ -89,7 +88,6 @@ class SearchAdmin extends Component {
 
     setLocation = (lat, lon) => {
         this.setState({ mylocation: { lat, lon } });
-        console.log(this.state.mylocation)
 
     };
 
@@ -126,8 +124,6 @@ class SearchAdmin extends Component {
     render() {
         const { providerSearch, searchConfig } = this.props;
         const { selectedAppt, selectedProvider, zipcode, geo, error } = this.state;
-        console.log("p",this.props);
-        console.log("s",this.state);
         return (
             <>
                 <Navbar />

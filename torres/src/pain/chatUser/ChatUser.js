@@ -21,11 +21,9 @@ class ChatUser extends Component {
         this.onNewChat = this.onNewChat.bind(this)
     }
     componentDidMount() {
-        console.log("cdm",this.props);
         this.props.dispatch(getChatUser({appt:this.props.appt}))
     }
     componentWillReceiveProps(p) { 
-        console.log("cu",p);
         if (p.chatUser && p.chatUser.data && p.chatUser.data.rooms && !this.state.activeSet) { 
             this.state.activeSet = true;
             var t = p.chatUser.data.rooms[0].id
@@ -36,8 +34,6 @@ class ChatUser extends Component {
     onNewChat(e) { 
     }
     render() {
-        console.log("p",this.props);
-        console.log("s",this.state);
         const { mobileState } = this.props;
         return (
         <>

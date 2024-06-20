@@ -32,7 +32,6 @@ class ChatListItem extends Component {
 
   render() {
     const { chat, isActive } = this.props;
-    console.log("chat",chat);
     return (
       <li 
         onClick={this.changeChat}

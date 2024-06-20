@@ -220,7 +220,6 @@ class CustomerView extends Component {
     } 
 
     render() {
-        console.log("p",this.props);
         var value = '';
         var cntr = 1;
         return (
@@ -236,18 +235,19 @@ class CustomerView extends Component {
                           <font style={{width:25}}></font>
                             {translate('Status')}:
                             {(this.props.data.status !== 'SCHEDULED') && (
-                                <TemplateButton onClick={this.markScheduled} style={{margin:10}} label={translate('Scheduled')}/>
+                                <TemplateButton onClick={this.markScheduled} style={{margin:10,width:120}} label={translate('Scheduled')}/>
                             )}
-                            <TemplateButton onClick={this.markComplete} style={{margin:10}} label={translate('Completed')}/>
-                            <TemplateButton onClick={this.markNoShow} style={{margin:10}} label={translate('No Show')}/>
+                            <TemplateButton onClick={this.markComplete} style={{margin:10,width:120}} label={translate('Completed')}/>
+                            <TemplateButton onClick={this.markNoShow} style={{margin:10,width:120}} label={translate('Canceled')}/>
                         </div>
                     )}
                     {this.state.inputs.map((t) => {
                         return (
                         <Grid container xs="12" style={{marginTop:5}}>
+                            <Grid item xs={12}>
                             <div style={{display: 'flex', alignItems: 'center', justifyContent: 'spread-evenly'}}>
                                 {t.t === 'text' && (
-                                  <TemplateTextField type="text" style={{backgroundColor:'white'}}
+                                  <TemplateTextField type="text" style={{width:'100%',backgroundColor:'white'}}
                                     onChange={(e) => this.setValue(t,e)} 
                                         value={this.state.inputs.filter((g) => g.f === t.f)[0].v} 
                                     label={t.l} />
@@ -278,6 +278,7 @@ class CustomerView extends Component {
                                   </>
                                 )}
                             </div>
+                            </Grid>
                         </Grid>
                         )
                     })}

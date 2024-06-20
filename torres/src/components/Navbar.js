@@ -11,6 +11,7 @@ class Navbar extends Component {
         super(props);
         this.state = { 
             mylocation: null,
+            prevlocation: null,
             delay:60000,
             geo: false,
         } 
@@ -47,7 +48,14 @@ class Navbar extends Component {
         setTimeout((e) => { e.sendLocation() }, this.state.delay, this)
         if (!this.state.geo) { return; } 
         if (!this.props.currentUser) { return; }
+        if (this.state.prevlocation && 
+            this.state.prevlocation.lat === this.state.mylocation.lat &&
+            this.state.prevlocation.lon === this.state.mylocation.lon) { 
+            return;
+        }  
+        this.state.prevlocation = this.state.mylocation;
         this.props.dispatch(locationUpdate(this.state.mylocation));
+        this.setState(this.state);
     } 
 
     logout() { 

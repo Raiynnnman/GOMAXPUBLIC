@@ -50,6 +50,7 @@ class RegisterProvider extends Component {
             last:'',
             phone:'',
             email:'',
+            disabledRegister:true,
             error_message:null,
             pq_id:null,
             coupon:null,
@@ -426,6 +427,9 @@ class RegisterProvider extends Component {
         this.setState(this.state);
     }
 
+    onCardChange(e) { 
+    } 
+
     firstChange(e) { 
         this.state.first = e.target.value;
         this.setState(this.state);
@@ -545,8 +549,7 @@ class RegisterProvider extends Component {
                             <>
                             <div style={{border:"1px solid black"}}></div>
                             <Button type="submit" onClick={this.register} style={{backgroundColor:"#fa6a0a",color:"white"}} 
-                                className="auth-btn mb-3" disabled={
-                                  !this.state.isValid} size="lg">Register</Button>
+                                className="auth-btn mb-3" disabled={!this.state.isValid} size="lg">Register2</Button>
                             </>
                             )}
                             {(this.props.landingData.data.do_billing_charge===1) && ( 
@@ -554,15 +557,10 @@ class RegisterProvider extends Component {
                             <div style={{border:"1px solid black"}}></div>
                             <Button type="submit" onClick={this.nextPage} style={{backgroundColor:"#fa6a0a",color:"white"}} 
                                 className="auth-btn mb-3" disabled={
-                                  !this.state.isValid} size="lg">Next</Button>
+                                  !this.state.isValid} size="lg">Next2</Button>
                             </>
                             )}
                         </div>
-                    </>
-                    )}
-                    {(this.state.page === 1 && this.props.landingData.data.do_billing_charge===0) && (
-                    <>
-                        <h3>ME</h3>
                     </>
                     )}
                     {(this.state.page === 1 && this.props.landingData.data.do_billing_charge===1) && (

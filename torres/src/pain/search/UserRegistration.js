@@ -153,7 +153,6 @@ class UserRegistration extends Component {
             phone,
             last_name
         };
-        console.log("reg",registrationData);
         this.props.onRegister(registrationData);
 
     };
@@ -258,7 +257,6 @@ class UserRegistration extends Component {
         const { page, selPlan, snackbarOpen, snackbarMessage, snackbarSeverity } = this.state;
         const { registerUser, landingData } = this.props;
 
-        console.log("s",this.state);
         var steps = ['Register Information'];
 
         return (

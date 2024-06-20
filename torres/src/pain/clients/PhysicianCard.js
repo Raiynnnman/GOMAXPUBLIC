@@ -23,7 +23,6 @@ class PhysicianCard extends Component {
 
     render() {
         const { provider, admin,showContact } = this.props;
-        console.log("p",this.props);
         return (
             <Card
                 sx={{
