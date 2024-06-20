@@ -692,21 +692,18 @@ class RegisterProvider(RegistrationsBase):
             if BS == 1:
                 cust_id = params['cust_id']
                 card = params['card']['token']
+                tok = card['id']
                 l = db.query("""
                     select stripe_key from setupIntents where uuid=%s
                 """,(cust_id,))
                 stripe_id = l[0]['stripe_key']
-                db.update("""
-                    update office set stripe_cust_id=%s where id=%s
-                    """,(stripe_id,off_id)
-                )
                 print("CARD----")
                 print(json.dumps(card,indent=4))
                 st = Stripe.Stripe()
                 email = params['email']
                 if config.getKey("email_to_override") is not None:
                     email = config.getKey("email_to_override")
-                (pid,src) = st.confirmCard(params['intent_id'],cust_id,stripe_id,card)
+                (pid,src) = st.confirmCard(params['intent_id'],cust_id,stripe_id,tok)
                 stripe.Customer.modify(
                     stripe_id,
                     name=params['name'],
@@ -717,17 +714,21 @@ class RegisterProvider(RegistrationsBase):
                 print("s=%s" % src)
                 card_id = src['id']
                 db.update("""
+                    update office set stripe_cust_id=%s where id=%s
+                    """,(stripe_id,off_id)
+                )
+                db.update("""
                     insert into office_cards(
                         office_id,card_id,last4,exp_month,
-                        exp_year,client_ip,payment_id,
+                        exp_year,client_ip,
                         address1,address2,state,city,zip,name,
                         is_default
                     ) values (
-                        %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,1
+                        %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,1
                     )
                     """,(off_id,src['id'],card['card']['last4'],
                          card['card']['exp_month'],card['card']['exp_year'],
-                         card['client_ip'],pid['payment_method'],card['card']['address_line1'],
+                         card['client_ip'],card['card']['address_line1'],
                          card['card']['address_line2'],card['card']['address_state'],card['card']['address_city'],
                          card['card']['address_zip'],card['card']['name']
                     )
