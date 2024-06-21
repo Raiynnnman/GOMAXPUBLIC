@@ -4,7 +4,6 @@ import { Box, Typography, Grid, Paper, Link } from '@mui/material';
 import ActivityCard from './components/cards/ActivityCard';
 import TeamCard from './components/cards/TeamCard';
 import locationpin from '../../assets/images/app/location-pin.png';
-import addclient from '../../assets/images/app/add-client.png';
 
 const hoverEffect = {
   transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
