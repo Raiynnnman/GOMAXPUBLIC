@@ -1,7 +1,7 @@
 import React from 'react';
 import { Paper, Typography, Box, Button } from '@mui/material';
 
-const TeamCard = ({ title, imageSrc, buttonLabel, buttonStyle, imageStyle }) => {
+const TeamCard = ({ title, imageSrc, buttonLabel, buttonStyle, imageStyle,onPress }) => {
   return (
     <Paper
       sx={{
@@ -33,7 +33,7 @@ const TeamCard = ({ title, imageSrc, buttonLabel, buttonStyle, imageStyle }) => 
       <Typography variant="h6" sx={{ marginTop:4 }}>
         {title}
       </Typography>
-      <Button variant="contained" color="primary" sx={buttonStyle}>
+      <Button variant="contained" color="primary" sx={buttonStyle} onClick={onPress}>
         {buttonLabel}
       </Button>
     </Paper>

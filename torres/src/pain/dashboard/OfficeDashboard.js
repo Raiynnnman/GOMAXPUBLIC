@@ -52,6 +52,7 @@ const buttonStyle = {
   textTransform: 'none',
   marginTop: '12px'
 };
+ 
 
 class OfficeDashboard extends Component {
   static propTypes = {
@@ -68,6 +69,7 @@ class OfficeDashboard extends Component {
 
   render() {
     const { state, notifications } = this.props;
+    console.log(state)
 
     const titleMapping = {
       client: 'Client Notifications',
@@ -75,6 +77,10 @@ class OfficeDashboard extends Component {
       new_client: 'New Clients',
       message: 'New Messages'
     };
+
+  function onPress(){
+   window.open('/app/main/office/locations')
+   }
 
     return (
       <Box
@@ -107,6 +113,7 @@ class OfficeDashboard extends Component {
               imageStyle={imageStyle}
               buttonLabel="Set Locations"
               buttonStyle={buttonStyle}
+              onPress={onPress}
             />
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
