@@ -25,9 +25,11 @@ install: build
 	if [ -d pre/pre ]; then rm -rf pre/pre; fi
 	if [ -d rest/roles ] ; then cp -r rest/roles pre/rest ; fi
 	if [ -f version.sh ]; then cp version.sh pre; fi
+	if [ -f ../version ]; then cp ../version pre; fi
 	if [ -d bin ]; then cp -r bin pre; rm -f pre/bin/dev*; fi
 	if [ -d docs ]; then cp -r docs pre; fi
 	cp stripe/doall.sh pre/stripe
+	cp office/doall.sh pre/office
 	cp data_import/doall.sh pre/data_import
 	cp -r ../backend/templates pre/
 	mkdir -p pre/tests

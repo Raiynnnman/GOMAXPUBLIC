@@ -178,6 +178,7 @@ function BillingCreditCardForm({ data, intentid, onCancel, onSave,stripe }) {
           base: {
             color: "black",
             margin:20,
+            borderRadius:20,
             backgroundColor:"white",
             fontSize: "20px",
             "::placeholder": {
@@ -198,7 +199,9 @@ function BillingCreditCardForm({ data, intentid, onCancel, onSave,stripe }) {
       <Form>
         <Row>
           <FormGroup>
+            <div style={{backgroundColor:"white",borderRadius:20}}>
             <CardElement options={cardStyle} elements={elements}/>
+            </div>
           </FormGroup>
         </Row>
         <Row style={{marginTop:10}}>
