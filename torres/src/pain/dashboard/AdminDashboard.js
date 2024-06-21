@@ -10,7 +10,6 @@ import UniqueVisitorCard from './components/cards/UniqueVisitorCard';
 import MonthlyBarChart from './components/charts/MonthlyBarChart';
 import MainCard from './components/cards/MainCard';
 import AnalyticEcommerce from './components/cards/AnalyticCard';
-import { Button } from '@mui/material';
  class AdminDashboard extends Component {
     constructor(props) {
         super(props);
@@ -20,9 +19,6 @@ import { Button } from '@mui/material';
     componentDidMount() {
         this.props.dispatch(getAdminDashboard());
     }
-
- 
-
 
     render() {
         const { adminDashboard } = this.props;
@@ -40,10 +36,7 @@ import { Button } from '@mui/material';
                 revenue_leads_month = {},
                 traffic = {}
             } = data;
-
-            function handlePress() {
-                window.open("/AdminHomeDashboard")
-            }
+ 
 
 
             return (
@@ -52,7 +45,6 @@ import { Button } from '@mui/material';
                     <Grid item xs={12} sx={{ mb: 4.25 }}>
                         <Typography variant="h3">Dashboard</Typography>
                         <Typography variant="text.secondary">Get an overview of your accound, user interactions, traffic and more!</Typography>
-                        <button item onClick={()=>{handlePress()}}/>
                     </Grid>
                      <Grid item xs={12} sm={6} md={4} lg={3}>
                         <AnalyticEcommerce 

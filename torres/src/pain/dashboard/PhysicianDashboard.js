@@ -8,6 +8,7 @@ import TrendHeroWithStats from './components/TrendHeroWithStats';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import {getProviderDashboard} from '../../actions/providerDashboard';
+import OfficeDashboard from './OfficeDashboard';
 
 class Template extends Component {
     constructor(props) { 
@@ -24,6 +25,7 @@ class Template extends Component {
     }
 
     render() {
+        const OfficeDashboardData = this.props.providerDashboard.data.notifications
         return (
         <>
             {(this.props.offices && this.props.offices.isReceiving) && (
@@ -31,13 +33,10 @@ class Template extends Component {
             )}
             {(this.props.providerDashboard && this.props.providerDashboard.data && 
               this.props.providerDashboard.data.customers) && (
-                <Grid container xs="12">
-                    <Grid item xs="3">
-                        <TrendHeroWithStats data={this.props.providerDashboard.data.customers}
-                            title="Clients Gained" num2title="Month" num3title="Year" 
-                            num4title="Converted"/>
-                    </Grid>
-                </Grid>
+                <OfficeDashboard 
+                state={this.props.providerDashboard.data.customers} 
+                notifications={OfficeDashboardData} 
+            />            
             )}
         </>
         )

@@ -28,8 +28,8 @@ log = Logging()
 config = settings.config()
 config.read("settings.cfg")
 
+ 
 class OfficeBase(SubmitDataRequest):
-
     def __init__(self):
         super().__init__()
 
@@ -40,46 +40,76 @@ class OfficeDashboard(OfficeBase):
     def isDeferred(self):
         return False
 
-    def getCustomers(self,off_id):
-        db= Query()
+    def getCustomers(self, off_id):
+        db = Query()
         CI = self.getClientIntake()
         o = db.query("""
-            select
-                ifnull(t1.num1,0) as num1, /* */
-                ifnull(t2.num2,0) as num2, /* */
-                ifnull(t3.num3,0) as num3, /* */
-                ifnull(t4.num4,0) as num4
-            from
-                (select count(ci.id) as num1 from 
-                    client_intake_offices cio,client_intake ci
-                    where 
-                    cio.client_intake_id=ci.id and hidden=0 and
-                    office_id = %s) as t1,
-                (select count(ci.id) as num2 from 
-                    client_intake_offices cio,client_intake ci
-                    where 
-                        cio.client_intake_id=ci.id and hidden=0 and
-                        office_id = %s and month(ci.created) = month(now())
-                        and year(ci.created) = year(now())) as t2,
-                (select count(ci.id) as num3 from 
-                    client_intake_offices cio,client_intake ci
-                    where 
-                    cio.client_intake_id=ci.id and hidden=0 and
-                    office_id = %s and year(ci.created) = year(now())) as t3,
-                (select count(ci.id) as num4 from client_intake_offices cio,
+            SELECT
+                IFNULL(t1.num1, 0) AS num1, /* */
+                IFNULL(t2.num2, 0) AS num2, /* */
+                IFNULL(t3.num3, 0) AS num3, /* */
+                IFNULL(t4.num4, 0) AS num4
+            FROM
+                (SELECT COUNT(ci.id) AS num1 FROM 
+                    client_intake_offices cio, client_intake ci
+                    WHERE 
+                    cio.client_intake_id = ci.id AND hidden = 0 AND
+                    office_id = %s) AS t1,
+                (SELECT COUNT(ci.id) AS num2 FROM 
+                    client_intake_offices cio, client_intake ci
+                    WHERE 
+                        cio.client_intake_id = ci.id AND hidden = 0 AND
+                        office_id = %s AND MONTH(ci.created) = MONTH(NOW())
+                        AND YEAR(ci.created) = YEAR(NOW())) AS t2,
+                (SELECT COUNT(ci.id) AS num3 FROM 
+                    client_intake_offices cio, client_intake ci
+                    WHERE 
+                    cio.client_intake_id = ci.id AND hidden = 0 AND
+                    office_id = %s AND YEAR(ci.created) = YEAR(NOW())) AS t3,
+                (SELECT COUNT(ci.id) AS num4 FROM client_intake_offices cio,
                     client_intake ci
-                    where 
-                    cio.client_intake_id=ci.id and office_id = %s and hidden=0
-                    and cio.client_intake_status_id=%s) as t4
-            """,(off_id,off_id,off_id,off_id,CI['COMPLETED']))
+                    WHERE 
+                    cio.client_intake_id = ci.id AND office_id = %s AND hidden = 0
+                    AND cio.client_intake_status_id = %s) AS t4
+            """, (off_id, off_id, off_id, off_id, CI['COMPLETED']))
         return o[0]
+
+    def getOfficeNotifications(self, off_id):
+        print(off_id)
+        db = Query()
+         #This query's primary goal is to group by `notifiable_type`.
+         #It does this by finding the maximum value of `acknowledged` 
+         #and `office_notifications_category_id` for each type.
+         #`notification_count` is the column that represents the tally or the total number of notifications 
+         #for each type with the `office_id` of 14041.
+        notifications = db.query("""
+            SELECT 
+                onf.notifiable_type, 
+                MAX(onf.acknowledged) AS acknowledged,   
+                MAX(onf.office_notifications_category_id) AS office_notifications_category_id,  
+                COUNT(onf.id) AS notification_count
+            FROM 
+                office o
+            JOIN 
+                office_notifications onf ON o.id = onf.office_id
+            JOIN 
+                office_notifications_category onc ON onf.office_notifications_category_id = onc.id
+            WHERE 
+                o.id = %s
+            GROUP BY 
+                onf.notifiable_type
+            """, (off_id,))
+        return notifications
 
     @check_office
     def execute(self, *args, **kwargs):
         ret = {}
-        job,user,off_id,params = self.getArgs(*args,**kwargs)
+        job, user, off_id, params = self.getArgs(*args, **kwargs)
         ret['customers'] = self.getCustomers(off_id)
+        ret['notifications'] = self.getOfficeNotifications(off_id)
+        print(ret['notifications'])
         return ret
+
 
 class OfficeInvoicesList(OfficeBase):
 

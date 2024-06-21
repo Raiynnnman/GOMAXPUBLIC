@@ -1,159 +1,258 @@
 import React, { Component } from 'react';
-import Box from '@mui/material/Box';
 import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
-import cx from 'classnames';
-import classnames from 'classnames';
+import {
+    Box,
+    Grid,
+    Container,
+    Button,
+    Paper,
+    Typography,
+    Divider,
+    Snackbar,
+    Alert,
+    TextField,
+} from '@mui/material';
 import AddBoxIcon from '@mui/icons-material/AddBox';
-import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
-import {getOfficeLocations} from '../../actions/officeLocations';
-import {officeLocationsSave} from '../../actions/officeLocationsSave';
-import LocationCard from './LocationCard';
-import Grid from '@mui/material/Grid';
-import Container from '@mui/material/Container';
-import TemplateButton from '../utils/TemplateButton';
 import Navbar from '../../components/Navbar';
+import LocationCard from './LocationCard';
+import { getOfficeLocations } from '../../actions/officeLocations';
+import { officeLocationsSave } from '../../actions/officeLocationsSave';
 
 class OfficeAddresses extends Component {
-    constructor(props) { 
-        super(props);
-        this.state = { 
-            activeTab: "office",
-            selected:null,
-        }
-        this.toggleTab = this.toggleTab.bind(this);
-        this.edit = this.edit.bind(this);
-        this.save = this.save.bind(this);
-        this.cancel = this.cancel.bind(this);
-        this.onUpdate = this.onUpdate.bind(this);
-    } 
-
-    componentWillReceiveProps(p) { 
-    }
+    state = {
+        activeTab: "office",
+        selected: null,
+        snackbarOpen: false,
+        snackbarMessage: '',
+        snackbarSeverity: 'success',
+    };
 
     componentDidMount() {
-        this.props.dispatch(getOfficeLocations({page:0,limit:10000}))
+        this.props.dispatch(getOfficeLocations({ page: 0, limit: 10000 }));
     }
 
-    toggleTab(e) { 
-        this.state.activeTab = e;
-    } 
+    cancel = () => {
+        this.setState({ selected: null });
+    }
 
-    cancel(e) { 
-        this.state.selected = null;
-        this.setState(this.state)
-    } 
+    onUpdate = (updatedField) => {
+        this.setState((prevState) => ({
+            selected: { ...prevState.selected, ...updatedField }
+        }));
+    }
 
-    onUpdate(e) { 
-        this.state.selected = e;
-        this.setState(this.state)
-    } 
+    save = () => {
+        const { selected } = this.state;
+        if (selected.id === 'new') {
+            delete selected.id;
+        }
+        this.props.dispatch(officeLocationsSave(selected, (err, args) => {
+            if (err) {
+                this.setState({
+                    snackbarOpen: true,
+                    snackbarMessage: 'Error saving address.',
+                    snackbarSeverity: 'error'
+                });
+                return;
+            }
+            this.props.dispatch(getOfficeLocations({ page: 0, limit: 10000 }, () => {
+                toast.success('Successfully saved address.', {
+                    position: "top-right",
+                    autoClose: 3000,
+                    hideProgressBar: true,
+                });
+                this.cancel();
+            }));
+        }));
+    }
 
-    save() { 
-        var g = this.state.selected;
-        if (g.id && g.id === 'new') { 
-            delete g.id;
-        } 
-        this.props.dispatch(officeLocationsSave(g,function(err,args) { 
-            args.props.dispatch(
-                getOfficeLocations(
-                    {limit:args.state.pageSize,offset:args.state.page,status:args.state.filter},function(err,args) { 
-              toast.success('Successfully saved address.',
-                {
-                    position:"top-right",
-                    autoClose:3000,
-                    hideProgressBar:true
+    edit = (e) => {
+        if (e.id === 'new') {
+            this.setState({
+                selected: {
+                    name: '',
+                    miles: 0,
+                    addr1: '',
+                    city: '',
+                    state: '',
+                    zipcode: '',
+                    phone: '',
+                    rating: 0
                 }
-              );
-              args.cancel()
-            },args))
-        },this));
-    } 
+            });
+        } else {
+            const selectedLocation = this.props.officeLocations.data.locations.find((g) => g.id === e.id);
+            this.setState({ selected: selectedLocation });
+        }
+    }
 
-    edit(e) { 
-        if (e.id === 'new') { 
-            this.state.selected = { 
-                name:'',
-                miles:0,
-                addr1:'',city:'',
-                state:'',zipcode:'',phone:'',
-                rating:0
-            } 
-        } else { 
-            var t = this.props.officeLocations.data.locations.filter((g) => g.id === e.id)
-            this.state.selected = t[0] 
-        } 
-        this.setState(this.state)
-    } 
+    handleCloseSnackbar = () => {
+        this.setState({ snackbarOpen: false });
+    }
 
     render() {
+        const { selected, snackbarOpen, snackbarMessage, snackbarSeverity } = this.state;
+        const { officeLocations, officeLocationSave } = this.props;
+
         return (
-        <>
-        <Navbar/>
-        <Box style={{margin:20}}>
-            {(this.props.officeLocations && this.props.officeLocations.isReceiving) && (
-                <AppSpinner/>
-            )}
-            {(this.props.officeLocationSave && this.props.officeLocationSave.isReceiving) && (
-                <AppSpinner/>
-            )}
-            {(this.state.selected !== null) && (
             <>
-            <Grid container xs="12">
-                <Grid item xs="4">
-                    <LocationCard provider={this.state.selected} onUpdate={this.onUpdate} edit={true}/>
-                </Grid>
-            </Grid>
-            <hr/>
-            <Grid container xs="12">
-                <Grid item xs="12">
-                    <Grid item xs="6">
-                        <TemplateButton onClick={this.save} label='Save'/>
-                        <TemplateButton outline style={{marginLeft:10}} onClick={this.cancel} 
-                            label='Close'/>
-                    </Grid>
-                </Grid>
-            </Grid>
+                <Navbar />
+                <Container sx={{ mt: 3 }}>
+                    {(officeLocations?.isReceiving || officeLocationSave?.isReceiving) && <AppSpinner />}
+                    {selected ? (
+                        <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', px: 2 }}>
+                            <Container maxWidth="md">
+                                <Paper
+                                    elevation={12}
+                                    sx={{
+                                        width: '100%',
+                                        p: { xs: 2, sm: 4, md: 6 },
+                                        borderRadius: '30px',
+                                        boxShadow: '0 5px 15px rgba(0, 0, 0, 0.35)',
+                                        backgroundColor: '#fff',
+                                    }}
+                                >
+                                    <Typography variant="h6" align="center" gutterBottom>
+                                        {selected.id === 'new' ? 'Add New Office Location' : 'Edit Office Location'}
+                                    </Typography>
+                                    <Grid container spacing={3}>
+                                        <Grid item xs={12}>
+                                            <TextField
+                                                fullWidth
+                                                required
+                                                label="Name"
+                                                name="name"
+                                                value={selected.name}
+                                                onChange={(e) => this.onUpdate({ name: e.target.value })}
+                                                margin="normal"
+                                                sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                                            />
+                                        </Grid>
+                                        <Grid item xs={12} sm={6}>
+                                            <TextField
+                                                fullWidth
+                                                required
+                                                label="Address"
+                                                name="addr1"
+                                                value={selected.addr1}
+                                                onChange={(e) => this.onUpdate({ addr1: e.target.value })}
+                                                margin="normal"
+                                                sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                                            />
+                                        </Grid>
+                                        <Grid item xs={12} sm={6}>
+                                            <TextField
+                                                fullWidth
+                                                required
+                                                label="City"
+                                                name="city"
+                                                value={selected.city}
+                                                onChange={(e) => this.onUpdate({ city: e.target.value })}
+                                                margin="normal"
+                                                sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                                            />
+                                        </Grid>
+                                        <Grid item xs={12} sm={6}>
+                                            <TextField
+                                                fullWidth
+                                                required
+                                                label="State"
+                                                name="state"
+                                                value={selected.state}
+                                                onChange={(e) => this.onUpdate({ state: e.target.value })}
+                                                margin="normal"
+                                                sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                                            />
+                                        </Grid>
+                                        <Grid item xs={12} sm={6}>
+                                            <TextField
+                                                fullWidth
+                                                required
+                                                label="Zipcode"
+                                                name="zipcode"
+                                                value={selected.zipcode}
+                                                onChange={(e) => this.onUpdate({ zipcode: e.target.value })}
+                                                margin="normal"
+                                                sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                                            />
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <TextField
+                                                fullWidth
+                                                required
+                                                label="Phone"
+                                                name="phone"
+                                                value={selected.phone}
+                                                onChange={(e) => this.onUpdate({ phone: e.target.value })}
+                                                margin="normal"
+                                                sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                                            />
+                                        </Grid>
+                                    </Grid>
+                                    <Divider sx={{ my: 2 }} />
+                                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                        <Button variant="outlined" sx={{ ...buttonStyle, mr: 2 }} onClick={this.cancel}>Close</Button>
+                                        <Button variant="contained" sx={buttonStyle} onClick={this.save}>Save</Button>
+                                    </Box>
+                                </Paper>
+                            </Container>
+                        </Box>
+                    ) : (
+                        <>
+                            <Grid container spacing={3} sx={{ justifyContent: 'center', mt: 2 }}>
+                                <Grid item>
+                                    <Button variant="contained" sx={buttonStyle} startIcon={<AddBoxIcon />} onClick={() => this.edit({ id: 'new' })}>
+                                        Add New Location
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                            <Grid container spacing={4} sx={{ mt: 2 }}>
+                                {officeLocations?.data?.locations?.length > 0 ? (
+                                    officeLocations.data.locations.map((e) => (
+                                        <Grid item xs={12} sm={6} md={4} key={e.id}>
+                                            <Box sx={{ height: '100%' }}>
+                                                <LocationCard onEdit={this.edit} provider={e} edit={false} />
+                                            </Box>
+                                        </Grid>
+                                    ))
+                                ) : (
+                                    <Typography variant="h6" color="textSecondary" sx={{ mt: 5 }}>
+                                        No office locations available.
+                                    </Typography>
+                                )}
+                            </Grid>
+                        </>
+                    )}
+                </Container>
+                <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={this.handleCloseSnackbar}>
+                    <Alert onClose={this.handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
+                        {snackbarMessage}
+                    </Alert>
+                </Snackbar>
             </>
-            )}
-            {(this.state.selected === null) && (
-            <>
-            <Grid container xs="12">
-                <Grid item xs="1">
-                    <TemplateButton onClick={() => this.edit({id:'new'})} style={{width:50}}
-                        label={<AddBoxIcon/>}/>
-                </Grid>
-            </Grid>
-            <Grid container xs="12">
-                {(this.props.officeLocations && this.props.officeLocations.data &&
-                  this.props.officeLocations.data.locations && 
-                  this.props.officeLocations.data.locations.length > 0) && (
-                  <>
-                    {this.props.officeLocations.data.locations.map((e) => {
-                        return (
-                        <Grid item xs="4">
-                            <LocationCard onEdit={this.edit} provider={e} edit={false}/>
-                        </Grid>
-                        )
-                    })}
-                  </>
-                )}
-            </Grid>
-            </>
-            )}
-        </Box>
-        </>
-        )
+        );
     }
 }
 
-function mapStateToProps(store) {
-    return {
-        currentUser: store.auth.currentUser,
-        officeLocations: store.officeLocations,
-        officeLocationSave: store.officeLocationSave
-    }
-}
+const buttonStyle = {
+    backgroundColor: '#fa6a0a',
+    color: 'white',
+    '&:hover': {
+        backgroundColor: '#e55d00',
+    },
+    borderRadius: '10px',
+    padding: '8px 16px',
+    width: '100%',
+    textTransform: 'none',
+    mt: 2,
+};
+
+const mapStateToProps = (store) => ({
+    currentUser: store.auth.currentUser,
+    officeLocations: store.officeLocations,
+    officeLocationSave: store.officeLocationSave
+});
 
 export default connect(mapStateToProps)(OfficeAddresses);

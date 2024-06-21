@@ -47,13 +47,13 @@ offices = db.query(q)
 CNT = 0
 
 for office in offices:
-    if notify_if_not_exists(db, office['office_id'], OFN['OFFICE_NOTIFICATION_UPDATED_ADDRESS']):
+    if notify_if_not_exists(db, office['office_id'], OFN['OFFICE_NOTIFICATION_HAS_ADDRESSES']):
         continue
     
     db.update("""
         INSERT INTO office_notifications (office_id, office_notifications_category_id, notifiable_id, notifiable_type, acknowledged) 
         VALUES (%s, %s, %s, 'office', 0)
-    """, (office['office_id'], OFN['OFFICE_NOTIFICATION_UPDATED_ADDRESS'], office['office_id']))
+    """, (office['office_id'], OFN['OFFICE_NOTIFICATION_HAS_ADDRESSES'], office['office_id']))
     db.commit()
     
     CNT += 1

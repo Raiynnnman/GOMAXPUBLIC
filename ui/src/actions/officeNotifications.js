@@ -1,10 +1,13 @@
 import axios from 'axios';
 import apiBaseUrl from '../globalConfig.js';
+import Cookies from 'universal-cookie';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import handleError from './handleError';
+const cookies = new Cookies();
 
-export const RECEIVED_ADASH_DATA_SUCCESS = 'RECEIVED_ADASH_DATA_SUCCESS';
-export const RECEIVING_ADASH_DATA = 'RECEIVING_ADASH_DATA';
+export const RECEIVED_PROVDASH_DATA_SUCCESS = 'RECEIVED_PROVDASH_DATA_SUCCESS';
+export const RECEIVING_PROVDASH_DATA = 'RECEIVING_PROVDASH_DATA';
 
 export function receiveDataRequest(params) {
     return (dispatch) => {
@@ -16,12 +19,12 @@ export function receiveDataRequest(params) {
 
 export function receiveDataSuccess(payload) {
     return {
-        type: RECEIVED_ADASH_DATA_SUCCESS,
+        type: RECEIVED_PROVDASH_DATA_SUCCESS,
         payload
     }
 }
 
-export function getAdminDashboard(params) { 
+export function getProviderDashboard(params) { 
   return async (dispatch) => {
     dispatch(receivingData(params));
   };
@@ -30,20 +33,19 @@ export function getAdminDashboard(params) {
 export function receivingData(params) {
   return async (dispatch) => {
     dispatch({
-        type: RECEIVING_ADASH_DATA
+        type: RECEIVING_PROVDASH_DATA
     });
-    const response = await axios.create({ //eslint-disable-line no-unused-vars
+    const response = await axios.create({
             baseURL: apiBaseUrl(),
             withCredentials: true,
             headers: {
               Accept: "application/json",
               "Content-Type": "application/json",
             },
-        }).get('/admin/dashboard')
+        }).get('/office/dashboard')
       .then((e) => { 
-        console.log(e.data.data)
           dispatch({
-                type: RECEIVED_ADASH_DATA_SUCCESS,
+                type: RECEIVED_PROVDASH_DATA_SUCCESS,
                 payload: e.data.data
             });
       })
