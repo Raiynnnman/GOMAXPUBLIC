@@ -93,9 +93,6 @@ class OfficeDashboard extends Component {
       >
         <Typography variant="h3" component="h1" fontWeight="bold" gutterBottom>
           Welcome, {name}
-          <Typography variant="caption" color="primary" sx={{ marginLeft: 1 }}>
-            NEW
-          </Typography>
         </Typography>
         <Typography sx={{mb:1}} variant="h6" color="InfoText" gutterBottom>
          Welcome to your Dashboard, Get an overview of your account and more!
@@ -136,7 +133,8 @@ class OfficeDashboard extends Component {
                 <Typography variant="body1" color="textSecondary">No notifications available.</Typography>
               </Grid>
             )}
-              <HelpSection/>
+              {/*PM: Disable for now since it goes nowhere */}
+              {/*<HelpSection/>*/}
           </Grid>
          </Box>
       </Box>

@@ -3,6 +3,7 @@ import {contactus} from '../actions/contactus';
 import { connect } from 'react-redux';
 import {subscribe} from '../actions/subscribe';
 import TemplateCheckbox from '../pain/utils/TemplateCheckbox';
+import getVersion from '../version';
 import TemplateButton from '../pain/utils/TemplateButton';
 import TemplateTextArea from '../pain/utils/TemplateTextArea';
 import TemplateTextField from '../pain/utils/TemplateTextField';
@@ -167,7 +168,7 @@ class FooterHome extends Component {
                                     <a href="https://www.instagram.com/poundpain/" rel="noreferrer" target='_blank'><i className="zmdi zmdi-instagram"></i></a>
                                 </div>
                                 <div className="footer-text text-center">
-                                    <span>Copyright © {new Date().getFullYear()} <a href="https://hasthemes.com">POUNDPAIN TECH</a></span>
+                                    <span>Copyright © {new Date().getFullYear()} <a href="https://hasthemes.com">POUNDPAIN TECH - {getVersion()}</a></span>
                                 </div>
                             </div>
                         </div>

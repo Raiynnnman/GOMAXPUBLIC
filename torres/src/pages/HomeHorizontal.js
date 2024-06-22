@@ -16,6 +16,7 @@ import TestimonialCustomer from '../components/TestimonialCustomer';
 import Screenshot from '../components/Screenshot';
 import Blog from '../components/Blog';
 import FooterHome from '../components/FooterHome';
+import Footer from '../components/Footer';
 import { getLandingData } from '../actions/landingData';
 import theme from '../theme';  
 import siteType from '../siteType';
@@ -34,6 +35,7 @@ class HomeHorizontal extends Component {
     render() {
         console.log(this.props)
         return (
+        <>
             <ThemeProvider theme={theme}>
                 {(siteType() === 'provider') && (
                 <div>
@@ -69,6 +71,7 @@ class HomeHorizontal extends Component {
                 </div>
                 )}
             </ThemeProvider>
+        </>
         );
     }
 }
