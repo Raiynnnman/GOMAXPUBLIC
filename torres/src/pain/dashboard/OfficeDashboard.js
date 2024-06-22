@@ -74,7 +74,7 @@ class OfficeDashboard extends Component {
     };
 
   function onPress(){
-   window.open('/app/main/office/locations')
+       window.location = '/app/main/office/locations'
    }
 
     return (

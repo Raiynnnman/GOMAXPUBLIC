@@ -15,6 +15,7 @@ import {
 } from '@mui/material';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import AppSpinner from '../utils/Spinner';
+import formatPhone from '../utils/formatPhone';
 import Navbar from '../../components/Navbar';
 import LocationCard from './LocationCard';
 import { getOfficeLocations } from '../../actions/officeLocations';
@@ -39,6 +40,12 @@ class OfficeAddresses extends Component {
     }
 
     onUpdate = (updatedField) => {
+        if (updatedField.phone) { 
+            if (updatedField.phone.length > 10) { return; }
+        } 
+        if (updatedField.zipcode) { 
+            if (updatedField.zipcode.length > 5) { return; }
+        } 
         this.setState((prevState) => ({
             selected: { ...prevState.selected, ...updatedField },
             errors: { ...prevState.errors, ...updatedField }
@@ -133,9 +140,6 @@ class OfficeAddresses extends Component {
                 <Container sx={{ mt: 3 }}>
                     <Typography variant="h3" component="h1" fontWeight="bold" gutterBottom>
                         Office Addresses
-                        <Typography variant="caption" color="primary" sx={{ marginLeft: 1 }}>
-                            NEW
-                        </Typography>
                     </Typography>
                     {(officeLocations?.isReceiving || officeLocationSave?.isReceiving) && <AppSpinner />}
                     {selected ? (
@@ -166,7 +170,6 @@ class OfficeAddresses extends Component {
                                                 margin="normal"
                                                 sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
                                                 error={!!errors.name}
-                                                helperText={errors.name}
                                             />
                                         </Grid>
                                         <Grid item xs={12} sm={6}>
@@ -180,7 +183,6 @@ class OfficeAddresses extends Component {
                                                 margin="normal"
                                                 sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
                                                 error={!!errors.addr1}
-                                                helperText={errors.addr1}
                                             />
                                         </Grid>
                                         <Grid item xs={12} sm={6}>
@@ -194,7 +196,6 @@ class OfficeAddresses extends Component {
                                                 margin="normal"
                                                 sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
                                                 error={!!errors.city}
-                                                helperText={errors.city}
                                             />
                                         </Grid>
                                         <Grid item xs={12} sm={6}>
@@ -208,7 +209,6 @@ class OfficeAddresses extends Component {
                                                 margin="normal"
                                                 sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
                                                 error={!!errors.state}
-                                                helperText={errors.state}
                                             />
                                         </Grid>
                                         <Grid item xs={12} sm={6}>
@@ -222,7 +222,6 @@ class OfficeAddresses extends Component {
                                                 margin="normal"
                                                 sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
                                                 error={!!errors.zipcode}
-                                                helperText={errors.zipcode}
                                             />
                                         </Grid>
                                         <Grid item xs={12}>
@@ -231,12 +230,11 @@ class OfficeAddresses extends Component {
                                                 required
                                                 label="Phone"
                                                 name="phone"
-                                                value={selected.phone}
+                                                value={formatPhone(selected.phone)}
                                                 onChange={(e) => this.onUpdate({ phone: e.target.value })}
                                                 margin="normal"
                                                 sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
                                                 error={!!errors.phone}
-                                                helperText={errors.phone}
                                             />
                                         </Grid>
                                     </Grid>
