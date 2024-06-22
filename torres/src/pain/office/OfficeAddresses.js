@@ -63,7 +63,7 @@ class OfficeAddresses extends Component {
         if (!selected.zipcode) errors.zipcode = 'Zipcode is required';
         else if (!/^\d{5}$/.test(selected.zipcode)) errors.zipcode = 'Zipcode must be exactly 5 digits';
         if (!selected.phone) errors.phone = 'Phone is required';
-        else if (!/^\d{10}$/.test(selected.phone)) errors.phone = 'Phone must be exactly 10 digits';
+        else if (!/^\d{10}$/.test(selected.phone) && !selected.phone.includes('(')) errors.phone = 'Phone must be exactly 10 digits';
 
         this.setState({ errors });
 
@@ -239,9 +239,9 @@ class OfficeAddresses extends Component {
                                         </Grid>
                                     </Grid>
                                     <Divider sx={{ my: 2 }} />
-                                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                                        <Button variant="outlined" sx={{ ...buttonStyle, mr: 2 }} onClick={this.cancel}>Close</Button>
-                                        <Button variant="contained" sx={buttonStyle} onClick={this.save}>Save</Button>
+                                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                                        <Button variant="contained" style={{width:100}} sx={buttonStyle} onClick={this.save}>Save</Button>
+                                        <Button variant="outlined" style={{marginLeft:20,width:100}} sx={{ ...buttonStyle, mr: 2 }} onClick={this.cancel}>Close</Button>
                                     </Box>
                                 </Paper>
                             </Container>

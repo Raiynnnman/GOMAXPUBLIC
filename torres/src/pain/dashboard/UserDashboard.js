@@ -35,7 +35,6 @@ class UserDashboard extends Component {
     }
 
     render() {
-        console.log("p",this.props);
         return (
         <>
             {(this.props.userDashboard && this.props.userDashboard.isReceiving) && (

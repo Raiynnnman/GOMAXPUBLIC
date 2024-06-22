@@ -417,8 +417,6 @@ class RegisterProvider extends Component {
     };
 
     render() {
-        console.log("s",this.state);
-        console.log("p",this.props);
         const { page, selPlan, snackbarOpen, snackbarMessage, snackbarSeverity } = this.state;
         const { registerProvider, landingData } = this.props;
 
