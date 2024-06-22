@@ -5,7 +5,7 @@ if [ -f office/__init__.pyc ]; then
     ext=.pyc
 fi
 
-T="
+T=" \
     office/office_notifications_has_null_field \
 	office/office_notifications_has_addr \
     office/office_notfications_has_city \
