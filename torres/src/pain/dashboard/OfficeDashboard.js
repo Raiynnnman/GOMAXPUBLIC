@@ -4,6 +4,7 @@ import { Box, Typography, Grid, Paper, Link } from '@mui/material';
 import ActivityCard from './components/cards/ActivityCard';
 import TeamCard from './components/cards/TeamCard';
 import locationpin from '../../assets/images/app/location-pin.png';
+import HelpSection from '../office/HelpSection';
 
 const hoverEffect = {
   transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
@@ -16,22 +17,17 @@ const hoverEffect = {
   },
 };
 
+ 
+
 const paperStyle = {
   padding: 6,
   borderRadius: '12px',
   boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-  background: 'white'
+  background: 'white',
+  width:'100%'
 };
 
-const largePaperStyle = {
-  padding: 6,
-  marginTop: 4,
-  width:1000,
-  borderRadius: '12px',
-  boxShadow: '0 6px 18px rgba(0,0,0,0.2)',
-  background: 'white',
-  minHeight: '200px'
-};
+ 
 
 const imageStyle = {
   width: '64px',
@@ -68,8 +64,7 @@ class OfficeDashboard extends Component {
   };
 
   render() {
-    const { state, notifications } = this.props;
-    console.log(state)
+    const { state, notifications,name } = this.props;
 
     const titleMapping = {
       client: 'Client Notifications',
@@ -97,13 +92,13 @@ class OfficeDashboard extends Component {
         }}
       >
         <Typography variant="h3" component="h1" fontWeight="bold" gutterBottom>
-          Dashboard
+          Welcome, {name}
           <Typography variant="caption" color="primary" sx={{ marginLeft: 1 }}>
             NEW
           </Typography>
         </Typography>
-        <Typography variant="h5" gutterBottom>
-          Get an overview of your account and more!
+        <Typography sx={{mb:1}} variant="h6" color="InfoText" gutterBottom>
+         Welcome to your Dashboard, Get an overview of your account and more!
         </Typography>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6} md={4}>
@@ -116,21 +111,11 @@ class OfficeDashboard extends Component {
               onPress={onPress}
             />
           </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <Paper variant="outlined" sx={{ ...largePaperStyle, ...hoverEffect }}>
-              <Typography variant="h5">Get answers to your questions</Typography>
-              <Typography variant="body1" sx={{ marginTop: 2 }}>
-                Find information about admin-specific issues such as managing your organization, integrations, and more.
-              </Typography>
-              <Box sx={{ marginTop: 2 }}>
-                <Link href="#" underline="none" sx={{ color: '#FF5722' }}>PoundPain support &rarr;</Link>
-              </Box>
-            </Paper>
-          </Grid>
+     
         </Grid>
         <Box sx={{ marginTop: 6, maxWidth: '1500px', width: '100%' }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-            <Typography variant="h5">Activity Last Week</Typography>
+            <Typography variant="h4">Notifications</Typography>
             <Link href="#" underline="none" sx={{ color: '#FF5722' }}>View Analytics &rarr;</Link>
           </Box>
           <Grid container spacing={2}>
@@ -151,8 +136,9 @@ class OfficeDashboard extends Component {
                 <Typography variant="body1" color="textSecondary">No notifications available.</Typography>
               </Grid>
             )}
+              <HelpSection/>
           </Grid>
-        </Box>
+         </Box>
       </Box>
     );
   }

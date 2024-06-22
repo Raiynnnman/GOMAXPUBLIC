@@ -27,6 +27,7 @@ class OfficeAddresses extends Component {
         snackbarOpen: false,
         snackbarMessage: '',
         snackbarSeverity: 'success',
+        errors: {},
     };
 
     componentDidMount() {
@@ -34,20 +35,49 @@ class OfficeAddresses extends Component {
     }
 
     cancel = () => {
-        this.setState({ selected: null });
+        this.setState({ selected: null, errors: {} });
     }
 
     onUpdate = (updatedField) => {
         this.setState((prevState) => ({
-            selected: { ...prevState.selected, ...updatedField }
+            selected: { ...prevState.selected, ...updatedField },
+            errors: { ...prevState.errors, ...updatedField }
         }));
     }
 
+    validate = () => {
+        const { selected } = this.state;
+        const errors = {};
+
+        if (!selected.name) errors.name = 'Name is required';
+        if (!selected.addr1) errors.addr1 = 'Address is required';
+        if (!selected.city) errors.city = 'City is required';
+        if (!selected.state) errors.state = 'State is required';
+        if (!selected.zipcode) errors.zipcode = 'Zipcode is required';
+        else if (!/^\d{5}$/.test(selected.zipcode)) errors.zipcode = 'Zipcode must be exactly 5 digits';
+        if (!selected.phone) errors.phone = 'Phone is required';
+        else if (!/^\d{10}$/.test(selected.phone)) errors.phone = 'Phone must be exactly 10 digits';
+
+        this.setState({ errors });
+
+        return Object.keys(errors).length === 0;
+    }
+
     save = () => {
+        if (!this.validate()) {
+            this.setState({
+                snackbarOpen: true,
+                snackbarMessage: 'Please correct the errors in the form.',
+                snackbarSeverity: 'error'
+            });
+            return;
+        }
+
         const { selected } = this.state;
         if (selected.id === 'new') {
             delete selected.id;
         }
+
         this.props.dispatch(officeLocationsSave(selected, (err, args) => {
             if (err) {
                 this.setState({
@@ -80,11 +110,12 @@ class OfficeAddresses extends Component {
                     zipcode: '',
                     phone: '',
                     rating: 0
-                }
+                },
+                errors: {}
             });
         } else {
             const selectedLocation = this.props.officeLocations.data.locations.find((g) => g.id === e.id);
-            this.setState({ selected: selectedLocation });
+            this.setState({ selected: selectedLocation, errors: {} });
         }
     }
 
@@ -93,13 +124,19 @@ class OfficeAddresses extends Component {
     }
 
     render() {
-        const { selected, snackbarOpen, snackbarMessage, snackbarSeverity } = this.state;
+        const { selected, snackbarOpen, snackbarMessage, snackbarSeverity, errors } = this.state;
         const { officeLocations, officeLocationSave } = this.props;
 
         return (
             <>
                 <Navbar />
                 <Container sx={{ mt: 3 }}>
+                    <Typography variant="h3" component="h1" fontWeight="bold" gutterBottom>
+                        Office Addresses
+                        <Typography variant="caption" color="primary" sx={{ marginLeft: 1 }}>
+                            NEW
+                        </Typography>
+                    </Typography>
                     {(officeLocations?.isReceiving || officeLocationSave?.isReceiving) && <AppSpinner />}
                     {selected ? (
                         <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', px: 2 }}>
@@ -128,6 +165,8 @@ class OfficeAddresses extends Component {
                                                 onChange={(e) => this.onUpdate({ name: e.target.value })}
                                                 margin="normal"
                                                 sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                                                error={!!errors.name}
+                                                helperText={errors.name}
                                             />
                                         </Grid>
                                         <Grid item xs={12} sm={6}>
@@ -140,6 +179,8 @@ class OfficeAddresses extends Component {
                                                 onChange={(e) => this.onUpdate({ addr1: e.target.value })}
                                                 margin="normal"
                                                 sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                                                error={!!errors.addr1}
+                                                helperText={errors.addr1}
                                             />
                                         </Grid>
                                         <Grid item xs={12} sm={6}>
@@ -152,6 +193,8 @@ class OfficeAddresses extends Component {
                                                 onChange={(e) => this.onUpdate({ city: e.target.value })}
                                                 margin="normal"
                                                 sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                                                error={!!errors.city}
+                                                helperText={errors.city}
                                             />
                                         </Grid>
                                         <Grid item xs={12} sm={6}>
@@ -164,6 +207,8 @@ class OfficeAddresses extends Component {
                                                 onChange={(e) => this.onUpdate({ state: e.target.value })}
                                                 margin="normal"
                                                 sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                                                error={!!errors.state}
+                                                helperText={errors.state}
                                             />
                                         </Grid>
                                         <Grid item xs={12} sm={6}>
@@ -176,6 +221,8 @@ class OfficeAddresses extends Component {
                                                 onChange={(e) => this.onUpdate({ zipcode: e.target.value })}
                                                 margin="normal"
                                                 sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                                                error={!!errors.zipcode}
+                                                helperText={errors.zipcode}
                                             />
                                         </Grid>
                                         <Grid item xs={12}>
@@ -188,6 +235,8 @@ class OfficeAddresses extends Component {
                                                 onChange={(e) => this.onUpdate({ phone: e.target.value })}
                                                 margin="normal"
                                                 sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
+                                                error={!!errors.phone}
+                                                helperText={errors.phone}
                                             />
                                         </Grid>
                                     </Grid>

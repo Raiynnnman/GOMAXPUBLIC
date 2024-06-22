@@ -9,6 +9,7 @@ import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import {getProviderDashboard} from '../../actions/providerDashboard';
 import OfficeDashboard from './OfficeDashboard';
+import { getContext } from '../../actions/context';
 
 class Template extends Component {
     constructor(props) { 
@@ -34,6 +35,7 @@ class Template extends Component {
             {(this.props.providerDashboard && this.props.providerDashboard.data && 
               this.props.providerDashboard.data.customers) && (
                 <OfficeDashboard 
+                name ={this.props.currentUser.contextValue.name}
                 state={this.props.providerDashboard.data.customers} 
                 notifications={OfficeDashboardData} 
             />            
