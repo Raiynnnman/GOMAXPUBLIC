@@ -72,6 +72,9 @@ class RegisterProvider extends Component {
         const { id, pq_id } = this.props.match.params;
         this.setState({ plan: id, pq_id });
         this.props.dispatch(getLandingData({ type: this.state.provtype, pq_id }));
+        if (id) { 
+            this.setState({ page:0, plan: id });
+        } 
         const { location } = this.props;
         if (location.state && location.state.selectedPlan) {
             this.setState({ selPlan: location.state.selectedPlan });
@@ -414,6 +417,8 @@ class RegisterProvider extends Component {
     };
 
     render() {
+        console.log("s",this.state);
+        console.log("p",this.props);
         const { page, selPlan, snackbarOpen, snackbarMessage, snackbarSeverity } = this.state;
         const { registerProvider, landingData } = this.props;
 
