@@ -58,7 +58,7 @@
   "scripts": {
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
-    "test": "react-app-rewired test",
+    "test": "node scripts/test.js",
     "eject": "react-app-rewired eject"
   },
   "eslintConfig": {
