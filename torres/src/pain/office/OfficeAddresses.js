@@ -47,8 +47,7 @@ class OfficeAddresses extends Component {
             if (updatedField.zipcode.length > 5) { return; }
         } 
         this.setState((prevState) => ({
-            selected: { ...prevState.selected, ...updatedField },
-            errors: { ...prevState.errors, ...updatedField }
+            selected: { ...prevState.selected, ...updatedField }
         }));
     }
 
@@ -170,6 +169,7 @@ class OfficeAddresses extends Component {
                                                 margin="normal"
                                                 sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
                                                 error={!!errors.name}
+                                                helperText={errors.name}
                                             />
                                         </Grid>
                                         <Grid item xs={12} sm={6}>
@@ -183,6 +183,7 @@ class OfficeAddresses extends Component {
                                                 margin="normal"
                                                 sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
                                                 error={!!errors.addr1}
+                                                helperText={errors.addr1}
                                             />
                                         </Grid>
                                         <Grid item xs={12} sm={6}>
@@ -196,6 +197,7 @@ class OfficeAddresses extends Component {
                                                 margin="normal"
                                                 sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
                                                 error={!!errors.city}
+                                                helperText={errors.city}
                                             />
                                         </Grid>
                                         <Grid item xs={12} sm={6}>
@@ -209,6 +211,7 @@ class OfficeAddresses extends Component {
                                                 margin="normal"
                                                 sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
                                                 error={!!errors.state}
+                                                helperText={errors.state}
                                             />
                                         </Grid>
                                         <Grid item xs={12} sm={6}>
@@ -222,6 +225,7 @@ class OfficeAddresses extends Component {
                                                 margin="normal"
                                                 sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
                                                 error={!!errors.zipcode}
+                                                helperText={errors.zipcode}
                                             />
                                         </Grid>
                                         <Grid item xs={12}>
@@ -235,6 +239,7 @@ class OfficeAddresses extends Component {
                                                 margin="normal"
                                                 sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
                                                 error={!!errors.phone}
+                                                helperText={errors.phone}
                                             />
                                         </Grid>
                                     </Grid>
