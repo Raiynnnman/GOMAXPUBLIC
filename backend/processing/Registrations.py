@@ -1338,9 +1338,16 @@ class ContactUs(RegistrationsBase):
         params = args[1][0]
         print(params)
         db = Query()
+        o = db.query("""
+            select id from contactus_emails 
+            where lower(email)=lower(%s)
+            """,(params['email'],)
+        )
+        if len(o) > 0:
+            return {'success':True}
         db.update("""
             insert into contactus_emails (name,email,message) 
-                values (%s,%s,%s)
+                values (%s,lower(%s),%s)
             """,(params['name'],params['email'],params['message'])
         )
         sysemail = config.getKey("contact_us_email")
@@ -1378,9 +1385,16 @@ class Subscribe(RegistrationsBase):
         print(params)
         sysemail = config.getKey("contact_us_email")
         url = config.getKey("host_url")
+        o = db.query("""
+            select id from subscribe_emails 
+            where lower(email)=lower(%s)
+            """,(params['email'],)
+        )
+        if len(o) > 0:
+            return {'success':True}
         db.update("""
             insert into subscribe_emails (email) 
-                values (%s)
+                values (lower(%s))
             """,(params['email'],)
         )
         data = { 

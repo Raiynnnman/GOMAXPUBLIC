@@ -419,7 +419,7 @@ class RegistrationList(AdminBase):
             {'id':2,'col':'name','active':False,'direction':'asc'}
         ]
         count_par = []
-        if 'pq_id' in params and params['pq_id'] is not None and params['pq_id'] > 0:
+        if 'pq_id' in params and params['pq_id'] is not None and int(params['pq_id']) > 0:
             q += " and pq.id = %s "
             search_par.insert(0,int(params['pq_id']))
             count_par.append(int(params['pq_id']))
