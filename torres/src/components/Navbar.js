@@ -147,7 +147,11 @@ class Navbar extends Component {
                         <div className="col-lg-3 col-sm-3 col-3">
                             <div className="logo">
                                 <a href='/'>
-                                    <img className="logo-1" style={{height:this.props.currentUser !== null ? '100px': '200px'}} 
+                                    <img className="logo-1" 
+                                        style={{
+                                            height:this.props.currentUser !== null ? '100px': '100px',
+                                            width:this.props.currentUser !== null ? '100px': '100px'
+                                        }} 
                                         src={require('../assets/images/logo/logo.png')} alt="app landing"/>
                                 </a>
                             </div>

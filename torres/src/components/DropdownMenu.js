@@ -23,19 +23,6 @@ function DropdownMenu({onChange,items,title,currentUser}) {
     setOpen(false);
   };
 
-  const styles: SxProps = {
-    position: 'absolute',
-    top: 28,
-    width:180,
-    right: 0,
-    left: 0,
-    border: '1px solid',
-    p: 1,
-    zIndex:9999,
-    // bgcolor: '#2d3e50',
-    bgcolor: 'black',
-  };
-
   return (
     <div onMouseEnter={handleClick} style={{marginLeft:10}}>
         <ClickAwayListener onClickAway={handleClickAway}>
@@ -44,7 +31,9 @@ function DropdownMenu({onChange,items,title,currentUser}) {
               {title}{currentUser.context ? " - " + currentUser.contextValue.name:'' }
             </div>
             {open ? (
-              <Box sx={styles}>
+              <Box sx={{ position: 'absolute', top: 28, width:180,
+                        right: 0, left: 0, border: '1px solid', p: 1, zIndex:9999,
+                        bgcolor: 'black' }}>
                 {items.map((e) => { 
                     if (e.v(currentUser)) { 
                         return(

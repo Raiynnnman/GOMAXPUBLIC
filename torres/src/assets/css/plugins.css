@@ -179,9 +179,9 @@
     border-top: 1px solid#ddd;
   }
   .mean-container .mean-nav ul li a {
-    background: #fff none repeat scroll 0 0;
+    background: black none repeat scroll 0 0;
     /* color: #2d3e50; */
-    color:#fa6a0a;
+    color:white;
     display: block;
     float: left;
     font-size: 12px;
