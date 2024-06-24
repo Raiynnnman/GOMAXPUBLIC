@@ -28,6 +28,7 @@ import TemplateBadge from '../utils/TemplateBadge';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Navbar from '../../components/Navbar';
+import LaunchIcon from '@mui/icons-material/Launch';
 
 class CommissionAdminList extends Component {
     constructor(props) { 
@@ -304,7 +305,7 @@ class CommissionAdminList extends Component {
                 text:'Office ID',
                 formatter:(cellContent,row) => (
                     <div>
-                        <a style={{color:'black'}} href={'/app/main/admin/office/' + row.office_id} target='_blank'>{row.office_id}</a>
+                        <a style={{color:'black'}} href={'/app/main/admin/office/' + row.office_id} target='_blank'>{row.office_id}<LaunchIcon/></a>
                     </div>
                 )
             },
