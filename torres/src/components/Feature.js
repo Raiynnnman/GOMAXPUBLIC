@@ -43,15 +43,21 @@ class Feature extends Component{
        let DataList = data.map((val , i) => {
            return(
                /* Start Single Feature */
-               <div className="feature" key={i}>
-                   <div style={{backgrounColor:'#fa6a0a'}} className="feature-icon">
-                       <i className={`${val.icon}`}/>
+                   <div className="feature" key={i}>
+                    <div style={{display:"flex",alignContent:'center',justifyContent:"center"}}>
+                       <div style={{backgrounColor:'#fa6a0a'}} className="feature-icon">
+                           <i className={`${val.icon}`}/>
+                       </div>
+                    </div>
+                       <div className="content">
+                           <div style={{display:"flex",alignContent:'center',justifyContent:"center"}}>
+                               <h4 className="title">{val.title}</h4>
+                           </div>
+                           <div style={{textAlign:'center',display:"flex",alignContent:'center',justifyContent:"center"}}>
+                               <p className="desc" style={{color:'black'}}>{val.desc}</p>
+                           </div>
+                       </div>
                    </div>
-                   <div className="content">
-                       <h4 className="title">{val.title}</h4>
-                       <p className="desc" style={{color:'black'}}>{val.desc}</p>
-                   </div>
-               </div>
                /* End Single Feature */
            )
        })

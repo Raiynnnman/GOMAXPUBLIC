@@ -138,7 +138,7 @@ const Pricing = ({ onSelectPlan, showButton }) => {
                             clipRule="evenodd"
                           />
                         </svg>
-                        <ListItemText primary={benefit.description} className={classes.benefitText} />
+                        <p>{benefit.description}</p>
                       </ListItem>
                     ))}
                   </List>

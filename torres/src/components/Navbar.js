@@ -144,13 +144,13 @@ class Navbar extends Component {
             <div style={{backgroundColor:'black'}} className="app-header header--transparent sticker" id="main-menu">
                 <div className="container">
                     <div className="row align-items-center">
-                        <div className="col-lg-3 col-sm-3 col-3">
+                        <div className="col-lg-3 col-sm-4 col-4">
                             <div className="logo">
                                 <a href='/'>
                                     <img className="logo-1" 
                                         style={{
-                                            height:this.props.currentUser !== null ? '100px': '100px',
-                                            width:this.props.currentUser !== null ? '100px': '100px'
+                                            height:this.props.currentUser !== null ? '100px': '200px',
+                                            width:this.props.currentUser !== null ? '100px': '300px'
                                         }} 
                                         src={require('../assets/images/logo/logo.png')} alt="app landing"/>
                                 </a>

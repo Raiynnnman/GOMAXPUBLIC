@@ -16,16 +16,19 @@
         margin-bottom: 24px;
     }
     p{
+        // padding: 0 27%;
         padding: 0 27%;
 
         @media #{$lg-layout} {
-            padding: 0 19%;
-        }
-        @media #{$md-layout} {
             padding: 0 9%;
         }
+        @media #{$md-layout} {
+            padding: 0;
+            font-size:24px;
+        }
         @media #{$sm-layout} {
-            padding: 0 5%;
+            padding: 0;
+            font-size:24px;
         }
     }
 }
