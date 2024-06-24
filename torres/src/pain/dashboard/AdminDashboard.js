@@ -10,6 +10,7 @@ import UniqueVisitorCard from './components/cards/UniqueVisitorCard';
 import MonthlyBarChart from './components/charts/MonthlyBarChart';
 import MainCard from './components/cards/MainCard';
 import AnalyticEcommerce from './components/cards/AnalyticCard';
+import convertToFormat from '../utils/convertToFormat';
  class AdminDashboard extends Component {
     constructor(props) {
         super(props);
@@ -32,6 +33,9 @@ import AnalyticEcommerce from './components/cards/AnalyticCard';
             const {
                 website_stats = {},
                 visits = {},
+                lead_status={},
+                commissions = {},
+                website_performance={},
                 revenue_month = {},
                 revenue_leads_month = {},
                 traffic = {}
@@ -44,28 +48,27 @@ import AnalyticEcommerce from './components/cards/AnalyticCard';
                     {/* Row 1 */}
                     <Grid item xs={12} sx={{ mb: 4.25 }}>
                         <Typography variant="h3">Dashboard</Typography>
-                        <Typography variant="text.secondary">Get an overview of your accound, user interactions, traffic and more!</Typography>
                     </Grid>
                      <Grid item xs={12} sm={6} md={4} lg={3}>
                         <AnalyticEcommerce 
                             title="Total Page Views"
                             count={`${website_stats.num1 || 0}`}  
-                            percentage={(website_stats.num2 || 0) * 100}  
+                            percentage={((website_stats.num2 || 0) * 100).toFixed(2)}  
                         />
                     </Grid>
                     <Grid item xs={12} sm={6} md={4} lg={3}>
                         <AnalyticEcommerce 
-                            title="Total Visits"
-                            count={`${visits.num1 || 0}`}
-                            percentage={(visits.num3 || 0) * 100}  
+                            title="In-Network"
+                            count={`${lead_status.num2 || 0}`}
+                            percentage={((lead_status.num2/lead_status.num1 || 0) * 100).toFixed(2)}  
                             extra={`${visits.num4 || 0}`}  
                         />
                     </Grid>
                     <Grid item xs={12} sm={6} md={4} lg={3}>
                         <AnalyticEcommerce 
-                            title="Total PoundPain Revenue"
-                            count={`${revenue_month.num1 || 0}`}  
-                            percentage={(revenue_month.num2 || 0) * 100}  
+                            title="Total Revenue"
+                            count={`${convertToFormat(revenue_month.num1 || 0)}`}  
+                            percentage={((revenue_month.num2 || 0) * 100).toFixed(2)}  
                             isLoss={revenue_month.num2 < 0}  
                             color={revenue_month.num2 < 0 ? 'warning' : 'success'}
                             extra={`${revenue_month.num3 || 'N/A'}`}  
@@ -73,12 +76,12 @@ import AnalyticEcommerce from './components/cards/AnalyticCard';
                     </Grid>
                     <Grid item xs={12} sm={6} md={4} lg={3}>
                         <AnalyticEcommerce 
-                            title="Total Sales"
-                            count={`$${revenue_leads_month.num1 || 0}`}  
-                            percentage={(revenue_leads_month.num2 || 0) * 100}  
+                            title="Total Commissions"
+                            count={`$${commissions.num1 || 0}`}  
+                            percentage={((revenue_leads_month.num2 || 0) * 100).toFixed(2)}  
                             isLoss={revenue_leads_month.num2 < 0}  
                             color={revenue_leads_month.num2 < 0 ? 'warning' : 'success'}
-                            extra={`$${revenue_leads_month.num3 || 0}`}  
+                            extra={`$${commissions.num3 || 0}`}  
                         />
                     </Grid>
 
@@ -86,24 +89,21 @@ import AnalyticEcommerce from './components/cards/AnalyticCard';
 
                     {/* Row 2 */}
                     <Grid item xs={12} md={7} lg={8}>
-                        <UniqueVisitorCard data={data.website_stats} />
+                        {(website_performance && website_performance.labels && website_performance.labels.length > 0) && (
+                            <UniqueVisitorCard data={website_performance} />
+                        )}
                     </Grid>
                     <Grid item xs={12} md={5} lg={4}>
                         <Grid container alignItems="center" justifyContent="space-between">
                             <Grid item>
-                                <Typography variant="h5">User Traffic Overview</Typography>
+                                <Typography variant="h5">Traffic Accidents Detected by Month</Typography>
                             </Grid>
                             <Grid item />
                         </Grid>
                         <MainCard sx={{ mt: 2 }} content={false}>
-                            <Box sx={{ p: 3, pb: 0 }}>
-                                <Stack spacing={2}>
-                                    <Typography variant="h6" color="text.secondary">
-                                        This Week's Statistics
-                                    </Typography>
-                                </Stack>
-                            </Box>
-                            <MonthlyBarChart data={traffic} />
+                            {(traffic && traffic.length && traffic.length > 0) && (
+                                <MonthlyBarChart data={traffic} />
+                            )}
                         </MainCard>
                     </Grid>
                 </Grid>

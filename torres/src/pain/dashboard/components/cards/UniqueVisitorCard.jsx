@@ -7,27 +7,6 @@ import MainCard from './MainCard';
 export default function UniqueVisitorCard({ data }) {
     const [slot, setSlot] = useState('week');
 
-    const chartData = {
-        week: [
-            data?.num1 || 0,
-            data?.num2 || 0,
-            data?.num3 || 0,
-            data?.num4 || 0,
-            data?.num1 || 0,
-            data?.num2 || 0,
-            data?.num3 || 0
-        ],
-        month: [
-            data?.num1 || 0,
-            data?.num2 || 0,
-            data?.num3 || 0,
-            data?.num4 || 0,
-            data?.num1 || 0,
-            data?.num2 || 0,
-            data?.num3 || 0
-        ]
-    };
-
     return (
         <>
             <Grid container alignItems="center" justifyContent="space-between">
@@ -67,7 +46,7 @@ export default function UniqueVisitorCard({ data }) {
                             Week
                         </Button>
                     </Stack>
-                    <AreaChart slot={slot} data={chartData[slot]} />
+                    <AreaChart labels={data.labels} slot={slot} data={data[slot]} />
                 </Box>
             </MainCard>
         </>

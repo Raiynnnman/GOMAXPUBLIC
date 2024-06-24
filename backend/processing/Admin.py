@@ -178,17 +178,91 @@ class AdminDashboard(AdminBase):
         )
         return o[0]
 
+    def getWebsiteStatsMonth(self):
+        db = Query()
+        ret = {}
+        o = db.query("""
+            WITH RECURSIVE t as (
+                select date(date_add(now(),INTERVAL -6 MONTH)) as dt,
+                 (select count(id) from performance p
+                    where 
+                    month(date(date_add(now(),INTERVAL -6 MONTH)))=month(p.created) 
+                    and year(date(date_add(now(),INTERVAL -6 MONTH)))=year(p.created) 
+                 ) as count1,
+                 (select max(ms) from performance p
+                    where 
+                    month(date(date_add(now(),INTERVAL -6 MONTH)))=month(p.created) 
+                    and year(date(date_add(now(),INTERVAL -6 MONTH)))=year(p.created) 
+                 ) as count2
+                UNION 
+                 SELECT DATE_ADD(t.dt, INTERVAL 1 MONTH) as month,
+                 (select count(id) from performance p
+                    where 
+                    date_format(t.dt,'%Y-%m-01') = date_format(p.created,'%Y-%m-01')
+                 ) as count1,
+                 (select max(ms) from performance p
+                    where 
+                    date_format(t.dt,'%Y-%m-01') = date_format(p.created,'%Y-%m-01')
+                 ) as count2
+                 FROM t
+                 WHERE DATE_ADD(t.dt, INTERVAL 1 day) <= now() 
+            )
+            select dt as label,count1,count2 FROM t ;
+            """,)
+        ret['month'] = o
+        o = db.query("""
+            WITH RECURSIVE t as (
+                select date(date_add(now(),INTERVAL -7 day)) as dt,
+                 (select count(id) from performance p
+                    where 
+                    day(date(date_add(now(),INTERVAL -7 day)))=day(p.created) 
+                    and month(date(date_add(now(),INTERVAL -7 day)))=month(p.created) 
+                    and year(date(date_add(now(),INTERVAL -7 day)))=year(p.created) 
+                 ) as count1,
+                 (select max(ms) from performance p
+                    where 
+                    day(date(date_add(now(),INTERVAL -7 day)))=day(p.created) 
+                    and month(date(date_add(now(),INTERVAL -7 day)))=month(p.created) 
+                    and year(date(date_add(now(),INTERVAL -7 day)))=year(p.created) 
+                 ) as count2
+                UNION 
+                 SELECT DATE_ADD(t.dt, INTERVAL 1 day) as month,
+                 (select count(id) from performance p
+                    where 
+                    day(t.dt)=day(p.created) and month(t.dt)=month(p.created) and year(t.dt)=year(p.created) 
+                 ) as count1,
+                 (select avg(ms) from performance p
+                    where 
+                    day(t.dt)=day(p.created) and month(t.dt)=month(p.created) and year(t.dt)=year(p.created) 
+                 ) as count2
+                 FROM t
+                 WHERE DATE_ADD(t.dt, INTERVAL 1 DAY) <= now()
+            )
+            select date_format(dt,'%a, %D') as label,count1,count2 FROM t ;
+            """,)
+        ret['week'] = o
+        ret['labels'] = ['Page views','Max Response (ms)']
+        return ret
+
     def getTrafficMonth(self):
         db = Query()
         o = db.query("""
-            select 
-                0 as num1, /* num accidents */
-                0 num2, /* providers selected */
-                0 num3, /* sales */
-                0 num4  /* */
-            """
-        )
-        return o[0]
+            WITH RECURSIVE t as (
+                select date(date_add(now(),INTERVAL -6 MONTH)) as dt,0 as count
+                UNION ALL
+                 SELECT DATE_ADD(t.dt, INTERVAL 1 MONTH) as month,
+                 (select count(id) from traffic_incidents ti
+                    where 
+                    month(t.dt)=month(ti.created) and year(t.dt)=year(ti.created) and
+                    ti.traffic_categories_id = 2
+                 ) as count
+                 FROM t
+                 WHERE DATE_ADD(t.dt, INTERVAL 1 DAY) <= now()
+            )
+            select date_format(dt,'%b, %Y') as label,count FROM t ;
+            """,)
+        print(o)
+        return o
 
     def getLeadsRevenueMonth(self):
         db = Query()
@@ -310,8 +384,10 @@ class AdminDashboard(AdminBase):
         ret['revenue_month'] = self.getRevenueThisMonth()
         ret['revenue_leads_month'] = self.getLeadsRevenueMonth()
         ret['lead_status'] = self.getLeadsStatus()
-        ret['traffic'] = self.getTrafficStats()
+        # ret['traffic'] = self.getTrafficStats()
+        ret['traffic'] = self.getTrafficMonth()
         ret['website_stats'] = self.getWebsiteTraffic()
+        ret['website_performance'] = self.getWebsiteStatsMonth()
         return ret
 
 class UserList(AdminBase):
