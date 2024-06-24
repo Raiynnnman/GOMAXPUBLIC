@@ -150,7 +150,6 @@ class CommissionListRest(RestBase):
     def post(self, *args, **kwargs):
         u = AdminCommissions.CommissionList()
         ret = u.process(args[0])
-        print(ret)
         return ret
 
 class CommissionUserListRest(RestBase):

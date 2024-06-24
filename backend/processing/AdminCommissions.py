@@ -248,7 +248,6 @@ class CommissionList(AdminBase):
             ret['filename'] = 'commission_report.csv'
             frame = pd.DataFrame.from_dict(o)
             t = frame.to_csv()
-            print(t)
             ret['content'] = base64.b64encode(t.encode('utf-8')).decode('utf-8')
         ret['commissions'] = o
         return ret

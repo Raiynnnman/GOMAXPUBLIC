@@ -62,21 +62,6 @@ class CommissionAdminList extends Component {
     } 
 
     componentWillReceiveProps(p) { 
-        if (p.commissionsUser.data && p.commissionsUser.data.config && 
-            p.commissionsUser.data.config.period && this.state.periodSelected === null) { 
-            var c = 0;
-            var t = [];
-            this.state.periodSelected = []
-            this.state.periodSelected.push({
-                label:p.commissionsUser.data.config.period[0].label,
-                value:p.commissionsUser.data.config.period[0].value
-            })
-            this.state.filter = [p.commissionsUser.data.config.period[0].value]
-            this.setState(this.state);
-            this.props.dispatch(getCommissionUserAdmin(
-                {period:this.state.filter,limit:this.state.pageSize,offset:this.state.page}
-            ));
-        }
         if (p.commissions.data && p.commissions.data.config && 
             p.commissions.data.config.period && this.state.periodSelected === null) { 
             var c = 0;
