@@ -219,11 +219,7 @@ class Landing extends Component {
                         <Grid item xs="12" sx="12" style={{marginTop:10,paddingRight:0,marginRight:0}}>
                             <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                 <iframe 
-                                    src={
-                                        this.props.landingData.data.introduction.length > 0 ? 
-                                            this.props.landingData.data.introduction[1].url : 
-                                            "https://calendly.com/d/ck2s-xvq-t7n/poundpain-introduction"
-                                    }
+                                    src='https://calendly.com/matt-qd-s/pound-pain-tech-patient-referral-introduction'
                                     style={{width:window.innerWidth < 500 ? window.innerWidth : "600px",
                                             height:window.innerWidth < 500 ? "800px" : "600px",
                                             }}

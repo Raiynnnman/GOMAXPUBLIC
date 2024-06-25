@@ -83,11 +83,7 @@ class Service extends Component{
                 <>
                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                         <iframe 
-                            src={
-                                this.props.landingData.data.introduction.length > 0 ? 
-                                    this.props.landingData.data.introduction[1].url : 
-                                    "https://calendly.com/d/ck2s-xvq-t7n/poundpain-introduction"
-                            }
+                            src='https://calendly.com/matt-qd-s/pain-patient-referral-introduction'
                             style={{overflow:"hidden",width:window.innerWidth < 500 ? window.innerWidth : "600px",
                                     height:900
                                     }}

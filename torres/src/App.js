@@ -64,6 +64,9 @@ const App = () => {
                     <Route exact path="/accept/:token" exact component={Accept}/> 
                     <Route exact path="/reject/:token" exact component={Reject}/> 
                     <Route exact path='/demo' component={Landing}/>
+                    <Route exact path='/introduction' component={Landing}/>
+                    <Route exact path='/meeting' component={Landing}/>
+                    <Route exact path='/referral' component={Landing}/>
                     <Route exact path='/forgot' component={Forgot}/>
                     <Route exact path='/verify/:token' component={Verified}/>
                     <Route exact path='/reset/:token' component={Reset}/>
