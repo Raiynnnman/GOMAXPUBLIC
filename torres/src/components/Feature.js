@@ -1,4 +1,8 @@
 import React ,  { Component } from "react";
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import MonitorHeartIcon from '@mui/icons-material/MonitorHeart';
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 
 
 
@@ -7,25 +11,25 @@ class Feature extends Component{
        let data = [
            
         {
-            icon: 'zmdi zmdi-collection-text',
+            icon: <TrendingUpIcon style={{fontSize:50,height:100,color:"white"}}/>,
             title: 'Increase Your Patient Base',
             desc: 'Tap into a broader network of patients actively seeking care.'
         },
 
         {
-            icon: 'zmdi zmdi-sun',
+            icon: <MonitorHeartIcon style={{fontSize:50,height:100,color:"white"}}/>,
             title: 'Optimize Your Practice',
             desc: 'Utilize our platform’s tools to manage referrals, appointments, and patient interactions effortlessly.'
         },
 
         {
-            icon: 'zmdi zmdi-brush',
+            icon:<MonetizationOnIcon style={{fontSize:50,height:100,color:"white"}}/>,
             title: 'Maximize ROI',
             desc: 'Leverage high ROI models tailored to support and grow your practice.'
         },
         {
-            icon: 'zmdi zmdi-desktop-mac',
-            title: 'Automated Appointment Reminders',
+            icon: <CalendarMonthIcon style={{fontSize:50,height:100,color:"white"}}/>,
+            title: 'Appointment Reminders',
             desc: 'Reduce no-shows and improve appointment adherence with our automated reminder system.'
         },
         /*{
@@ -44,11 +48,11 @@ class Feature extends Component{
            return(
                /* Start Single Feature */
                    <div className="feature" key={i}>
-                    <div style={{display:"flex",alignContent:'center',justifyContent:"center"}}>
                        <div style={{backgrounColor:'#fa6a0a'}} className="feature-icon">
-                           <i className={`${val.icon}`}/>
+                            <div style={{display:"flex",justifyContent:"center"}}>
+                            {val.icon}
+                           </div>
                        </div>
-                    </div>
                        <div className="content">
                            <div style={{display:"flex",alignContent:'center',justifyContent:"center"}}>
                                <h4 className="title">{val.title}</h4>

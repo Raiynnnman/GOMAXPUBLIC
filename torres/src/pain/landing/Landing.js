@@ -212,24 +212,29 @@ class Landing extends Component {
         <Navbar/>
             {(this.props.landingData && this.props.landingData.data && this.props.landingData.data.pricing) && (
             <>
-            <div>
-                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                    <>
-                    <Grid container xs="12">
-                        <Grid item xs="12" sx="12" style={{marginTop:10,paddingRight:0,marginRight:0}}>
-                            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                                <iframe 
-                                    src='https://calendly.com/matt-qd-s/pound-pain-tech-patient-referral-introduction'
-                                    style={{width:window.innerWidth < 500 ? window.innerWidth : "600px",
-                                            height:window.innerWidth < 500 ? "800px" : "600px",
-                                            }}
-                                    title="PoundPain Invite">
-                                </iframe>
-                            </div>
-                        </Grid>
+            <div style={{margin:20}}>
+                <Grid container xs="12" md="12">
+                    <Grid item xs="12" md="6">
+                        <div style={{backgroundColor:"black",display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                            <iframe src="https://player.vimeo.com/video/954405043?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" 
+                                frameBorder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write" 
+                                style={{height:800,width:"100%"}}
+                                title="PoundPain_video_V1_2">
+                            </iframe>
+                        </div>
                     </Grid>
-                    </>
-                </div>
+                    <Grid item xs="12" md="6" style={{marginTop:20,paddingRight:0,marginRight:0}}>
+                        <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                            <iframe 
+                                src='https://calendly.com/matt-qd-s/pound-pain-tech-patient-referral-introduction'
+                                style={{width:window.innerWidth < 500 ? window.innerWidth : "600px",
+                                        height:window.innerWidth < 500 ? "800px" : "1000px",
+                                        }}
+                                title="PoundPain Invite">
+                            </iframe>
+                        </div>
+                    </Grid>
+                </Grid>
             </div>
             </>
             )}
