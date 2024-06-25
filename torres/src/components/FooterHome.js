@@ -141,6 +141,14 @@ class FooterHome extends Component {
                                         </div>
                                         <div className="single-contact-info">
                                             <div className="contact-icon">
+                                                <i className="zmdi zmdi-view-toc"></i>
+                                            </div>
+                                            <div className="contact-text">
+                                                <a href="/privacy_policy.html" rel="noreferrer" target='_blank'>Privacy Policy</a>
+                                            </div>
+                                        </div>
+                                        <div className="single-contact-info">
+                                            <div className="contact-icon">
                                                 <i className="zmdi zmdi-pin"></i>
                                             </div>
                                             <div className="contact-text">
