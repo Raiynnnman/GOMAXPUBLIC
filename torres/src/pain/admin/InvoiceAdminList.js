@@ -649,11 +649,11 @@ class InvoiceAdminList extends Component {
             <hr/>
             <Grid container xs="12">
                 <Grid item xs="4">
-                <h5>Comments</h5>
+                <h5>Comments Section</h5>
                 </Grid>
             </Grid>
             <Grid container xs="12">
-                <Grid item xs="4">
+                <Grid item xs="4" sx={{marginTop:10,paddingBottom:3}}>
                     <TemplateButton onClick={() => this.addComment({id:"new"})} color="primary" label='Add Comment'/>
                 </Grid>
             </Grid>
@@ -697,15 +697,17 @@ class InvoiceAdminList extends Component {
                                         </Grid>
                                         )}
                                     </Grid>
-                                    <Grid container xs="12">
-                                        {(e.edit) && ( 
-                                        <Grid item xs="12">
-                                            <Grid item xs="6">
-                                                <TemplateButton onClick={this.saveComment} color="primary" label='Save'/>
-                                                <TemplateButton outline style={{marginLeft:10}} onClick={this.cancelComment} label='Cancel'/>
-                                            </Grid>
+                                    <Grid container spacing={2} xs={12}>
+                                    {e.edit && (
+                                        <>
+                                        <Grid item xs={6}>
+                                            <TemplateButton onClick={this.saveComment} color="primary" sx={{ mt: 3 }} label="Save" />
                                         </Grid>
-                                        )}
+                                        <Grid item xs={6}>
+                                            <TemplateButton outline style={{ marginLeft: 10 }} onClick={this.cancelComment} label="Cancel" />
+                                        </Grid>
+                                        </>
+                                    )}
                                     </Grid>
                             </Container>
                         </Grid>
@@ -716,7 +718,7 @@ class InvoiceAdminList extends Component {
                 <Grid container xs="12" style={{marginTop:10}}>
                     {(!this.state.commentAdd) && (
                     <Grid item xs="6">
-                        <TemplateButton onClick={this.save} color="primary" label='Save'/>
+                        <TemplateButton onClick={this.save} color="primary" sx={{ml:2}}label='Save'/>
                         <TemplateButton outline style={{marginLeft:10}} onClick={this.cancel} label='Cancel'/>
                     </Grid>
                     )}

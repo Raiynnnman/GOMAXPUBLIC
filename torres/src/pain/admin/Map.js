@@ -4,6 +4,8 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
 import Navbar from '../../components/Navbar';
 import TemplateSelect from '../utils/TemplateSelect';
 import TemplateTextField from '../utils/TemplateTextField';
@@ -12,6 +14,7 @@ import AppSpinner from '../utils/Spinner';
 import { getTraffic } from '../../actions/trafficGet';
 import TrafficMap from './TrafficMap';
 import HeatMap from './HeatMap';
+ 
 
 class Map extends Component {
     constructor(props) {
@@ -21,12 +24,16 @@ class Map extends Component {
             dateSelected: null,
             categories: null,
             zipSelected: null,
+            address: '', // New state for address
+            center: null, // New state for map center
             recentlyViewed: [] 
         }
         this.toggleTab = this.toggleTab.bind(this);
         this.onDateChange = this.onDateChange.bind(this);
         this.onZipChange = this.onZipChange.bind(this);
         this.onCategoryChange = this.onCategoryChange.bind(this);
+        this.onAddressChange = this.onAddressChange.bind(this); // New handler
+        this.onRouteButtonClick = this.onRouteButtonClick.bind(this); // New handler
     }
 
     componentWillReceiveProps(p) {
@@ -103,15 +110,26 @@ class Map extends Component {
         if (e.target.value) {
             this.state.zipSelected = e.target.value;
             if (e.target.value.length === 5) {
-                this.props.dispatch(getTraffic({ categories: t, date: this.state.dateSelected, zipcode: this.state.zipSelected }))
+                this.props.dispatch(getTraffic({ categories: t, date: this.state.dateSelected, zipcode: this.state.zipSelected }));
+                this.geocodeZipcode(e.target.value);
             }
             this.setState(this.state);
         } else {
-            this.state.zipSelected = e.label
+            this.state.zipSelected = e.label;
             this.setState(this.state);
-            this.props.dispatch(getTraffic({ categories: t, date: this.state.dateSelected, zipcode: this.state.zipSelected }))
+            this.props.dispatch(getTraffic({ categories: t, date: this.state.dateSelected, zipcode: this.state.zipSelected }));
+            this.geocodeZipcode(e.label);
         }
     }
+
+    onAddressChange(e) {
+        this.setState({ address: e.target.value });
+    }
+
+    onRouteButtonClick() {
+        this.geocodeAddress(this.state.address);
+    }
+ 
 
     toggleTab(e, t) {
         this.state.activeTab = t;
@@ -125,8 +143,8 @@ class Map extends Component {
                     <AppSpinner />
                 )}
                 <Navbar />
-                <div  >
-                    <Grid container  ml={1} mt={5}>
+                <div>
+                    <Grid container ml={1} mt={5}>
                         <Grid item xs={8} m={1} md={3}>
                             {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.config &&
                                 this.props.trafficData.data.config.avail && this.state.dateSelected !== null) && (
@@ -168,6 +186,24 @@ class Map extends Component {
                                 />
                             )}
                         </Grid>
+                        <Grid item xs={8} m={1} md={3}>
+                            <TextField
+                                label="Search Address"
+                                value={this.state.address}
+                                onChange={this.onAddressChange}
+                                fullWidth
+                            />
+                        </Grid>
+                        <Grid item xs={4} m={1} md={2}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={this.onRouteButtonClick}
+                                fullWidth
+                            >
+                                Route
+                            </Button>
+                        </Grid>
                     </Grid>
                 </div>
                 <Grid container spacing={2} style={{ marginLeft: {xs:4}, marginTop: 0 }}>
@@ -180,10 +216,10 @@ class Map extends Component {
                                         <Tab value='heatmap' label='HeatMap' />
                                     </Tabs>
                                     {(this.state.activeTab === 'traffic') && (
-                                        <TrafficMap data={this.props.trafficData} centerPoint={this.props.trafficData.data.center} />
+                                        <TrafficMap data={this.props.trafficData} centerPoint={this.state.center || this.props.trafficData.data.center} />
                                     )}
                                     {(this.state.activeTab === 'heatmap') && (
-                                        <HeatMap data={this.props.trafficData} centerPoint={this.props.trafficData.data.center} />
+                                        <HeatMap data={this.props.trafficData} centerPoint={this.state.center || this.props.trafficData.data.center} />
                                     )}
                                 </>
                             )}

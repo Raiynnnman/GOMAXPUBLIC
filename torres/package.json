@@ -38,6 +38,7 @@
     "react-apexcharts": "^1.4.1",
     "react-app-rewired": "^2.2.1",
     "react-dom": "^18.2.0",
+    "react-geocode": "^1.0.0-alpha.1",
     "react-google-maps": "^9.4.5",
     "react-google-places-autocomplete": "^4.0.1",
     "react-number-format": "^5.4.0",
@@ -105,24 +106,24 @@
       "node"
     ],
     "coveragePathIgnorePatterns": [
-         "/public/",
-         "/node_modules/"
-      ],
+      "/public/",
+      "/node_modules/"
+    ],
     "modulePathIgnorePatterns": [
-         "/public/",
-         "/node_modules/"
+      "/public/",
+      "/node_modules/"
     ],
     "testPathIgnorePatterns": [
-         "/public/",
-         "/node_modules/"
+      "/public/",
+      "/node_modules/"
     ],
     "transformIgnorePatterns": [
-         "/public/",
-         "/node_modules/"
+      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$",
+      "^.+\\.module\\.(css|sass|scss)$"
     ],
     "watchPathIgnorePatterns": [
-         "/public/",
-         "/node_modules/"
+      "/public/",
+      "/node_modules/"
     ],
     "moduleNameMapper": {
       "^react-native$": "react-native-web",
@@ -142,11 +143,7 @@
     "testURL": "http://localhost",
     "transform": {
       "^.+\\.(js|jsx)$": "<rootDir>/node_modules/babel-jest"
-    },
-    "transformIgnorePatterns": [
-      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$",
-      "^.+\\.module\\.(css|sass|scss)$"
-    ]
+    }
   },
   "browserslist": {
     "production": [
