@@ -41,7 +41,6 @@ export function receivingData(params) {
             },
         }).get('/admin/dashboard')
       .then((e) => { 
-        console.log(e.data.data)
           dispatch({
                 type: RECEIVED_ADASH_DATA_SUCCESS,
                 payload: e.data.data

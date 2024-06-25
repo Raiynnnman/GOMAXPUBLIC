@@ -133,6 +133,14 @@ class FooterHome extends Component {
                                         </div>
                                         <div className="single-contact-info">
                                             <div className="contact-icon">
+                                                <i className="zmdi zmdi-view-headline"></i>
+                                            </div>
+                                            <div className="contact-text">
+                                                <a href="/terms_of_service.html" rel="noreferrer" target='_blank'>Terms and Conditions</a>
+                                            </div>
+                                        </div>
+                                        <div className="single-contact-info">
+                                            <div className="contact-icon">
                                                 <i className="zmdi zmdi-pin"></i>
                                             </div>
                                             <div className="contact-text">

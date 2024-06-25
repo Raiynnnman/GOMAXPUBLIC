@@ -25,7 +25,6 @@ const areaChartOptions = {
 
 export default function AreaChart({ slot, data, labels }) {
     const [options, setOptions] = useState(areaChartOptions);
-    console.log("data",data,slot);
 
     useEffect(() => {
         setOptions((prevState) => ({

@@ -86,7 +86,6 @@ class PainTable extends Component {
     this.handleChangePage = this.handleChangePage.bind(this);
     this.handleChangeSort = this.handleChangeSort.bind(this);
     this.handleChangeGridsPerPage = this.handleChangeGridsPerPage.bind(this);
-    console.log(this.props);
   }
 
   componentWillReceiveProps(p) {}
