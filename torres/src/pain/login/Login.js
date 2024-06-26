@@ -39,6 +39,10 @@ class Login extends React.Component {
     this.setState({ userType: event.target.value });
   };
 
+  reset = (e) => { 
+    window.location = '/forgot';
+  }
+
   handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -112,15 +116,16 @@ class Login extends React.Component {
                       <Button
                         type="submit"
                         variant="contained"
-                        sx={{ borderRadius: 8, backgroundColor: '#FF5733', color: '#fff', padding: '10px 45px', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase' }}
+                        sx={{ width:50, borderRadius: 8, backgroundColor: '#FF5733', color: '#fff', padding: '10px 45px', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase' }}
                       >
                         Login
                       </Button>
-                    </Box>
-                    <Box mt={2}>
-                      <Typography variant="body2" color="text.secondary" align="center">
-                        Forgot password? <Link to="/forgot">Reset here</Link>
-                      </Typography>
+                      <Button
+                        variant="contained" onClick={this.reset}
+                        sx={{ marginLeft:5,width:50, borderRadius: 8, backgroundColor: '#FF5733', color: '#fff', padding: '10px 45px', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase' }}
+                      >
+                       Reset
+                      </Button>
                     </Box>
                   </Box>
                 </Grid>
