@@ -24,10 +24,10 @@ const darkModeStyle = [
   { "featureType": "poi.park", "elementType": "labels.text.stroke", "stylers": [{ "color": "#1a1a1a" }] },
   { "featureType": "road", "elementType": "geometry.fill", "stylers": [{ "color": "#2b2b2b" }] },
   { "featureType": "road", "elementType": "labels.text.fill", "stylers": [{ "color": "#909090" }] },
-  { "featureType": "road.arterial", "elementType": "geometry", "stylers": [{ "color": "#d9502e" }] },
-  { "featureType": "road.highway", "elementType": "geometry", "stylers": [{ "color": "#d9502e" }] },
-  { "featureType": "road.highway.controlled_access", "elementType": "geometry", "stylers": [{ "color": "#d9502e" }] },
-  { "featureType": "road.local", "elementType": "labels.text.fill", "stylers": [{ "color": "#d9502e" }] },
+  { "featureType": "road.arterial", "elementType": "geometry", "stylers": [{ "color": "#98a5be" }] },
+  { "featureType": "road.highway", "elementType": "geometry", "stylers": [{ "color": "#98a5be" }] },
+  { "featureType": "road.highway.controlled_access", "elementType": "geometry", "stylers": [{ "color": "#98a5be" }] },
+  { "featureType": "road.local", "elementType": "labels.text.fill", "stylers": [{ "color": "#98a5be" }] },
   { "featureType": "transit", "elementType": "labels.text.fill", "stylers": [{ "color": "#d9502e" }] },
   { "featureType": "water", "elementType": "geometry", "stylers": [{ "color": "#002060" }] },
   { "featureType": "water", "elementType": "labels.text.fill", "stylers": [{ "color": "#000000" }] }
@@ -279,7 +279,7 @@ class MapContainer extends Component {
         return "http://maps.google.com/mapfiles/ms/icons/purple-dot.png";
       case 104:
         if (e.office_type_id === 1) {
-          return "https://maps.gstatic.com/mapfiles/ms2/micons/red-pushpin.png";
+          return "https://maps.gstatic.com/mapfiles/ms2/micons/purple-pushpin.png";
         } else if (e.office_type_id === 6) {
           return "https://maps.gstatic.com/mapfiles/ms2/micons/ylw-pushpin.png";
         }

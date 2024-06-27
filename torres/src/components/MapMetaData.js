@@ -39,7 +39,7 @@ const MapMetaData = ({ selected }) => {
 
                 <a style={{color:"black"}} target="_blank" href={"/app/main/admin/search/" + selected.id}>
                     <Typography variant="body2" color="textSecondary" mt={1}>
-                      {selected.client_count + " clients"} <EventSeatIcon style={{fontSize:20}}/>
+                      {selected.client_count  ? selected.client_count : "0" + " clients"} <EventSeatIcon style={{fontSize:20}}/>
                     </Typography>
                 </a>
 

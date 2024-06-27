@@ -53,6 +53,7 @@ class Map extends Component {
             for (c = 0; c < p.trafficData.data.config.categories.length; c++) {
                 if (p.trafficData.data.config.categories[c].name === 'Accident') { continue; }
                 if (p.trafficData.data.config.categories[c].name === 'Potential Providers') { continue; }
+                if (p.trafficData.data.config.categories[c].name === 'Pending Provider') { continue; }
                 this.state.categories.push(p.trafficData.data.config.categories[c]);
             }
             this.setState(this.state);
