@@ -17,7 +17,7 @@ class SearchAdmin extends Component {
         mylocation: null,
         selected: 0,
         geo: false,
-        selectedProcedure: 0,
+        specialProvider: null,
         error_message: null,
         selectedProvider: null,
         selectedProviderType: null,
@@ -27,6 +27,15 @@ class SearchAdmin extends Component {
         zipchange: false,
         zipcode: ''
     };
+
+    componentWillReceiveProps(p) {
+        if (this.state.specialProvider && p.providerSearchAdmin &&
+            p.providerSearchAdmin.data && p.providerSearchAdmin.data.providers &&
+            p.providerSearchAdmin.data.providers.length > 0 && !this.state.selectedProviderType) 
+        {
+            this.setState({selectedProviderType: p.providerSearchAdmin.data.providers[0].office_type_id})
+        } 
+    } 
 
     componentDidMount() {
         this.setState({ geo: true });
@@ -41,6 +50,15 @@ class SearchAdmin extends Component {
         } else {
             this.setState({ geo: false });
         }
+        var i = null;
+        if (this.props.match && this.props.match.params && this.props.match.params.id) { 
+            i = this.props.match.params.id;
+            this.setState({specialProvider: i})
+            this.props.dispatch(getProviderSearchAdmin({
+                type: this.state.selectedProviderType,
+                office_addresses_id: i
+            }));
+        } 
     }
 
     changeZip = (e) => {

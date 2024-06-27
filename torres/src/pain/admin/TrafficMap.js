@@ -1,7 +1,13 @@
 import React, { useState, useEffect, Component } from 'react';
 import { TextField, Grid, Paper, Typography, Button } from '@mui/material';
 import googleKey from '../../googleConfig';
+import MapMetaData from "../../components/MapMetaData";
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 import { APIProvider, Map, Marker, useMap, useMapsLibrary } from '@vis.gl/react-google-maps';
+import { HeatMap, GoogleApiWrapper } from "google-maps-react";
+import DirectionsComponent from '../utils/DirectionsComponent';
+import GoogleAutoComplete from '../utils/GoogleAutoComplete';
 
 const darkModeStyle = [
   { "elementType": "geometry", "stylers": [{ "color": "#1e1e1e" }] },
@@ -27,9 +33,6 @@ const darkModeStyle = [
   { "featureType": "water", "elementType": "labels.text.fill", "stylers": [{ "color": "#000000" }] }
 ];
 
-
-
-
 class MapContainer extends Component {
   constructor(props) {
     super(props);
@@ -38,19 +41,29 @@ class MapContainer extends Component {
       mapRef: null,
       showInfoWindow: false,
       selected: null,
+      office:null,
       sticky: false,
       origin: '',
       destination: '',
       fetchDirections: false,
       routes: [],
+      activeSubTab: 'information',
       selectedRouteIndex: 0,
     };
   }
 
+  toggleSubTab = (r,g) => { 
+    this.setState({activeSubTab:g})
+  } 
+
   handleMarkerClick = (ref, map) => {
     const location = ref.addr1 + " " + ref.city + " " + ref.state;
-    this.setState({ destination: location, origin: this.props.data.data.center });
+    this.setState({ office: ref, destination: location });
   };
+
+  updateAddress = (r) => { 
+    this.setState({origin:r.fulladdr});
+  } 
 
   handleMapClick = (ref, map, ev) => {
     const location = ev.latLng;
@@ -67,6 +80,7 @@ class MapContainer extends Component {
   handleRouteSelect = (index) => {
     this.setState({ selectedRouteIndex: index });
   };
+
 
   generateGoogleMapsUrl = () => {
     const { origin, destination } = this.state;
@@ -128,11 +142,21 @@ class MapContainer extends Component {
                 style={{ width: '100%', height: '50vh' }}
                 defaultCenter={position}
                 defaultZoom={9}
+                disableDefaultUI={true}
                 gestureHandling={'greedy'}
                 fullscreenControl={false}
                 options={{ styles: darkModeStyle }} // Apply dark mode style here
             >
-              {this.props.data.data.data.map((e) => {
+              {this.props.targeted && this.props.targeted.map((e) => {
+                let markerProps = {
+                  onClick: (map) => this.handleMarkerClick(e, map),
+                  position: e.coords[0],
+                  data: e,
+                  icon: "http://maps.google.com/mapfiles/ms/icons/blue-pushpin.png"
+                };
+                return <Marker key={e.index} {...markerProps} />;
+              })}
+              {(this.props.targeted && this.props.targeted.length < 1) && this.props.data.data.data.map((e) => {
                 let markerProps = {
                   onClick: (map) => this.handleMarkerClick(e, map),
                   position: e.coords[0],
@@ -142,14 +166,6 @@ class MapContainer extends Component {
                 return <Marker key={e.index} {...markerProps} />;
               })}
             </Map>
-            <Button
-              variant="contained"
-              sx={{ backgroundColor: '#FFA500' }} // Orange color
-              onClick={this.handleFetchDirections}
-              fullWidth
-            >
-              Get Directions
-            </Button>
             {this.state.fetchDirections && (
               <DirectionsComponent
                 origin={this.state.origin}
@@ -171,43 +187,75 @@ class MapContainer extends Component {
         </Grid>
         <Grid item xs={12} md={4}>
           <Paper style={styles.directions}>
-            <Grid container spacing={2}>
-              {this.state.routes.map((route, index) => (
-                <Grid item xs={12} key={index}>
-                  <Paper
-                    elevation={3}
-                    onClick={() => this.handleRouteSelect(index)}
-                    style={{ cursor: 'pointer', padding: '10px', marginBottom: '10px', backgroundColor: index === this.state.selectedRouteIndex ? '#f0f0f0' : '#fff' }}
-                  >
-                    <Typography variant="subtitle1">{route.summary}</Typography>
-                    <Typography variant="body2">Distance: {route.legs[0].distance.text}</Typography>
-                    <Typography variant="body2">Duration: {route.legs[0].duration.text}</Typography>
-                  </Paper>
+            <Tabs value={this.state.activeSubTab} onChange={this.toggleSubTab}>
+                <Tab value='information' label='Information'/>
+                <Tab value='directions' label='Directions'/>
+            </Tabs>
+            {this.state.activeSubTab === 'information' && (
+                <Grid container spacing={2} style={{marginTop:20}}>
+                    <Grid item xs={12}>
+                        <MapMetaData selected={this.state.office} />
+                    </Grid>
                 </Grid>
-              ))}
-              {this.state.routes.length > 0 && (
-                <Grid item xs={12}>
-                  <Paper style={{ padding: '10px', marginTop: '20px', borderRadius: 10 }}>
-                    <Typography variant="subtitle1">Route Summary: {this.state.routes[this.state.selectedRouteIndex].summary}</Typography>
-                    <Typography variant="body2">Distance: {this.state.routes[this.state.selectedRouteIndex].legs[0].distance.text}</Typography>
-                    <Typography variant="body2">Duration: {this.state.routes[this.state.selectedRouteIndex].legs[0].duration.text}</Typography>
-                    <Typography variant="body2">Start Address: {this.state.routes[this.state.selectedRouteIndex].legs[0].start_address}</Typography>
-                    <Typography variant="body2">End Address: {this.state.routes[this.state.selectedRouteIndex].legs[0].end_address}</Typography>
-                    <div style={styles.directionsButton}>
-                      <Button
-                        variant="contained"
-                        sx={{ backgroundColor: '#FFA500' }} // Orange color
-                        href={this.generateGoogleMapsUrl()}
-                        target="_blank"
-                        rel="noopener noreferrer"
+            )}
+            {this.state.activeSubTab === 'directions' && (
+            <>
+                <Grid container spacing={2} style={{marginTop:20}}>
+                    <Grid item xs={12}>
+                        <GoogleAutoComplete onChange={this.updateAddress}/>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Button
+                          variant="contained"
+                          sx={{ backgroundColor: '#FFA500' }} // Orange color
+                          disabled={
+                            this.state.destination.length < 1 || 
+                            this.state.origin.length < 1
+                          } 
+                          onClick={this.handleFetchDirections}
+                          fullWidth
+                        >
+                          Get Directions
+                        </Button>
+                    </Grid>
+                  {this.state.routes.map((route, index) => (
+                    <Grid item xs={12} key={index}>
+                      <Paper
+                        elevation={3}
+                        onClick={() => this.handleRouteSelect(index)}
+                        style={{ cursor: 'pointer', padding: '10px', marginBottom: '10px', backgroundColor: index === this.state.selectedRouteIndex ? '#f0f0f0' : '#fff' }}
                       >
-                        Open in Google Maps
-                      </Button>
-                    </div>
-                  </Paper>
+                        <Typography variant="subtitle1">{route.summary}</Typography>
+                        <Typography variant="body2">Distance: {route.legs[0].distance.text}</Typography>
+                        <Typography variant="body2">Duration: {route.legs[0].duration.text}</Typography>
+                      </Paper>
+                    </Grid>
+                  ))}
+                  {this.state.routes.length > 0 && (
+                    <Grid item xs={12}>
+                      <Paper style={{ padding: '10px', marginTop: '20px', borderRadius: 10 }}>
+                        <Typography variant="subtitle1">Route Summary: {this.state.routes[this.state.selectedRouteIndex].summary}</Typography>
+                        <Typography variant="body2">Distance: {this.state.routes[this.state.selectedRouteIndex].legs[0].distance.text}</Typography>
+                        <Typography variant="body2">Duration: {this.state.routes[this.state.selectedRouteIndex].legs[0].duration.text}</Typography>
+                        <Typography variant="body2">Start Address: {this.state.routes[this.state.selectedRouteIndex].legs[0].start_address}</Typography>
+                        <Typography variant="body2">End Address: {this.state.routes[this.state.selectedRouteIndex].legs[0].end_address}</Typography>
+                        <div style={styles.directionsButton}>
+                          <Button
+                            variant="contained"
+                            sx={{ backgroundColor: '#FFA500' }} // Orange color
+                            href={this.generateGoogleMapsUrl()}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Open in Google Maps
+                          </Button>
+                        </div>
+                      </Paper>
+                    </Grid>
+                  )}
                 </Grid>
-              )}
-            </Grid>
+                </>
+                )}
           </Paper>
         </Grid>
       </Grid>
@@ -246,47 +294,8 @@ class MapContainer extends Component {
   }
 }
 
-function DirectionsComponent({ origin, destination, onRouteSelect, routes, selectedRouteIndex, setRoutes }) {
-  const map = useMap();
-  const routesLibrary = useMapsLibrary("routes");
 
-  const [directionsService, setDirectionsService] = useState(null);
-  const [directionsRenderer, setDirectionsRenderer] = useState(null);
-
-  useEffect(() => {
-    if (!routesLibrary || !map) return;
-    setDirectionsService(new routesLibrary.DirectionsService());
-    setDirectionsRenderer(new routesLibrary.DirectionsRenderer({ map }));
-  }, [routesLibrary, map]);
-
-  useEffect(() => {
-    if (!directionsRenderer || !directionsService || !origin || !destination) return;
-
-    const fetchDirections = async () => {
-      try {
-        const response = await directionsService.route({
-          origin,
-          destination,
-          travelMode: window.google.maps.TravelMode.DRIVING,
-          provideRouteAlternatives: true,
-        });
-
-        directionsRenderer.setDirections(response);
-        onRouteSelect(0);  
-        setRoutes(response.routes);
-      } catch (error) {
-        console.error("Error fetching directions:", error);
-      }
-    };
-    fetchDirections();
-  }, [directionsRenderer, directionsService, origin, destination]);
-
-  useEffect(() => {
-    if(!directionsRenderer) return;
-    directionsRenderer.setRouteIndex(selectedRouteIndex)
-  },[selectedRouteIndex,directionsRenderer])
-
-  return null; 
-}
-
-export default MapContainer;
+export default GoogleApiWrapper({
+  apiKey: googleKey(),
+  libraries: ['visualization','places']
+})(MapContainer);

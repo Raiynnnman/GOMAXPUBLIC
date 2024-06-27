@@ -78,6 +78,7 @@ const App = () => {
                     <Route exact path='/register-legal/:id' component={RegisterLegal}/>
                     <Route exact path='/app/main/dashboard' component={Dashboard}/>
                     <Route exact path='/app/main/admin/search' component={SearchAdmin}/>
+                    <Route exact path='/app/main/admin/search/:id' component={SearchAdmin}/>
                     <Route exact path='/app/main/admin/map' component={Map}/>
                     <Route exact path='/app/main/admin/registrations' component={Registrations}/>
                     <Route exact path='/app/main/admin/customers' component={Referrers}/>

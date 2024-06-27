@@ -224,10 +224,12 @@ class TrafficGet(AdminBase):
             o = db.query("""
                 select 
                     oa.id,oa.name,oa.addr1,'' as uuid,
+                    o.id as office_id,
                     oa.city,oa.state,oa.zipcode,104 as category_id,pq.website,
                     'Pending Provider' as category, oa.lat, oa.lon as lng,oa.phone,
                     pq.provider_queue_lead_strength_id as lead_strength,
                     o.office_type_id as office_type_id, ot.name as office_type,
+                    0 as client_cound,
                     json_arrayagg(
                         json_object('lat',oa.lat,'lng',oa.lon)) as coords
                 from 
@@ -325,10 +327,13 @@ class TrafficGet(AdminBase):
                         json_object('lat',oa.lat,'lng',oa.lon)) as coords
                 from 
                     office_addresses oa,
+                    office o,
                     provider_queue_lead_strength pqls,
                     provider_queue pq
                 where
                     lat <> 0 and
+                    o.id = oa.office_id and
+                    o.active = 1 and
                     pq.provider_queue_lead_strength_id <> %s and
                     pq.provider_queue_lead_strength_id = pqls.id and
                     pq.office_id = oa.office_id
@@ -343,6 +348,11 @@ class TrafficGet(AdminBase):
                     where ou.user_id=u.id and ou.office_id=%s
                     """,(t['office_id'],)
                 )
+                t['client_count'] = db.query("""
+                    select count(id) as cnt from client_intake_offices where
+                    office_addresses_id = %s
+                    """,(t['id'],)
+                )[0]['cnt']
                 t['coords'] = json.loads(t['coords'])
                 ret['data'].append(t) 
         return ret

@@ -128,14 +128,20 @@ class SearchGet(SearchBase):
         #        st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192 < 50 
         #    """,(lon,lat,lon,lat))
         #log.debug("dist=%s" % o)
-        IDS = []
+        oa_id = 0
+        if 'office_addresses_id' in params:
+            oa_id = params['office_addresses_id']
+        IDS = [
+        ]
         limit = 10
         if 'all' in params and params['all']:
             limit = 10000
-        o = db.query("""
+        p = []
+        q = """
             select
                 oa.id,o.id as office_id,
                 o.name as office_name,
+                o.office_type_id as office_type_id,
                 JSON_OBJECT(
                     'id',oa.id,'addr1',concat(oa.addr1,' ',ifnull(oa.addr2,'')),'phone',oa.phone,
                     'lat',oa.lat,'lon',oa.lon, 'city',oa.city,'state',
@@ -147,18 +153,38 @@ class SearchGet(SearchBase):
                 office o,
                 provider_queue pq
             where
+                1 = 1 and 
+        """
+        p.append(lon)
+        p.append(lat)
+        if oa_id != 0:
+            q += " oa.id = %s and " 
+            p.append(oa_id)
+        if oa_id == 0:
+            q += """
                 st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192 < 10 and
+                o.office_type_id = %s and 
+            """
+            p.append(lon)
+            p.append(lat)
+            p.append(provtype)
+        q += """
                 pq.office_id = o.id and
                 oa.office_id = o.id and
                 o.active = 1 and
-                oa.lat <> 0 and
-                o.office_type_id = %s
+                oa.lat <> 0
+        """
+        p.append(lon)
+        p.append(lat)
+        q += """
             order by
                 pq.provider_queue_status_id, 
                 round(st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192,2) 
             limit %s
-            """,(lon,lat,lon,lat,provtype,lon,lat,limit)
-        )
+            """
+        p.append(limit)
+        print(q,p)
+        o = db.query(q,p)
         for x in o:
             x['addr'] = json.loads(x['addr'])
             IDS.append(x['id'])

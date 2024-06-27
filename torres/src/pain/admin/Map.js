@@ -8,6 +8,7 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Navbar from '../../components/Navbar';
 import TemplateSelect from '../utils/TemplateSelect';
+import TemplateSelectSearch from '../utils/TemplateSelectSearch';
 import TemplateTextField from '../utils/TemplateTextField';
 import TemplateSelectMulti from '../utils/TemplateSelectMulti';
 import AppSpinner from '../utils/Spinner';
@@ -22,6 +23,8 @@ class Map extends Component {
         this.state = {
             activeTab: "traffic",
             dateSelected: null,
+            officeFilter:'',
+            officeTarget:[],
             categories: null,
             zipSelected: null,
             address: '', // New state for address
@@ -32,6 +35,7 @@ class Map extends Component {
         this.onDateChange = this.onDateChange.bind(this);
         this.onZipChange = this.onZipChange.bind(this);
         this.onCategoryChange = this.onCategoryChange.bind(this);
+        this.onOfficeFilterChange = this.onOfficeFilterChange.bind(this);
         this.onAddressChange = this.onAddressChange.bind(this); // New handler
         this.onRouteButtonClick = this.onRouteButtonClick.bind(this); // New handler
     }
@@ -72,6 +76,18 @@ class Map extends Component {
 
     componentDidMount() {
         this.props.dispatch(getTraffic({}));
+    }
+
+    onOfficeFilterChange(e, t) {
+        var g = e.target.value;
+        var tar = null;
+        var tos = this.props.trafficData.data.data.filter((r) => r.name)
+        var tar = tos.filter((f) => f.name.toLowerCase().includes(g.toLowerCase()))
+        if (g.length < 1) { tar = []; }
+        this.setState({
+            officeFilter:e.target.value,
+            officeTarget:tar,
+        });
     }
 
     onCategoryChange(e, t) {
@@ -143,18 +159,16 @@ class Map extends Component {
                     <AppSpinner />
                 )}
                 <Navbar />
+                <Box style={{margin:20}}>
                 <div>
                     <Grid container ml={1} mt={5}>
                         <Grid item xs={8} m={1} md={3}>
-                            {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.config &&
-                                this.props.trafficData.data.config.avail && this.state.dateSelected !== null) && (
-                                <TemplateSelect
-                                    onChange={this.onDateChange}
-                                    label='Day'
-                                    value={{ label: this.state.dateSelected }}
-                                    options={this.props.trafficData.data.config.avail.map((e) => (
-                                        { label: e.day, value: e.day, key: e.day }
-                                    ))}
+                            {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.data &&
+                                this.props.trafficData.data.data.length > 0) && (
+                                <TemplateTextField
+                                    onChange={this.onOfficeFilterChange}
+                                    label='Office'
+                                    value={this.state.officeFilter}
                                 />
                             )}
                         </Grid>
@@ -198,7 +212,8 @@ class Map extends Component {
                                         <Tab value='heatmap' label='HeatMap' />
                                     </Tabs>
                                     {(this.state.activeTab === 'traffic') && (
-                                        <TrafficMap data={this.props.trafficData} centerPoint={this.state.center || this.props.trafficData.data.center} />
+                                        <TrafficMap targeted={this.state.officeTarget} 
+                                            data={this.props.trafficData} centerPoint={this.state.center || this.props.trafficData.data.center} />
                                     )}
                                     {(this.state.activeTab === 'heatmap') && (
                                         <HeatMap data={this.props.trafficData} centerPoint={this.state.center || this.props.trafficData.data.center} />
@@ -208,6 +223,7 @@ class Map extends Component {
                         </Box>
                     </Grid>
                 </Grid>
+            </Box>
         </>
         )
     }

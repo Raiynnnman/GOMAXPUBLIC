@@ -27,7 +27,6 @@ class UserDashboard extends Component {
     } 
 
     chatAppt(e) { 
-        console.log(e);
     } 
 
     componentDidMount() {
