@@ -186,29 +186,11 @@ class Map extends Component {
                                 />
                             )}
                         </Grid>
-                        <Grid item xs={8} m={1} md={3}>
-                            <TextField
-                                label="Search Address"
-                                value={this.state.address}
-                                onChange={this.onAddressChange}
-                                fullWidth
-                            />
-                        </Grid>
-                        <Grid item xs={4} m={1} md={2}>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                onClick={this.onRouteButtonClick}
-                                fullWidth
-                            >
-                                Route
-                            </Button>
-                        </Grid>
                     </Grid>
                 </div>
                 <Grid container spacing={2} style={{ marginLeft: {xs:4}, marginTop: 0 }}>
                     <Grid item xs={12}>
-                        <Box sx={{ marginLeft:10,marginRight:10,width: '100%' }}>
+                        <Box sx={{  }}>
                             {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.center) && (
                                 <>
                                     <Tabs value={this.state.activeTab} onChange={this.toggleTab} >
