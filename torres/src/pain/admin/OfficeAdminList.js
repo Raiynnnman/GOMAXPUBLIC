@@ -34,11 +34,17 @@ import TemplateBadge from '../utils/TemplateBadge';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Navbar from '../../components/Navbar';
+import LocationCard from '../office/LocationCard';
+import { useState } from 'react';
+
+
 
 class OfficeList extends Component {
+
     constructor(props) { 
         super(props);
-        this.state = { 
+        this.state = {  
+            addbutton:false,
             selected: null,
             subTab: "plans",
             filter: [],
@@ -253,7 +259,9 @@ class OfficeList extends Component {
             state:'',
             zipcode:'',
             phone:''
+           
         })
+        this.state.addbutton= true
         this.setState(this.state);
     } 
     getContext(e) { 
@@ -348,6 +356,7 @@ class OfficeList extends Component {
     } 
 
     render() {
+
         var clientheads = [
             {
                 dataField:'id',
@@ -671,7 +680,11 @@ class OfficeList extends Component {
                 )
             }
         ]
+
+        console.log(this.state.addbutton, "hellllooo");
+
         return (
+          
         <>
             {(this.props.offices && this.props.offices.isReceiving) && (
                 <AppSpinner/>
@@ -874,19 +887,24 @@ class OfficeList extends Component {
                                 )}
                             </>
                         )}
-                        {(this.state.subTab === 'offices') && (
-                        <>
-                                <TemplateButton style={{marginBottom:10}} onClick={this.addAddress} 
-                                    label={<AddBoxIcon/>}/>
-                                {(this.state.selected.addr && this.state.selected.addr.length > 0) && (
-                                <>
-                                <PainTable
-                                    keyField='id' data={this.state.selected.addr} 
-                                    columns={offheads}/>
-                                </>
-                                )}
-                        </>
-                        )}
+
+
+                        {this.state.subTab === 'offices' && (
+                                                    <>
+                                                        <TemplateButton
+                                                            style={{ marginBottom: 10 }}
+                                                            onClick={this.addAddress}
+                                                            label={<AddBoxIcon />}
+                                                        />
+                                                        {this.state.selected.addr && this.state.selected.addr.length > 0 && (
+                                                            this.state.selected.addr.map((address, index) => (
+                                                                <LocationCard   key={index} provider={address} edit={true} />
+                                                            ))
+                                                        )}
+                                                    </>
+                                                    )}
+
+
                         {(this.state.subTab === 'invoices') && (
                         <>
                                 {(this.state.selected.invoices && this.state.selected.invoices.length > 0) && (
