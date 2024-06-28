@@ -263,12 +263,21 @@ class MapContainer extends Component {
   }
 
   getMarkerIcon(e) {
+    console.log("e",e.name,e.office_type_id,e.lead_strength_id);
     switch (e.category_id) {
       case 2:
         return "http://maps.google.com/mapfiles/ms/icons/red-dot.png";
       case 99:
         if (e.lead_strength_id === 1 && e.office_type_id === 1) {
           return "http://maps.google.com/mapfiles/ms/icons/orange-dot.png";
+        } else if (e.lead_strength_id === 1 && e.office_type_id === 6) {
+          return "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png";
+        } else if (e.lead_strength_id === 2 && e.office_type_id === 6) {
+          return "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png";
+        } else if (e.lead_strength_id === 3 && e.office_type_id === 6) {
+          return "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png";
+        } else if (e.lead_strength_id === 4 && e.office_type_id === 6) {
+          return "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png";
         } else if (e.lead_strength_id === 2 && e.office_type_id === 1) {
           return "http://maps.google.com/mapfiles/ms/icons/orange-dot.png";
         } else if (e.lead_strength_id === 3 && e.office_type_id === 1) {

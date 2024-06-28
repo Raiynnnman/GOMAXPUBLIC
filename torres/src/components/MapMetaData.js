@@ -7,6 +7,7 @@ import formatPhoneNumber from '../pain/utils/formatPhone';
  
 
 const MapMetaData = ({ selected }) => {
+  console.log("sel",selected)
   return (
     <Box
       sx={{
@@ -42,10 +43,6 @@ const MapMetaData = ({ selected }) => {
                       {selected.client_count  ? selected.client_count : "0" + " clients"} <EventSeatIcon style={{fontSize:20}}/>
                     </Typography>
                 </a>
-
-                <Typography variant="body2" color="textSecondary" mt={1}>
-                  {selected.office_type ? selected.office_type : ""} 
-                </Typography>
 
                 <Typography variant="body2" color="textSecondary" mt={1}>
                   {selected.category}
