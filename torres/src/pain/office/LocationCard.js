@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import GoogleAutoComplete from '../utils/GoogleAutoComplete';
+import DeleteIcon from '@mui/icons-material/Delete';
 import formatPhoneNumber from '../utils/formatPhone';
 import { Grid, Typography, Paper, Box, TextField, Divider, Button } from '@mui/material';
 
@@ -33,7 +34,8 @@ const cardStyle = {
 
 class LocationCard extends Component {
     state = {
-        selected: null
+        selected: null,
+        edit:false
     };
 
     componentWillReceiveProps(nextProps) {
@@ -46,22 +48,29 @@ class LocationCard extends Component {
     }
 
     componentDidMount() {
-        const j = new Date();
-        const date = j.toISOString().substring(0, 10);
-        const date2 = j.toDateString().substring(0, 15);
-        this.setState({
-            dateSelected: date2,
-            dateSelectedForRest: date
-        });
-        if (this.props.edit && this.state.selected === null) {
-            this.setState({ selected: this.props.provider });
-        }
+        if (!this.props.provider.id) { 
+            this.editCard();
+        } 
     }
 
-    save = () => { }
+    editCard = () => { 
+        this.setState({selected:this.props.provider,edit:true})
+    } 
+
+    delCard = () => { 
+        this.state.selected = this.props.provider
+        this.state.selected.deleted = true
+        this.props.onEdit(this.state.selected);
+        this.setState({selected:null,edit:false})
+    } 
+
+    saveCard = () => { 
+        this.props.onEdit(this.state.selected);
+        this.setState({selected:null,edit:false})
+    } 
 
     cancel = () => {
-        this.setState({ selected: null });
+        this.setState({selected:null,edit:false})
         this.props.onCancel();
     }
 
@@ -69,28 +78,27 @@ class LocationCard extends Component {
         this.setState({
             selected: { ...this.state.selected, name: e.target.value }
         });
-        this.props.onUpdate(this.state.selected);
     }
 
     changeAddr1 = (e) => {
         this.setState({
-            selected: { ...this.state.selected, addr1: e.target.value }
+            selected: { ...this.state.selected, ...e }
         });
-        this.props.onUpdate(this.state.selected);
     }
 
     changeAddr2 = (e) => {
         this.setState({
             selected: { ...this.state.selected, addr2: e.target.value }
         });
-        this.props.onUpdate(this.state.selected);
     }
 
     changePhone = (e) => {
+        var g = e.target.value;
+        if (g.length > 10) { return; } 
+        const phone = formatPhoneNumber(g);
         this.setState({
-            selected: { ...this.state.selected, phone: e.target.value }
+            selected: { ...this.state.selected, phone: phone }
         });
-        this.props.onUpdate(this.state.selected);
     }
 
     render() {
@@ -100,9 +108,9 @@ class LocationCard extends Component {
                     <Box sx={{ mt: 3 }}>
                         <Paper elevation={3} sx={cardStyle}>
                             <Box>
-                                <Grid container spacing={2}>
-                                    <Grid item xs={12}>
-                                        {this.props.edit && this.state.selected ? (
+                                <Grid container spacing={1}>
+                                    <Grid item xs={10}>
+                                        {this.state.edit && this.state.selected ? (
                                             <TextField
                                                 fullWidth
                                                 value={this.state.selected.name}
@@ -113,11 +121,17 @@ class LocationCard extends Component {
                                             <Typography variant="h6">{this.props.provider.name}</Typography>
                                         )}
                                     </Grid>
+                                    <Grid item xs={1}>
+                                        <Button variant="contained" sx={buttonStyle} style={{marginTop:0,marginRight:20}} 
+                                                onClick={this.delCard} >
+                                            <DeleteIcon/>
+                                        </Button>
+                                    </Grid>
                                 </Grid>
                                 <Divider sx={{ my: 2 }} />
                                 <Grid container spacing={2}>
                                     <Grid item xs={12}>
-                                        {this.props.edit && this.state.selected ? (
+                                        {this.state.edit && this.state.selected ? (
                                             <GoogleAutoComplete onChange={this.changeAddr1} />
                                         ) : (
                                             <Typography>
@@ -126,7 +140,7 @@ class LocationCard extends Component {
                                             </Typography>
                                         )}
                                     </Grid>
-                                    {this.props.edit && this.state.selected && (
+                                    {this.state.edit && this.state.selected && (
                                         <Grid item xs={12}>
                                             <TextField
                                                 fullWidth
@@ -140,7 +154,7 @@ class LocationCard extends Component {
                                 <Divider sx={{ my: 2 }} />
                                 <Grid container spacing={2}>
                                     <Grid item xs={12}>
-                                        {this.props.edit && this.state.selected ? (
+                                        {this.state.edit && this.state.selected ? (
                                             <TextField
                                                 fullWidth
                                                 value={this.state.selected.phone}
@@ -154,9 +168,14 @@ class LocationCard extends Component {
                                 </Grid>
                             </Box>
                             <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-                                {!this.props.edit && (
-                                    <Button variant="contained" sx={buttonStyle} onClick={() => this.props.onEdit(this.props.provider)}>
+                                {!this.state.edit && (
+                                    <Button variant="contained" sx={buttonStyle} onClick={this.editCard}>
                                         Edit
+                                    </Button>
+                                )}
+                                {this.state.edit && (
+                                    <Button variant="contained" sx={buttonStyle} onClick={this.saveCard}>
+                                        Done
                                     </Button>
                                 )}
                             </Box>

@@ -42,42 +42,52 @@ class LocationUpdate(OfficeBase):
         ret = {}
         job,user,off_id,params = self.getArgs(*args,**kwargs)
         db = Query()
-        if 'fulladdr' not in params:
-            params['fulladdr'] = ''
-        if 'addr2' not in params:
-            params['addr2'] = ''
-        print(params)
-        if 'id' in params:
-            db.update("""
-                update office_addresses set name = %s,
-                    addr1=%s,addr2=%s,city=%s,state=%s,zipcode=%s,phone=%s,
-                    lat=0,lon=0,places_id=null,lat_attempt_count=0,
-                    nextcheck=null
-                    where id = %s
-                """,(params['name'],
-                     params['addr1'],
-                     params['addr2'],
-                     params['city'],
-                     params['state'],
-                     params['zipcode'],
-                     params['phone'],
-                     params['id'])
-            )
-        else:
-            db.update("""
-                insert into office_addresses (
-                    office_id,name,addr1,addr2,city,state,zipcode,phone,full_addr)
-                    values (%s,%s,%s,%s,%s,%s,%s,%s,%s)
-                """,(off_id,params['name'],
-                     params['addr1'],
-                     params['addr2'],
-                     params['city'],
-                     params['state'],
-                     params['zipcode'],
-                     params['phone'],
-                     params['fulladdr']
+        if 'addr' not in params or params['addr'] is None:
+            return {'success':False,'message':'MISSING_REQUIRED_DATA'}
+        for x in params['addr']:
+            if 'fulladdr' not in x:
+                x['fulladdr'] = ''
+            if 'addr2' not in x:
+                x['addr2'] = ''
+            if 'name' not in x:
+                continue
+            if 'id' in x:
+                db.update("""
+                    update office_addresses set name = %s,
+                        addr1=%s,addr2=%s,city=%s,state=%s,zipcode=%s,phone=%s,
+                        lat=0,lon=0,places_id=null,lat_attempt_count=0,
+                        nextcheck=null
+                        where id = %s
+                    """,(x['name'],
+                         x['addr1'],
+                         x['addr2'],
+                         x['city'],
+                         x['state'],
+                         x['zipcode'],
+                         x['phone'],
+                         x['id'])
                 )
-            )
+                if 'deleted' in params and params['deleted']:
+                    db.update("""
+                        update office_addresses set deleted = 1
+                        where id=%s
+                        """,(x['id'],)
+                    )
+            else:
+                db.update("""
+                    insert into office_addresses (
+                        office_id,name,addr1,addr2,city,state,zipcode,phone,full_addr)
+                        values (%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                    """,(off_id,x['name'],
+                         x['addr1'],
+                         x['addr2'],
+                         x['city'],
+                         x['state'],
+                         x['zipcode'],
+                         x['phone'],
+                         x['fulladdr']
+                    )
+                )
         db.commit()
         ret['success'] = True
         return ret
@@ -102,7 +112,7 @@ class LocationList(OfficeBase):
                     oa.lat as lat, oa.lon as lng
             from 
                 office_addresses oa
-            where oa.office_id = %s
+            where oa.deleted = 0 and oa.office_id = %s
             
             """,(off_id,)
         )

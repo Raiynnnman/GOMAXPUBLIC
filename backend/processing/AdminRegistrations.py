@@ -273,10 +273,6 @@ class RegistrationUpdate(AdminBase):
                 (select id from office_addresses where office_id=%s)
             """,(offid,)
         )
-        db.update("""
-            delete from office_addresses where office_id=%s
-            """,(offid,)
-        )
         if 'do_not_contact' in params:
             db.update("""
                 update provider_queue set do_not_contact=%s where office_id=%s

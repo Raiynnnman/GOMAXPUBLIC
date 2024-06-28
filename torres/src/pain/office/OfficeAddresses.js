@@ -24,20 +24,28 @@ import { officeLocationsSave } from '../../actions/officeLocationsSave';
 class OfficeAddresses extends Component {
     state = {
         activeTab: "office",
+        addButton:true,
         selected: null,
+        addr:null,
         snackbarOpen: false,
         snackbarMessage: '',
         snackbarSeverity: 'success',
         errors: {},
     };
 
+    componentWillReceiveProps(p) { 
+        if (p.officeLocations && p.officeLocations.data &&
+            p.officeLocations.data.locations && this.state.selected === null) { 
+            this.state.selected = {}
+            this.state.selected.addr = p.officeLocations.data.locations;
+            this.setState(this.state);
+        } 
+    } 
     componentDidMount() {
         this.props.dispatch(getOfficeLocations({ page: 0, limit: 10000 }));
     }
 
-    cancel = () => {
-        this.setState({ selected: null, errors: {} });
-    }
+    cancel = () => { }
 
     onUpdate = (updatedField) => {
         if (updatedField.phone) { 
@@ -70,19 +78,8 @@ class OfficeAddresses extends Component {
     }
 
     save = () => {
-        if (!this.validate()) {
-            this.setState({
-                snackbarOpen: true,
-                snackbarMessage: 'Please correct the errors in the form.',
-                snackbarSeverity: 'error'
-            });
-            return;
-        }
 
         const { selected } = this.state;
-        if (selected.id === 'new') {
-            delete selected.id;
-        }
 
         this.props.dispatch(officeLocationsSave(selected, (err, args) => {
             if (err) {
@@ -93,7 +90,8 @@ class OfficeAddresses extends Component {
                 });
                 return;
             }
-            this.props.dispatch(getOfficeLocations({ page: 0, limit: 10000 }, () => {
+            //this.setState({selected:null});
+            this.props.dispatch(getOfficeLocations({ page: 0, limit: 10000 }, (err,args) => {
                 toast.success('Successfully saved address.', {
                     position: "top-right",
                     autoClose: 3000,
@@ -105,25 +103,22 @@ class OfficeAddresses extends Component {
     }
 
     edit = (e) => {
-        if (e.id === 'new') {
-            this.setState({
-                selected: {
-                    name: '',
-                    miles: 0,
-                    addr1: '',
-                    city: '',
-                    state: '',
-                    zipcode: '',
-                    phone: '',
-                    rating: 0
-                },
-                errors: {}
-            });
-        } else {
-            const selectedLocation = this.props.officeLocations.data.locations.find((g) => g.id === e.id);
-            this.setState({ selected: selectedLocation, errors: {} });
-        }
+        const selectedLocation = this.props.officeLocations.data.locations.find((g) => g.id === e.id);
+        var v = this.state.selected.addr.findIndex((f) => f.id === e.id)
+        if (v < 0) { 
+            this.state.selected.addr.push(e);
+        } else { 
+            this.state.selected.addr[v] = e;
+        } 
+        this.state.addButton = true;
+        this.save();
+        this.setState(this.state);
     }
+
+    addAddress = () => { 
+        this.state.selected.addr.push({});
+        this.setState(this.state);
+    } 
 
     handleCloseSnackbar = () => {
         this.setState({ snackbarOpen: false });
@@ -132,157 +127,37 @@ class OfficeAddresses extends Component {
     render() {
         const { selected, snackbarOpen, snackbarMessage, snackbarSeverity, errors } = this.state;
         const { officeLocations, officeLocationSave } = this.props;
-
         return (
             <>
                 <Navbar />
-                <Container sx={{ mt: 3 }}>
-                    <Typography variant="h3" component="h1" fontWeight="bold" gutterBottom>
-                        Office Addresses
-                    </Typography>
-                    {(officeLocations?.isReceiving || officeLocationSave?.isReceiving) && <AppSpinner />}
-                    {selected ? (
-                        <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', px: 2 }}>
-                            <Container maxWidth="md">
-                                <Paper
-                                    elevation={12}
-                                    sx={{
-                                        width: '100%',
-                                        p: { xs: 2, sm: 4, md: 6 },
-                                        borderRadius: '30px',
-                                        boxShadow: '0 5px 15px rgba(0, 0, 0, 0.35)',
-                                        backgroundColor: '#fff',
-                                    }}
-                                >
-                                    <Typography variant="h6" align="center" gutterBottom>
-                                        {selected.id === 'new' ? 'Add New Office Location' : 'Edit Office Location'}
-                                    </Typography>
-                                    <Grid container spacing={3}>
-                                        <Grid item xs={12}>
-                                            <TextField
-                                                fullWidth
-                                                required
-                                                label="Name"
-                                                name="name"
-                                                value={selected.name}
-                                                onChange={(e) => this.onUpdate({ name: e.target.value })}
-                                                margin="normal"
-                                                sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
-                                                error={!!errors.name}
-                                                helperText={errors.name}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12} sm={6}>
-                                            <TextField
-                                                fullWidth
-                                                required
-                                                label="Address"
-                                                name="addr1"
-                                                value={selected.addr1}
-                                                onChange={(e) => this.onUpdate({ addr1: e.target.value })}
-                                                margin="normal"
-                                                sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
-                                                error={!!errors.addr1}
-                                                helperText={errors.addr1}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12} sm={6}>
-                                            <TextField
-                                                fullWidth
-                                                required
-                                                label="City"
-                                                name="city"
-                                                value={selected.city}
-                                                onChange={(e) => this.onUpdate({ city: e.target.value })}
-                                                margin="normal"
-                                                sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
-                                                error={!!errors.city}
-                                                helperText={errors.city}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12} sm={6}>
-                                            <TextField
-                                                fullWidth
-                                                required
-                                                label="State"
-                                                name="state"
-                                                value={selected.state}
-                                                onChange={(e) => this.onUpdate({ state: e.target.value })}
-                                                margin="normal"
-                                                sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
-                                                error={!!errors.state}
-                                                helperText={errors.state}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12} sm={6}>
-                                            <TextField
-                                                fullWidth
-                                                required
-                                                label="Zipcode"
-                                                name="zipcode"
-                                                value={selected.zipcode}
-                                                onChange={(e) => this.onUpdate({ zipcode: e.target.value })}
-                                                margin="normal"
-                                                sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
-                                                error={!!errors.zipcode}
-                                                helperText={errors.zipcode}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12}>
-                                            <TextField
-                                                fullWidth
-                                                required
-                                                label="Phone"
-                                                name="phone"
-                                                value={formatPhone(selected.phone)}
-                                                onChange={(e) => this.onUpdate({ phone: e.target.value })}
-                                                margin="normal"
-                                                sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
-                                                error={!!errors.phone}
-                                                helperText={errors.phone}
-                                            />
-                                        </Grid>
-                                    </Grid>
-                                    <Divider sx={{ my: 2 }} />
-                                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                                        <Button variant="contained" style={{width:100}} sx={buttonStyle} onClick={this.save}>Save</Button>
-                                        <Button variant="outlined" style={{marginLeft:20,width:100}} sx={{ ...buttonStyle, mr: 2 }} onClick={this.cancel}>Close</Button>
-                                    </Box>
-                                </Paper>
-                            </Container>
-                        </Box>
+                <Box style={{margin:20}}>
+                <Grid container spacing={3} sx={{ justifyContent: 'center', mt: 2 }}>
+                    <Grid item>
+                        <Button variant="contained" sx={buttonStyle} startIcon={<AddBoxIcon />} onClick={this.addAddress}>
+                            Add New Location
+                        </Button>
+                    </Grid>
+                </Grid>
+                <Grid container spacing={4} sx={{ mt: 2 }}>
+                    {this.state.selected && this.state.selected.addr && this.state.selected.addr.length > 0 ? (
+                        this.state.selected.addr.map((e) => (
+                            <>
+                            {!e.deleted && ( 
+                            <Grid item xs={12} sm={6} md={4} key={e.id}>
+                                <Box sx={{ height: '100%' }}>
+                                    <LocationCard onEdit={this.edit} provider={e}/>
+                                </Box>
+                            </Grid>
+                            )}
+                            </>
+                        ))
                     ) : (
-                        <>
-                            <Grid container spacing={3} sx={{ justifyContent: 'center', mt: 2 }}>
-                                <Grid item>
-                                    <Button variant="contained" sx={buttonStyle} startIcon={<AddBoxIcon />} onClick={() => this.edit({ id: 'new' })}>
-                                        Add New Location
-                                    </Button>
-                                </Grid>
-                            </Grid>
-                            <Grid container spacing={4} sx={{ mt: 2 }}>
-                                {officeLocations?.data?.locations?.length > 0 ? (
-                                    officeLocations.data.locations.map((e) => (
-                                        <Grid item xs={12} sm={6} md={4} key={e.id}>
-                                            <Box sx={{ height: '100%' }}>
-                                                <LocationCard onEdit={this.edit} provider={e} edit={false} />
-                                            </Box>
-                                        </Grid>
-                                    ))
-                                ) : (
-                                    <Typography variant="h6" color="textSecondary" sx={{ mt: 5 }}>
-                                        No office locations available.
-                                    </Typography>
-                                )}
-                            </Grid>
-                        </>
+                        <Typography variant="h6" color="textSecondary" sx={{ mt: 5 }}>
+                            No office locations available.
+                        </Typography>
                     )}
-                </Container>
-                <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={this.handleCloseSnackbar}>
-                    <Alert onClose={this.handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
-                        {snackbarMessage}
-                    </Alert>
-                </Snackbar>
+                </Grid>
+                </Box>
             </>
         );
     }

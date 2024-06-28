@@ -28,7 +28,6 @@ class Appointments extends Component {
 
     componentDidMount() {
         const initMap = (e) => { 
-            console.log("init",e);
         } 
         if (this.props.match.params && this.props.match.params.id) { 
             this.state.selected = this.props.match.params.id;

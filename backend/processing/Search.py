@@ -154,6 +154,7 @@ class SearchGet(SearchBase):
                 provider_queue pq
             where
                 1 = 1 and 
+                oa.deleted = 0 and
         """
         p.append(lon)
         p.append(lat)
@@ -183,7 +184,6 @@ class SearchGet(SearchBase):
             limit %s
             """
         p.append(limit)
-        print(q,p)
         o = db.query(q,p)
         for x in o:
             x['addr'] = json.loads(x['addr'])

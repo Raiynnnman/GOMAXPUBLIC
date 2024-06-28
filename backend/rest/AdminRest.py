@@ -8,20 +8,20 @@ from flask import request, jsonify
 from rest.RestBase import RestBase
 from processing import Admin,Coupons,AdminCustomers
 from processing import AdminInvoices,AdminRegistrations
-from processing import AdminTraffic, AdminCommissions
+from processing import AdminTraffic, AdminCommissions,AdminOffice 
 from processing.Context import GetContext,DelContext
 
 class OfficeListRest(RestBase):
 
     def post(self, *args, **kwargs):
-        u = Admin.OfficeList()
+        u = AdminOffice.OfficeList()
         ret = u.process(args[0])
         return ret
 
 class OfficeSaveRest(RestBase):
 
     def post(self, *args, **kwargs):
-        u = Admin.OfficeSave()
+        u = AdminOffice.OfficeSave()
         ret = u.process(args[0])
         return ret
 

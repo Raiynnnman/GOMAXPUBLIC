@@ -44,12 +44,13 @@ class OfficeList extends Component {
     constructor(props) { 
         super(props);
         this.state = {  
-            addbutton:false,
+            addButton:true,
             selected: null,
             subTab: "plans",
             filter: [],
             comments:[],
             commentAdd:false,
+            addrState:{},
             statusSelected:null,
             search:null,
             selProvider:null,
@@ -59,6 +60,7 @@ class OfficeList extends Component {
         } 
         this.cancel = this.cancel.bind(this);
         this.comment = this.comment.bind(this);
+        this.editAddress = this.editAddress.bind(this);
         this.search = this.search.bind(this);
         this.pageChange = this.pageChange.bind(this);
         this.priorityChange = this.priorityChange.bind(this);
@@ -134,6 +136,17 @@ class OfficeList extends Component {
         this.state.selected.comments.shift();
         this.setState(this.state);
     }
+
+    editAddress(e,t) { 
+        var v = this.state.selected.addr.findIndex((f) => f.id === e.id)
+        if (v < 0) { 
+            this.state.selected.addr.push(e);
+        } else { 
+            this.state.selected.addr[v] = e;
+        } 
+        this.state.addButton = true;
+        this.setState(this.state)
+    } 
 
     comment(e) { 
         this.state.selected.comments[0].text=e.target.value
@@ -252,16 +265,14 @@ class OfficeList extends Component {
     } 
     addAddress() { 
         this.state.selected.addr.push({
-            id:0,
             name:'',
             addr1:'',
             city:'',
             state:'',
             zipcode:'',
             phone:''
-           
         })
-        this.state.addbutton= true
+        this.state.addButton = false; 
         this.setState(this.state);
     } 
     getContext(e) { 
@@ -521,8 +532,8 @@ class OfficeList extends Component {
                 text:'Actions',
                 formatter:(cellContent,row) => ( 
                     <div>
-                        <TemplateButton onClick={() => this.edit(row)} style={{marginRight:5,height:35}} label={<EditIcon/>}/>
-                        <TemplateButton onClick={() => this.getContext(row)} style={{height:35}} label={<LaunchIcon/>}/>
+                        <TemplateButton onClick={() => this.edit(row)} style={{marginRight:5,width:50,height:35}} label={<EditIcon/>}/>
+                        <TemplateButton onClick={() => this.getContext(row)} style={{height:35,width:50}} label={<LaunchIcon/>}/>
                     </div>
                 )
             },
@@ -681,7 +692,6 @@ class OfficeList extends Component {
             }
         ]
 
-        console.log(this.state.addbutton, "hellllooo");
 
         return (
           
@@ -890,19 +900,30 @@ class OfficeList extends Component {
 
 
                         {this.state.subTab === 'offices' && (
-                                                    <>
-                                                        <TemplateButton
-                                                            style={{ marginBottom: 10 }}
-                                                            onClick={this.addAddress}
-                                                            label={<AddBoxIcon />}
-                                                        />
-                                                        {this.state.selected.addr && this.state.selected.addr.length > 0 && (
-                                                            this.state.selected.addr.map((address, index) => (
-                                                                <LocationCard   key={index} provider={address} edit={true} />
-                                                            ))
-                                                        )}
-                                                    </>
-                                                    )}
+                            <>
+                                {this.state.addButton && ( 
+                                <TemplateButton
+                                    style={{ width:50,marginBottom: 10 }}
+                                    onClick={this.addAddress}
+                                    label={<AddBoxIcon />}
+                                />
+                                )}
+                                <Grid container xs={12}>
+                                {this.state.selected.addr && this.state.selected.addr.length > 0 && (
+                                    this.state.selected.addr.map((address, index) => (
+                                    <>
+                                        {!address.deleted && (
+                                        <Grid item xs={3} style={{margin:20}}>
+                                        <LocationCard onEdit={this.editAddress} key={index} 
+                                            provider={address} />
+                                        </Grid>
+                                        )}
+                                    </>
+                                    ))
+                                )}
+                                </Grid>
+                            </>
+                        )}
 
 
                         {(this.state.subTab === 'invoices') && (
