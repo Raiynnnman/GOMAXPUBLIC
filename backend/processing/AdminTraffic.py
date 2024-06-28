@@ -320,6 +320,7 @@ class TrafficGet(AdminBase):
                     oa.id,oa.name,oa.addr1,'' as uuid,
                     oa.city,oa.state,oa.zipcode,99 as category_id,
                     oa.phone,oa.office_id,
+                    ot.name as office_type,ot.id as office_type_id,
                     pq.provider_queue_lead_strength_id as lead_strength_id,
                     pqls.name as lead_strength,
                     'Preferred Provider' as category, oa.lat, oa.lon as lng,
@@ -328,10 +329,12 @@ class TrafficGet(AdminBase):
                 from 
                     office_addresses oa,
                     office o,
+                    office_type ot,
                     provider_queue_lead_strength pqls,
                     provider_queue pq
                 where
                     lat <> 0 and
+                    o.office_type_id=ot.id and
                     o.id = oa.office_id and
                     o.active = 1 and
                     pq.provider_queue_lead_strength_id <> %s and

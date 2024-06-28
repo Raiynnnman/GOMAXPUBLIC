@@ -287,7 +287,7 @@ class MapContainer extends Component {
       case 103:
         return "http://maps.google.com/mapfiles/ms/icons/purple-dot.png";
       case 100:
-        return null;
+        return "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
       default:
         return null;
     }

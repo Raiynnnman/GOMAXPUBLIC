@@ -128,14 +128,14 @@ class Map extends Component {
             this.state.zipSelected = e.target.value;
             if (e.target.value.length === 5) {
                 this.props.dispatch(getTraffic({ categories: t, date: this.state.dateSelected, zipcode: this.state.zipSelected }));
-                this.geocodeZipcode(e.target.value);
+                // this.geocodeZipcode(e.target.value);
             }
             this.setState(this.state);
         } else {
             this.state.zipSelected = e.label;
             this.setState(this.state);
             this.props.dispatch(getTraffic({ categories: t, date: this.state.dateSelected, zipcode: this.state.zipSelected }));
-            this.geocodeZipcode(e.label);
+            // this.geocodeZipcode(e.label);
         }
     }
 

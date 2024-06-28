@@ -44,6 +44,10 @@ const MapMetaData = ({ selected }) => {
                 </a>
 
                 <Typography variant="body2" color="textSecondary" mt={1}>
+                  {selected.office_type ? selected.office_type : ""} 
+                </Typography>
+
+                <Typography variant="body2" color="textSecondary" mt={1}>
                   {selected.category}
                 </Typography>
 
