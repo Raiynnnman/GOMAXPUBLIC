@@ -562,31 +562,12 @@ class Registrations extends Component {
                 text:'Email'
             },
             {
-                dataField:'office_type',
-                sort:true,
-                text:'Type'
-            },
-            {
                 dataField:'phone',
                 sort:true,
                 text:'Phone',
                 formatter: (cellContent,row) => (
                     <div>
                        {formatPhoneNumber(row.phone)} 
-                    </div>
-                )
-            },
-            {
-                dataField:'sf_id',
-                sort:true,
-                text:'Links',
-                formatter:(cellContent,row) => (
-                    <div>
-                    {row.sf_id !== null && (
-                        <a target="_blank" href={'https://poundpain1.salesmate.io/#/app/deals/' + row.sm_id + '/detail'}>
-                            <img height={50} width={50}src='/salesmate.webp'/>
-                        </a>
-                    )}
                     </div>
                 )
             },

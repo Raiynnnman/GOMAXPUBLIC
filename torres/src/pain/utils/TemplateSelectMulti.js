@@ -1,6 +1,9 @@
 import React, { useState, Component, useEffect } from 'react';
 import OutlinedInput from '@mui/material/OutlinedInput';
+import Checkbox from '@mui/material/Checkbox';
+
 import Chip from '@mui/material/Chip';
+import ListItemText from '@mui/material/ListItemText';
 import Button from '@mui/material/Button';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -19,8 +22,14 @@ function TemplateSelectMulti({label,onChange,style,value,options}) {
   const handleDelete = (e) => { 
     var o = value.filter((f) => f.label !== e);
     var t = sel.filter((f) => f !== e);
+    var upd = [];
+    var c = 0;
+    for (c = 0; c < t.length; c++) { 
+        var g = options.filter((k) => k.label === t[c])
+        if (g.length > 0) { upd.push(g[0]); }
+    } 
     setSelected(t);
-    onChange(o);
+    onChange(upd);
   }
 
   const handleChange = (e,t) => {
@@ -50,7 +59,7 @@ function TemplateSelectMulti({label,onChange,style,value,options}) {
           renderValue={(e) => { 
             return ( 
                 e.map((f) => { 
-                    return <Chip key={f} 
+                    return <Chip key={f} size="small"
                         onMouseDown={(event) => { event.stopPropagation(); }}
                         label={f} onDelete={() => handleDelete(f)} />
                 })
@@ -61,7 +70,8 @@ function TemplateSelectMulti({label,onChange,style,value,options}) {
           {options.map((n) => {
             return (
                 <MenuItem key={n.label} value={n.label} >
-                  {n.label}
+                  <Checkbox checked={sel.indexOf(n.label) > -1}/>
+                  <ListItemText primary={n.label}/>
                 </MenuItem>
             )
           })}

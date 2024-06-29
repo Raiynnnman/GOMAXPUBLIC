@@ -26,6 +26,9 @@ class Map extends Component {
             officeFilter:'',
             officeTarget:[],
             categories: null,
+            categoriesFilter:[],
+            officeTypeFilter:[],
+            office_types: null,
             zipSelected: null,
             address: '', // New state for address
             center: null, // New state for map center
@@ -35,6 +38,7 @@ class Map extends Component {
         this.onDateChange = this.onDateChange.bind(this);
         this.onZipChange = this.onZipChange.bind(this);
         this.onCategoryChange = this.onCategoryChange.bind(this);
+        this.onOfficeTypeChange = this.onOfficeTypeChange.bind(this);
         this.onOfficeFilterChange = this.onOfficeFilterChange.bind(this);
         this.onAddressChange = this.onAddressChange.bind(this); // New handler
         this.onRouteButtonClick = this.onRouteButtonClick.bind(this); // New handler
@@ -47,29 +51,35 @@ class Map extends Component {
             changed = true;
             this.setState(this.state);
         }
+        if (p.trafficData.data && p.trafficData.data.config && p.trafficData.data.config.avail && this.state.office_types === null) {
+            this.state.office_types = [];
+            this.state.categoriesFilter = [];
+            for (c = 0; c < p.trafficData.data.config.office_types.length; c++) {
+                this.state.office_types.push(p.trafficData.data.config.office_types[c]);
+                this.state.officeTypeFilter.push(p.trafficData.data.config.office_types[c].id);
+            }
+            this.setState(this.state);
+            changed = true;
+        } 
         if (p.trafficData.data && p.trafficData.data.config && p.trafficData.data.config.avail && this.state.categories === null) {
             var c = 0;
             this.state.categories = [];
+            this.state.categoriesFilter = [];
             for (c = 0; c < p.trafficData.data.config.categories.length; c++) {
                 if (p.trafficData.data.config.categories[c].name === 'Accident') { continue; }
                 if (p.trafficData.data.config.categories[c].name === 'Potential Providers') { continue; }
                 if (p.trafficData.data.config.categories[c].name === 'Pending Provider') { continue; }
                 this.state.categories.push(p.trafficData.data.config.categories[c]);
+                this.state.categoriesFilter.push(p.trafficData.data.config.categories[c].id);
             }
             this.setState(this.state);
             changed = true;
         }
         if (changed) {
-            var t = [];
-            var c = 0;
-            for (c = 0; c < this.state.categories.length; c++) {
-                t.push(this.state.categories[c].id);
-            }
             this.props.dispatch(
                 getTraffic({
-                    date: this.state.dateSelected,
-                    categories: t,
-                    zipcode: this.state.zipSelected
+                    office_types: this.state.officeTypeFilter,
+                    categories: this.state.categoriesFilter,
                 })
             )
         }
@@ -91,6 +101,25 @@ class Map extends Component {
         });
     }
 
+    onOfficeTypeChange(e, t) {
+        this.state.office_types = e;
+        if (this.state.office_types.length < 1) { return; }
+        var d = [];
+        var c = 0;
+        for (c = 0; c < this.state.office_types.length; c++) {
+            if (this.state.office_types[c].id) {
+                d.push(this.state.office_types[c].id);
+            } else {
+                d.push(this.state.office_types[c].value);
+            }
+        }
+        this.state.officeTypesFilter = d;
+        this.setState(this.state);
+        this.props.dispatch(getTraffic({ 
+            categories: this.state.categoriesFilter, 
+            office_types: d, date: this.state.dateSelected, zipcode: this.state.zipSelected }))
+    } 
+
     onCategoryChange(e, t) {
         this.state.categories = e;
         if (this.state.categories.length < 1) { return; }
@@ -103,8 +132,9 @@ class Map extends Component {
                 d.push(this.state.categories[c].value);
             }
         }
+        this.state.categoryTypesFilter = d;
         this.setState(this.state);
-        this.props.dispatch(getTraffic({ categories: d, date: this.state.dateSelected, zipcode: this.state.zipSelected }))
+        this.props.dispatch(getTraffic({ office_types: this.state.officeTypesFilter, categories: d, date: this.state.dateSelected, zipcode: this.state.zipSelected }))
     }
 
     onDateChange(e) {
@@ -115,26 +145,24 @@ class Map extends Component {
         }
         this.state.dateSelected = e.label
         this.setState(this.state);
-        this.props.dispatch(getTraffic({ categories: t, date: this.state.dateSelected, zipcode: this.state.zipSelected }))
+        this.props.dispatch(getTraffic({ office_types: this.state.officeTypeFilter, categories: this.state.categoriesFilter, 
+            date: this.state.dateSelected, zipcode: this.state.zipSelected }))
     }
 
     onZipChange(e) {
-        var t = [];
-        var c = 0;
-        for (c = 0; c < this.state.categories.length; c++) {
-            t.push(this.state.categories[c].id);
-        }
         if (e.target.value) {
             this.state.zipSelected = e.target.value;
             if (e.target.value.length === 5) {
-                this.props.dispatch(getTraffic({ categories: t, date: this.state.dateSelected, zipcode: this.state.zipSelected }));
+                this.props.dispatch(getTraffic({ office_types: this.state.officeTypeFilter, categories: this.state.categoriesFilter, 
+                    date: this.state.dateSelected, zipcode: this.state.zipSelected }));
                 // this.geocodeZipcode(e.target.value);
             }
             this.setState(this.state);
         } else {
             this.state.zipSelected = e.label;
             this.setState(this.state);
-            this.props.dispatch(getTraffic({ categories: t, date: this.state.dateSelected, zipcode: this.state.zipSelected }));
+            this.props.dispatch(getTraffic({ office_types: this.state.officeTypeFilter, categories: this.state.categoriesFilter, 
+                date: this.state.dateSelected, zipcode: this.state.zipSelected }));
             // this.geocodeZipcode(e.label);
         }
     }
@@ -154,6 +182,8 @@ class Map extends Component {
     }
 
     render() {
+        console.log("p",this.props);
+        console.log("s",this.state);
         return (
             <>
                 {(this.props.trafficData && this.props.trafficData.isReceiving) && (
@@ -163,7 +193,7 @@ class Map extends Component {
                 <Box style={{margin:20}}>
                 <div>
                     <Grid container ml={1} mt={5}>
-                        <Grid item xs={8} m={1} md={3}>
+                        <Grid item xs={8} m={1} md={2}>
                             {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.data &&
                                 this.props.trafficData.data.data.length > 0) && (
                                 <TemplateTextField
@@ -186,7 +216,7 @@ class Map extends Component {
                                 />
                             )}
                         </Grid>
-                        <Grid item m={0.5} xs={11} md={6}>
+                        <Grid item m={0.5} xs={4} md={4}>
                             {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.config &&
                                 this.props.trafficData.data.config.avail && this.state.dateSelected !== null) && (
                                 <TemplateSelectMulti
@@ -196,6 +226,21 @@ class Map extends Component {
                                         { label: g.label ? g.label : g.name, id: g.id, key: g.id }
                                     ))}
                                     options={this.props.trafficData.data.config.categories.map((e) => (
+                                        { label: e.name, value: e.id, key: e.id }
+                                    ))}
+                                />
+                            )}
+                        </Grid>
+                        <Grid item m={0.5} xs={4} md={3}>
+                            {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.config &&
+                                this.props.trafficData.data.config.avail && this.state.dateSelected !== null) && (
+                                <TemplateSelectMulti
+                                    onChange={this.onOfficeTypeChange}
+                                    label='Type'
+                                    value={this.state.office_types.map((g) => (
+                                        { label: g.label ? g.label : g.name, id: g.id, key: g.id }
+                                    ))}
+                                    options={this.props.trafficData.data.config.office_types.map((e) => (
                                         { label: e.name, value: e.id, key: e.id }
                                     ))}
                                 />

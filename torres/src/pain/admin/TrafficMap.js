@@ -39,6 +39,7 @@ class MapContainer extends Component {
     this.state = {
       locations: [],
       mapRef: null,
+      center:{lat:0,lng:0},
       showInfoWindow: false,
       selected: null,
       office:null,
@@ -52,6 +53,15 @@ class MapContainer extends Component {
     };
   }
 
+  componentWillReceiveProps(p) { 
+    if (p.centerPoint && p.centerPoint.lat !== this.state.center.lat &&
+        p.centerPoint.lng !== this.state.center.lng && this.state.mapRef) { 
+        this.state.mapRef.panTo(p.centerPoint);
+        this.state.center = p.centerPoint;
+        this.setState(this.state);
+    } 
+  } 
+
   toggleSubTab = (r,g) => { 
     this.setState({activeSubTab:g})
   } 
@@ -63,6 +73,11 @@ class MapContainer extends Component {
 
   updateAddress = (r) => { 
     this.setState({origin:r.fulladdr});
+  } 
+
+  handleMapLoad = (ref, map, ev) => {
+    this.state.mapRef = ref.map;
+    this.setState(this.state);
   } 
 
   handleMapClick = (ref, map, ev) => {
@@ -141,6 +156,7 @@ class MapContainer extends Component {
             <Map
                 style={{ width: '100%', height: '50vh' }}
                 defaultCenter={position}
+                onIdle={this.handleMapLoad}
                 defaultZoom={9}
                 disableDefaultUI={true}
                 gestureHandling={'greedy'}
@@ -161,7 +177,7 @@ class MapContainer extends Component {
                   onClick: (map) => this.handleMarkerClick(e, map),
                   position: e.coords[0],
                   data: e,
-                  icon: this.getMarkerIcon(e),
+                  icon: this.getMarkerIcon(e)
                 };
                 return <Marker key={e.index} {...markerProps} />;
               })}
@@ -263,7 +279,6 @@ class MapContainer extends Component {
   }
 
   getMarkerIcon(e) {
-    console.log("e",e.name,e.office_type_id,e.lead_strength_id);
     switch (e.category_id) {
       case 2:
         return "http://maps.google.com/mapfiles/ms/icons/red-dot.png";
@@ -294,7 +309,7 @@ class MapContainer extends Component {
         }
         break;
       case 103:
-        return "http://maps.google.com/mapfiles/ms/icons/purple-dot.png";
+        return "http://maps.google.com/mapfiles/ms/icons/green-dot.png";
       case 100:
         return "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
       default:
