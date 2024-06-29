@@ -76,10 +76,12 @@ class ChatDialog extends Component {
                 this.state.socket.close();
             } 
             var last = 0;
-            var l = t[0].chats.sort((a,b) => (a.created > b.created ? -1:1))
-            if (l.length > 0) { 
-                last = l[0].id
-            } 
+            if (t[0].chats) { 
+                var l = t[0].chats.sort((a,b) => (a.created > b.created ? -1:1))
+                if (l.length > 0) { 
+                    last = l[0].id
+                } 
+            }
             var token = "Bearer " + localStorage.getItem("token");
             this.state.socket = io.connect(chatURL(), { 
                 extraHeaders: { Authorization: token }
@@ -144,6 +146,7 @@ class ChatDialog extends Component {
         mychat.chats = mychat.chats.concat(this.state.newMessages);
         this.state.newMessages = []
     } 
+    if (!mychat.chats) { return []; }
     if (mychat.chats.length < 1) { return []; }
     let firstMessage = mychat.chats[0];
     let dialogParts = [[this.shortCalendarDate(firstMessage.created)],[firstMessage]];

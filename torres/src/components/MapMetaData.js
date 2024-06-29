@@ -7,7 +7,6 @@ import formatPhoneNumber from '../pain/utils/formatPhone';
  
 
 const MapMetaData = ({ selected }) => {
-  console.log("sel",selected)
   return (
     <Box
       sx={{

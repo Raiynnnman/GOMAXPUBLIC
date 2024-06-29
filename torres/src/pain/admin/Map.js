@@ -183,8 +183,6 @@ class Map extends Component {
     }
 
     render() {
-        console.log("p",this.props);
-        console.log("s",this.state);
         return (
             <>
                 {(this.props.trafficData && this.props.trafficData.isReceiving) && (
