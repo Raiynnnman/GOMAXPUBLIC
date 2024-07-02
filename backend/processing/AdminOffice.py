@@ -347,7 +347,7 @@ class OfficeSave(AdminBase):
             """,(insid,user['id']))
         if 'pq_status_id' in params:
             db.update("""
-                update provider_queue set provider_queue_status_id=%s where id = %s
+                update provider_queue set provider_queue_status_id=%s where office_id = %s
                 """,(params['pq_status_id'],params['id'])
             )
         if 'commission_user_id' in params:
