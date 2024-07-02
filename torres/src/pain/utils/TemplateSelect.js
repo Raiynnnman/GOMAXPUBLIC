@@ -5,7 +5,7 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 
-function TemplateSelect({label,onChange,style,value,options}) {
+function TemplateSelect({label,onChange,style,value,options,disabled}) {
 
     return (
     <>
@@ -13,12 +13,13 @@ function TemplateSelect({label,onChange,style,value,options}) {
       <InputLabel>{label}</InputLabel>
       <Select
         value={value.label ? value.label : value}
+        disabled={disabled}
         label={label}
         onChange={onChange}
       >
         {options.map((e) => { 
             return (
-                <MenuItem key={e.value} value={e.value}>{e.label}</MenuItem>
+                <MenuItem key={e.key ? e.key : e.value} value={e.value}>{e.label}</MenuItem>
             )
         })}
       </Select>

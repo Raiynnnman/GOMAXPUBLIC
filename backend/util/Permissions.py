@@ -11,6 +11,27 @@ from util.Logging import Logging
 from common.InvalidCredentials import InvalidCredentials
 
 
+def check_crm(val):
+    def check(cls,jobid,inp):
+        if len(inp) > 1 or len(inp) == 1:
+            u = {}
+            if isinstance(inp,list):
+                u = inp[0]
+            elif isinstance(inp,tuple):
+                u = inp[0]
+            else:
+                u = dict(inp)
+            print(u)
+            if 'entitlements' in u:
+                if 'Admin' not in u['entitlements'] and 'CRMUser' not in u['entitlements']:
+                    raise InvalidCredentials("ACCESS_REQUIRED")
+            else:
+                raise InvalidCredentials("ACCESS_REQUIRED")
+        else:
+                raise InvalidCredentials("ACCESS_REQUIRED")
+        return val(cls,jobid,inp)
+    return check
+
 def check_admin(val):
     def check(cls,jobid,inp):
         if len(inp) > 1 or len(inp) == 1:

@@ -28,7 +28,7 @@ from processing.Audit import Audit
 from processing import Search,Office
 from common.DataException import DataException
 from common.InvalidCredentials import InvalidCredentials
-from util.Permissions import check_admin,check_bdr
+from util.Permissions import check_admin,check_bdr,check_crm
 from util.Mail import Mail
 
 log = Logging()
@@ -43,7 +43,7 @@ class RegistrationUpdate(AdminBase):
     def isDeferred(self):
         return False
 
-    @check_admin
+    @check_crm
     def execute(self, *args, **kwargs):
         ret = {}
         job,user,off_id,params = self.getArgs(*args,**kwargs)
@@ -130,10 +130,10 @@ class RegistrationUpdate(AdminBase):
             pqid = db.query("select LAST_INSERT_ID()");
             pqid = pqid[0]['LAST_INSERT_ID()']
             db.update("""
-                insert into provider_queue_history(provider_queue_id,user_id,text) values (
+                insert into office_history(office_id,user_id,text) values (
                     %s,%s,'Created (New Record)'
                 )
-            """,(pqid,user['id']))
+            """,(offid,user['id']))
             db.update("""
                 insert into office_user(office_id,user_id) values
                     (%s,%s)
@@ -171,7 +171,7 @@ class RegistrationUpdate(AdminBase):
                 """,(offid,user['id']))
         else:
             db.update("""
-                insert into provider_queue_history(provider_queue_id,user_id,text) values (
+                insert into office_history(office_id,user_id,text) values (
                     %s,%s,'Updated Record'
                 )
             """,(pqid,user['id']))
@@ -273,18 +273,96 @@ class RegistrationUpdate(AdminBase):
                 (select id from office_addresses where office_id=%s)
             """,(offid,)
         )
-        if 'do_not_contact' in params:
+        if 'actions' in params:
+            for x in params['actions']:
+                if 'id' not in x:
+                    bb2 = encryption.encrypt(
+                        x['action'],
+                        config.getKey('encryption_key')
+                        )
+                    db.update("""
+                        insert into provider_queue_actions(
+                            user_id,provider_queue_id,action,provider_queue_actions_type_id,
+                            provider_queue_actions_status_id
+                        )
+                        values 
+                        (%s,%s,%s,%s,%s)
+                        """,(user['user_id'],
+                            pqid,bb2,
+                            x['action_type_id'],x['action_status_id'])
+                    )
+                    db.update("""
+                        insert into office_history (office_id,user_id,text) values
+                            (%s,%s,%s)""",(offid,user['id'],"ADDED_ACTION")
+                    )
+                else:
+                    db.update("""
+                        update provider_queue_actions set provider_queue_actions_type_id=%s,
+                            provider_queue_actions_status_id=%s where id=%s
+                        """,(x['action_type_id'],x['action_status_id'],x['id'])
+                    )
+                    db.update("""
+                        insert into office_history (office_id,user_id,text) values
+                            (%s,%s,%s)""",(offid,user['id'],"UPDATED_ACTION")
+                    )
+        if 'comments' in params:
+            for x in params['comments']:
+                if 'id' in x:
+                    continue
+                bb2 = encryption.encrypt(
+                    x['text'],
+                    config.getKey('encryption_key')
+                    )
+                db.update("""
+                    insert into office_comment (user_id,office_id,text)
+                    values 
+                    (%s,%s,%s)
+                    """,(user['user_id'],offid,bb2)
+                )
+                db.update("""
+                    insert into office_history (office_id,user_id,text) values
+                        (%s,%s,%s)""",(offid,user['id'],"ADDED_COMMENT")
+                )
+        if 'do_not_contact' in params and params['do_not_contact']:
             db.update("""
                 update provider_queue set do_not_contact=%s where office_id=%s
                 """,(params['do_not_contact'],offid,)
             )
+            db.update("""
+                update provider_queue set provider_queue_status_id=%s where office_id=%s
+                """,(PQS['DO_NOT_CONTACT'],offid,)
+            )
         for a in params['addr']:
+            if 'id' in a and a['id'] is not None:
+                db.update("""
+                    update office_addresses set 
+                      name=%s,addr1=%s,addr2=%s,phone=%s,city=%s,state=%s,zipcode=%s
+                    where id=%s
+                    """,(
+                        a['name'],a['addr1'],a['addr2'],a['phone'],
+                        a['city'],a['state'],a['zipcode'],
+                        a['id'],
+                    )
+                )
+                if 'deleted' in x and x['deleted']:
+                    db.update("""
+                        update office_addresses set deleted=1 where id=%s
+                    """,(a['id'],)
+                    )
+            else:
+                db.update(
+                    """
+                        insert into office_addresses (
+                            office_id,name,addr1,addr2,phone,city,state,zipcode
+                        ) values (%s,%s,%s,%s,%s,%s,%s,%s)
+                    """,(offid,x['name'],x['addr1'],x['addr2'],x['phone'],x['city'],x['state'],x['zipcode'])
+                )
+        if 'call_status_id' in params and params['call_status_id'] is not None:
             db.update(
                 """
-                    insert into office_addresses (
-                        office_id,name,addr1,phone,city,state,zipcode
-                    ) values (%s,%s,%s,%s,%s,%s,%s)
-                """,(offid,a['name'],a['addr1'],a['phone'],a['city'],a['state'],a['zipcode'])
+                    update provider_queue set provider_queue_call_status_id=%s
+                    where office_id = %s
+                """,(params['call_status_id'],offid,)
             )
         if 'invoice_id' in params:
             invid = params['invoice_id']
@@ -351,9 +429,9 @@ class RegistrationUpdate(AdminBase):
             )
             db.commit()
             # TODO: Send welcome mail here
-            if len(u) > 0:
-                we = WelcomeEmailReset()
-                we.execute(0,[{'email': u[0]['email']}])
+            #if len(u) > 0:
+            #    we = WelcomeEmailReset()
+            #    we.execute(0,[{'email': u[0]['email']}])
         self.setJenkinsID(offid)
         db.commit()
         return ret
@@ -366,7 +444,7 @@ class RegistrationList(AdminBase):
     def isDeferred(self):
         return False
 
-    @check_admin
+    @check_crm
     def execute(self, *args, **kwargs):
         ret = {}
         job,user,off_id,params = self.getArgs(*args,**kwargs)
@@ -387,6 +465,7 @@ class RegistrationList(AdminBase):
                 pq.provider_queue_status_id,pq.sm_id,pqls.name as lead_strength,
                 pqls.id as lead_strength_id, pq.created,pq.updated,pq.places_id,
                 pq.initial_payment,ot.id as office_type_id,
+                pqcs.name as call_status, pqcs.id as call_status_id,
                 ot.name as office_type,op.pricing_data_id as pricing_id,
                 pq.do_not_contact,
                 o.commission_user_id,oa.state,op.start_date,
@@ -395,7 +474,8 @@ class RegistrationList(AdminBase):
             from
                 provider_queue pq
                 left join office o on pq.office_id = o.id
-                left join office_addresses oa on oa.office_id = o.id 
+                left outer join office_addresses oa on oa.office_id = o.id 
+                left outer join provider_queue_call_status pqcs on pq.provider_queue_call_status_id=pqcs.id
                 left outer join provider_queue_status pqs on pqs.id=pq.provider_queue_status_id
                 left outer join provider_queue_lead_strength pqls on pq.provider_queue_lead_strength_id=pqls.id
                 left outer join office_plans op on op.office_id = o.id
@@ -419,14 +499,18 @@ class RegistrationList(AdminBase):
             q += " and pq.id = %s "
             search_par.insert(0,int(params['pq_id']))
             count_par.append(int(params['pq_id']))
-        elif 'status' in params and len(params['status']) > 0:
+        elif 'mine' in params and params['mine'] is not None:
+            q += " and o.commission_user_id = %s "
+            search_par.insert(0,user['id'])
+            count_par.append(user['id'])
+        if 'status' in params and len(params['status']) > 0:
             q += " and provider_queue_status_id in ("
             arr = []
             for z in params['status']:
                 arr.append(z)
             q += ",".join(map(str,arr))
             q += ")"
-        if 'search' in params:
+        elif 'search' in params:
             if 'state:' in params['search'].lower():
                 q += """ and oa.state = %s """
                 y = params['search'].split(":")
@@ -493,6 +577,32 @@ class RegistrationList(AdminBase):
         o = db.query(q,search_par)
         k = [] 
         for x in o:
+            x['actions']  = []
+            acts = db.query("""
+                select pqa.id,pqa.user_id,pqa.action,
+                pqat.name as action_type,pqat.id as action_type_id,
+                pqas.name as action_status, pqas.id as action_status_id,
+                concat(u.first_name, ' ', u.last_name) as activity_name
+                from 
+                    provider_queue_actions pqa
+                    left join provider_queue_actions_status pqas on pqa.provider_queue_actions_status_id=pqas.id
+                    left join provider_queue_actions_type pqat on pqa.provider_queue_actions_type_id=pqat.id
+                    left outer join users u on user_id=u.id
+                where 
+                    provider_queue_id = %s
+                """,(x['id'],)
+            )
+            for cc in acts: 
+                # This happens when we switch environments, just skip
+                try:
+                    bb2 = encryption.decrypt(
+                        cc['action'],
+                        config.getKey('encryption_key')
+                        )
+                    cc['action'] = bb2
+                    x['actions'].append(cc)
+                except:
+                    pass
             x['addr'] = db.query("""
                 select 
                     u.first_name,u.last_name,u.email,u.phone
@@ -504,18 +614,60 @@ class RegistrationList(AdminBase):
                     ou.user_id = u.id
                 """,(x['office_id'],)
             )
+            x['assignee'] = db.query("""
+                select
+                    u.id,u.first_name,u.last_name
+                from users u
+                where id in
+                (select user_id
+                    from user_entitlements ue,entitlements e
+                    where ue.entitlements_id=e.id and e.name='CRM')
+                UNION ALL
+                select
+                    u.id,u.first_name,u.last_name
+                from users u
+                where id in
+                (select user_id
+                    from user_entitlements ue,entitlements e
+                    where ue.entitlements_id=e.id and e.name='Admin')
+                """
+            )
+            x['comments'] = []
+            comms = db.query("""
+                select 
+                    ic.id,ic.text,ic.user_id,
+                    u.first_name,u.last_name,u.title,
+                    ic.created
+                from 
+                office_comment ic, users u
+                where ic.user_id = u.id and office_id=%s
+                order by created desc
+                """,(x['office_id'],)
+            )
+            for cc in comms: 
+                # This happens when we switch environments, just skip
+                try:
+                    bb2 = encryption.decrypt(
+                        cc['text'],
+                        config.getKey('encryption_key')
+                        )
+                    cc['text'] = bb2
+                    x['comments'].append(cc)
+                    x['last_comment'] = bb2
+                except:
+                    pass
             x['last_name'] = x['addr'][0]['last_name'] if len(x['addr']) > 0 else ''
             x['first_name'] = x['addr'][0]['first_name'] if len(x['addr']) > 0 else ''
             x['phone'] = x['addr'][0]['phone'] if len(x['addr']) > 0 else ''
             x['email'] = x['addr'][0]['email'] if len(x['addr']) > 0 else ''
             x['history'] = db.query("""
                 select ph.id,user_id,text,concat(u.first_name, ' ', u.last_name) as user,ph.created
-                    from provider_queue_history ph,users u
+                    from office_history ph,users u
                 where 
                     ph.user_id=u.id and
-                    ph.provider_queue_id = %s
+                    ph.office_id = %s
                 order by created desc
-                """,(x['id'],)
+                """,(x['office_id'],)
             )
             x['addr'] = db.query("""
                 select 
@@ -587,6 +739,9 @@ class RegistrationList(AdminBase):
             k.append(x)
         ret['config'] = {}
         ret['config']['type'] = db.query("select id,name from office_type where name <> 'Customer'")
+        ret['config']['call_status'] = db.query("select id,name from provider_queue_call_status")
+        ret['config']['action_status'] = db.query("select id,name from provider_queue_actions_status")
+        ret['config']['action_type'] = db.query("select id,name from provider_queue_actions_type")
         ret['config']['status'] = db.query("select id,name from provider_queue_status")
         ret['config']['coupons'] = db.query("select id,name,total,perc,reduction from coupons")
         ret['config']['commission_users'] = db.query("""
@@ -594,6 +749,9 @@ class RegistrationList(AdminBase):
             UNION ALL
             select id,concat(first_name,' ',last_name) as name from users 
                 where id in (select user_id from user_entitlements where entitlements_id=10)
+            UNION ALL
+            select id,concat(first_name,' ',last_name) as name from users 
+                where id in (select user_id from user_entitlements where entitlements_id=14)
         """)
         ret['config']['strength'] = db.query("select id,name from provider_queue_lead_strength")
         ret['registrations'] = k

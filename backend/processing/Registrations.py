@@ -546,10 +546,10 @@ class RegisterProvider(RegistrationsBase):
             pq_id = db.query("select LAST_INSERT_ID()");
             pq_id = pq_id[0]['LAST_INSERT_ID()']
             db.update("""
-                insert into provider_queue_history(provider_queue_id,user_id,text) values (
+                insert into office_history(office_id,user_id,text) values (
                     %s,1,'Created (Registration)'
                 )
-            """,(pq_id,))
+            """,(off_id,))
             l = db.query("""
                 select id from users where lower(email) = lower(%s)
                 """,(params['email'],)
@@ -1000,10 +1000,10 @@ class RegisterProvider(RegistrationsBase):
             """,(PQ['INVITED'],pq_id)
         )
         db.update("""
-            insert into provider_queue_history(provider_queue_id,user_id,text) values (
+            insert into office_history(office_id,user_id,text) values (
                 %s,1,'User Registered, Set to INVITED (SF Lead Registration)'
             )
-        """,(pq_id,))
+        """,(off_id,))
         db.update("""
             update office set active = 1,import_sf=1 where id = %s
             """,(off_id,)

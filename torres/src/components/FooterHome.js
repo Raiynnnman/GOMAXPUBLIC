@@ -128,7 +128,8 @@ class FooterHome extends Component {
                                             </div>
                                             <div className="contact-text">
                                                 <span>mailto:info@poundpain.com<br />
-                                                https://poundpain.com/</span>
+                                                    https://poundpain.com/
+                                                </span>
                                             </div>
                                         </div>
                                         <div className="single-contact-info">
@@ -184,7 +185,7 @@ class FooterHome extends Component {
                                     <a href="https://www.instagram.com/poundpain/" rel="noreferrer" target='_blank'><i className="zmdi zmdi-instagram"></i></a>
                                 </div>
                                 <div className="footer-text text-center">
-                                    <span>Copyright © {new Date().getFullYear()} <a href="https://hasthemes.com">POUNDPAIN TECH - {getVersion()}</a></span>
+                                    <span>Copyright © {new Date().getFullYear()} <a href="https://www.poundpain.com">POUNDPAIN TECH - {getVersion()}</a></span>
                                 </div>
                             </div>
                         </div>

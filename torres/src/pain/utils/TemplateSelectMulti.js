@@ -16,7 +16,17 @@ function TemplateSelectMulti({label,onChange,style,value,options}) {
   for (c = 0; c < value.length; c++) { 
     sel.push(value[c].label);
   } 
+
   const [selected, setSelected] = React.useState(sel);
+  const [open,setOpen] = React.useState(false);
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
 
 
   const handleDelete = (e) => { 
@@ -55,13 +65,14 @@ function TemplateSelectMulti({label,onChange,style,value,options}) {
         <Select
           multiple
           value={selected}
+          onOpen={handleOpen}
+          onClose={handleClose}
           onChange={handleChange}
           renderValue={(e) => { 
             return ( 
                 e.map((f) => { 
                     return <Chip key={f} size="small"
-                        onMouseDown={(event) => { event.stopPropagation(); }}
-                        label={f} onDelete={() => handleDelete(f)} />
+                        label={f} />
                 })
             )
 

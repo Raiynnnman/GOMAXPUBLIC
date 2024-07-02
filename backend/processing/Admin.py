@@ -27,7 +27,7 @@ from processing.Audit import Audit
 from processing import Search,Office
 from common.DataException import DataException
 from common.InvalidCredentials import InvalidCredentials
-from util.Permissions import check_admin,check_bdr
+from util.Permissions import check_admin,check_bdr,check_crm
 from util.Mail import Mail
 
 log = Logging()
@@ -498,7 +498,7 @@ class PlansList(AdminBase):
     def isDeferred(self):
         return False
 
-    @check_admin
+    @check_crm
     def execute(self, *args, **kwargs):
         ret = []
         job,user,off_id,params = self.getArgs(*args,**kwargs)
@@ -522,6 +522,20 @@ class PlansList(AdminBase):
                 description asc
             """
         )
+        for x in o:
+            x['coupons'] = db.query("""
+                select 
+                    c.id,
+                    c.name,
+                    c.pricing_data_id as pricing_id,
+                    c.total,
+                    c.perc,
+                    c.reduction
+                from coupons c
+                    where pricing_data_id=%s
+                """,(x['id'],)
+            )
+            ret.append(x)
         ret = o
         return ret
 

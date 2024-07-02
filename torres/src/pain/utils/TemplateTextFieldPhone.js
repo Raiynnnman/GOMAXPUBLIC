@@ -1,6 +1,7 @@
 import React from 'react';
 import TextField from '@mui/material/TextField';
 import FormControl from '@mui/material/FormControl';
+import formatPhoneNumber from './formatPhone';
 
 function TemplateTextFieldPhone({label,onChange,helpText,initialValue,style,value,readOnly,sx}) {
 
@@ -20,7 +21,7 @@ function TemplateTextFieldPhone({label,onChange,helpText,initialValue,style,valu
     return (
     <>
       <FormControl sx={{ m: 1}} style={style}>
-          <TextField variant="outlined" label={label} value={value} style={style}
+          <TextField variant="outlined" label={label} value={formatPhoneNumber(value)} style={style}
                 InputProps={ip} sx={sx}
                 onChange={onUpdate}/>
       </FormControl>
