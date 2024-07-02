@@ -254,7 +254,7 @@ class Registrations extends Component {
     } 
 
     providerReport() { 
-        this.props.dispatch(getRegistrationReport(
+        this.props.dispatch(getRegistrations(
             {direction:this.state.direction,
              sort:this.state.sort,
              mine:this.state.mine,

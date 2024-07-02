@@ -63,8 +63,8 @@ class OfficeList(AdminBase):
                             'id',oa.id,'name',oa.name,'addr1',oa.addr1,'addr2',oa.addr2,'phone',oa.phone,
                             'city',oa.city,'state',oa.state,'zipcode',oa.zipcode)
                     ) as addr,u.phone,u.first_name,u.last_name,o.stripe_cust_id,o.old_stripe_cust_id,
-                    o.priority,pq.do_not_contact,
-                    ot.name as office_type,o.updated,o.commission_user_id,
+                    o.priority,pq.do_not_contact,pq.provider_queue_status_id pq_status_id,
+                    pqs.name as provider_queue_status,ot.name as office_type,o.updated,o.commission_user_id,
                     trim(concat(comu.first_name, ' ', comu.last_name)) as commission_name
                 from 
                     office o
@@ -99,6 +99,7 @@ class OfficeList(AdminBase):
             q += " and pq.provider_queue_status_id in (%s) " % ','.join(map(str,params['status']))
         q += " group by o.id order by o.updated desc "
         cnt = db.query("select count(id) as cnt from (" + q + ") as t", count_par)
+        repquery = q
         q += " limit %s offset %s " 
         ret['total'] = cnt[0]['cnt']
         o = db.query(q,search_par)
@@ -268,6 +269,31 @@ class OfficeList(AdminBase):
                 x['plans'] = j
                 x['plans']['items'] = json.loads(x['plans']['items'])
             ret['offices'].append(x)
+        if 'report' in params:
+            j = db.query(repquery,count_par)
+            v = []
+            for g in j:
+                g['addr'] = json.loads(g['addr'])
+                a = g
+                c = 0
+                if len(g['addr']) < 1:
+                    v.append(a)
+                for k in g['addr']:
+                    k['addr_%s_addr1' % c] = k['addr1']
+                    k['addr_%s_addr2' % c] = k['addr1']
+                    k['addr_%s_phone' % c] = k['phone']
+                    k['addr_%s_city' % c] = k['city']
+                    k['addr_%s_state' % c] = k['state']
+                    k['addr_%s_zipcode' % c] = k['zipcode']
+                    g.update(k)
+                    c += 1
+                del g['addr']
+                v.append(g)
+            frame = pd.DataFrame.from_dict(v)
+            report = 'report.csv'
+            ret['filename'] = report
+            t = frame.to_csv()
+            ret['content'] = base64.b64encode(t.encode('utf-8')).decode('utf-8')
         ret['config'] = {}
         ret['config']['commission_users'] = db.query("""
             select 1,'System' as name
@@ -319,6 +345,11 @@ class OfficeSave(AdminBase):
                     %s,%s,'Updated Record'
                 )
             """,(insid,user['id']))
+        if 'pq_status_id' in params:
+            db.update("""
+                update provider_queue set provider_queue_status_id=%s where id = %s
+                """,(params['pq_status_id'],params['id'])
+            )
         if 'commission_user_id' in params:
             db.update("""
                 update office set commission_user_id=%s where id = %s

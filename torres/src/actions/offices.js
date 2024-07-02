@@ -33,6 +33,19 @@ export function receivingData(params,callback,args) {
             },
         }).post('/admin/office/list',params)
       .then((e) => { 
+          var g = e.data.data;
+          if (g.content) { 
+            let filename = e.data.data.filename
+            let content = atob(e.data.data.content)
+            const url = window.URL.createObjectURL(new Blob([content]));
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", filename);
+            document.body.appendChild(link);
+            link.click();
+            delete e.data.data.content;
+            delete e.data.data.filename;
+          } 
           dispatch({
                 type: RECEIVED_OFF_DATA_SUCCESS,
                 payload: e.data.data

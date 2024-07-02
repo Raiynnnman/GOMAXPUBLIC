@@ -510,7 +510,7 @@ class RegistrationList(AdminBase):
                 arr.append(z)
             q += ",".join(map(str,arr))
             q += ")"
-        elif 'search' in params:
+        if 'search' in params:
             if 'state:' in params['search'].lower():
                 q += """ and oa.state = %s """
                 y = params['search'].split(":")

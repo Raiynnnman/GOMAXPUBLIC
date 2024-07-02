@@ -20,7 +20,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { getOffices } from '../../actions/offices';
 import { getContext } from '../../actions/context';
 import { officeSave } from '../../actions/officeSave';
-import { officeReportDownload } from '../../actions/officeReportDownload';
+// import { officeReportDownload } from '../../actions/officeReportDownload';
 import formatPhoneNumber from '../utils/formatPhone';
 import PainTable from '../utils/PainTable';
 import TemplateSelect from '../utils/TemplateSelect';
@@ -77,6 +77,7 @@ class OfficeList extends Component {
         this.reload = this.reload.bind(this);
         this.toggleSubTab = this.toggleSubTab.bind(this);
         this.onStatusFilter = this.onStatusFilter.bind(this);
+        this.onStatusChange = this.onStatusChange.bind(this);
         this.onCommissionChange = this.onCommissionChange.bind(this);
         this.save = this.save.bind(this);
         this.delGrid = this.delGrid.bind(this);
@@ -187,8 +188,22 @@ class OfficeList extends Component {
     }
 
     officeReport() { 
-        this.props.dispatch(officeReportDownload({report:'office_report'}));
+        this.props.dispatch(getOffices(
+            {report:'office_report',sort:this.state.sort,direction:this.state.direction,
+             search:this.state.search,limit:this.state.pageSize,
+            offset:this.state.page,status:this.state.filter}
+        ));
     } 
+
+    onStatusChange(e,t) { 
+        var g = this.props.offices.data.config.provider_status.filter((g) => g.name === e.target.value)
+        if (g.length > 0) { 
+            this.state.selected.pq_status_id = g[0].id;
+            this.state.selected.status = g[0].name;
+        } 
+        this.setState(this.state);
+    }
+
     onCommissionChange(e,t) { 
         this.state.selected.commission_user_id = e.value;
         this.state.selected.commission_name = 
@@ -367,6 +382,8 @@ class OfficeList extends Component {
     } 
 
     render() {
+        console.log("p",this.props);
+        console.log("s",this.state);
 
         var clientheads = [
             {
@@ -778,60 +795,73 @@ class OfficeList extends Component {
               this.props.offices.data.offices.length > 0 && this.state.selected !== null) && ( 
                 <>
                 <Grid container xs="12" style={{margin:10}}>
-                    <Grid item xs={1}>
-                      <TemplateTextField readOnly label="ID" value={this.state.selected.id}/>
+                    <Grid container xs="6">
+                        <Grid item xs={1} style={{margin:20}}>
+                          <TemplateTextField readOnly label="ID" value={this.state.selected.id}/>
+                        </Grid>
+                        <Grid item xs={3} style={{margin:20}}>
+                          <TemplateTextField readOnly label='Service Start' value={this.state.selected.service_start_date}/>
+                        </Grid>
+                        <Grid item xs={4} style={{margin:20}}>
+                          <TemplateTextField onChange={this.nameChange} label="Name" value={this.state.selected.name}/>
+                        </Grid>
+                        <Grid item xs={4} style={{margin:20}}>
+                          <TemplateTextField 
+                                  onChange={this.emailChange} label="Email" value={this.state.selected.email}/>
+                        </Grid>
                     </Grid>
-                    <Grid item xs={2}>
-                      <TemplateTextField readOnly label='Service Start' value={this.state.selected.service_start_date}/>
+                    <Grid container xs="6" style={{borderLeft:"1px solid black"}}>
+                        <Grid item xs={3} style={{marginLeft:20}}>
+                          {(this.props.offices && this.props.offices.data && 
+                            this.props.offices.data.config &&
+                            this.props.offices.data.config.commission_users) && (
+                              <TemplateSelect
+                                  label='Status'
+                                  onChange={this.onStatusChange}
+                                  value={{label:this.state.selected.status}}
+                                  options={this.props.offices.data.config.provider_status.map((e) => { 
+                                    return (
+                                        { 
+                                        label: e.name,
+                                        value: e.name
+                                        }
+                                    )
+                                  })}
+                                />
+                            )}
+                        </Grid>                
+                        <Grid item xs={3} style={{marginLeft:20}}>
+                          {(this.props.offices && this.props.offices.data && 
+                            this.props.offices.data.config &&
+                            this.props.offices.data.config.commission_users) && (
+                              <TemplateSelect
+                                  label='Commission Owner'
+                                  onChange={this.onCommissionChange}
+                                  value={{label:this.state.selected.commission_name}}
+                                  options={this.props.offices.data.config.commission_users.map((e) => { 
+                                    return (
+                                        { 
+                                        label: e.name,
+                                        value: e.name
+                                        }
+                                    )
+                                  })}
+                                />
+                            )}
+                        </Grid>                
+                        <Grid item xs={12} style={{marginLeft:20}}>
+                        <TemplateCheckbox 
+                              onChange={this.activeChange} label="Active" checked={this.state.selected.active}/>
+                        </Grid>
+                        <Grid item xs={12} style={{marginLeft:20}}>
+                        <TemplateCheckbox 
+                            onChange={this.donotCallChange} label="Do not call" checked={this.state.selected.do_not_contact}/>
+                        </Grid>
+                        <Grid item xs={3} style={{marginLeft:20}}>
+                        <TemplateTextField 
+                              onChange={this.priorityChange} label="Priority" value={this.state.selected.priority}/>
+                        </Grid>
                     </Grid>
-                    <Grid item xs={3}>
-                      <TemplateTextField onChange={this.nameChange} label="Name" value={this.state.selected.name}/>
-                    </Grid>
-                    <Grid item xs={3}>
-                      <TemplateTextField 
-                              onChange={this.emailChange} label="Email" value={this.state.selected.email}/>
-                    </Grid>
-                    <Grid item xs={3}>
-                      {(this.props.offices && this.props.offices.data && 
-                        this.props.offices.data.config &&
-                        this.props.offices.data.config.commission_users) && (
-                          <TemplateSelect
-                              label='Commission Owner'
-                              onChange={this.onCommissionChange}
-                              value={{label:this.state.selected.commission_name}}
-                              options={this.props.offices.data.config.commission_users.map((e) => { 
-                                return (
-                                    { 
-                                    label: e.name,
-                                    value: e.name
-                                    }
-                                )
-                              })}
-                            />
-                        )}
-                    </Grid>                
-                    <Grid item xs={1}>
-                    <TemplateCheckbox 
-                          onChange={this.activeChange} label="Active" checked={this.state.selected.active}/>
-                    </Grid>
-                    <Grid item xs={1}>
-                    <TemplateCheckbox 
-                        onChange={this.donotCallChange} label="Do not call" checked={this.state.selected.do_not_contact}/>
-                    </Grid>
-                    <Grid item xs={1}>
-                    <TemplateTextField 
-                          onChange={this.priorityChange} label="Priority" value={this.state.selected.priority}/>
-                    </Grid>
-                    {/*<Grid item xs={3} style={{color:'black'}}>
-                      {(this.state.selected.stripe_cust_id && this.state.selected.stripe_cust_id.includes('cus_'))  && (
-                          <a href={'https://dashboard.stripe.com/customers/' + this.state.selected.stripe_cust_id}
-                            target='_blank'>{this.state.selected.stripe_cust_id}</a>
-                      )}
-                      {(this.state.selected.stripe_cust_id && !this.state.selected.stripe_cust_id.includes('cus_'))  && (
-                          <a style={{color:'black'}} href={'https://squareup.com/dashboard/customers/directory/customer/' + this.state.selected.stripe_cust_id}
-                            target='_blank'>{this.state.selected.stripe_cust_id}</a>
-                      )}
-                     </Grid>*/}
                 </Grid>
                 <Grid container xs="12">
                     <Grid item xs="12">
