@@ -58,25 +58,19 @@ class OfficeList(AdminBase):
         q = """
                 select 
                     o.id,o.name,o.active,o.email,pqs.name as status,
-                    JSON_ARRAYAGG(
-                        JSON_OBJECT(
-                            'id',oa.id,'name',oa.name,'addr1',oa.addr1,'addr2',oa.addr2,'phone',oa.phone,
-                            'city',oa.city,'state',oa.state,'zipcode',oa.zipcode)
-                    ) as addr,u.phone,u.first_name,u.last_name,o.stripe_cust_id,o.old_stripe_cust_id,
+                    o.stripe_cust_id,o.old_stripe_cust_id,
                     o.priority,pq.do_not_contact,pq.provider_queue_status_id pq_status_id,
                     pqs.name as provider_queue_status,ot.name as office_type,o.updated,o.commission_user_id,
                     trim(concat(comu.first_name, ' ', comu.last_name)) as commission_name
                 from 
                     office o
-                    left outer join office_addresses oa on oa.office_id=o.id
                     left outer join office_type ot on o.office_type_id = ot.id
+                    left outer join office_phones op on op.office_id = o.id
                     left outer join provider_queue pq on pq.office_id = o.id
                     left outer join provider_queue_status pqs on pq.provider_queue_status_id=pqs.id
                     left outer join users comu on comu.id = o.commission_user_id
-                    left join  users u on u.id = o.user_id
                 where 
-                    o.office_type_id <> %s and
-                    oa.deleted = 0
+                    o.office_type_id <> %s 
             """ % (OT['Customer'],)
         stat_params = []
         count_par = []
@@ -87,7 +81,7 @@ class OfficeList(AdminBase):
         if 'office_id' in params and params['office_id'] is not None and int(params['office_id']) > 0:
             q += " and o.id = %s " % params['office_id']
         elif 'search' in params and params['search'] is not None:
-            q += """ and (o.email like %s  or o.name like %s or oa.phone like %s ) 
+            q += """ and (o.email like %s  or o.name like %s or op.phone like %s ) 
             """
             search_par.insert(0,params['search']+'%%')
             search_par.insert(0,params['search']+'%%')
@@ -105,6 +99,24 @@ class OfficeList(AdminBase):
         o = db.query(q,search_par)
         ret['offices'] = []
         for x in o:
+            x['addr'] = db.query("""
+                select
+                  oa.id,oa.name,addr1,addr2,phone,
+                  city,oa.state,oa.zipcode
+                from office_addresses oa
+                  where oa.office_id=%s and oa.deleted = 0
+                """,(x['id'],)
+            )
+            x['users'] = db.query("""
+                select u.id,u.email,u.first_name,u.last_name 
+                from 
+                    users u,
+                    office_user ou
+                where 
+                    u.id = ou.user_id and
+                    ou.office_id = %s
+                """,(x['id'],)
+            )
             x['comments'] = []
             comms = db.query("""
                 select 
@@ -182,13 +194,6 @@ class OfficeList(AdminBase):
                 order by created desc
                 """,(x['id'],)
             )
-            a = json.loads(x['addr'])
-            newaddr = []
-            for t in a:
-                if t['id'] == None:
-                    continue
-                newaddr.append(t)
-            x['addr'] = newaddr
             if len(x['addr']) > 0:
                 x['phone'] = x['addr'][0]['phone']
             x['potential'] = db.query("""
@@ -273,11 +278,15 @@ class OfficeList(AdminBase):
             j = db.query(repquery,count_par)
             v = []
             for g in j:
-                g['addr'] = json.loads(g['addr'])
-                a = g
+                g['addr'] = db.query("""
+                    select
+                      oa.id,oa.name,addr1,addr2,phone,
+                      city,oa.state,oa.zipcode
+                    from office_addresses oa
+                      where oa.office_id=%s and oa.deleted = 0
+                    """,(g['id'],)
+                )
                 c = 0
-                if len(g['addr']) < 1:
-                    v.append(a)
                 for k in g['addr']:
                     k['addr_%s_addr1' % c] = k['addr1']
                     k['addr_%s_addr2' % c] = k['addr1']
