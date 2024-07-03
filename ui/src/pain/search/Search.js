@@ -236,7 +236,7 @@ class SearchAdmin extends Component {
             {(Login.isAuthenticated() && this.state.selectedProvider !== null) && ( 
                 <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                     <div className="form-group mb-0">
-                        <input className="form-control no-border" value={this.state.zipcode} onChange={this.changeZip} required name="zip" placeholder="Zip" />
+                        <input className="form-control no-border" maxlength="5" value={this.state.zipcode} onChange={this.changeZip} required name="zip" placeholder="Zip" />
                     </div>
                 </div>
             )}
@@ -272,7 +272,7 @@ class SearchAdmin extends Component {
                         {(!Login.isAuthenticated() && this.state.selectedProvider !== null && this.state.geo === false) && ( 
                             <div style={{height:100,display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                 <div className="form-group mb-0">
-                                    <input className="form-control no-border" value={this.state.zipcode} onChange={this.changeZip} required name="zip" placeholder="Zip" />
+                                    <input className="form-control no-border" maxlength="5" value={this.state.zipcode} onChange={this.changeZip} required name="zip" placeholder="Zip" />
                                 </div>
                             </div>
                         )}
