@@ -67,9 +67,9 @@ function Office365SSO({onChange}) {
             {!isSignedIn && <Login />}
             {isSignedIn && (
             <>
-                <Welcome/>
-                {/*<Agenda groupByDay />
-                <Planner/>*/}
+                {/*<Welcome/>*/}
+                <Agenda groupByDay />
+                <Planner/>
             </>
             )}
         </>
