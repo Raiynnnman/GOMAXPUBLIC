@@ -61,7 +61,7 @@ class OfficeList(AdminBase):
                     o.stripe_cust_id,o.old_stripe_cust_id,
                     o.priority,pq.do_not_contact,pq.provider_queue_status_id pq_status_id,
                     pqs.name as provider_queue_status,ot.name as office_type,o.updated,o.commission_user_id,
-                    trim(concat(comu.first_name, ' ', comu.last_name)) as commission_name
+                    trim(concat(comu.first_name, ' ', comu.last_name)) as commission_name,pq.website
                 from 
                     office o
                     left outer join office_type ot on o.office_type_id = ot.id
@@ -107,12 +107,19 @@ class OfficeList(AdminBase):
                   where oa.office_id=%s and oa.deleted = 0
                 """,(x['id'],)
             )
+            x['phones'] = db.query("""
+                select id,phone from office_phones 
+                    where office_id=%s
+                """,(x['id'],)
+            )
             x['users'] = db.query("""
-                select u.id,u.email,u.first_name,u.last_name 
+                select u.id,u.email,u.first_name,u.last_name,u.phone,
+                    concat(u.first_name, ' ',u.last_name) as name
                 from 
                     users u,
                     office_user ou
                 where 
+                    u.active = 1 and
                     u.id = ou.user_id and
                     ou.office_id = %s
                 """,(x['id'],)
@@ -359,6 +366,16 @@ class OfficeSave(AdminBase):
                 update provider_queue set provider_queue_status_id=%s where office_id = %s
                 """,(params['pq_status_id'],params['id'])
             )
+        if 'email' in params:
+            db.update("""
+                update office set email=%s where id = %s
+                """,(params['email'],params['id'])
+            )
+        if 'website' in params:
+            db.update("""
+                update provider_queue set website=%s where office_id = %s
+                """,(params['website'],params['id'])
+            )
         if 'commission_user_id' in params:
             db.update("""
                 update office set commission_user_id=%s where id = %s
@@ -368,6 +385,48 @@ class OfficeSave(AdminBase):
                 update commission_users set user_id=%s where office_id = %s
                 """,(params['commission_user_id'],insid)
             )
+        if 'users' in params:
+            for x in params['users']:
+                if 'id' in x:
+                    h = HumanName(x['name'])
+                    first = "%s %s" % (h.title,h.first)
+                    last = "%s %s" % (h.last,h.suffix)
+                    db.update("""
+                        update users set
+                            first_name=%s, last_name=%s, email=%s,phone=%s
+                        where id = %s
+                        """,(first,last,x['email'],x['phone'],x['id'])
+                    )
+                    if 'deleted' in x and x['deleted']:
+                        db.update("""
+                            update users set active=0 where id=%s
+                        """,(x['id'],)
+                        )
+                    db.update("""
+                        insert into office_history (office_id,user_id,text) values
+                            (%s,%s,%s)""",(params['id'],user['id'],"UPDATED_USER")
+                    )
+                else:
+                    h = HumanName(params['name'])
+                    first = "%s %s" % (t1.title,t1.first)
+                    last = "%s %s" % (t1.last,t1.suffix)
+                    db.update("""
+                        insert into users
+                            (first_name,last_name,email,phone)
+                        values 
+                        (%s,%s,%s)
+                        """,(first,last,x['email'],x['phone'])
+                    )
+                    g = db.query("select LAST_INSERT_ID()");
+                    g = g[0]['LAST_INSERT_ID()']
+                    db.update("""
+                        insert into office_user (office_id,user_id) values (%s,%s)
+                        """,(insid,g)
+                    )
+                    db.update("""
+                        insert into office_history (office_id,user_id,text) values
+                            (%s,%s,%s)""",(params['id'],user['id'],"ADDED_USER")
+                    )
         if 'comments' in params:
             for x in params['comments']:
                 if 'id' in x:
@@ -386,7 +445,6 @@ class OfficeSave(AdminBase):
                     insert into office_history (office_id,user_id,text) values
                         (%s,%s,%s)""",(params['id'],user['id'],"ADDED_COMMENT")
                 )
-            db.commit()
         if 'priority' in params:
             db.update("""
                 update office set priority=%s where id=%s

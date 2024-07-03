@@ -35,6 +35,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Navbar from '../../components/Navbar';
 import LocationCard from '../office/LocationCard';
+import UserCard from '../office/UserCard';
 import { useState } from 'react';
 
 
@@ -61,6 +62,7 @@ class OfficeList extends Component {
         this.cancel = this.cancel.bind(this);
         this.comment = this.comment.bind(this);
         this.editAddress = this.editAddress.bind(this);
+        this.editUser = this.editUser.bind(this);
         this.search = this.search.bind(this);
         this.pageChange = this.pageChange.bind(this);
         this.priorityChange = this.priorityChange.bind(this);
@@ -78,10 +80,12 @@ class OfficeList extends Component {
         this.toggleSubTab = this.toggleSubTab.bind(this);
         this.onStatusFilter = this.onStatusFilter.bind(this);
         this.onStatusChange = this.onStatusChange.bind(this);
+        this.websiteChange = this.websiteChange.bind(this);
         this.onCommissionChange = this.onCommissionChange.bind(this);
         this.save = this.save.bind(this);
         this.delGrid = this.delGrid.bind(this);
         this.addAddress = this.addAddress.bind(this);
+        this.addUser = this.addUser.bind(this);
         this.nameChange = this.nameChange.bind(this);
         this.emailChange = this.emailChange.bind(this);
     } 
@@ -138,6 +142,17 @@ class OfficeList extends Component {
         this.setState(this.state);
     }
 
+    editUser(e,t) { 
+        var v = this.state.selected.users.findIndex((f) => f.id === e.id)
+        if (v < 0) { 
+            this.state.selected.users.push(e);
+        } else { 
+            this.state.selected.users[v] = e;
+        } 
+        this.state.addButton = true;
+        this.setState(this.state)
+    } 
+
     editAddress(e,t) { 
         var v = this.state.selected.addr.findIndex((f) => f.id === e.id)
         if (v < 0) { 
@@ -179,6 +194,11 @@ class OfficeList extends Component {
 
     donotCallChange(e,t) { 
         this.state.selected.do_not_contact = this.state.selected.do_not_contact ? 0 : 1; 
+        this.setState(this.state);
+    }
+
+    websiteChange(e,t) { 
+        this.state.selected.website = e.target.value;
         this.setState(this.state);
     }
 
@@ -276,6 +296,16 @@ class OfficeList extends Component {
     } 
     toggleSubTab(e,t) { 
         this.state.subTab = t;
+        this.setState(this.state);
+    } 
+    addUser() { 
+        this.state.selected.user.push({
+            first_name:'',
+            last_name:'',
+            email:'',
+            phone:''
+        })
+        this.state.addButton = true;
         this.setState(this.state);
     } 
     addAddress() { 
@@ -383,6 +413,32 @@ class OfficeList extends Component {
 
     render() {
 
+        var phonesheads = [
+            {
+                dataField:'id',
+                text:'ID'
+            },
+            {
+                dataField:'phone',
+                text:'Phone',
+                formatter:(cellContent,row) => (
+                    <div>
+                        {formatPhoneNumber(row['phone'])}
+                    </div>
+                )
+            },
+            {
+                dataField:'created',
+                align:'center',
+                text:'Created',
+                formatter:(cellContent,row) => (
+                    <div>
+                        {moment(row['created']).format('LLL')} 
+                    </div>
+                )
+            },
+            
+        ]
         var clientheads = [
             {
                 dataField:'id',
@@ -547,8 +603,8 @@ class OfficeList extends Component {
                 text:'Actions',
                 formatter:(cellContent,row) => ( 
                     <div>
-                        <TemplateButton onClick={() => this.edit(row)} style={{marginRight:5,width:50,height:35}} label={<EditIcon/>}/>
-                        <TemplateButton onClick={() => this.getContext(row)} style={{height:35,width:50}} label={<LaunchIcon/>}/>
+                        <TemplateButton onClick={() => this.edit(row)} style={{marginRight:5,width:30,height:35}} label={<EditIcon/>}/>
+                        <TemplateButton onClick={() => this.getContext(row)} style={{height:35,width:30}} label={<LaunchIcon/>}/>
                     </div>
                 )
             },
@@ -794,7 +850,7 @@ class OfficeList extends Component {
                 <>
                 <Grid container xs="12" style={{margin:10}}>
                     <Grid container xs="6">
-                        <Grid item xs={1} style={{margin:20}}>
+                        <Grid item xs={2} style={{margin:20}}>
                           <TemplateTextField readOnly label="ID" value={this.state.selected.id}/>
                         </Grid>
                         <Grid item xs={3} style={{margin:20}}>
@@ -806,6 +862,10 @@ class OfficeList extends Component {
                         <Grid item xs={4} style={{margin:20}}>
                           <TemplateTextField 
                                   onChange={this.emailChange} label="Email" value={this.state.selected.email}/>
+                        </Grid>
+                        <Grid item xs={4} style={{margin:20}}>
+                          <TemplateTextField 
+                                  onChange={this.websiteChange} label="Website" value={this.state.selected.website}/>
                         </Grid>
                     </Grid>
                     <Grid container xs="6" style={{borderLeft:"1px solid black"}}>
@@ -866,14 +926,47 @@ class OfficeList extends Component {
                         <Tabs style={{marginBottom:30}} value={this.state.subTab} onChange={this.toggleSubTab}>
                             <Tab value='plans' label='Plans'  sx={{ color: 'black' }}/>
                             <Tab value='offices' label='Offices' sx={{ color: 'black' }}/>
+                            <Tab value='contact' label='Contact' sx={{ color: 'black' }}/>
                             <Tab value='invoices' label='Invoices' sx={{ color: 'black' }} />
                             <Tab value='potentials' label='Potentials' sx={{ color: 'black' }}/>
                             <Tab value='history' label='History' sx={{ color: 'black' }}/>
                             <Tab value='cards' label='Cards' sx={{ color: 'black' }}/>
-                            <Tab value='clients' label='clients' sx={{ color: 'black' }}/>
+                            <Tab value='clients' label='Clients' sx={{ color: 'black' }}/>
+                            <Tab value='users' label='Users' sx={{ color: 'black' }}/>
                             <Tab value='comments' label='Comments' sx={{ color: 'black' }}/>
                             
                         </Tabs>
+                        {(this.state.subTab === 'users') && (
+                            <>
+                                {this.state.addButton && ( 
+                                <TemplateButton
+                                    style={{ width:50,marginBottom: 10 }}
+                                    onClick={this.addUser}
+                                    label={<AddBoxIcon />}
+                                />
+                                )}
+                                <Grid container xs={12}>
+                                {this.state.selected.users && this.state.selected.users.length > 0 && (
+                                    this.state.selected.users.map((u, i) => (
+                                    <>
+                                        {!u.deleted && (
+                                        <Grid item xs={3} style={{margin:20}}>
+                                        <UserCard onEdit={this.editUser} key={i} 
+                                            provider={u} />
+                                        </Grid>
+                                        )}
+                                    </>
+                                    ))
+                                )}
+                                </Grid>
+                            </>
+                        )}
+                        {(this.state.subTab === 'contact') && (
+                          <PainTable
+                              keyField="id"
+                              data={this.state.selected.phones} 
+                              columns={ phonesheads }/>
+                        )}
                         {(this.state.subTab === 'clients') && (
                           <PainTable
                               keyField="id"
