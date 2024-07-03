@@ -21,7 +21,6 @@ def check_crm(val):
                 u = inp[0]
             else:
                 u = dict(inp)
-            print(u)
             if 'entitlements' in u:
                 if 'Admin' not in u['entitlements'] and 'CRMUser' not in u['entitlements']:
                     raise InvalidCredentials("ACCESS_REQUIRED")

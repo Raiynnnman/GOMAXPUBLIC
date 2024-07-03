@@ -32,6 +32,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Navbar from '../../components/Navbar';
 import RegistrationsEdit from './RegistrationsEdit';
+import Office365SSO from '../utils/Office365SSO';
 
 class Registrations extends Component {
     constructor(props) { 
@@ -392,7 +393,11 @@ class Registrations extends Component {
                         <Tabs style={{marginBottom:20}} value={this.state.activeTab} onChange={this.toggleTab}>
                             <Tab value='myregistrations' label='Assigned to Me'/>
                             <Tab value='registrations' label='Registrations'/>
+                            <Tab value='myactivities' label='My Activities'/>
                         </Tabs>
+                        {(this.state.activeTab === 'myactivities')  && ( 
+                            <Office365SSO/>
+                        )}
                         {(this.state.activeTab === 'registrations' || this.state.activeTab === 'myregistrations') && ( 
                         <>
                             {(this.state.selected === null) && (
