@@ -49,10 +49,12 @@ class OfficeList extends Component {
             selected: null,
             subTab: "plans",
             filter: [],
+            altFilter: [],
             comments:[],
             commentAdd:false,
             addrState:{},
             statusSelected:null,
+            statusAltSelected:null,
             search:null,
             selProvider:null,
             page: 0,
@@ -75,14 +77,15 @@ class OfficeList extends Component {
         this.pageGridsChange = this.pageGridsChange.bind(this);
         this.activeChange = this.activeChange.bind(this);
         this.officeReport = this.officeReport.bind(this);
-        this.renderTotalLabel = this.renderTotalLabel.bind(this);
         this.reload = this.reload.bind(this);
         this.toggleSubTab = this.toggleSubTab.bind(this);
         this.onStatusFilter = this.onStatusFilter.bind(this);
         this.onStatusChange = this.onStatusChange.bind(this);
+        this.onAltStatusChange = this.onAltStatusChange.bind(this);
         this.websiteChange = this.websiteChange.bind(this);
         this.onCommissionChange = this.onCommissionChange.bind(this);
         this.save = this.save.bind(this);
+        this.onAltStatusFilter = this.onAltStatusFilter.bind(this);
         this.delGrid = this.delGrid.bind(this);
         this.addAddress = this.addAddress.bind(this);
         this.addUser = this.addUser.bind(this);
@@ -91,22 +94,40 @@ class OfficeList extends Component {
     } 
 
     componentWillReceiveProps(p) { 
+        var changed = false;
+        console.log("p",this.props);
         if (p.offices.data && p.offices.data.config && 
             p.offices.data.config.provider_status && 
             this.state.statusSelected === null && this.state.selProvider === null) { 
             var c = 0;
             var t = [];
+            var t1 = [];
             for (c = 0; c < p.offices.data.config.provider_status.length; c++) { 
                 if (p.offices.data.config.provider_status[c].name !== 'INVITED') { continue; }
-                t.push(p.offices.data.config.provider_status[c].id); 
+                t.push(p.offices.data.config.provider_status[c]); 
+                t1.push(p.offices.data.config.provider_status[c].id); 
             } 
             this.state.statusSelected = t;
-            this.state.filter = t;
+            this.state.filter = t1;
             this.setState(this.state);
-            this.props.dispatch(getOffices(
-                {limit:this.state.pageSize,offset:this.state.page,status:t}
-            ));
+            changed = true;
         } 
+        if (p.offices.data && p.offices.data.config && 
+            p.offices.data.config.provider_status && 
+            this.state.statusAltSelected === null && this.state.selProvider === null) { 
+            var c = 0;
+            var t = [];
+            var t1 = [];
+            for (c = 0; c < p.offices.data.config.alternate_status.length; c++) { 
+                t.push(p.offices.data.config.alternate_status[c]); 
+                t1.push(p.offices.data.config.alternate_status[c].id); 
+            } 
+            this.state.statusAltSelected = t;
+            this.state.altFilter = t1;
+            this.setState(this.state);
+            changed = true;
+        } 
+        if (changed) { this.reload(); } 
     }
 
 
@@ -183,7 +204,7 @@ class OfficeList extends Component {
         this.props.dispatch(getOffices(
             {sort:this.state.sort,direction:this.state.direction,
              search:this.state.search,limit:this.state.pageSize,
-            offset:this.state.page,status:this.state.filter}
+            offset:this.state.page,status:this.state.filter,alt_status:this.state.altFilter}
         ));
     }
 
@@ -215,6 +236,15 @@ class OfficeList extends Component {
         ));
     } 
 
+    onAltStatusChange(e,t) { 
+        var g = this.props.offices.data.config.alternate_status.filter((g) => g.name === e.target.value)
+        if (g.length > 0) { 
+            this.state.selected.office_alternate_status_id = g[0].id;
+            this.state.selected.office_alternate_status_name = g[0].name;
+        } 
+        this.setState(this.state);
+    }
+
     onStatusChange(e,t) { 
         var g = this.props.offices.data.config.provider_status.filter((g) => g.name === e.target.value)
         if (g.length > 0) { 
@@ -230,19 +260,39 @@ class OfficeList extends Component {
             this.props.offices.data.config.commission_users.filter((g) => g.id === e.value)[0].name
         this.setState(this.state);
     }
+
+    onAltStatusFilter(e) { 
+        console.log("e",e);
+        if (e.length < 1 ) { return; }
+        var c = 0;
+        var t = [];
+        var t1 = [];
+        for (c = 0; c < e.length; c++) { 
+            e[c].name = e[c].value;
+            t.push(e[c]); 
+            t1.push(e[c].id);
+        } 
+        console.log("t",t)
+        this.state.statusAltSelected = t;
+        this.state.altFilter = t1;
+        this.setState(this.state)
+        this.reload();
+    } 
+
     onStatusFilter(e,t) { 
         if (e.length < 1 ) { return; }
         var c = 0;
         var t = [];
+        var t1 = [];
         for (c = 0; c < e.length; c++) { 
-            t.push(e[c].value); 
+            e[c].name = e[c].value;
+            t.push(e[c]); 
+            t1.push(e[c].id);
         } 
         this.state.statusSelected = t;
-        this.state.filter = t;
-        this.props.dispatch(getOffices(
-            {search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
-        ));
+        this.state.filter = t1;
         this.setState(this.state)
+        this.reload();
     } 
 
     sortChange(t) { 
@@ -282,11 +332,6 @@ class OfficeList extends Component {
             {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
         ));
         this.setState(this.state);
-    } 
-
-    renderTotalLabel(f,t,s) { 
-        var numpage = s/t;
-        return "Showing page " + (this.state.page+1) + " of " + numpage.toFixed(0);
     } 
 
     delGrid(e) { 
@@ -412,6 +457,8 @@ class OfficeList extends Component {
     } 
 
     render() {
+        console.log("p",this.props);
+        console.log("s",this.state);
 
         var phonesheads = [
             {
@@ -783,7 +830,7 @@ class OfficeList extends Component {
             <Box style={{margin:20}}>
             {(this.state.selected === null) && (
             <Grid container xs="12">
-                <Grid item xs="5" style={{zIndex:9995,margin:10}}>
+                <Grid item xs="3" style={{zIndex:9995,margin:10}}>
                   {(this.props.offices && this.props.offices.data && 
                     this.props.offices.data.config &&
                     this.props.offices.data.config.provider_status && this.state.statusSelected !== null) && (
@@ -792,10 +839,13 @@ class OfficeList extends Component {
                           label='Status'
                           onChange={this.onStatusFilter}
                           value={this.state.statusSelected.map((g) => { 
+                            console.log(g)
                             return (
                                 {
-                                label:this.props.offices.data.config.provider_status.filter((f) => f.id === g)[0].name,
-                                value:this.props.offices.data.config.provider_status.filter((f) => f.id === g)[0].name
+                                label:this.props.offices.data.config.provider_status.filter((f) => f.id === g.id).length > 0 ? 
+                                    this.props.offices.data.config.provider_status.filter((f) => f.id === g.id)[0].name : '',
+                                id:this.props.offices.data.config.provider_status.filter((f) => f.id === g.id).length > 0 ? 
+                                    this.props.offices.data.config.provider_status.filter((f) => f.id === g.id)[0].id : ''
                                 }
                             )
                           })}
@@ -803,7 +853,36 @@ class OfficeList extends Component {
                             return (
                                 { 
                                 label: e.name,
-                                value: e.name
+                                id: e.id
+                                }
+                            )
+                          })}
+                        />
+                    )}
+                </Grid>                
+                <Grid item xs="3" style={{zIndex:9995,margin:10}}>
+                  {(this.props.offices && this.props.offices.data && 
+                    this.props.offices.data.config &&
+                    this.props.offices.data.config.provider_status && this.state.statusAltSelected !== null) && (
+                      <TemplateSelectMulti
+                          closeMenuOnSelect={true}
+                          label='Special Status'
+                          onChange={this.onAltStatusFilter}
+                          value={this.state.statusAltSelected.map((g) => { 
+                            return (
+                                {
+                                label:this.props.offices.data.config.alternate_status.filter((f) => f.id === g.id).length > 0 ? 
+                                    this.props.offices.data.config.alternate_status.filter((f) => f.id === g.id)[0].name : '',
+                                id:this.props.offices.data.config.alternate_status.filter((f) => f.id === g.id).length > 0 ? 
+                                    this.props.offices.data.config.alternate_status.filter((f) => f.id === g.id)[0].id: ''
+                                }
+                            )
+                          })}
+                          options={this.props.offices.data.config.alternate_status.map((e) => { 
+                            return (
+                                { 
+                                label: e.name,
+                                id: e.id
                                 }
                             )
                           })}
@@ -814,12 +893,12 @@ class OfficeList extends Component {
                     <TemplateTextField type="text" id="normal-field" onChange={this.search}
                     label="Search" value={this.state.search}/>
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={2}>
                     <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                         <div style={{justifyContent:'spread-evenly'}}>
-                            <TemplateButton onClick={() => this.reload()} style={{width:50}}
+                            <TemplateButton onClick={() => this.reload()} style={{width:35}}
                                 label={<AutorenewIcon/>}/>
-                            <TemplateButton onClick={this.officeReport} style={{width:50,marginLeft:5}} label={<AssessmentIcon/>}/>
+                            <TemplateButton onClick={this.officeReport} style={{width:35}} label={<AssessmentIcon/>}/>
                         </div>
                     </div>
                 </Grid>
@@ -878,6 +957,25 @@ class OfficeList extends Component {
                                   onChange={this.onStatusChange}
                                   value={{label:this.state.selected.status}}
                                   options={this.props.offices.data.config.provider_status.map((e) => { 
+                                    return (
+                                        { 
+                                        label: e.name,
+                                        value: e.name
+                                        }
+                                    )
+                                  })}
+                                />
+                            )}
+                        </Grid>                
+                        <Grid item xs={3} style={{marginLeft:20}}>
+                          {(this.props.offices && this.props.offices.data && 
+                            this.props.offices.data.config &&
+                            this.props.offices.data.config.commission_users) && (
+                              <TemplateSelect
+                                  label='Special Status'
+                                  onChange={this.onAltStatusChange}
+                                  value={{label:this.state.selected.office_alternate_status_name}}
+                                  options={this.props.offices.data.config.alternate_status.map((e) => { 
                                     return (
                                         { 
                                         label: e.name,

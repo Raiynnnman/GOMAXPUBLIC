@@ -68,11 +68,8 @@ class RegistrationUpdate(AdminBase):
             select 
                 pq.id,pqs.name,o.name,o.id as office_id,pqs.name as status,
                 pq.provider_queue_status_id,
-                JSON_ARRAYAGG(
-                    JSON_OBJECT(
-                        'id',oa.id,'addr1',oa.addr1,'addr2',oa.addr2,'phone',oa.phone,
-                        'city',oa.city,'state',oa.state,'zipcode',oa.zipcode)
-                ) as addr,u.first_name,u.last_name,u.email,u.phone,u.id as uid,
+                u.first_name,u.last_name,u.email,u.phone,u.id as uid,
+                o.office_alternate_status_id, oas1.name as office_alternate_status_name
                 pq.initial_payment,op.id as planid
             from
                 provider_queue pq
@@ -82,6 +79,7 @@ class RegistrationUpdate(AdminBase):
                 left outer join office_plans op on op.office_id = o.id
                 left outer join office_user ou on ou.office_id = o.id
                 left outer join users u on u.id = ou.user_id
+                left outer join office_alternate_status oas1 on o.office_alternate_status_id=oas1.id
             where
                 o.id = %s
             group by 
@@ -216,6 +214,11 @@ class RegistrationUpdate(AdminBase):
             """,(params['status'],params['lead_strength_id'],
                  params['initial_payment'],pqid)
         )
+        if 'office_alternate_status_id' in params:
+            db.update("""
+                update office set office_alternate_status_id=%s where id = %s
+                """,(params['office_alternate_status_id'],offid)
+            )
         if 'commission_user_id' in params:
             db.update("""
                 update office set commission_user_id=%s where id=%s
@@ -540,6 +543,16 @@ class RegistrationList(AdminBase):
                 search_par.insert(0,params['search']+'%%')
                 count_par.insert(0,params['search']+'%%')
                 count_par.insert(0,params['search']+'%%')
+        if 'alt_status' in params and params['alt_status'] is not None:
+            q += " and office_alternate_status_id in ("
+            arr = []
+            for z in params['alt_status']:
+                if z == str(0) or z == 0:
+                    arr.append(None)
+                else:
+                    arr.append(z)
+            q += ",".join(map(str,arr))
+            q += ")"
         if 'type' in params and params['type'] is not None:
             q += " and office_type_id in ("
             arr = []
@@ -656,6 +669,14 @@ class RegistrationList(AdminBase):
                     x['last_comment'] = bb2
                 except:
                     pass
+            x['addr'] = db.query("""
+                select
+                  oa.id,oa.name,addr1,addr2,phone,
+                  city,oa.state,oa.zipcode
+                from office_addresses oa
+                  where oa.office_id=%s and oa.deleted = 0
+                """,(x['office_id'],)
+            )
             x['last_name'] = x['addr'][0]['last_name'] if len(x['addr']) > 0 else ''
             x['first_name'] = x['addr'][0]['first_name'] if len(x['addr']) > 0 else ''
             x['phone'] = x['addr'][0]['phone'] if len(x['addr']) > 0 else ''
@@ -739,6 +760,10 @@ class RegistrationList(AdminBase):
             k.append(x)
         ret['config'] = {}
         ret['config']['type'] = db.query("select id,name from office_type where name <> 'Customer'")
+        ret['config']['alternate_status'] = db.query("""
+                select 0 as id,'NONE' as name
+                UNION ALL
+                select id,name from office_alternate_status""")
         ret['config']['call_status'] = db.query("select id,name from provider_queue_call_status")
         ret['config']['action_status'] = db.query("select id,name from provider_queue_actions_status")
         ret['config']['action_type'] = db.query("select id,name from provider_queue_actions_type")

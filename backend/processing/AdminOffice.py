@@ -61,7 +61,8 @@ class OfficeList(AdminBase):
                     o.stripe_cust_id,o.old_stripe_cust_id,
                     o.priority,pq.do_not_contact,pq.provider_queue_status_id pq_status_id,
                     pqs.name as provider_queue_status,ot.name as office_type,o.updated,o.commission_user_id,
-                    trim(concat(comu.first_name, ' ', comu.last_name)) as commission_name,pq.website
+                    trim(concat(comu.first_name, ' ', comu.last_name)) as commission_name,pq.website,
+                    o.office_alternate_status_id, oas1.name as office_alternate_status_name
                 from 
                     office o
                     left outer join office_type ot on o.office_type_id = ot.id
@@ -69,6 +70,7 @@ class OfficeList(AdminBase):
                     left outer join provider_queue pq on pq.office_id = o.id
                     left outer join provider_queue_status pqs on pq.provider_queue_status_id=pqs.id
                     left outer join users comu on comu.id = o.commission_user_id
+                    left outer join office_alternate_status oas1 on o.office_alternate_status_id=oas1.id
                 where 
                     o.office_type_id <> %s 
             """ % (OT['Customer'],)
@@ -91,6 +93,15 @@ class OfficeList(AdminBase):
             count_par.insert(0,params['search']+'%%')
         elif 'status' in params and params['status'] is not None and len(params['status']) > 0:
             q += " and pq.provider_queue_status_id in (%s) " % ','.join(map(str,params['status']))
+        if 'alt_status' in params and params['alt_status'] is not None and 0 not in params['alt_status']:
+            q += " and office_alternate_status_id in ("
+            arr = []
+            for z in params['alt_status']:
+                arr.append("%s")
+                count_par.append(z)
+                search_par.append(z)
+            q += ",".join(map(str,arr))
+            q += ")"
         q += " group by o.id order by o.updated desc "
         cnt = db.query("select count(id) as cnt from (" + q + ") as t", count_par)
         repquery = q
@@ -319,6 +330,10 @@ class OfficeList(AdminBase):
         """)
         ret['config']['coupons'] = db.query("select id,name,total,perc,reduction from coupons")
         ret['config']['provider_status'] = db.query("select id,name from provider_queue_status")
+        ret['config']['alternate_status'] = db.query("""
+                select 0 as id,'NONE' as name
+                UNION ALL
+                select id,name from office_alternate_status""")
         ret['config']['invoice_status'] = db.query("select id,name from invoice_status")
         return ret
 
@@ -376,6 +391,11 @@ class OfficeSave(AdminBase):
                 update provider_queue set website=%s where office_id = %s
                 """,(params['website'],params['id'])
             )
+        if 'office_alternate_status_id' in params:
+            db.update("""
+                update office set office_alternate_status_id=%s where id = %s
+                """,(params['office_alternate_status_id'],params['id'])
+            )
         if 'commission_user_id' in params:
             db.update("""
                 update office set commission_user_id=%s where id = %s
@@ -387,7 +407,6 @@ class OfficeSave(AdminBase):
             )
         if 'users' in params:
             for x in params['users']:
-                print(x)
                 if 'id' in x:
                     h = HumanName(x['name'])
                     first = "%s %s" % (h.title,h.first)
