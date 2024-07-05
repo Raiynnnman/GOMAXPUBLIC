@@ -387,6 +387,7 @@ class OfficeSave(AdminBase):
             )
         if 'users' in params:
             for x in params['users']:
+                print(x)
                 if 'id' in x:
                     h = HumanName(x['name'])
                     first = "%s %s" % (h.title,h.first)
@@ -461,6 +462,8 @@ class OfficeSave(AdminBase):
             """,(insid,)
         )
         for x in params['addr']:
+            if 'addr2' not in x:
+                x['addr2'] = ''
             if 'id' in x and x['id'] is not None:
                 db.update("""
                     update office_addresses set 
