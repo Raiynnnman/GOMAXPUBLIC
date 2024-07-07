@@ -111,15 +111,14 @@ for x in contacts:
     if owner not in users:
         owner = str(1)
 
-    if COMPANY is not None:
-        p = COMPANY['id']
-        print("sm_id=%s" % p)
-        o = db.query("""
-            select id from office where sm_id = %s
-            """,(p,)
-        )
-        if len(o) > 0:
-            pain_comp_id = o[0]['id']
+    p = COMPANY['id']
+    print("sm_id=%s" % p)
+    o = db.query("""
+        select id from office where sm_id = %s
+        """,(p,)
+    )
+    if len(o) > 0:
+        pain_comp_id = o[0]['id']
 
     prov_status = 1
     COMP['do_not_contact'] = 0
