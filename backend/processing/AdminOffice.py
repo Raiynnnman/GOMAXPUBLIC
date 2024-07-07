@@ -58,7 +58,7 @@ class OfficeList(AdminBase):
         q = """
                 select 
                     o.id,o.name,o.active,o.email,pqs.name as status,
-                    o.stripe_cust_id,o.old_stripe_cust_id,
+                    o.stripe_cust_id,o.old_stripe_cust_id,pq.tags,
                     o.priority,pq.do_not_contact,pq.provider_queue_status_id pq_status_id,
                     pqs.name as provider_queue_status,ot.name as office_type,o.updated,o.commission_user_id,
                     trim(concat(comu.first_name, ' ', comu.last_name)) as commission_name,pq.website,

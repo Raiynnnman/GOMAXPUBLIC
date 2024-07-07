@@ -150,6 +150,15 @@ for x in contacts:
     COMP['commission_user_id'] = uid[0]['id']
     COMP['office_alternate_status_id'] = stat_id
     COMP['provider_queue_status_id'] = prov_status
+    tags = ''
+
+    if 'tags' in COMP:
+        tags += COMP['tags']
+    if 'tags' in j:
+        tags += j['tags']
+
+
+    tags tags.replace(",,",",")
 
     if pain_comp_id == 0:
         print("creating new company %s" % j['id'])
@@ -202,6 +211,10 @@ for x in contacts:
     db.update("""
         update provider_queue set website=%s where office_id=%s
         """,(COMP['website'],pain_comp_id)
+    )
+    db.update("""
+        update provider_queue set tags=%s where office_id=%s
+        """,(tags,pain_comp_id)
     )
     db.update("""
         update office set commission_user_id=%s where id=%s
