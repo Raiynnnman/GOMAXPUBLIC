@@ -70,6 +70,7 @@ for x in contacts:
     } 
     COMP = {
         'name':'unknown-%s' % encryption.getSHA256()[:10],
+        'id':None,
         'phone':'',
         'website':'',
         'notes': [],
@@ -79,6 +80,7 @@ for x in contacts:
     if comp in companies:
         print("c",companies[comp])
         COMP = {
+            'id': companies[comp]['id'],
             'name':companies[comp]['name'],
             'phone':companies[comp]['phone'],
             'sm_id': companies[comp]['id'],
@@ -87,6 +89,7 @@ for x in contacts:
             'addr':[{
                 'addr1': companies[comp]['billingAddressLine1'],
                 'city': companies[comp]['billingCity'],
+                'phone':companies[comp]['phone'],
                 'state': companies[comp]['billingState']
             }]
         } 
@@ -131,7 +134,6 @@ for x in contacts:
     if stat_id == ALT['NOT INTERESTED IN PI NOW']:
         COMP['do_not_contact'] = 1
         COMP['provider_queue_status_id'] = PQ['DO_NOT_CONTACT']
-        
 
     OWNER = users[owner]
     print(COMPANY)
@@ -163,10 +165,10 @@ for x in contacts:
         # add addresses
         for g in COMP['addr']:
             db.update(""" insert into office_addresses (office_id,addr1,city,state,phone) 
-                values (%s,%s,%s,phone)
+                values (%s,%s,%s,%s,%s)
             """,(pain_comp_id,g['addr1'],g['city'],g['state'],g['phone'])
             )
-        n = HumanName(params['first'])    
+        n = HumanName(j['name'])    
         first = "%s %s" % (n.title,n.first)
         last = "%s %s" % (n.last,n.suffix)
         # insert users
@@ -187,6 +189,7 @@ for x in contacts:
             insert into office_user (user_id,office_id) values (%s,%s)
             """,(uid,pain_comp_id)
         )
+        CNTR += 1
 
     db.update("""
         update office set  office_alternate_status_id=%s where id=%s
@@ -215,6 +218,5 @@ for x in contacts:
         )
 
     db.commit()
-    CNTR += 1
     if args.limit is not None and CNTR > int(args.limit):
         break
