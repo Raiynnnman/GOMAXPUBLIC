@@ -343,6 +343,7 @@ class SM_Contacts(SM_Base):
             "contact.lastModifiedBy.name",
             "contact.lastModifiedBy.photo",
             "contact.lastModifiedBy.id",
+            "contact.website",
             "contact.createdBy.name",
             "contact.createdBy.photo",
             "contact.createdBy.id",
@@ -430,6 +431,7 @@ class SM_Companies(SM_Base):
           "displayingFields": [
             "company.type",
             "company.painid",
+            "company.website",
             "company.painurl",
             "company.saleslink",
             "company.addressesid",
@@ -441,6 +443,7 @@ class SM_Companies(SM_Base):
             "company.annualRevenue",
             "company.billingCity",
             "company.owner.name",
+            "company.owner.email",
             "company.owner.id",
             "company.name",
             "company.billingState",

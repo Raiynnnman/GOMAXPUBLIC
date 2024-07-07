@@ -7,6 +7,26 @@ def getBillingSystem():
     ret = o[0]['billing_system_id']
     return ret
 
+def getAltStatus():
+    db = Query()
+    ret = {}
+    o = db.query("select id,name from office_alternate_status")
+    for x in o:
+        n = x['name']
+        i = x['id']
+        ret[n] = i
+    return ret
+
+def getCallStatus():
+    db = Query()
+    ret = {}
+    o = db.query("select id,name from provider_queue_call_status")
+    for x in o:
+        n = x['name']
+        i = x['id']
+        ret[n] = i
+    return ret
+
 def getReferrerUserStatus():
     db = Query()
     ret = {}

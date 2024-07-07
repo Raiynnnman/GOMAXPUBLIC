@@ -1,0 +1,33 @@
+
+update office set office_alternate_status_id=null;
+delete from office_alternate_status;
+insert into office_alternate_status(name) values
+('Missing information'),
+('Not a Chiropractor'),
+('NO PI'),
+('DNC'),
+('Not interested'),
+('WORKING ATT EMAIL SENT'),
+('Working ATT1'),
+('WORKING ATT2'),
+('Did Not Answer'),
+('WORKING ATT3'),
+('SATURDAY OPEN'),
+('Patient'),
+('WORKING ATT4'),
+('Hot Lead App set'),
+('NOT INTERESTED IN PI NOW'),
+('customer'),
+('WORKING ATT5'),
+('Canidates'),
+('need time'),
+('NURTURING'),
+('partner'),
+('confirmed dr calling back'),
+('NURTURING APP SET'),
+('NURTURING UNTIL PATIENT SENT'),
+('NURTURING PROPOSAL PRESENTED'),
+('Address Missing'),
+('NURTURING PENDING PAYMENT'),
+('CLOSED-PAID'),
+('CLOSED ONBOARDED');
