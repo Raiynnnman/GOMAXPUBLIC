@@ -163,6 +163,8 @@ class OfficeList(AdminBase):
                     (select user_id
                         from user_entitlements ue,entitlements e
                         where ue.entitlements_id=e.id and e.name='Admin')
+                    UNION ALL
+                    select 1,'System',''
                     """,(x['id'],)
             )
             for cc in comms: 
