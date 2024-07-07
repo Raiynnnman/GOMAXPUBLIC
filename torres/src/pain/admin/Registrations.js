@@ -44,6 +44,8 @@ class Registrations extends Component {
             statusSelected:null,
             Selected:null,
             search:null,
+            altFilter: [],
+            statusAltSelected:null,
             filter: [],
             filterType: [],
             subTab: "plans",
@@ -70,6 +72,22 @@ class Registrations extends Component {
     } 
 
     componentWillReceiveProps(p) { 
+        var changed = false;
+        if (p.registrationsAdminList.data && p.registrationsAdminList.data.config && 
+            p.registrationsAdminList.data.config.alternate_status && 
+            this.state.statusAltSelected === null) { 
+            var c = 0;
+            var t = [];
+            var t1 = [];
+            for (c = 0; c < p.registrationsAdminList.data.config.alternate_status.length; c++) { 
+                t.push(p.registrationsAdminList.data.config.alternate_status[c]); 
+                t1.push(p.registrationsAdminList.data.config.alternate_status[c].id); 
+            } 
+            this.state.statusAltSelected = t;
+            this.state.altFilter = t1;
+            this.setState(this.state);
+            changed = true;
+        } 
         if (p.registrationsAdminList.data && p.registrationsAdminList.data.config && 
             p.registrationsAdminList.data.config.status && this.state.statusSelected === null) { 
             var c = 0;
@@ -168,22 +186,45 @@ class Registrations extends Component {
         this.setState(this.state)
     } 
 
+    onAltStatusChange(e,t) { 
+        var g = this.props.registrationsAdminList.data.config.alternate_status.filter((g) => g.name === e.target.value)
+        if (g.length > 0) { 
+            this.state.selected.office_alternate_status_id = g[0].id;
+            this.state.selected.office_alternate_status_name = g[0].name;
+        } 
+        this.setState(this.state);
+    }
+
+    onAltStatusFilter(e) { 
+        if (e.length < 1 ) { return; }
+        var c = 0;
+        var t = [];
+        var t1 = [];
+        for (c = 0; c < e.length; c++) { 
+            e[c].name = e[c].value;
+            t.push(e[c]); 
+            t1.push(e[c].id);
+        } 
+        this.state.statusAltSelected = t;
+        this.state.altFilter = t1;
+        this.setState(this.state)
+        this.reload();
+    } 
+
     onStatusFilter(e,t) { 
         if (e.length < 1 ) { return; }
         var c = 0;
         var t = [];
+        var t1 = [];
         for (c = 0; c < e.length; c++) { 
-            t.push(e[c].value); 
+            e[c].name = e[c].value;
+            t.push(e[c]); 
+            t1.push(e[c].id);
         } 
         this.state.statusSelected = t;
-        this.state.filter = t;
-        this.props.dispatch(getRegistrations(
-            {type:this.state.filterType,
-            direction:this.state.direction,
-            sort:this.state.sort,
-            search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
-        ));
+        this.state.filter = t1;
         this.setState(this.state)
+        this.reload();
     } 
 
     componentDidMount() {
@@ -224,7 +265,8 @@ class Registrations extends Component {
     reload() { 
         if (this.state.pq_id) { 
             this.props.dispatch(getRegistrations(
-                {mine:this.state.mine,pq_id:this.state.pq_id,limit:this.state.pageSize,offset:this.state.page}
+                {alt_status:this.state.altFilter,
+                 mine:this.state.mine,pq_id:this.state.pq_id,limit:this.state.pageSize,offset:this.state.page}
             ));
         } else { 
             this.props.dispatch(getRegistrations(
@@ -272,6 +314,8 @@ class Registrations extends Component {
     } 
 
     render() {
+        console.log("p",this.props);
+        console.log("s",this.state);
         var regheads = [
             {
                 dataField:'id',
@@ -409,7 +453,7 @@ class Registrations extends Component {
                                             label={<AddBoxIcon/>}/>
                                     </div>
                                 </Grid>
-                                <Grid item xs="3" style={{margin:10}}>
+                                <Grid item xs="2" style={{margin:10}}>
                                     {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
                                     this.props.registrationsAdminList.data.config &&
                                     this.props.registrationsAdminList.data.config.status && this.state.statusSelected !== null) && (
@@ -435,7 +479,7 @@ class Registrations extends Component {
                                         />
                                     )}
                                 </Grid>
-                                <Grid item xs="3" style={{margin:10}}>
+                                <Grid item xs="2" style={{margin:10}}>
                                     {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
                                     this.props.registrationsAdminList.data.config &&
                                     this.props.registrationsAdminList.data.config.type && this.state.statusSelected !== null) && (
@@ -461,6 +505,35 @@ class Registrations extends Component {
                                         />
                                     )}
                                 </Grid>
+                                <Grid itrm xs="2" style={{zIndex:9995,margin:10}}>
+                                  {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
+                                    this.props.registrationsAdminList.data.config &&
+                                    this.props.registrationsAdminList.data.config.alternate_status && this.state.statusAltSelected !== null) && (
+                                      <TemplateSelectMulti
+                                          closeMenuOnSelect={true}
+                                          label='Special Status'
+                                          onChange={this.onAltStatusFilter}
+                                          value={this.state.statusAltSelected.map((g) => { 
+                                            return (
+                                                {
+                                                label:this.props.registrationsAdminList.data.config.alternate_status.filter((f) => f.id === g.id).length > 0 ? 
+                                                    this.props.registrationsAdminList.data.config.alternate_status.filter((f) => f.id === g.id)[0].name : '',
+                                                id:this.props.registrationsAdminList.data.config.alternate_status.filter((f) => f.id === g.id).length > 0 ? 
+                                                    this.props.registrationsAdminList.data.config.alternate_status.filter((f) => f.id === g.id)[0].id: ''
+                                                }
+                                            )
+                                          })}
+                                          options={this.props.registrationsAdminList.data.config.alternate_status.map((e) => { 
+                                            return (
+                                                { 
+                                                label: e.name,
+                                                id: e.id
+                                                }
+                                            )
+                                          })}
+                                        />
+                                    )}
+                                </Grid>                
                                 <Grid item xs={2} style={{margin:10}}>
                                     <TemplateTextField type="text" id="normal-field" onChange={this.search}
                                     label="Search" value={this.state.search}/>

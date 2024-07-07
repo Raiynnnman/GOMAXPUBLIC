@@ -95,7 +95,6 @@ class OfficeList extends Component {
 
     componentWillReceiveProps(p) { 
         var changed = false;
-        console.log("p",this.props);
         if (p.offices.data && p.offices.data.config && 
             p.offices.data.config.provider_status && 
             this.state.statusSelected === null && this.state.selProvider === null) { 
@@ -262,7 +261,6 @@ class OfficeList extends Component {
     }
 
     onAltStatusFilter(e) { 
-        console.log("e",e);
         if (e.length < 1 ) { return; }
         var c = 0;
         var t = [];
@@ -272,7 +270,6 @@ class OfficeList extends Component {
             t.push(e[c]); 
             t1.push(e[c].id);
         } 
-        console.log("t",t)
         this.state.statusAltSelected = t;
         this.state.altFilter = t1;
         this.setState(this.state)
@@ -457,8 +454,6 @@ class OfficeList extends Component {
     } 
 
     render() {
-        console.log("p",this.props);
-        console.log("s",this.state);
 
         var phonesheads = [
             {
@@ -839,7 +834,6 @@ class OfficeList extends Component {
                           label='Status'
                           onChange={this.onStatusFilter}
                           value={this.state.statusSelected.map((g) => { 
-                            console.log(g)
                             return (
                                 {
                                 label:this.props.offices.data.config.provider_status.filter((f) => f.id === g.id).length > 0 ? 
@@ -863,7 +857,7 @@ class OfficeList extends Component {
                 <Grid item xs="3" style={{zIndex:9995,margin:10}}>
                   {(this.props.offices && this.props.offices.data && 
                     this.props.offices.data.config &&
-                    this.props.offices.data.config.provider_status && this.state.statusAltSelected !== null) && (
+                    this.props.offices.data.config.alternate_status && this.state.statusAltSelected !== null) && (
                       <TemplateSelectMulti
                           closeMenuOnSelect={true}
                           label='Special Status'

@@ -69,7 +69,7 @@ class RegistrationUpdate(AdminBase):
                 pq.id,pqs.name,o.name,o.id as office_id,pqs.name as status,
                 pq.provider_queue_status_id,
                 u.first_name,u.last_name,u.email,u.phone,u.id as uid,
-                o.office_alternate_status_id, oas1.name as office_alternate_status_name
+                o.office_alternate_status_id, oas1.name as office_alternate_status_name,
                 pq.initial_payment,op.id as planid
             from
                 provider_queue pq
@@ -204,6 +204,11 @@ class RegistrationUpdate(AdminBase):
             params['lead_strength_id'] = STR['Potential Provider']
         if 'initial_payment' not in params:
             params['initial_payment'] = None
+        if 'office_alternate_status_id' in params:
+            db.update("""
+                update office set office_alternate_status_id=%s where id = %s
+                """,(params['office_alternate_status_id'],params['office_id'])
+            )
         db.update("""
             update provider_queue set 
                 provider_queue_status_id=%s,
@@ -473,6 +478,7 @@ class RegistrationList(AdminBase):
                 pq.do_not_contact,
                 o.commission_user_id,oa.state,op.start_date,
                 concat(comu.first_name, ' ', comu.last_name) as commission_name,
+                o.office_alternate_status_id, oas1.name as office_alternate_status_name,
                 coup.id as coupon_id,coup.name as coupon_name
             from
                 provider_queue pq
@@ -485,6 +491,7 @@ class RegistrationList(AdminBase):
                 left outer join coupons coup on coup.id = op.coupons_id
                 left outer join office_type ot on ot.id=o.office_type_id
                 left outer join users comu on comu.id = o.commission_user_id
+                left outer join office_alternate_status oas1 on o.office_alternate_status_id=oas1.id
             where
                 1 = 1 
         """
@@ -543,7 +550,7 @@ class RegistrationList(AdminBase):
                 search_par.insert(0,params['search']+'%%')
                 count_par.insert(0,params['search']+'%%')
                 count_par.insert(0,params['search']+'%%')
-        if 'alt_status' in params and params['alt_status'] is not None:
+        if 'alt_status' in params and params['alt_status'] is not None and 0 not in params['alt_status']:
             q += " and office_alternate_status_id in ("
             arr = []
             for z in params['alt_status']:
@@ -677,10 +684,18 @@ class RegistrationList(AdminBase):
                   where oa.office_id=%s and oa.deleted = 0
                 """,(x['office_id'],)
             )
-            x['last_name'] = x['addr'][0]['last_name'] if len(x['addr']) > 0 else ''
-            x['first_name'] = x['addr'][0]['first_name'] if len(x['addr']) > 0 else ''
-            x['phone'] = x['addr'][0]['phone'] if len(x['addr']) > 0 else ''
-            x['email'] = x['addr'][0]['email'] if len(x['addr']) > 0 else ''
+            x['users'] = db.query("""
+                select u.first_name,u.email,u.last_name,u.phone,u.id
+                from users u
+                left join office_user ou on u.id = ou.user_id
+                where 
+                ou.office_id = %s
+                """,(x['office_id'],)
+            )
+            x['last_name'] = x['users'][0]['last_name'] if len(x['users']) > 0 else ''
+            x['first_name'] = x['users'][0]['first_name'] if len(x['users']) > 0 else ''
+            x['phone'] = x['users'][0]['phone'] if len(x['users']) > 0 else ''
+            x['email'] = x['users'][0]['email'] if len(x['users']) > 0 else ''
             x['history'] = db.query("""
                 select ph.id,user_id,text,concat(u.first_name, ' ', u.last_name) as user,ph.created
                     from office_history ph,users u

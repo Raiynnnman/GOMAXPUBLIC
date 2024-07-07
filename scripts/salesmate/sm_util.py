@@ -353,6 +353,7 @@ class SM_Contacts(SM_Base):
             "contact.utmTerm",
             "contact.utmMedium",
             "contact.utmContent",
+            "contact.notes",
             "contact.library",
             "contact.emailMessageCount",
             "contact.description",
@@ -701,6 +702,26 @@ def getDeals(debug=False):
     H.close()
     return DEALS
 
+def getActivity(debug=False):
+    USERS = {}
+    users = SM_Activity()
+    users.setDebug(debug)
+    F = "sm_activity.json"
+    if os.path.exists(F):
+        print("using cached file: %s" % F)
+        H=open(F,"r")
+        js = json.loads(H.read())
+        H.close()
+        return js
+    for x in users.get():
+        # print("user=%s" % json.dumps(x,sort_keys=True))
+        v = str(x['id'])
+        USERS[v] = x
+    H=open(F,"w")
+    H.write(json.dumps(USERS,indent=4,sort_keys=True))
+    H.close()
+    return USERS
+
 def getUsers(debug=False):
     USERS = {}
     users = SM_User()
@@ -790,3 +811,101 @@ def normalizeSMDeal(j,debug=False):
     if debug:
         print("normalize deal")
     return normalizeDictionary(j,DEAL_MAPPING_REV,debug)
+
+class SM_Activity(SM_Base):
+
+    def __init__(self):
+        super().__init__()
+
+    def getPayload(self):
+        j = {
+          "displayingFields": [
+            "activity.isCompleted",
+            "activity.title",
+            "activity.primaryCompany.name",
+            "activity.primaryCompany.id",
+            "activity.primaryCompany.photo",
+            "activity.type",
+            "activity.tags",
+            "activity.note",
+            "activity.duration",
+            "activity.primaryContact.name",
+            "activity.primaryContact.id",
+            "activity.primaryContact.photo",
+            "activity.owner.name",
+            "activity.owner.photo",
+            "activity.owner.id",
+            "activity.createdAt",
+            "activity.dueDate",
+            "activity.lastModifiedAt",
+            "activity.outcome",
+            "activity.completedAt",
+            "activity.lastNoteAddedAt",
+            "activity.lastNoteAddedBy.name",
+            "activity.lastNoteAddedBy.photo",
+            "activity.lastNoteAddedBy.id",
+            "activity.lastNote",
+            "activity.relatedTo.title",
+            "activity.relatedTo.id",
+            "activity.endDate",
+            "activity.primaryContact.firstName",
+            "activity.primaryContact.lastName",
+            "activity.id"
+          ],
+          "filterQuery": {
+            "group": {
+              "operator": "AND",
+              "rules": [
+                {
+                  "condition": "IS_AFTER",
+                  "moduleName": "Contact",
+                  "field": {
+                    "fieldName": "activity.createdAt",
+                    "displayName": "Created At",
+                    "type": "DateTime"
+                  },
+                  "data": "Jan 01, 1970 05:30 AM",
+                  "eventType": "DateTime"
+                }
+              ]
+            }
+          },
+          "sort": {
+            "fieldName": "activity.createdAt",
+            "order": "desc"
+          },
+          "moduleId": 1,
+          "getRecordsCount": True
+        }
+        return json.dumps(j)
+
+    def get(self,*args,**kwargs):
+        self.setCall('/apis/activity/v4/search?rows=1000&from=0')
+        self.setType('POST')
+        toget = self.getPayload()
+        return self.getData(payload=toget)
+
+    def update(self,args,dryrun=False,raw=False):
+        self.setCall('/apis/activity/v4')
+        self.setType('POST')
+        upd = args
+        toset = {}
+        additional = []
+        if raw:
+            toset = args
+        else:
+            for x in upd:
+                if x in CONTACT_MAPPING:
+                    v = CONTACT_MAPPING[x] 
+                    toset[v] = upd[x]
+            for x in additional:
+                toset[x] = upd[x]
+        if 'id' in toset:
+            if self.__DEBUG__:
+                print("setting to PUT")
+            self.setType('PUT')
+        if dryrun:
+            print("CONTACTSET:%s" % json.dumps(toset,indent=4))
+            return {'id':None}
+        else:
+            return self.getData(payload=json.dumps(toset))

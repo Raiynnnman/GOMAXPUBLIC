@@ -33,6 +33,7 @@ CONTACTS = sm_util.getContacts(debug=args.debug)
 DEALS = sm_util.getDeals(debug=args.debug)
 COMPANIES = sm_util.getCompanies(debug=args.debug)
 USERS = sm_util.getUsers(debug=args.debug)
+ACTIVITY = sm_util.getActivity(debug=args.debug)
 
 
 

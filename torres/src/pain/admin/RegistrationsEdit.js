@@ -10,6 +10,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import TemplateTextArea from '../utils/TemplateTextArea';
 import moment from 'moment';
 import LocationCard from '../office/LocationCard';
+import UserCard from '../office/UserCard';
 import { connect } from 'react-redux';
 import formatPhoneNumber from '../utils/formatPhone';
 import Tabs from '@mui/material/Tabs';
@@ -58,6 +59,7 @@ class RegistrationsEdit extends Component {
     constructor(props) { 
         super(props);
         this.updatePhone = this.updatePhone.bind(this);
+        this.editUser = this.editUser.bind(this);
         this.addAddress = this.addAddress.bind(this);
         this.editAddress = this.editAddress.bind(this);
         this.save = this.save.bind(this);
@@ -72,6 +74,7 @@ class RegistrationsEdit extends Component {
         this.onActionStatusChange = this.onActionStatusChange.bind(this);
         this.onActionTypeChange = this.onActionTypeChange.bind(this);
         this.onCallStatusChange = this.onCallStatusChange.bind(this);
+        this.onAltStatusChange = this.onAltStatusChange.bind(this);
         this.onTypeChange = this.onTypeChange.bind(this);
         this.onLeadStrengthChange = this.onLeadStrengthChange.bind(this);
         this.onPlansChange = this.onPlansChange.bind(this);
@@ -88,6 +91,7 @@ class RegistrationsEdit extends Component {
         this.toggleSubTab = this.toggleSubTab.bind(this);
         this.state = { 
             selected: null,
+            statusAltSelected:null,
             actionIdx:null,
             subTab: "activity",
         } 
@@ -219,6 +223,17 @@ class RegistrationsEdit extends Component {
         } 
     } 
 
+    editUser(e,t) { 
+        var v = this.state.selected.users.findIndex((f) => f.id === e.id)
+        if (v < 0) { 
+            this.state.selected.users.push(e);
+        } else { 
+            this.state.selected.users[v] = e;
+        } 
+        this.state.addButton = true;
+        this.setState(this.state)
+    } 
+
     onCouponChange(e) { 
         var g = this.props.plansList.data.filter((g) => e.target.value === g.description)
         if (g.length > 0) { 
@@ -258,6 +273,14 @@ class RegistrationsEdit extends Component {
         if (t.length > 0) { 
             this.state.selected.office_type = t[0].name;
             this.state.selected.office_type_id = t[0].id;
+        } 
+        this.setState(this.state);
+    } 
+    onAltStatusChange(e) { 
+        var o = e.target.value;
+        var t = this.props.registrationsAdminList.data.config.alternate_status.filter((g) => o === g.name);
+        if (t.length > 0) { 
+            this.state.selected.office_alternate_status_id = t[0].id;
         } 
         this.setState(this.state);
     } 
@@ -496,7 +519,33 @@ class RegistrationsEdit extends Component {
                         </Grid>
                 </Grid>
                 <Grid container style={{borderLeft:"1px solid black"}} xs="6">
-                    <Grid item xs={5} style={{margin:10}}>
+                    <Grid item xs="3" style={{zIndex:9995,margin:10}}>
+                      {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
+                        this.props.registrationsAdminList.data.config &&
+                        this.props.registrationsAdminList.data.config.alternate_status) && (
+                          <TemplateSelect
+                              label='Special Status'
+                              onChange={this.onAltStatusChange}
+                              value={{
+                                label:
+                                    this.props.registrationsAdminList.data.config.alternate_status.filter((g) => 
+                                        this.state.selected.office_alternate_status_id === g.id).length > 0 ? 
+                                    this.props.registrationsAdminList.data.config.alternate_status.filter((g) => 
+                                        this.state.selected.office_alternate_status_id === g.id
+                                )[0].name : '',
+                              }}
+                              options={this.props.registrationsAdminList.data.config.alternate_status.map((g) => { 
+                                return (
+                                    { 
+                                    label: g.name,
+                                    value: g.name
+                                    }
+                                )
+                              })}
+                            />
+                        )}
+                    </Grid>                
+                    <Grid item xs={4} style={{margin:10}}>
                       {(this.props.registrationsAdminList && this.props.registrationsAdminList.data &&
                         this.props.registrationsAdminList.data.config && 
                         this.props.registrationsAdminList.data.config.status) && (
@@ -628,11 +677,37 @@ class RegistrationsEdit extends Component {
                             <Tabs style={{marginBottom:20}} value={this.state.subTab} onChange={this.toggleSubTab}>
                                 <Tab value='activity' label='Activity'/>
                                 <Tab value='plans' label='Plans'/>
-                                <Tab value='offices' label='Offices'/>
+                                <Tab value='registrationsAdminList' label='Offices'/>
                                 <Tab value='invoice' label='Invoice'/>
                                 <Tab value='history' label='History'/>
+                                <Tab value='users' label='Users'/>
                                 <Tab value='comments' label='Comments'/>
                             </Tabs>
+                            {(this.state.subTab === 'users') && (
+                                <>
+                                    {this.state.addButton && ( 
+                                    <TemplateButton
+                                        style={{ width:50,marginBottom: 10 }}
+                                        onClick={this.addUser}
+                                        label={<AddBoxIcon />}
+                                    />
+                                    )}
+                                    <Grid container xs={12}>
+                                    {this.state.selected.users && this.state.selected.users.length > 0 && (
+                                        this.state.selected.users.map((u, i) => (
+                                        <>
+                                            {!u.deleted && (
+                                            <Grid item xs={3} style={{margin:20}}>
+                                            <UserCard onEdit={this.editUser} key={i} 
+                                                provider={u} />
+                                            </Grid>
+                                            )}
+                                        </>
+                                        ))
+                                    )}
+                                    </Grid>
+                                </>
+                            )}
                             {(this.state.selected && this.state.selected.actions && this.state.subTab === 'activity') && (
                             <>
                                 <TemplateButton style={{width:30}} onClick={() => this.addAction({id:"new"})} label={<AddBoxIcon/>}/>
