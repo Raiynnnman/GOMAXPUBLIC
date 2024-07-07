@@ -27,6 +27,7 @@ config = settings.config()
 config.read("settings.cfg")
 parser = argparse.ArgumentParser()
 parser.add_argument('--debug', dest="debug", action="store_true")
+parser.add_argument('--limit', dest="limit", action="store")
 args = parser.parse_args()
 
 PQ = getIDs.getProviderQueueStatus()
@@ -56,6 +57,7 @@ js=H.read()
 users=json.loads(js)
 H.close()
 
+CNTR = 0
 for x in contacts:
     j = contacts[x]
     print("----")
@@ -214,4 +216,6 @@ for x in contacts:
         )
 
     db.commit()
-    break
+    CNTR += 1
+    if args.limit is not None and CNTR > int(args.limit):
+        break
