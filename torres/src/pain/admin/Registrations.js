@@ -58,6 +58,7 @@ class Registrations extends Component {
         }
         this.search = this.search.bind(this);
         this.close = this.close.bind(this);
+        this.onAltStatusFilter = this.onAltStatusFilter.bind(this);
         this.onStatusFilter = this.onStatusFilter.bind(this);
         this.onTypeFilter = this.onTypeFilter.bind(this);
         this.save = this.save.bind(this);
@@ -71,112 +72,116 @@ class Registrations extends Component {
         this.toggleTab = this.toggleTab.bind(this);
     } 
 
-    componentWillReceiveProps(p) { 
-        var changed = false;
-        if (p.registrationsAdminList.data && p.registrationsAdminList.data.config && 
-            p.registrationsAdminList.data.config.alternate_status && 
-            this.state.statusAltSelected === null) { 
-            var c = 0;
-            var t = [];
-            var t1 = [];
-            for (c = 0; c < p.registrationsAdminList.data.config.alternate_status.length; c++) { 
-                t.push(p.registrationsAdminList.data.config.alternate_status[c]); 
-                t1.push(p.registrationsAdminList.data.config.alternate_status[c].id); 
+        componentWillReceiveProps(p) { 
+            var changed = false;
+            if (p.registrationsAdminList.data && p.registrationsAdminList.data.config && 
+                p.registrationsAdminList.data.config.alternate_status && 
+                this.state.statusAltSelected === null) { 
+                var c = 0;
+                var t = [];
+                var t1 = [];
+                for (c = 0; c < p.registrationsAdminList.data.config.alternate_status.length; c++) { 
+                    t.push(p.registrationsAdminList.data.config.alternate_status[c]); 
+                    t1.push(p.registrationsAdminList.data.config.alternate_status[c].id); 
+                } 
+                this.state.statusAltSelected = t;
+                this.state.altFilter = t1;
+                this.setState(this.state);
+                changed = true;
             } 
-            this.state.statusAltSelected = t;
-            this.state.altFilter = t1;
+            if (p.registrationsAdminList.data && p.registrationsAdminList.data.config && 
+                p.registrationsAdminList.data.config.status && this.state.statusSelected === null) { 
+                var c = 0;
+                var t = [];
+                var t1 = [];
+                for (c = 0; c < p.registrationsAdminList.data.config.status.length; c++) { 
+                    if (p.registrationsAdminList.data.config.status[c].name === 'INVITED') { continue; }
+                    if (p.registrationsAdminList.data.config.status[c].name === 'CLOSED_WON') { continue; }
+                    if (p.registrationsAdminList.data.config.status[c].name === 'APPROVED') { continue; }
+                    if (p.registrationsAdminList.data.config.status[c].name === 'DO_NOT_CONTACT') { continue; }
+                    if (p.registrationsAdminList.data.config.status[c].name === 'INACTIVE') { continue; }
+                    if (p.registrationsAdminList.data.config.status[c].name === 'DENIED') { continue; }
+                    t.push(p.registrationsAdminList.data.config.status[c]); 
+                    t1.push(p.registrationsAdminList.data.config.status[c].id); 
+                } 
+                this.state.statusSelected = t;
+                this.state.filter = t1;
+                var v = [];
+                var v1 = [];
+                c = 0;
+                for (c = 0; c < p.registrationsAdminList.data.config.type.length; c++) { 
+                    v.push(p.registrationsAdminList.data.config.type[c]); 
+                    v1.push(p.registrationsAdminList.data.config.type[c].id); 
+                } 
+                this.state.typeSelected = v;
+                this.state.filterType = v1;
+                this.setState(this.state);
+                if (this.props.match.params.id) { 
+                    this.reload();
+                }
+                if (!this.props.match.params.id) { 
+                    this.reload();
+                }
+            } 
+        }
+        close() { 
+            this.state.selected = null;
             this.setState(this.state);
-            changed = true;
         } 
-        if (p.registrationsAdminList.data && p.registrationsAdminList.data.config && 
-            p.registrationsAdminList.data.config.status && this.state.statusSelected === null) { 
-            var c = 0;
-            var t = [];
-            for (c = 0; c < p.registrationsAdminList.data.config.status.length; c++) { 
-                if (p.registrationsAdminList.data.config.status[c].name === 'INVITED') { continue; }
-                if (p.registrationsAdminList.data.config.status[c].name === 'CLOSED_WON') { continue; }
-                if (p.registrationsAdminList.data.config.status[c].name === 'APPROVED') { continue; }
-                if (p.registrationsAdminList.data.config.status[c].name === 'DO_NOT_CONTACT') { continue; }
-                if (p.registrationsAdminList.data.config.status[c].name === 'INACTIVE') { continue; }
-                if (p.registrationsAdminList.data.config.status[c].name === 'DENIED') { continue; }
-                t.push(p.registrationsAdminList.data.config.status[c].id); 
-            } 
-            this.state.statusSelected = t;
-            this.state.filter = t;
-            var v = [];
-            c = 0;
-            for (c = 0; c < p.registrationsAdminList.data.config.type.length; c++) { 
-                v.push(p.registrationsAdminList.data.config.type[c].id); 
-            } 
-            this.state.typeSelected = v;
-            this.state.filterType = v;
-            this.setState(this.state);
-            if (this.props.match.params.id) { 
-                this.reload();
-            }
-            if (!this.props.match.params.id) { 
-                this.reload();
-            }
-        } 
-    }
-    close() { 
-        this.state.selected = null;
-        this.setState(this.state);
-    } 
 
-    sortChange(t) { 
-        var g = this.props.registrationsAdminList.data.sort.filter((e) => t.dataField === e.col);
-        if (g.length > 0) { 
-            g = g[0]
-            this.state.sort = g.id
-            this.state.direction = g.direction === 'asc' ? 'desc' : 'asc'
+        sortChange(t) { 
+            var g = this.props.registrationsAdminList.data.sort.filter((e) => t.dataField === e.col);
+            if (g.length > 0) { 
+                g = g[0]
+                this.state.sort = g.id
+                this.state.direction = g.direction === 'asc' ? 'desc' : 'asc'
+                this.props.dispatch(getRegistrations(
+                    {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
+                ));
+                this.setState(this.state);
+            } 
+        } 
+
+        pageGridsChange(t) { 
+            this.state.pageSize = t
+            this.state.page = 0
             this.props.dispatch(getRegistrations(
                 {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
             ));
             this.setState(this.state);
         } 
-    } 
-
-    pageGridsChange(t) { 
-        this.state.pageSize = t
-        this.state.page = 0
-        this.props.dispatch(getRegistrations(
-            {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
-        ));
-        this.setState(this.state);
-    } 
-    pageChange(e) { 
-        this.state.page = e
-        this.props.dispatch(getRegistrations(
-            {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
-        ));
-        this.setState(this.state);
-    } 
-
-
-    search(e) { 
-        this.state.search = e.target.value;
-        if (this.state.search.length === 0) { 
-            this.state.search = null;
+        pageChange(e) { 
+            this.state.page = e
+            this.props.dispatch(getRegistrations(
+                {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
+            ));
+            this.setState(this.state);
         } 
-        this.props.dispatch(getRegistrations(
-            {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
-        ));
-        this.setState(this.state);
-    } 
 
 
-    onTypeFilter(e,t) { 
-        if (e.length < 1 ) { return; }
-        var c = 0;
-        var t = [];
-        for (c = 0; c < e.length; c++) { 
-            t.push(e[c].value); 
+        search(e) { 
+            this.state.search = e.target.value;
+            if (this.state.search.length === 0) { 
+                this.state.search = null;
+            } 
+            this.props.dispatch(getRegistrations(
+                {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
+            ));
+            this.setState(this.state);
         } 
-        this.state.typeSelected = t;
-        this.state.filterType = t;
-        this.props.dispatch(getRegistrations(
-            {type:this.state.filterType,
+
+
+        onTypeFilter(e,t) { 
+            if (e.length < 1 ) { return; }
+            var c = 0;
+            var t = [];
+            for (c = 0; c < e.length; c++) { 
+                t.push(e[c].value); 
+            } 
+            this.state.typeSelected = t;
+            this.state.filterType = t;
+            this.props.dispatch(getRegistrations(
+                {type:this.state.filterType,
              direction:this.state.direction,
              sort:this.state.sort,
              search:this.state.search,
@@ -272,7 +277,7 @@ class Registrations extends Component {
             this.props.dispatch(getRegistrations(
                 {type:this.state.filterType,mine:this.state.mine,sort:this.state.sort,direction:this.state.direction,
                  search:this.state.search,limit:this.state.pageSize,
-                offset:this.state.page,status:this.state.filter}
+                offset:this.state.page,status:this.state.filter,alt_status:this.state.altFilter}
             ));
         } 
     }
@@ -314,8 +319,6 @@ class Registrations extends Component {
     } 
 
     render() {
-        console.log("p",this.props);
-        console.log("s",this.state);
         var regheads = [
             {
                 dataField:'id',
@@ -408,8 +411,6 @@ class Registrations extends Component {
                 } 
             } 
         }  
-        console.log("p",this.props);
-        console.log("s",this.state);
         return (
         <>
             {(this.props.plansList && this.props.plansList.isReceiving) && (
@@ -461,8 +462,15 @@ class Registrations extends Component {
                                           value={this.state.statusSelected.map((g) => { 
                                             return (
                                                 {
-                                                label:this.props.registrationsAdminList.data.config.status.filter((f) => f.id === g)[0].name,
-                                                value:this.props.registrationsAdminList.data.config.status.filter((f) => f.id === g)[0].id
+                                                label:
+                this.props.registrationsAdminList.data.config.status.filter((f) => f.id === g.id).length > 0 ? 
+                this.props.registrationsAdminList.data.config.status.filter((f) => f.id === g.id)[0].name : '',
+                                                value:
+                this.props.registrationsAdminList.data.config.status.filter((f) => f.id === g.id).length > 0 ? 
+                this.props.registrationsAdminList.data.config.status.filter((f) => f.id === g.id)[0].name : '',
+                                                id:
+                this.props.registrationsAdminList.data.config.status.filter((f) => f.id === g.id).length > 0 ? 
+                this.props.registrationsAdminList.data.config.status.filter((f) => f.id === g.id)[0].name : '',
                                                 }
                                             )
                                           })}
@@ -470,7 +478,8 @@ class Registrations extends Component {
                                             return (
                                                 { 
                                                 label: e.name ? e.name : e.label,
-                                                value: e.id
+                                                value: e.id,
+                                                id: e.id,
                                                 }
                                             )
                                           })}
@@ -487,8 +496,9 @@ class Registrations extends Component {
                                           value={this.state.typeSelected.map((g) => { 
                                             return (
                                                 {
-                                                label:this.props.registrationsAdminList.data.config.type.filter((f) => f.id === g)[0].name,
-                                                value:this.props.registrationsAdminList.data.config.type.filter((f) => f.id === g)[0].id
+                                                label:this.props.registrationsAdminList.data.config.type.filter((f) => f.id === g.id)[0].name,
+                                                value:this.props.registrationsAdminList.data.config.type.filter((f) => f.id === g.id)[0].id,
+                                                id:this.props.registrationsAdminList.data.config.type.filter((f) => f.id === g.id)[0].id
                                                 }
                                             )
                                           })}
@@ -496,6 +506,7 @@ class Registrations extends Component {
                                             return (
                                                 { 
                                                 label: e.name,
+                                                id: e.id,
                                                 value: e.id
                                                 }
                                             )
@@ -503,7 +514,7 @@ class Registrations extends Component {
                                         />
                                     )}
                                 </Grid>
-                                <Grid itrm xs="2" style={{zIndex:9995,margin:10}}>
+                                <Grid itrm xs="2" style={{margin:10}}>
                                   {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
                                     this.props.registrationsAdminList.data.config &&
                                     this.props.registrationsAdminList.data.config.alternate_status && this.state.statusAltSelected !== null) && (

@@ -550,6 +550,8 @@ class RegistrationList(AdminBase):
                 search_par.insert(0,params['search']+'%%')
                 count_par.insert(0,params['search']+'%%')
                 count_par.insert(0,params['search']+'%%')
+        if 'alt_status' in params and params['alt_status'] is not None and 0 in params['alt_status']:
+            q += " and office_alternate_status_id is null "
         if 'alt_status' in params and params['alt_status'] is not None and 0 not in params['alt_status']:
             q += " and office_alternate_status_id in ("
             arr = []
