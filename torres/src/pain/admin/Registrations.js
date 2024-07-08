@@ -371,11 +371,7 @@ class Registrations extends Component {
                 text:'Status',
                 formatter:(cellContent,row) => (
                     <div>
-                        {(row.status === 'INVITED') && (<TemplateBadge label='INVITED'/>)}
-                        {(row.status === 'APPROVED') && (<TemplateBadge label='APPROVED'/>)}
-                        {(row.status === 'QUEUED') && (<TemplateBadge label='QUEUED'/>)}
-                        {(row.status === 'WAITING') && (<TemplateBadge label='WAITING'/>)}
-                        {(row.status === 'DENIED') && (<TemplateBadge label='DENIED'/>)}
+                        {row.status && (<TemplateBadge label={row.status}/>)}
                     </div>
                 )
             },
