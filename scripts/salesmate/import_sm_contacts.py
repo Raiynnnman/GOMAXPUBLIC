@@ -158,7 +158,7 @@ for x in contacts:
         tags += j['tags']
 
 
-    tags tags.replace(",,",",")
+    tags = tags.replace(",,",",")
 
     if pain_comp_id == 0:
         print("creating new company %s" % j['id'])
