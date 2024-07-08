@@ -408,6 +408,8 @@ class Registrations extends Component {
                 } 
             } 
         }  
+        console.log("p",this.props);
+        console.log("s",this.state);
         return (
         <>
             {(this.props.plansList && this.props.plansList.isReceiving) && (
@@ -467,7 +469,7 @@ class Registrations extends Component {
                                           options={this.props.registrationsAdminList.data.config.status.map((e) => { 
                                             return (
                                                 { 
-                                                label: e.name,
+                                                label: e.name ? e.name : e.label,
                                                 value: e.id
                                                 }
                                             )
