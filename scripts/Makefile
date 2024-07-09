@@ -57,7 +57,7 @@ copypre:
 	find . -type f | grep __pycache__ | grep -v '^\.\/p/' | cpio -pdv pre
 	echo "----"
 	find pre -type  f -name '*.pyc' | grep -v '/\./p/' | \
-		xargs bash -x ../backend/scripts/preprocess-python.sh
+		xargs bash ../backend/scripts/preprocess-python.sh
 	if [ -d pre/pre ]; then rm -rf pre/pre; fi
 
 tests:
