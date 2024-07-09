@@ -1,6 +1,7 @@
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 import { connect } from 'react-redux';
 import { styled, useTheme } from '@mui/material/styles';
+import Checkbox from '@mui/material/Checkbox';
 import {
   Box,
   Table,
@@ -32,6 +33,7 @@ function TablePaginationActions(props) {
   const handleFirstPageButtonClick = (event) => {
     onPageChange(event, 0);
   };
+
 
   const handleBackButtonClick = (event) => {
     onPageChange(event, page - 1);
@@ -82,15 +84,52 @@ function TablePaginationActions(props) {
 class PainTable extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+        selected:[],
+        selectedRowIDs:[],
+        allSelected:false
+    };
     this.handleChangePage = this.handleChangePage.bind(this);
+    this.onSelectRow = this.onSelectRow.bind(this);
+    this.onSelectAll = this.onSelectAll.bind(this);
     this.handleChangeSort = this.handleChangeSort.bind(this);
     this.handleChangeGridsPerPage = this.handleChangeGridsPerPage.bind(this);
   }
 
-  componentWillReceiveProps(p) {}
+  componentWillReceiveProps(p) {
+  }
 
-  componentDidMount() {}
+  componentDidMount() {
+  }
+
+  onSelectRow(e) { 
+    if (this.state.selected.includes(e.id)) { 
+        this.state.selected = this.state.selected.filter((f) => f.id !== e.id)
+        this.state.selectedRowIDs = this.state.selectedRowIDs.filter((f) => f !== e.id)
+    } else { 
+        this.state.selected.push(e)
+        this.state.selectedRowIDs.push(e.id)
+    } 
+    this.setState(this.state)
+    this.props.onMassChange(this.state.selected);
+  } 
+
+  onSelectAll(e) { 
+    var c = 0; 
+    if (this.state.selected.length > 0) { 
+        this.state.selected = []
+        this.state.selectedRowIDs = []
+        this.state.allSelected = false;
+        this.props.onMassChange([]);
+        this.setState(this.state)
+    } else { 
+        this.state.allSelected = true;
+        for (c = 0;c < this.props.data.length; c++) { 
+            this.onSelectRow(this.props.data[c])
+        } 
+        this.setState(this.state)
+    }
+  } 
 
   handleChangeSort(e, t) {
     this.props.onSort(e);
@@ -116,6 +155,18 @@ class PainTable extends Component {
               <Table sx={{ minWidth: 650 }} size="small" aria-label="">
                 <TableHead>
                   <TableRow>
+                    {this.props.selectAll && (
+                    <TableCell style={{backgroundColor:'#fa6a0a'}} padding="checkbox">
+                      <Checkbox
+                        style={{ color: 'white' }}
+                        checked={this.allSelected}
+                        onChange={this.onSelectAll}
+                        inputProps={{
+                          'aria-label': 'select all desserts',
+                        }}
+                      />
+                    </TableCell>
+                    )}
                     {this.props.columns.map((e) => {
                       if (!e.hidden) {
                         return (
@@ -145,6 +196,18 @@ class PainTable extends Component {
                 <TableBody>
                   {this.props.data.map((row) => (
                     <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                        {this.props.selectAll && (
+                        <TableCell style={{backgroundColor:'#fa6a0a'}} padding="checkbox">
+                          <Checkbox
+                            style={{ color: 'white' }}
+                            checked={this.state.selectedRowIDs.includes(row.id)}
+                            onChange={() => this.onSelectRow(row)}
+                            inputProps={{
+                              'aria-label': 'select all desserts',
+                            }}
+                          />
+                        </TableCell>
+                        )}
                       {this.props.columns.map((e) => {
                         if (!e.hidden) {
                           return (
@@ -161,7 +224,7 @@ class PainTable extends Component {
                 </TableBody>
                 <TableFooter>
                   <TablePagination
-                    rowsPerPageOptions={[5, 10, 25]}
+                    rowsPerPageOptions={[5, 10, 25, 100, 250]}
                     count={this.props.total || this.props.data.length}
                     rowsPerPage={this.props.pageSize || 10}
                     page={this.props.page || 0}

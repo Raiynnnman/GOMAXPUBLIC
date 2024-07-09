@@ -24,6 +24,7 @@ import TemplateTextField from '../utils/TemplateTextField';
 import TemplateTextArea from '../utils/TemplateTextArea';
 import TemplateCheckbox from '../utils/TemplateCheckbox';
 import TemplateButton from '../utils/TemplateButton';
+import TemplateButtonIcon from '../utils/TemplateButtonIcon';
 import TemplateBadge from '../utils/TemplateBadge';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -362,7 +363,7 @@ class CommissionAdminList extends Component {
                 <Grid item xs="7">
                     <div style={{display:'flex',justifyItems:'end'}}>
                         <div style={{justifyContent:'spread-evenly'}}>
-                            <TemplateButton onClick={this.commissionReport} outline label={<AssessmentIcon/>}/>
+                            <TemplateButtonIcon onClick={this.commissionReport} outline label={<AssessmentIcon/>}/>
                         </div>
                     </div>
                 </Grid>
@@ -427,7 +428,7 @@ class CommissionAdminList extends Component {
                 <Grid item xs="1">
                     <div style={{display:'flex',alignItems:'end',justifyItems:'end'}}>
                         <div style={{justifyContent:'spread-evenly'}}>
-                            <TemplateButton onClick={this.commissionReport} outline label={<AssessmentIcon/>}/>
+                            <TemplateButtonIcon onClick={this.commissionReport} outline label={<AssessmentIcon/>}/>
                         </div>
                     </div>
                 </Grid>

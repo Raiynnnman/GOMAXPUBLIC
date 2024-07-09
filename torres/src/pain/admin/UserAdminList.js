@@ -24,6 +24,7 @@ import TemplateTextField from '../utils/TemplateTextField';
 import TemplateTextArea from '../utils/TemplateTextArea';
 import TemplateCheckbox from '../utils/TemplateCheckbox';
 import TemplateButton from '../utils/TemplateButton';
+import TemplateButtonIcon from '../utils/TemplateButtonIcon';
 import TemplateBadge from '../utils/TemplateBadge';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -210,7 +211,7 @@ class UserAdminList extends Component {
                 formatter:(cellContent,row) => ( 
                     <div>
                         {/*<TemplateButton onClick={() => this.edit(row)} style={{marginRight:5,height:35}} label={<EditIcon/>}/>*/}
-                        <TemplateButton onClick={() => this.getContext(row)} style={{height:35}} label={<LaunchIcon/>}/>
+                        <TemplateButtonIcon onClick={() => this.getContext(row)} style={{height:35}} label={<LaunchIcon/>}/>
                     </div>
                 )
             },
@@ -227,7 +228,7 @@ class UserAdminList extends Component {
             <>
             <Grid container xs="12">
                 <Grid item xs="2" style={{marginBottom:10}}>
-                    {/*<TemplateButton onClick={() => this.edit({id:"new"})} 
+                    {/*<TemplateButtonIcon onClick={() => this.edit({id:"new"})} 
                         style={{marginRight:5,height:35,width:90}} color="primary">Add</Button>
                     */}
                 </Grid>

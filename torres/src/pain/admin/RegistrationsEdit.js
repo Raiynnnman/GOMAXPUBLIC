@@ -23,6 +23,7 @@ import TemplateTextField from '../utils/TemplateTextField';
 import TemplateTextFieldPhone from '../utils/TemplateTextFieldPhone';
 import TemplateCheckbox from '../utils/TemplateCheckbox';
 import TemplateButton from '../utils/TemplateButton';
+import TemplateButtonIcon from '../utils/TemplateButtonIcon';
 import TemplateBadge from '../utils/TemplateBadge';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -188,7 +189,7 @@ class RegistrationsEdit extends Component {
             office_id: this.state.selected.office_id,
             office_type_id: this.state.selected.office_type_id,
             pricing_id: this.state.selected.pricing_id,
-            status: this.state.selected.provider_queue_status_id,
+            provider_queue_status_id: this.state.selected.provider_queue_status_id,
         } 
         if (this.state.selected.invoice && this.state.selected.invoice.id) { 
             tosend.invoice_id = this.state.selected.invoice.id;
@@ -686,7 +687,7 @@ class RegistrationsEdit extends Component {
                             {(this.state.subTab === 'users') && (
                                 <>
                                     {this.state.addButton && ( 
-                                    <TemplateButton
+                                    <TemplateButtonIcon
                                         style={{ width:50,marginBottom: 10 }}
                                         onClick={this.addUser}
                                         label={<AddBoxIcon />}
@@ -710,7 +711,7 @@ class RegistrationsEdit extends Component {
                             )}
                             {(this.state.selected && this.state.selected.actions && this.state.subTab === 'activity') && (
                             <>
-                                <TemplateButton style={{width:30}} onClick={() => this.addAction({id:"new"})} label={<AddBoxIcon/>}/>
+                                <TemplateButtonIcon style={{width:30}} onClick={() => this.addAction({id:"new"})} label={<AddBoxIcon/>}/>
                                 {this.state.selected.actions.sort((a,b) => (a.created > b.created ? -1:1)).map((e) => { 
                                     return (
                                         <Grid item xs="5" key={e.id}>
@@ -801,8 +802,8 @@ class RegistrationsEdit extends Component {
                                                     <Grid item xs="12">
                                                         <div style={{display:"flex",justifyContent:"center"}}>
                                                             <div style={{display:"flex",justifyContent:"spread-evenly"}}>
-                                                            <TemplateButton onClick={this.saveAction} label={<SaveIcon/>}/>
-                                                            <TemplateButton outline style={{marginLeft:10}} 
+                                                            <TemplateButtonIcon onClick={this.saveAction} label={<SaveIcon/>}/>
+                                                            <TemplateButtonIcon outline style={{marginLeft:10}} 
                                                                 onClick={this.cancelAction} label={<CancelIcon/>}/>
                                                             </div>
                                                         </div>
@@ -817,7 +818,7 @@ class RegistrationsEdit extends Component {
                             )}
                             {(this.state.subTab === 'comments') && (
                             <>
-                                <TemplateButton onClick={() => this.addComment({id:"new"})} label={<AddBoxIcon/>}/>
+                                <TemplateButtonIcon onClick={() => this.addComment({id:"new"})} label={<AddBoxIcon/>}/>
                                 {this.state.selected.comments.sort((a,b) => (a.created > b.created ? -1:1)).map((e) => { 
                                     return (
                                         <Grid item xs="3" key={e.id}>
@@ -862,8 +863,8 @@ class RegistrationsEdit extends Component {
                                                     <Grid item xs="12">
                                                         <div style={{display:"flex",justifyContent:"center"}}>
                                                             <div style={{display:"flex",justifyContent:"spread-evenly"}}>
-                                                            <TemplateButton onClick={this.saveComment} label={<SaveIcon/>}/>
-                                                            <TemplateButton outline style={{marginLeft:10}} 
+                                                            <TemplateButtonIcon onClick={this.saveComment} label={<SaveIcon/>}/>
+                                                            <TemplateButtonIcon outline style={{marginLeft:10}} 
                                                                 onClick={this.cancelComment} label={<CancelIcon/>}/>
                                                             </div>
                                                         </div>

@@ -30,6 +30,7 @@ import TemplateTextField from '../utils/TemplateTextField';
 import TemplateTextArea from '../utils/TemplateTextArea';
 import TemplateCheckbox from '../utils/TemplateCheckbox';
 import TemplateButton from '../utils/TemplateButton';
+import TemplateButtonIcon from '../utils/TemplateButtonIcon';
 import TemplateBadge from '../utils/TemplateBadge';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -645,8 +646,8 @@ class OfficeList extends Component {
                 text:'Actions',
                 formatter:(cellContent,row) => ( 
                     <div>
-                        <TemplateButton onClick={() => this.edit(row)} style={{marginRight:5,width:30,height:35}} label={<EditIcon/>}/>
-                        <TemplateButton onClick={() => this.getContext(row)} style={{height:35,width:30}} label={<LaunchIcon/>}/>
+                        <TemplateButtonIcon onClick={() => this.edit(row)} style={{marginRight:5,width:30,height:35}} label={<EditIcon/>}/>
+                        <TemplateButtonIcon onClick={() => this.getContext(row)} style={{height:35,width:30}} label={<LaunchIcon/>}/>
                     </div>
                 )
             },
@@ -725,7 +726,7 @@ class OfficeList extends Component {
                 editable: false,
                 formatter:(cellContent,row) => ( 
                     <div>
-                        <TemplateButton onClick={() => this.delGrid(row)} style={{marginRight:5,height:35,width:90}} label={<DeleteIcon/>}/>
+                        <TemplateButtonIcon onClick={() => this.delGrid(row)} style={{marginRight:5,height:35,width:90}} label={<DeleteIcon/>}/>
                     </div>
                 )
             },
@@ -890,9 +891,9 @@ class OfficeList extends Component {
                 <Grid item xs={2}>
                     <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                         <div style={{justifyContent:'spread-evenly'}}>
-                            <TemplateButton onClick={() => this.reload()} style={{width:35}}
+                            <TemplateButtonIcon onClick={() => this.reload()} style={{width:35}}
                                 label={<AutorenewIcon/>}/>
-                            <TemplateButton onClick={this.officeReport} style={{width:35}} label={<AssessmentIcon/>}/>
+                            <TemplateButtonIcon onClick={this.officeReport} style={{width:35}} label={<AssessmentIcon/>}/>
                         </div>
                     </div>
                 </Grid>
@@ -1031,7 +1032,7 @@ class OfficeList extends Component {
                         {(this.state.subTab === 'users') && (
                             <>
                                 {this.state.addButton && ( 
-                                <TemplateButton
+                                <TemplateButtonIcon
                                     style={{ width:50,marginBottom: 10 }}
                                     onClick={this.addUser}
                                     label={<AddBoxIcon />}
@@ -1115,7 +1116,7 @@ class OfficeList extends Component {
                         {this.state.subTab === 'offices' && (
                             <>
                                 {this.state.addButton && ( 
-                                <TemplateButton
+                                <TemplateButtonIcon
                                     style={{ width:50,marginBottom: 10 }}
                                     onClick={this.addAddress}
                                     label={<AddBoxIcon />}
@@ -1150,7 +1151,7 @@ class OfficeList extends Component {
                         )}
                         {(this.state.subTab === 'comments') && (
                         <>
-                                <TemplateButton onClick={() => this.addComment({id:"new"})} label={<AddBoxIcon/>}/>
+                                <TemplateButtonIcon onClick={() => this.addComment({id:"new"})} label={<AddBoxIcon/>}/>
                                 {this.state.selected.comments.sort((a,b) => (a.created > b.created ? -1:1)).map((e) => { 
                                     return (
                                         <Grid item xs="3" key={e.id}>

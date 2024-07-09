@@ -26,6 +26,7 @@ import TemplateTextField from '../utils/TemplateTextField';
 import TemplateTextArea from '../utils/TemplateTextArea';
 import TemplateCheckbox from '../utils/TemplateCheckbox';
 import TemplateButton from '../utils/TemplateButton';
+import TemplateButtonIcon from '../utils/TemplateButtonIcon';
 import TemplateBadge from '../utils/TemplateBadge';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -301,7 +302,7 @@ class CouponAdminList extends Component {
                 editable: false,
                 formatter:(cellContent,row) => ( 
                     <div>
-                        <TemplateButton onClick={() => this.edit(row)} style={{marginRight:5,height:35}} label={<EditIcon/>}/>
+                        <TemplateButtonIcon onClick={() => this.edit(row)} style={{marginRight:5,height:35}} label={<EditIcon/>}/>
                     </div>
                 )
             }
@@ -320,7 +321,7 @@ class CouponAdminList extends Component {
             <Grid container xs="12">
                 <Grid item xs="2" style={{marginBottom:10}}>
                     <Grid item xs="1">
-                        <TemplateButton onClick={() => this.edit({id:"new"})} style={{width:50}}
+                        <TemplateButtonIcon onClick={() => this.edit({id:"new"})} style={{width:50}}
                             label={<AddBoxIcon/>}/>
                     </Grid>
                 </Grid>

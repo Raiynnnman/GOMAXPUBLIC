@@ -23,6 +23,7 @@ import TemplateTextField from '../utils/TemplateTextField';
 import TemplateTextArea from '../utils/TemplateTextArea';
 import TemplateCheckbox from '../utils/TemplateCheckbox';
 import TemplateButton from '../utils/TemplateButton';
+import TemplateButtonIcon from '../utils/TemplateButtonIcon';
 import TemplateBadge from '../utils/TemplateBadge';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -409,7 +410,7 @@ class InvoiceAdminList extends Component {
                 editable: false,
                 formatter:(cellContent,row) => ( 
                     <div>
-                        <TemplateButton onClick={() => this.edit(row)} style={{marginRight:5,height:35}} label={<EditIcon/>}/>
+                        <TemplateButtonIcon onClick={() => this.edit(row)} style={{marginRight:5,height:35}} label={<EditIcon/>}/>
                     </div>
                 )
             }
@@ -475,7 +476,7 @@ class InvoiceAdminList extends Component {
                 <Grid item xs={3} style={{margin:10}}>
                     <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                         <div style={{justifyContent:'spread-evenly'}}>
-                            <TemplateButton onClick={() => this.reload()} style={{marginRight:5,height:35}} outline 
+                            <TemplateButtonIcon onClick={() => this.reload()} style={{marginRight:5,height:35}} outline 
                                 label={<AutorenewIcon/>}/>
                         </div>
                     </div>
@@ -654,7 +655,7 @@ class InvoiceAdminList extends Component {
             </Grid>
             <Grid container xs="12">
                 <Grid item xs="4" sx={{marginTop:10,paddingBottom:3}}>
-                    <TemplateButton onClick={() => this.addComment({id:"new"})} color="primary" label='Add Comment'/>
+                    <TemplateButtonIcon onClick={() => this.addComment({id:"new"})} color="primary" label='Add Comment'/>
                 </Grid>
             </Grid>
             <Grid container xs="12">

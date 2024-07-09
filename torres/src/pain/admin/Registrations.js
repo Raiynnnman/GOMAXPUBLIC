@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { toast } from 'react-toastify';
 import Select from 'react-select';
+import SaveIcon from '@mui/icons-material/Save';
+import CancelIcon from '@mui/icons-material/Cancel';
+import InputIcon from '@mui/icons-material/Input';
 import DoNotDisturbIcon from '@mui/icons-material/DoNotDisturb';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -43,6 +46,7 @@ class Registrations extends Component {
             selected: null,
             activeTab: "myregistrations",
             typeSelected:null,
+            transition:false,
             statusSelected:null,
             Selected:null,
             search:null,
@@ -52,6 +56,8 @@ class Registrations extends Component {
             filterType: [],
             subTab: "plans",
             mine:true,
+            massSel:[],
+            massUpdateValue:{},
             sort:null,
             direction:0,
             pq_id:0,
@@ -59,9 +65,14 @@ class Registrations extends Component {
             pageSize: 10
         }
         this.search = this.search.bind(this);
+        this.onMassUpdateValue = this.onMassUpdateValue.bind(this);
+        this.transition = this.transition.bind(this);
+        this.cancelMass = this.cancelMass.bind(this);
+        this.saveMass = this.saveMass.bind(this);
         this.close = this.close.bind(this);
         this.onAltStatusFilter = this.onAltStatusFilter.bind(this);
         this.onStatusFilter = this.onStatusFilter.bind(this);
+        this.onMassChange = this.onMassChange.bind(this);
         this.onTypeFilter = this.onTypeFilter.bind(this);
         this.save = this.save.bind(this);
         this.reload = this.reload.bind(this);
@@ -132,6 +143,40 @@ class Registrations extends Component {
         this.setState(this.state);
     } 
 
+    cancelMass() { 
+        this.state.transition = false;
+        this.state.massSel = [];
+        this.state.massUpdateValue = {};
+        this.setState(this.state);
+    } 
+
+    saveMass() { 
+        var tosend = {bulk:this.state.massSel}
+        this.props.dispatch(registrationAdminUpdate(tosend,function(err,args) { 
+                args.reload();
+                toast.success('Successfully saved registration.', {
+                    position:"top-right",
+                    autoClose:3000,
+                    hideProgressBar:true
+                }
+                );
+                args.cancelMass()
+            },this));
+    } 
+
+    onMassUpdateValue(e,t) { 
+        this.state.massUpdateValue[e] = t.target.value;
+        var c = 0;
+        if (e === 'commission_user_id') { 
+            var v = this.props.registrationsAdminList.data.config.commission_users.filter((f) => f.name === t.target.value)
+            for (c = 0; c < this.state.massSel.length; c++) { 
+                this.state.massSel[c][e] = v[0].id
+                this.state.massSel[c]['commission_name'] = v[0].name
+            } 
+        } 
+        this.setState(this.state);
+    } 
+
     sortChange(t) { 
         var g = this.props.registrationsAdminList.data.sort.filter((e) => t.dataField === e.col);
         if (g.length > 0) { 
@@ -143,6 +188,11 @@ class Registrations extends Component {
             ));
             this.setState(this.state);
         } 
+    } 
+
+    transition() { 
+        this.state.transition = true;
+        this.setState(this.state);
     } 
 
     pageGridsChange(t) { 
@@ -161,6 +211,10 @@ class Registrations extends Component {
         this.setState(this.state);
     } 
 
+    onMassChange(e) { 
+        this.state.massSel = e;
+        this.setState(this.state);
+    } 
 
     search(e) { 
         this.state.search = e.target.value;
@@ -301,16 +355,6 @@ class Registrations extends Component {
 
     dncReport() { 
         this.props.dispatch(getRegistrations(
-                {type:this.state.filterType,mine:this.state.mine,sort:this.state.sort,direction:this.state.direction,
-                 search:this.state.search,limit:this.state.pageSize,
-                 report:1,
-                 dnc:1,
-                offset:this.state.page,status:this.state.filter,alt_status:this.state.altFilter}
-        ));
-    } 
-
-    dncReport() { 
-        this.props.dispatch(getRegistrations(
             {type:this.state.filterType,mine:this.state.mine,sort:this.state.sort,direction:this.state.direction,
              search:this.state.search,limit:this.state.pageSize, report:1, dnc:1,
             offset:this.state.page,status:this.state.filter,alt_status:this.state.altFilter}
@@ -333,9 +377,8 @@ class Registrations extends Component {
     render() {
         var regheads = [
             {
-                dataField:'id',
+                dataField:'office_id',
                 sort:true,
-                hidden:true,
                 text:'ID'
             },
             {
@@ -414,6 +457,75 @@ class Registrations extends Component {
                 )
             },
         ]
+        var regheads_noact = [
+            {
+                dataField:'office_id',
+                sort:true,
+                text:'ID'
+            },
+            {
+                dataField:'name',
+                sort:true,
+                text:'Name'
+            },
+            {
+                dataField:'email',
+                sort:true,
+                text:'Email'
+            },
+            {
+                dataField:'office_type',
+                sort:true,
+                align:'center',
+                text:'Office Type',
+                formatter:(cellContent,row) => (
+                    <div>
+                        {row.office_type}
+                    </div>
+                )
+            },
+            {
+                dataField:'call_status',
+                sort:true,
+                text:'Call Status',
+                formatter:(cellContent,row) => (
+                    <div>
+                        {row.call_status && <TemplateBadge label={row.call_status}/>}
+                    </div>
+                )
+            },
+            {
+                dataField:'office_alternate_status_name',
+                sort:true,
+                text:'Type',
+                formatter:(cellContent,row) => (
+                    <div>
+                        {row.office_alternate_status_name && <TemplateBadge label={row.office_alternate_status_name}/>}
+                    </div>
+                )
+            },
+            {
+                dataField:'commission_name',
+                sort:true,
+                text:'Assignee',
+                formatter:(cellContent,row) => (
+                    <div>
+                        {row.commission_name && <TemplateBadge label={row.commission_name}/>}
+                    </div>
+                )
+            },
+            {
+                dataField:'status',
+                sort:true,
+                align:'center',
+                text:'Status',
+                formatter:(cellContent,row) => (
+                    <div>
+                        {row.status && (<TemplateBadge label={row.status}/>)}
+                    </div>
+                )
+            },
+        ]
         if (this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
             this.props.registrationsAdminList.data.sort) { 
             var c = 0; 
@@ -451,6 +563,66 @@ class Registrations extends Component {
             <Box style={{margin:20}}>
             <Grid container xs="12" style={{margin:10}}>
             <>
+                {this.state.transition && (
+                <> 
+                    <Grid container xs="12">
+                        <Grid item xs="12">
+                            <h4>Transition Items</h4>
+                        </Grid>
+                    </Grid>
+                    <Grid container xs="12" style={{marginTop:20}}>
+                        <Grid item xs="1">
+                            <h6>Assignee</h6>
+                        </Grid>
+                        <Grid item xs="3">
+                          <TemplateSelect
+                              label='Assignee'
+                              onChange={(e) => this.onMassUpdateValue('commission_user_id',e)}
+                              value={{
+                                label:this.props.registrationsAdminList.data.config.commission_users.filter(
+                                    (f) => f.name === this.state.massUpdateValue['commission_user_id']).length > 0 ? 
+                                    this.props.registrationsAdminList.data.config.commission_users.filter(
+                                    (f) => f.name === this.state.massUpdateValue['commission_user_id'])[0].name : '', 
+                                value:this.props.registrationsAdminList.data.config.commission_users.filter(
+                                    (f) => f.name === this.state.massUpdateValue['commission_user_id']).length > 0 ? 
+                                    this.props.registrationsAdminList.data.config.commission_users.filter(
+                                    (f) => f.name === this.state.massUpdateValue['commission_user_id'])[0].name : '', 
+                              }}
+                              options={this.props.registrationsAdminList.data.config.commission_users.map((e) => { 
+                                return (
+                                    { 
+                                    label: e.name,
+                                    value: e.name,
+                                    id: e.id
+                                    }
+                                )
+                              })}
+                            />
+                        </Grid>
+                    </Grid>
+                    <Grid container xs="12" style={{marginTop:20}}>
+                        <Grid item xs="12">
+                            <TemplateButtonIcon onClick={this.saveMass} label={<SaveIcon/>}/>
+                            <TemplateButtonIcon outline style={{marginLeft:10}} 
+                                onClick={this.cancelMass} label={<CancelIcon/>}/>
+                        </Grid>
+                    </Grid>
+                    <Grid container xs="12" style={{marginTop:20}}>
+                        <Grid item xs="12">
+                            <PainTable
+                                keyField='id' 
+                                selectAll={false}
+                                data={this.state.massSel} 
+                                total={this.state.massSel.length}
+                                page={0}
+                                pageSize={this.state.massSel.length}
+                                columns={regheads_noact}>
+                            </PainTable> 
+                        </Grid>
+                    </Grid>
+                </>
+                )}
+                {!this.state.transition && (
                 <Grid item xs="12">
                 <>
                     <Box sx={{width:'100%'}}>
@@ -572,7 +744,8 @@ class Registrations extends Component {
                                 <Grid item xs={2.5} style={{margin:10}}>
                                     <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                                         <div style={{display:'flex',justifyContent:"spread-evenly"}}>
-                                            <TemplateButtonIcon onClick={this.dncReport} size="small" label={<DoNotDisturbIcon/>}/>
+                                            <TemplateButtonIcon disabled={this.state.massSel.length < 1} onClick={this.transition} size="small" label={<InputIcon/>}/>
+                                            <TemplateButtonIcon onClick={this.dncReport} style={{marginLeft:5}} size="small" label={<DoNotDisturbIcon/>}/>
                                             <TemplateButtonIcon onClick={this.providerReport} size="small" style={{marginLeft:5}} label={<AssessmentIcon/>}/>
                                             <TemplateButtonIcon onClick={() => this.reload()} style={{marginLeft:5}} 
                                                 label={<AutorenewIcon/>}/>
@@ -586,11 +759,13 @@ class Registrations extends Component {
                                       this.props.registrationsAdminList.data.registrations.length > 0)&& ( 
                                         <PainTable
                                             keyField='id' 
+                                            selectAll={true}
                                             data={this.props.registrationsAdminList.data.registrations} 
                                             total={this.props.registrationsAdminList.data.total}
                                             page={this.state.page}
                                             pageSize={this.state.pageSize}
                                             onPageChange={this.pageChange}
+                                            onMassChange={this.onMassChange}
                                             onSort={this.sortChange}
                                             onPageGridsPerPageChange={this.pageGridsChange}
                                             columns={regheads}>
@@ -617,6 +792,7 @@ class Registrations extends Component {
                     </Box>
                 </>
                 </Grid>                
+                )}
             </>
             </Grid>
         </Box>

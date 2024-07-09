@@ -43,11 +43,7 @@ class RegistrationUpdate(AdminBase):
     def isDeferred(self):
         return False
 
-    @check_crm
-    def execute(self, *args, **kwargs):
-        ret = {}
-        job,user,off_id,params = self.getArgs(*args,**kwargs)
-        db = Query()
+    def processRow(self,params,user,db):
         PQS = self.getProviderQueueStatus()
         ALT = self.getAltStatus()
         INV = self.getInvoiceIDs()
@@ -57,7 +53,6 @@ class RegistrationUpdate(AdminBase):
         OT = self.getOfficeTypes()
         PL = self.getPlans()
         STR = self.getLeadStrength()
-        # TODO: Check params here
         email = params['email']
         offid = 0
         userid = 0
@@ -187,7 +182,7 @@ class RegistrationUpdate(AdminBase):
         if 'do_not_contact' in params:
             db.update("""
                 update provider_queue set do_not_contact=%s where office_id=%s
-            """,(params['do_not_contact'],off_id,)
+            """,(params['do_not_contact'],offid,)
             )
         db.update("""
             update users set 
@@ -215,9 +210,9 @@ class RegistrationUpdate(AdminBase):
                 provider_queue_lead_strength_id=%s,
                 initial_payment=%s,updated=now()
             where 
-                id = %s
-            """,(params['status'],params['lead_strength_id'],
-                 params['initial_payment'],pqid)
+                office_id = %s
+            """,(params['provider_queue_status_id'],params['lead_strength_id'],
+                 params['initial_payment'],offid)
         )
         if 'office_alternate_status_id' in params:
             db.update("""
@@ -435,14 +430,23 @@ class RegistrationUpdate(AdminBase):
                     where u.id=ou.user_id and ou.office_id=%s
                 """,(offid,)
             )
-            db.commit()
             # TODO: Send welcome mail here
             #if len(u) > 0:
             #    we = WelcomeEmailReset()
             #    we.execute(0,[{'email': u[0]['email']}])
-        self.setJenkinsID(offid)
         db.commit()
-        return ret
+
+    @check_crm
+    def execute(self, *args, **kwargs):
+        ret = {}
+        job,user,off_id,params = self.getArgs(*args,**kwargs)
+        db = Query()
+        if 'bulk' in params:
+            for g in params['bulk']:
+                self.processRow(g,user,db);
+        else:
+            self.processRow(params,user,db);
+        return {'success':True}
 
 class RegistrationList(AdminBase):
 
