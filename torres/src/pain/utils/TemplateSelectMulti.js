@@ -43,11 +43,25 @@ function TemplateSelectMulti({label,onChange,style,value,options}) {
   }
 
   const handleChange = (e,t) => {
-    setSelected(e.target.value);
+    console.log("hc",e,t);
+    var v = e.target.value;
+    if (v.includes('SelectAll')) { 
+        var n = v.filter((f) => f !== 'SelectAll');
+        if (n.length === options.length) { 
+            v = [] 
+        } else { 
+            var h = 0; 
+            for (h = 0; h < options.length; h++) { 
+                n.push(options[h].label)
+            } 
+            v = n;
+        } 
+    } 
+    setSelected(v);
     var c = 0;
     var n = []
-    for (c=0;c < e.target.value.length; c++) { 
-        var g = e.target.value[c];
+    for (c=0;c < v.length; c++) { 
+        var g = v[c];
         var h = 0; 
         for (h = 0; h < options.length; h++) { 
             if (g === options[h].label) { 
@@ -64,6 +78,7 @@ function TemplateSelectMulti({label,onChange,style,value,options}) {
         <InputLabel key={label}>{label}</InputLabel>
         <Select
           multiple
+          style={style}
           value={selected}
           onOpen={handleOpen}
           onClose={handleClose}
@@ -78,6 +93,10 @@ function TemplateSelectMulti({label,onChange,style,value,options}) {
 
           }}
         >
+          <MenuItem key={0} value='SelectAll' style={{borderBottom:"1px solid black"}}>
+              <Checkbox checked={sel.length === options.length}/> 
+              <ListItemText primary="Select All"/>
+          </MenuItem>
           {options.map((n) => {
             return (
                 <MenuItem key={n.label} value={n.label} >

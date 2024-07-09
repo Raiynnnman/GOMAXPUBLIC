@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { toast } from 'react-toastify';
+import Drawer from '@mui/material/Drawer';
+import Divider from '@mui/material/Divider';
 import Select from 'react-select';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -53,19 +55,25 @@ class Registrations extends Component {
             altFilter: [],
             statusAltSelected:null,
             filter: [],
+            saveSearches:[],
             filterType: [],
             subTab: "plans",
             mine:true,
             massSel:[],
+            userSelected:null,
+            userFilter:[],
             massUpdateValue:{},
             sort:null,
+            drawerOpen:false,
             direction:0,
             pq_id:0,
             page: 0,
             pageSize: 10
         }
         this.search = this.search.bind(this);
+        this.updateFilter = this.updateFilter.bind(this);
         this.onMassUpdateValue = this.onMassUpdateValue.bind(this);
+        this.toggleDrawer = this.toggleDrawer.bind(this);
         this.transition = this.transition.bind(this);
         this.cancelMass = this.cancelMass.bind(this);
         this.saveMass = this.saveMass.bind(this);
@@ -74,6 +82,7 @@ class Registrations extends Component {
         this.onStatusFilter = this.onStatusFilter.bind(this);
         this.onMassChange = this.onMassChange.bind(this);
         this.onTypeFilter = this.onTypeFilter.bind(this);
+        this.onUserFilter = this.onUserFilter.bind(this);
         this.save = this.save.bind(this);
         this.reload = this.reload.bind(this);
         this.providerReport = this.providerReport.bind(this);
@@ -82,12 +91,34 @@ class Registrations extends Component {
         this.add = this.add.bind(this);
         this.pageChange = this.pageChange.bind(this);
         this.sortChange = this.sortChange.bind(this);
+        this.loadSavedSearch = this.loadSavedSearch.bind(this);
+        this.saveSearchValue = this.saveSearchValue.bind(this);
+        this.saveSearchName = this.saveSearchName.bind(this);
         this.pageGridsChange = this.pageGridsChange.bind(this);
         this.toggleTab = this.toggleTab.bind(this);
     } 
 
     componentWillReceiveProps(p) { 
         var changed = false;
+        if (p.registrationsAdminList.data && p.registrationsAdminList.data.config && 
+            p.registrationsAdminList.data.config.commission_users && this.state.userSelected === null) { 
+            var c = 0;
+            var t = [];
+            var t1 = [];
+            for (c = 0; c < p.registrationsAdminList.data.config.commission_users.length; c++) { 
+                t.push(p.registrationsAdminList.data.config.commission_users[c]); 
+                t1.push(p.registrationsAdminList.data.config.commission_users[c].id); 
+            } 
+            this.state.userSelected = t;
+            this.state.userFilter = t1;
+            if (localStorage.getItem('reg_user')) { 
+                var g = JSON.parse(localStorage.getItem("reg_user"));
+                this.state.userSelected = g[0];
+                this.state.userFilter = g[1];
+            } 
+            this.setState(this.state);
+            changed = true;
+        } 
         if (p.registrationsAdminList.data && p.registrationsAdminList.data.config && 
             p.registrationsAdminList.data.config.alternate_status && 
             this.state.statusAltSelected === null) { 
@@ -100,6 +131,11 @@ class Registrations extends Component {
             } 
             this.state.statusAltSelected = t;
             this.state.altFilter = t1;
+            if (localStorage.getItem('reg_alt_status')) { 
+                var g = JSON.parse(localStorage.getItem("reg_alt_status"));
+                this.state.statusAltSelected = g[0];
+                this.state.altFilter = g[1];
+            } 
             this.setState(this.state);
             changed = true;
         } 
@@ -120,6 +156,11 @@ class Registrations extends Component {
             } 
             this.state.statusSelected = t;
             this.state.filter = t1;
+            if (localStorage.getItem('reg_status')) { 
+                var g = JSON.parse(localStorage.getItem("reg_status"));
+                this.state.statusSelected = g[0];
+                this.state.filter = g[1];
+            } 
             var v = [];
             var v1 = [];
             c = 0;
@@ -129,6 +170,11 @@ class Registrations extends Component {
             } 
             this.state.typeSelected = v;
             this.state.filterType = v1;
+            if (localStorage.getItem('reg_type')) { 
+                var g = JSON.parse(localStorage.getItem("reg_type"));
+                this.state.statusSelected = g[0];
+                this.state.filter = g[1];
+            } 
             this.setState(this.state);
             if (this.props.match.params.id) { 
                 this.reload();
@@ -164,10 +210,58 @@ class Registrations extends Component {
             },this));
     } 
 
+    loadSavedSearch(e) { 
+        var g = this.state.saveSearches.findIndex((f) => f.name === e.name)
+        if (g !== -1) { 
+            var vals = this.state.saveSearches[g];
+            this.state.typeSelected = vals.type[0];
+            this.state.filterType = vals.type[1];
+            this.state.statusAltSelected = vals.alt_status[0];
+            this.state.altFilter = vals.alt_status[1];
+            this.state.statusSelected = vals.status[0];
+            this.state.filter = vals.status[1]
+            this.setState(this.state);
+            this.reload();
+            this.toggleDrawer();
+        } else { 
+            toast.error('Didnt find that saved search.', {
+                position:"top-right",
+                autoClose:3000,
+                hideProgressBar:true
+            });
+        }
+    } 
+
+    saveSearchValue(e) { 
+        var q = this.state.saveSearches.findIndex((f) => f.name === e.target.value)
+        if (q !== -1) { 
+            this.state.saveSearches[q] = {
+                name:this.state.searchname,
+                type:[this.state.typeSelected,this.state.filterType],
+                alt_status:[this.state.statusAltSelected,this.state.altFilter],
+                status:[this.state.statusSelected,this.state.filter]
+            }
+        } else { 
+            this.state.saveSearches.push({
+                name:this.state.searchname,
+                type:[this.state.typeSelected,this.state.filterType],
+                alt_status:[this.state.statusAltSelected,this.state.altFilter],
+                status:[this.state.statusSelected,this.state.filter]
+            })
+        } 
+        localStorage.setItem('reg_saved_filters',JSON.stringify(this.state.saveSearches));
+        this.state.searchname = '';
+        this.setState(this.state);
+    } 
+    saveSearchName(e) { 
+        this.state.searchname = e.target.value;;
+        this.setState(this.state);
+    }  
+
     onMassUpdateValue(e,t) { 
         this.state.massUpdateValue[e] = t.target.value;
         var c = 0;
-        if (e === 'commission_user_id') { 
+        if (e === 'commission_users_id') { 
             var v = this.props.registrationsAdminList.data.config.commission_users.filter((f) => f.name === t.target.value)
             for (c = 0; c < this.state.massSel.length; c++) { 
                 this.state.massSel[c][e] = v[0].id
@@ -229,7 +323,6 @@ class Registrations extends Component {
 
 
     onTypeFilter(e,t) { 
-        if (e.length < 1 ) { return; }
         var c = 0;
         var t = [];
         var t1 = [];
@@ -239,7 +332,8 @@ class Registrations extends Component {
         } 
         this.state.typeSelected = t;
         this.state.filterType = t1;
-        this.reload();
+        localStorage.setItem("reg_type",JSON.stringify([t,t1]));
+        // this.reload();
         this.setState(this.state)
     } 
 
@@ -253,7 +347,6 @@ class Registrations extends Component {
     }
 
     onAltStatusFilter(e) { 
-        if (e.length < 1 ) { return; }
         var c = 0;
         var t = [];
         var t1 = [];
@@ -264,12 +357,28 @@ class Registrations extends Component {
         } 
         this.state.statusAltSelected = t;
         this.state.altFilter = t1;
+        localStorage.setItem("reg_alt_status",JSON.stringify([t,t1]));
         this.setState(this.state)
-        this.reload();
+        // this.reload();
+    } 
+
+    onUserFilter(e,t) { 
+        var c = 0;
+        var t = [];
+        var t1 = [];
+        for (c = 0; c < e.length; c++) { 
+            e[c].name = e[c].value;
+            t.push(e[c]); 
+            t1.push(e[c].id);
+        } 
+        this.state.userSelected = t;
+        this.state.userFilter = t1;
+        localStorage.setItem("reg_user",JSON.stringify([t,t1]));
+        this.setState(this.state)
+        // this.reload();
     } 
 
     onStatusFilter(e,t) { 
-        if (e.length < 1 ) { return; }
         var c = 0;
         var t = [];
         var t1 = [];
@@ -280,8 +389,9 @@ class Registrations extends Component {
         } 
         this.state.statusSelected = t;
         this.state.filter = t1;
+        localStorage.setItem("reg_status",JSON.stringify([t,t1]));
         this.setState(this.state)
-        this.reload();
+        // this.reload();
     } 
 
     componentDidMount() {
@@ -295,6 +405,9 @@ class Registrations extends Component {
             pq_id:i,
             offset:this.state.page
         }));
+        this.state.saveSearches = 
+            localStorage.getItem("reg_saved_filters") ? JSON.parse(localStorage.getItem("reg_saved_filters"))
+         : []
         this.props.dispatch(getPlansList({}));
     }
 
@@ -322,17 +435,29 @@ class Registrations extends Component {
     reload() { 
         if (this.state.pq_id) { 
             this.props.dispatch(getRegistrations(
-                {alt_status:this.state.altFilter,
+                {alt_status:this.state.altFilter,users:this.state.userFilter,
                  mine:this.state.mine,pq_id:this.state.pq_id,limit:this.state.pageSize,offset:this.state.page}
             ));
         } else { 
             this.props.dispatch(getRegistrations(
                 {type:this.state.filterType,mine:this.state.mine,sort:this.state.sort,direction:this.state.direction,
-                 search:this.state.search,limit:this.state.pageSize,
+                 search:this.state.search,limit:this.state.pageSize,users:this.state.userFilter,
                 offset:this.state.page,status:this.state.filter,alt_status:this.state.altFilter}
             ));
         } 
     }
+
+    updateFilter() { 
+        this.reload();
+        this.toggleDrawer();
+        this.setState(this.state);
+    } 
+
+    toggleDrawer(e) {
+        this.state.drawerOpen = !this.state.drawerOpen;
+        this.setState(this.state);
+    };
+
     save(tosend) { 
         this.props.dispatch(registrationAdminUpdate(tosend,function(err,args) { 
                 args.reload();
@@ -561,6 +686,175 @@ class Registrations extends Component {
             )}
             <Navbar/>
             <Box style={{margin:20}}>
+                <Drawer
+                  anchor="right"
+                  open={this.state.drawerOpen}
+                  onClose={this.toggleDrawer}
+                >
+                <Box sx={{ width: 400 }} role="presentation">
+                    <Grid container xs="12">
+                        <Grid container xs="12" style={{marginTop:10}}>
+                            <h4 style={{margin:20}}>Filters:</h4>
+                        </Grid>
+                        <Grid container xs="12" style={{marginTop:10}}>
+                            <Grid item xs="12">
+                                {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
+                                this.props.registrationsAdminList.data.config &&
+                                this.props.registrationsAdminList.data.config.status && this.state.statusSelected !== null) && (
+                                  <TemplateSelectMulti
+                                      onChange={this.onStatusFilter}
+                                      label="Status"
+                                      value={this.state.statusSelected.map((g) => { 
+                                        return (
+                                            {
+                                            label:
+            this.props.registrationsAdminList.data.config.status.filter((f) => f.id === g.id).length > 0 ? 
+            this.props.registrationsAdminList.data.config.status.filter((f) => f.id === g.id)[0].name : '',
+                                            value:
+            this.props.registrationsAdminList.data.config.status.filter((f) => f.id === g.id).length > 0 ? 
+            this.props.registrationsAdminList.data.config.status.filter((f) => f.id === g.id)[0].name : '',
+                                            id:
+            this.props.registrationsAdminList.data.config.status.filter((f) => f.id === g.id).length > 0 ? 
+            this.props.registrationsAdminList.data.config.status.filter((f) => f.id === g.id)[0].name : '',
+                                            }
+                                        )
+                                      })}
+                                      options={this.props.registrationsAdminList.data.config.status.map((e) => { 
+                                        return (
+                                            { 
+                                            label: e.name ? e.name : e.label,
+                                            value: e.id,
+                                            id: e.id,
+                                            }
+                                        )
+                                      })}
+                                    />
+                                )}
+                            </Grid>
+                        </Grid>
+                        <Grid container xs="12">
+                            <Grid item xs="12">
+                                {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
+                                this.props.registrationsAdminList.data.config &&
+                                this.props.registrationsAdminList.data.config.type && this.state.statusSelected !== null) && (
+                                  <TemplateSelectMulti
+                                      onChange={this.onTypeFilter}
+                                      label="Type"
+                                      value={this.state.typeSelected.map((g) => { 
+                                        return (
+                                            {
+                                            label:this.props.registrationsAdminList.data.config.type.filter((f) => f.id === g.id)[0].name,
+                                            value:this.props.registrationsAdminList.data.config.type.filter((f) => f.id === g.id)[0].id,
+                                            id:this.props.registrationsAdminList.data.config.type.filter((f) => f.id === g.id)[0].id
+                                            }
+                                        )
+                                      })}
+                                      options={this.props.registrationsAdminList.data.config.type.map((e) => { 
+                                        return (
+                                            { 
+                                            label: e.name,
+                                            id: e.id,
+                                            value: e.id
+                                            }
+                                        )
+                                      })}
+                                    />
+                                )}
+                            </Grid>
+                        </Grid>
+                        <Grid container xs="12">
+                            <Grid item xs="12">
+                              {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
+                                this.props.registrationsAdminList.data.config &&
+                                this.props.registrationsAdminList.data.config.alternate_status && this.state.statusAltSelected !== null) && (
+                                  <TemplateSelectMulti
+                                      label='Special Status'
+                                      onChange={this.onAltStatusFilter}
+                                      value={this.state.statusAltSelected.map((g) => { 
+                                        return (
+                                            {
+                                            label:this.props.registrationsAdminList.data.config.alternate_status.filter((f) => f.id === g.id).length > 0 ? 
+                                                this.props.registrationsAdminList.data.config.alternate_status.filter((f) => f.id === g.id)[0].name : '',
+                                            id:this.props.registrationsAdminList.data.config.alternate_status.filter((f) => f.id === g.id).length > 0 ? 
+                                                this.props.registrationsAdminList.data.config.alternate_status.filter((f) => f.id === g.id)[0].id: ''
+                                            }
+                                        )
+                                      })}
+                                      options={this.props.registrationsAdminList.data.config.alternate_status.map((e) => { 
+                                        return (
+                                            { 
+                                            label: e.name,
+                                            id: e.id
+                                            }
+                                        )
+                                      })}
+                                    />
+                                )}
+                            </Grid>                
+                        </Grid>
+                        <Grid container xs="12">
+                            <Grid item xs="12">
+                              {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
+                                this.props.registrationsAdminList.data.config &&
+                                this.props.registrationsAdminList.data.config.commission_users && this.state.userSelected !== null) && (
+                                  <TemplateSelectMulti
+                                      label='User'
+                                      onChange={this.onUserFilter}
+                                      value={this.state.userSelected.map((g) => { 
+                                        return (
+                                            {
+                                            label:this.props.registrationsAdminList.data.config.commission_users.filter((f) => f.id === g.id).length > 0 ? 
+                                                this.props.registrationsAdminList.data.config.commission_users.filter((f) => f.id === g.id)[0].name : '',
+                                            id:this.props.registrationsAdminList.data.config.commission_users.filter((f) => f.id === g.id).length > 0 ? 
+                                                this.props.registrationsAdminList.data.config.commission_users.filter((f) => f.id === g.id)[0].id: ''
+                                            }
+                                        )
+                                      })}
+                                      options={this.props.registrationsAdminList.data.config.commission_users.map((e) => { 
+                                        return (
+                                            { 
+                                            label: e.name,
+                                            id: e.id
+                                            }
+                                        )
+                                      })}
+                                    />
+                                )}
+                            </Grid>                
+                        </Grid>
+                        <Grid container xs="12">
+                            <Grid item xs={9}>
+                                <TemplateTextField onChange={this.saveSearchName} label="Saved Name" value={this.state.searchname}/>
+                            </Grid>
+                            <Grid item xs={2}>
+                                <TemplateButtonIcon style={{margin:10}} onClick={this.saveSearchValue} label=<SaveIcon/>/>
+                            </Grid>
+                        </Grid>
+                        <Grid container xs="12">
+                            <Grid item xs="12">
+                                <h6 style={{marginLeft:10}}>Saved Filters:</h6>
+                            </Grid>
+                        </Grid>
+                        <Grid container xs="12">
+                            {this.state.saveSearches.map((e) => { 
+                                return (
+                                    <Grid item xs={3} style={{margin:10}} key={e.name}>
+                                        <TemplateButtonIcon onClick={() => this.loadSavedSearch(e)} label={e.name}/>
+                                    </Grid>
+                                )
+                            })}
+                        </Grid>
+                        <Grid container xs="12" style={{marginTop:20,borderTop:"1px solid black"}}>
+                            <Grid item xs={12} style={{margin:10}}>
+                                <div style={{display:"flex",justifyContent:"space-around"}}>
+                                    <TemplateButton onClick={this.updateFilter} label='Update'/>
+                                    <TemplateButton onClick={this.toggleDrawer} label='Close'/>
+                                </div>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Box>
+            </Drawer>
             <Grid container xs="12" style={{margin:10}}>
             <>
                 {this.state.transition && (
@@ -577,16 +871,16 @@ class Registrations extends Component {
                         <Grid item xs="3">
                           <TemplateSelect
                               label='Assignee'
-                              onChange={(e) => this.onMassUpdateValue('commission_user_id',e)}
+                              onChange={(e) => this.onMassUpdateValue('commission_users_id',e)}
                               value={{
                                 label:this.props.registrationsAdminList.data.config.commission_users.filter(
-                                    (f) => f.name === this.state.massUpdateValue['commission_user_id']).length > 0 ? 
+                                    (f) => f.name === this.state.massUpdateValue['commission_users_id']).length > 0 ? 
                                     this.props.registrationsAdminList.data.config.commission_users.filter(
-                                    (f) => f.name === this.state.massUpdateValue['commission_user_id'])[0].name : '', 
+                                    (f) => f.name === this.state.massUpdateValue['commission_users_id'])[0].name : '', 
                                 value:this.props.registrationsAdminList.data.config.commission_users.filter(
-                                    (f) => f.name === this.state.massUpdateValue['commission_user_id']).length > 0 ? 
+                                    (f) => f.name === this.state.massUpdateValue['commission_users_id']).length > 0 ? 
                                     this.props.registrationsAdminList.data.config.commission_users.filter(
-                                    (f) => f.name === this.state.massUpdateValue['commission_user_id'])[0].name : '', 
+                                    (f) => f.name === this.state.massUpdateValue['commission_users_id'])[0].name : '', 
                               }}
                               options={this.props.registrationsAdminList.data.config.commission_users.map((e) => { 
                                 return (
@@ -646,101 +940,14 @@ class Registrations extends Component {
                                             label={<AddBoxIcon/>}/>
                                     </div>
                                 </Grid>
-                                <Grid item xs="2" style={{margin:10}}>
-                                    {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
-                                    this.props.registrationsAdminList.data.config &&
-                                    this.props.registrationsAdminList.data.config.status && this.state.statusSelected !== null) && (
-                                      <TemplateSelectMulti
-                                          onChange={this.onStatusFilter}
-                                          label="Status"
-                                          value={this.state.statusSelected.map((g) => { 
-                                            return (
-                                                {
-                                                label:
-                this.props.registrationsAdminList.data.config.status.filter((f) => f.id === g.id).length > 0 ? 
-                this.props.registrationsAdminList.data.config.status.filter((f) => f.id === g.id)[0].name : '',
-                                                value:
-                this.props.registrationsAdminList.data.config.status.filter((f) => f.id === g.id).length > 0 ? 
-                this.props.registrationsAdminList.data.config.status.filter((f) => f.id === g.id)[0].name : '',
-                                                id:
-                this.props.registrationsAdminList.data.config.status.filter((f) => f.id === g.id).length > 0 ? 
-                this.props.registrationsAdminList.data.config.status.filter((f) => f.id === g.id)[0].name : '',
-                                                }
-                                            )
-                                          })}
-                                          options={this.props.registrationsAdminList.data.config.status.map((e) => { 
-                                            return (
-                                                { 
-                                                label: e.name ? e.name : e.label,
-                                                value: e.id,
-                                                id: e.id,
-                                                }
-                                            )
-                                          })}
-                                        />
-                                    )}
+                                <Grid item xs={1} style={{margin:10}}>
+                                    <TemplateButton onClick={this.toggleDrawer} label='Filters'/>
                                 </Grid>
-                                <Grid item xs="2" style={{margin:10}}>
-                                    {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
-                                    this.props.registrationsAdminList.data.config &&
-                                    this.props.registrationsAdminList.data.config.type && this.state.statusSelected !== null) && (
-                                      <TemplateSelectMulti
-                                          onChange={this.onTypeFilter}
-                                          label="Type"
-                                          value={this.state.typeSelected.map((g) => { 
-                                            return (
-                                                {
-                                                label:this.props.registrationsAdminList.data.config.type.filter((f) => f.id === g.id)[0].name,
-                                                value:this.props.registrationsAdminList.data.config.type.filter((f) => f.id === g.id)[0].id,
-                                                id:this.props.registrationsAdminList.data.config.type.filter((f) => f.id === g.id)[0].id
-                                                }
-                                            )
-                                          })}
-                                          options={this.props.registrationsAdminList.data.config.type.map((e) => { 
-                                            return (
-                                                { 
-                                                label: e.name,
-                                                id: e.id,
-                                                value: e.id
-                                                }
-                                            )
-                                          })}
-                                        />
-                                    )}
-                                </Grid>
-                                <Grid item xs="2" style={{margin:10}}>
-                                  {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
-                                    this.props.registrationsAdminList.data.config &&
-                                    this.props.registrationsAdminList.data.config.alternate_status && this.state.statusAltSelected !== null) && (
-                                      <TemplateSelectMulti
-                                          closeMenuOnSelect={true}
-                                          label='Special Status'
-                                          onChange={this.onAltStatusFilter}
-                                          value={this.state.statusAltSelected.map((g) => { 
-                                            return (
-                                                {
-                                                label:this.props.registrationsAdminList.data.config.alternate_status.filter((f) => f.id === g.id).length > 0 ? 
-                                                    this.props.registrationsAdminList.data.config.alternate_status.filter((f) => f.id === g.id)[0].name : '',
-                                                id:this.props.registrationsAdminList.data.config.alternate_status.filter((f) => f.id === g.id).length > 0 ? 
-                                                    this.props.registrationsAdminList.data.config.alternate_status.filter((f) => f.id === g.id)[0].id: ''
-                                                }
-                                            )
-                                          })}
-                                          options={this.props.registrationsAdminList.data.config.alternate_status.map((e) => { 
-                                            return (
-                                                { 
-                                                label: e.name,
-                                                id: e.id
-                                                }
-                                            )
-                                          })}
-                                        />
-                                    )}
-                                </Grid>                
-                                <Grid item xs={2} style={{margin:10}}>
+                                <Grid item xs={3} style={{margin:10}}>
                                     <TemplateTextField type="text" id="normal-field" onChange={this.search}
                                     label="Search" value={this.state.search}/>
                                 </Grid>
+                                <Grid item xs={3}></Grid>
                                 <Grid item xs={2.5} style={{margin:10}}>
                                     <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                                         <div style={{display:'flex',justifyContent:"spread-evenly"}}>
@@ -795,7 +1002,7 @@ class Registrations extends Component {
                 )}
             </>
             </Grid>
-        </Box>
+            </Box>
         </>
         )
     }

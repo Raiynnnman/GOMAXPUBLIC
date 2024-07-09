@@ -94,6 +94,7 @@ class RegistrationsEdit extends Component {
         this.toggleSubTab = this.toggleSubTab.bind(this);
         this.state = { 
             selected: null,
+            savedAction:{},
             statusAltSelected:null,
             actionIdx:null,
             subTab: "activity",
@@ -121,6 +122,7 @@ class RegistrationsEdit extends Component {
         if (g > -1) { 
             this.state.actionIdx = g;
             this.state.selected.actions[g].edit = true;
+            this.state.savedAction = JSON.parse(JSON.stringify(this.state.selected.actions[g]));
             this.setState(this.state);
         } 
     }
@@ -138,8 +140,10 @@ class RegistrationsEdit extends Component {
     }
 
     cancelAction(e) { 
-        this.state.selected.actions.shift();
+        this.state.selected.actions[this.state.actionIdx]=JSON.parse(JSON.stringify(this.state.savedAction));
+        this.state.selected.actions[this.state.actionIdx].edit=false;
         this.state.actionIdx = null;
+        this.state.savedAction = {};
         this.setState(this.state);
     }
 
@@ -728,10 +732,11 @@ class RegistrationsEdit extends Component {
                             )}
                             {(this.state.selected && this.state.selected.actions && this.state.subTab === 'activity') && (
                             <>
-                                <TemplateButtonIcon style={{width:30}} onClick={() => this.addAction({id:"new"})} label={<AddBoxIcon/>}/>
+                                <TemplateButtonIcon onClick={() => this.addAction({id:"new"})} label={<AddBoxIcon/>}/>
+                                <Grid container xs="12">
                                 {this.state.selected.actions.sort((a,b) => (a.created > b.created ? -1:1)).map((e) => { 
                                     return (
-                                        <Grid item xs="5" key={e.id}>
+                                        <Grid item xs="4" key={e.id} style={{marginLeft:10}}>
                                             <Box sx={{mt:3}}>
                                             <Paper elevation={3} sx={cardStyle}>
                                                 <Grid container xs="12">
@@ -744,14 +749,12 @@ class RegistrationsEdit extends Component {
                                                             }
                                                         </font>
                                                     </Grid>
-                                                    <Grid item xs="5">
+                                                    <Grid item xs="4">
                                                         {moment(e.created).format('LLL')}
                                                     </Grid>
-                                                    <Grid item xs="1">
-                                                        <Button variant="contained" sx={buttonStyle} style={{marginTop:0,marginRight:20}} 
-                                                                onClick={() => this.editAction(e)} >
-                                                            <EditIcon/>
-                                                        </Button>
+                                                    <Grid item xs="2">
+                                                        <TemplateButtonIcon sx={buttonStyle} style={{marginTop:0,marginRight:20}} 
+                                                            onClick={() => this.editAction(e)} label={<EditIcon/>}/>
                                                     </Grid>
                                                 </Grid>
                                                 <hr/>
@@ -831,6 +834,7 @@ class RegistrationsEdit extends Component {
                                             </Box>
                                         </Grid>
                                     )})}
+                                    </Grid>
                                 </>
                             )}
                             {(this.state.subTab === 'comments') && (

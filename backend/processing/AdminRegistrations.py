@@ -200,7 +200,6 @@ class RegistrationUpdate(AdminBase):
         if 'initial_payment' not in params:
             params['initial_payment'] = None
         if 'office_alternate_status_id' in params:
-            print("oasi",params['office_alternate_status_id'])
             db.update("""
                 update office set office_alternate_status_id=%s where id = %s
                 """,(params['office_alternate_status_id'],params['office_id'])
@@ -289,6 +288,10 @@ class RegistrationUpdate(AdminBase):
                         x['action'],
                         config.getKey('encryption_key')
                         )
+                    if 'action_type_id' not in x:
+                        x['action_type_id'] = None
+                    if 'action_status_id' not in x:
+                        x['action_status_id'] = None
                     db.update("""
                         insert into provider_queue_actions(
                             user_id,provider_queue_id,action,provider_queue_actions_type_id,
@@ -569,6 +572,16 @@ class RegistrationList(AdminBase):
                     arr.append("office_alternate_status_id = %s" % z)
             q += " or ".join(map(str,arr))
             q += ")"
+        if 'users' in params and params['users'] is not None: 
+            q += " and ("
+            arr = []
+            for z in params['users']:
+                if z == str(0) or z == 0:
+                    arr.append("o.commission_user_id is null")
+                else:
+                    arr.append("o.commission_user_id = %s" % z)
+            q += " or ".join(map(str,arr))
+            q += ")"
         if 'type' in params and params['type'] is not None:
             q += " and office_type_id in ("
             arr = []
@@ -800,6 +813,8 @@ class RegistrationList(AdminBase):
         ret['config']['status'] = db.query("select id,name from provider_queue_status")
         ret['config']['coupons'] = db.query("select id,name,total,perc,reduction from coupons")
         ret['config']['commission_users'] = db.query("""
+            select 0 as id,'Unassigned' as name
+            UNION ALL
             select 1 as id,'System' as name
             UNION ALL
             select id,concat(first_name,' ',last_name) as name from users u
