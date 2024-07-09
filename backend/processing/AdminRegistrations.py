@@ -200,9 +200,15 @@ class RegistrationUpdate(AdminBase):
         if 'initial_payment' not in params:
             params['initial_payment'] = None
         if 'office_alternate_status_id' in params:
+            print("oasi",params['office_alternate_status_id'])
             db.update("""
                 update office set office_alternate_status_id=%s where id = %s
                 """,(params['office_alternate_status_id'],params['office_id'])
+            )
+        if 'website' in params:
+            db.update("""
+                update provider_queue set website=%s where office_id = %s
+                """,(params['website'],params['office_id'])
             )
         db.update("""
             update provider_queue set 
@@ -405,7 +411,7 @@ class RegistrationUpdate(AdminBase):
                         (%s,%s,%s)
                     """,(invid,user['id'],'Updated Invoice' )
                 )
-        if params['status'] == PQS['APPROVED'] or params['status'] == PQS['INVITED']:
+        if params['provider_queue_status_id'] == PQS['APPROVED'] or params['provider_queue_status_id'] == PQS['INVITED']:
             db.update("""
                 update office set active = 1 where id = %s
                 """,(offid,)
@@ -479,7 +485,7 @@ class RegistrationList(AdminBase):
                 pq.initial_payment,ot.id as office_type_id,pq.tags,
                 pqcs.name as call_status, pqcs.id as call_status_id,
                 ot.name as office_type,op.pricing_data_id as pricing_id,
-                pq.do_not_contact,
+                pq.do_not_contact,pq.website,
                 o.commission_user_id,oa.state,op.start_date,
                 concat(comu.first_name, ' ', comu.last_name) as commission_name,
                 o.office_alternate_status_id, oas1.name as office_alternate_status_name,

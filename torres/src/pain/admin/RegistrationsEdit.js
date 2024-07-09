@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import LaunchIcon from '@mui/icons-material/Launch';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Cancel';
 import EditIcon from '@mui/icons-material/Edit';
@@ -69,6 +70,7 @@ class RegistrationsEdit extends Component {
         this.updateEmail = this.updateEmail.bind(this);
         this.updateFirst = this.updateFirst.bind(this);
         this.updateLast = this.updateLast.bind(this);
+        this.websiteUpdate = this.websiteUpdate.bind(this);
         this.donotCallChange = this.donotCallChange.bind(this);
         this.close = this.close.bind(this);
         this.onStatusChange = this.onStatusChange.bind(this);
@@ -176,7 +178,9 @@ class RegistrationsEdit extends Component {
             name: this.state.selected.name,
             do_not_contact: this.state.selected.do_not_contact,
             first_name:this.state.selected.first_name,
+            office_alternate_status_id:this.state.selected.office_alternate_status_id,
             initial_payment:this.state.selected.initial_payment,
+            website:this.state.selected.website,
             last_name:this.state.selected.last_name,
             lead_strength_id:this.state.selected.lead_strength_id,
             coupon_id:this.state.selected.coupon_id,
@@ -205,6 +209,11 @@ class RegistrationsEdit extends Component {
 
     updateFirst(e) { 
         this.state.selected.first_name = e.target.value;
+        this.setState(this.state);
+    }
+
+    websiteUpdate(e) { 
+        this.state.selected.website = e.target.value;
         this.setState(this.state);
     }
 
@@ -518,9 +527,17 @@ class RegistrationsEdit extends Component {
                               onChange={this.updatePhone} value={this.state.selected.phone}
                             />
                         </Grid>
+                        <Grid item xs={5} style={{margin:10}}>
+                            <div style={{display: 'flex',justifyContent:'space-between'}}>
+                                <TemplateTextField label='Website'
+                                  onChange={this.websiteUpdate} value={this.state.selected.website}
+                                />
+                                 <a style={{marginTop:10,color:'black'}} href={this.state.selected.website} target='_blank'><LaunchIcon/></a>
+                            </div>
+                        </Grid>
                 </Grid>
                 <Grid container style={{borderLeft:"1px solid black"}} xs="6">
-                    <Grid item xs="3" style={{zIndex:9995,margin:10}}>
+                    <Grid item xs="3" style={{margin:10}}>
                       {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
                         this.props.registrationsAdminList.data.config &&
                         this.props.registrationsAdminList.data.config.alternate_status) && (
