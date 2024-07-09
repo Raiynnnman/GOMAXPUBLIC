@@ -584,7 +584,7 @@ class RegistrationList(AdminBase):
         if 'sort' not in params or params['sort'] == None:
             q += """
                 order by
-                    updated desc
+                    pq.id desc
             """
             ret['sort'][0]['active'] = True
             ret['sort'][0]['direction'] = 'desc'
