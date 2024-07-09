@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { toast } from 'react-toastify';
 import Select from 'react-select';
+import DoNotDisturbIcon from '@mui/icons-material/DoNotDisturb';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import AddBoxIcon from '@mui/icons-material/AddBox';
@@ -27,6 +28,7 @@ import TemplateSelectMulti from '../utils/TemplateSelectMulti';
 import TemplateTextField from '../utils/TemplateTextField';
 import TemplateCheckbox from '../utils/TemplateCheckbox';
 import TemplateButton from '../utils/TemplateButton';
+import TemplateButtonIcon from '../utils/TemplateButtonIcon';
 import TemplateBadge from '../utils/TemplateBadge';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -64,6 +66,7 @@ class Registrations extends Component {
         this.save = this.save.bind(this);
         this.reload = this.reload.bind(this);
         this.providerReport = this.providerReport.bind(this);
+        this.dncReport = this.dncReport.bind(this);
         this.edit = this.edit.bind(this);
         this.add = this.add.bind(this);
         this.pageChange = this.pageChange.bind(this);
@@ -72,122 +75,117 @@ class Registrations extends Component {
         this.toggleTab = this.toggleTab.bind(this);
     } 
 
-        componentWillReceiveProps(p) { 
-            var changed = false;
-            if (p.registrationsAdminList.data && p.registrationsAdminList.data.config && 
-                p.registrationsAdminList.data.config.alternate_status && 
-                this.state.statusAltSelected === null) { 
-                var c = 0;
-                var t = [];
-                var t1 = [];
-                for (c = 0; c < p.registrationsAdminList.data.config.alternate_status.length; c++) { 
-                    t.push(p.registrationsAdminList.data.config.alternate_status[c]); 
-                    t1.push(p.registrationsAdminList.data.config.alternate_status[c].id); 
-                } 
-                this.state.statusAltSelected = t;
-                this.state.altFilter = t1;
-                this.setState(this.state);
-                changed = true;
-            } 
-            if (p.registrationsAdminList.data && p.registrationsAdminList.data.config && 
-                p.registrationsAdminList.data.config.status && this.state.statusSelected === null) { 
-                var c = 0;
-                var t = [];
-                var t1 = [];
-                for (c = 0; c < p.registrationsAdminList.data.config.status.length; c++) { 
-                    if (p.registrationsAdminList.data.config.status[c].name === 'INVITED') { continue; }
-                    if (p.registrationsAdminList.data.config.status[c].name === 'CLOSED_WON') { continue; }
-                    if (p.registrationsAdminList.data.config.status[c].name === 'APPROVED') { continue; }
-                    if (p.registrationsAdminList.data.config.status[c].name === 'DO_NOT_CONTACT') { continue; }
-                    if (p.registrationsAdminList.data.config.status[c].name === 'INACTIVE') { continue; }
-                    if (p.registrationsAdminList.data.config.status[c].name === 'DENIED') { continue; }
-                    t.push(p.registrationsAdminList.data.config.status[c]); 
-                    t1.push(p.registrationsAdminList.data.config.status[c].id); 
-                } 
-                this.state.statusSelected = t;
-                this.state.filter = t1;
-                var v = [];
-                var v1 = [];
-                c = 0;
-                for (c = 0; c < p.registrationsAdminList.data.config.type.length; c++) { 
-                    v.push(p.registrationsAdminList.data.config.type[c]); 
-                    v1.push(p.registrationsAdminList.data.config.type[c].id); 
-                } 
-                this.state.typeSelected = v;
-                this.state.filterType = v1;
-                this.setState(this.state);
-                if (this.props.match.params.id) { 
-                    this.reload();
-                }
-                if (!this.props.match.params.id) { 
-                    this.reload();
-                }
-            } 
-        }
-        close() { 
-            this.state.selected = null;
-            this.setState(this.state);
-        } 
-
-        sortChange(t) { 
-            var g = this.props.registrationsAdminList.data.sort.filter((e) => t.dataField === e.col);
-            if (g.length > 0) { 
-                g = g[0]
-                this.state.sort = g.id
-                this.state.direction = g.direction === 'asc' ? 'desc' : 'asc'
-                this.props.dispatch(getRegistrations(
-                    {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
-                ));
-                this.setState(this.state);
-            } 
-        } 
-
-        pageGridsChange(t) { 
-            this.state.pageSize = t
-            this.state.page = 0
-            this.props.dispatch(getRegistrations(
-                {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
-            ));
-            this.setState(this.state);
-        } 
-        pageChange(e) { 
-            this.state.page = e
-            this.props.dispatch(getRegistrations(
-                {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
-            ));
-            this.setState(this.state);
-        } 
-
-
-        search(e) { 
-            this.state.search = e.target.value;
-            if (this.state.search.length === 0) { 
-                this.state.search = null;
-            } 
-            this.props.dispatch(getRegistrations(
-                {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
-            ));
-            this.setState(this.state);
-        } 
-
-
-        onTypeFilter(e,t) { 
-            if (e.length < 1 ) { return; }
+    componentWillReceiveProps(p) { 
+        var changed = false;
+        if (p.registrationsAdminList.data && p.registrationsAdminList.data.config && 
+            p.registrationsAdminList.data.config.alternate_status && 
+            this.state.statusAltSelected === null) { 
             var c = 0;
             var t = [];
-            for (c = 0; c < e.length; c++) { 
-                t.push(e[c].value); 
+            var t1 = [];
+            for (c = 0; c < p.registrationsAdminList.data.config.alternate_status.length; c++) { 
+                t.push(p.registrationsAdminList.data.config.alternate_status[c]); 
+                t1.push(p.registrationsAdminList.data.config.alternate_status[c].id); 
             } 
-            this.state.typeSelected = t;
-            this.state.filterType = t;
+            this.state.statusAltSelected = t;
+            this.state.altFilter = t1;
+            this.setState(this.state);
+            changed = true;
+        } 
+        if (p.registrationsAdminList.data && p.registrationsAdminList.data.config && 
+            p.registrationsAdminList.data.config.status && this.state.statusSelected === null) { 
+            var c = 0;
+            var t = [];
+            var t1 = [];
+            for (c = 0; c < p.registrationsAdminList.data.config.status.length; c++) { 
+                if (p.registrationsAdminList.data.config.status[c].name === 'INVITED') { continue; }
+                if (p.registrationsAdminList.data.config.status[c].name === 'CLOSED_WON') { continue; }
+                if (p.registrationsAdminList.data.config.status[c].name === 'APPROVED') { continue; }
+                if (p.registrationsAdminList.data.config.status[c].name === 'DO_NOT_CONTACT') { continue; }
+                if (p.registrationsAdminList.data.config.status[c].name === 'INACTIVE') { continue; }
+                if (p.registrationsAdminList.data.config.status[c].name === 'DENIED') { continue; }
+                t.push(p.registrationsAdminList.data.config.status[c]); 
+                t1.push(p.registrationsAdminList.data.config.status[c].id); 
+            } 
+            this.state.statusSelected = t;
+            this.state.filter = t1;
+            var v = [];
+            var v1 = [];
+            c = 0;
+            for (c = 0; c < p.registrationsAdminList.data.config.type.length; c++) { 
+                v.push(p.registrationsAdminList.data.config.type[c]); 
+                v1.push(p.registrationsAdminList.data.config.type[c].id); 
+            } 
+            this.state.typeSelected = v;
+            this.state.filterType = v1;
+            this.setState(this.state);
+            if (this.props.match.params.id) { 
+                this.reload();
+            }
+            if (!this.props.match.params.id) { 
+                this.reload();
+            }
+        } 
+    }
+    close() { 
+        this.state.selected = null;
+        this.setState(this.state);
+    } 
+
+    sortChange(t) { 
+        var g = this.props.registrationsAdminList.data.sort.filter((e) => t.dataField === e.col);
+        if (g.length > 0) { 
+            g = g[0]
+            this.state.sort = g.id
+            this.state.direction = g.direction === 'asc' ? 'desc' : 'asc'
             this.props.dispatch(getRegistrations(
-                {type:this.state.filterType,
-             direction:this.state.direction,
-             sort:this.state.sort,
-             search:this.state.search,
-             limit:this.state.pageSize,offset:this.state.page,
-             status:this.state.filter}
+                {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
+            ));
+            this.setState(this.state);
+        } 
+    } 
+
+    pageGridsChange(t) { 
+        this.state.pageSize = t
+        this.state.page = 0
+        this.props.dispatch(getRegistrations(
+            {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
         ));
+        this.setState(this.state);
+    } 
+    pageChange(e) { 
+        this.state.page = e
+        this.props.dispatch(getRegistrations(
+            {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
+        ));
+        this.setState(this.state);
+    } 
+
+
+    search(e) { 
+        this.state.search = e.target.value;
+        if (this.state.search.length === 0) { 
+            this.state.search = null;
+        } 
+        this.props.dispatch(getRegistrations(
+            {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
+        ));
+        this.setState(this.state);
+    } 
+
+
+    onTypeFilter(e,t) { 
+        if (e.length < 1 ) { return; }
+        var c = 0;
+        var t = [];
+        var t1 = [];
+        for (c = 0; c < e.length; c++) { 
+            t1.push(e[c].id); 
+            t.push(e[c]); 
+        } 
+        this.state.typeSelected = t;
+        this.state.filterType = t1;
+        this.reload();
         this.setState(this.state)
     } 
 
@@ -301,15 +299,29 @@ class Registrations extends Component {
         this.reload();
     } 
 
+    dncReport() { 
+        this.props.dispatch(getRegistrations(
+                {type:this.state.filterType,mine:this.state.mine,sort:this.state.sort,direction:this.state.direction,
+                 search:this.state.search,limit:this.state.pageSize,
+                 report:1,
+                 dnc:1,
+                offset:this.state.page,status:this.state.filter,alt_status:this.state.altFilter}
+        ));
+    } 
+
+    dncReport() { 
+        this.props.dispatch(getRegistrations(
+            {type:this.state.filterType,mine:this.state.mine,sort:this.state.sort,direction:this.state.direction,
+             search:this.state.search,limit:this.state.pageSize, report:1, dnc:1,
+            offset:this.state.page,status:this.state.filter,alt_status:this.state.altFilter}
+        ));
+    } 
+
     providerReport() { 
         this.props.dispatch(getRegistrations(
-            {direction:this.state.direction,
-             sort:this.state.sort,
-             mine:this.state.mine,
-             search:this.state.search,
-             limit:100000,offset:0,
-             report:1,
-             period:this.state.filter}
+            {type:this.state.filterType,mine:this.state.mine,sort:this.state.sort,direction:this.state.direction,
+             search:this.state.search,limit:this.state.pageSize, report:1,
+            offset:this.state.page,status:this.state.filter,alt_status:this.state.altFilter}
         ));
     } 
 
@@ -354,6 +366,16 @@ class Registrations extends Component {
                 formatter:(cellContent,row) => (
                     <div>
                         {row.call_status && <TemplateBadge label={row.call_status}/>}
+                    </div>
+                )
+            },
+            {
+                dataField:'office_alternate_status_name',
+                sort:true,
+                text:'Type',
+                formatter:(cellContent,row) => (
+                    <div>
+                        {row.office_alternate_status_name && <TemplateBadge label={row.office_alternate_status_name}/>}
                     </div>
                 )
             },
@@ -448,7 +470,7 @@ class Registrations extends Component {
                             <Grid container xs="12" style={{marginTop:10}}>
                                 <Grid item xs={.5} style={{margin:10}}>
                                     <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
-                                        <TemplateButton onClick={this.add} style={{width:50}}
+                                        <TemplateButtonIcon onClick={this.add} style={{width:50}}
                                             label={<AddBoxIcon/>}/>
                                     </div>
                                 </Grid>
@@ -514,7 +536,7 @@ class Registrations extends Component {
                                         />
                                     )}
                                 </Grid>
-                                <Grid itrm xs="2" style={{margin:10}}>
+                                <Grid item xs="2" style={{margin:10}}>
                                   {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
                                     this.props.registrationsAdminList.data.config &&
                                     this.props.registrationsAdminList.data.config.alternate_status && this.state.statusAltSelected !== null) && (
@@ -547,11 +569,12 @@ class Registrations extends Component {
                                     <TemplateTextField type="text" id="normal-field" onChange={this.search}
                                     label="Search" value={this.state.search}/>
                                 </Grid>
-                                <Grid item xs={2} style={{margin:10}}>
+                                <Grid item xs={2.5} style={{margin:10}}>
                                     <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                                         <div style={{display:'flex',justifyContent:"spread-evenly"}}>
-                                            <TemplateButton onClick={this.providerReport} style={{width:50}} label={<AssessmentIcon/>}/>
-                                            <TemplateButton onClick={() => this.reload()} style={{marginLeft:5,width:50}} 
+                                            <TemplateButtonIcon onClick={this.dncReport} size="small" label={<DoNotDisturbIcon/>}/>
+                                            <TemplateButtonIcon onClick={this.providerReport} size="small" style={{marginLeft:5}} label={<AssessmentIcon/>}/>
+                                            <TemplateButtonIcon onClick={() => this.reload()} style={{marginLeft:5}} 
                                                 label={<AutorenewIcon/>}/>
                                         </div>
                                     </div>

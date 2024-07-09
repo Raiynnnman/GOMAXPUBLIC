@@ -49,13 +49,13 @@ class RegistrationUpdate(AdminBase):
         job,user,off_id,params = self.getArgs(*args,**kwargs)
         db = Query()
         PQS = self.getProviderQueueStatus()
+        ALT = self.getAltStatus()
         INV = self.getInvoiceIDs()
         ENT = self.getEntitlementIDs()
         PERM = self.getPermissionIDs()
         BS = self.getBillingSystem()
         OT = self.getOfficeTypes()
         PL = self.getPlans()
-        PQS = self.getProviderQueueStatus()
         STR = self.getLeadStrength()
         # TODO: Check params here
         email = params['email']
@@ -466,7 +466,7 @@ class RegistrationList(AdminBase):
             if params['search'] == None or len(params['search']) == 0:
                 del params['search']
         db = Query()
-        PQS = self.getProviderQueueStatus()
+        ALT = self.getAltStatus()
         q = """
             select 
                 pq.id,o.name,o.email,o.id as office_id,pqs.name as status,
@@ -497,8 +497,6 @@ class RegistrationList(AdminBase):
         """
         status_ids = []
         search_par = [
-            int(limit),
-            int(offset)*int(limit)
         ]
         ret['sort'] = [
             {'id':1,'col':'updated','active':False,'direction':'asc'},
@@ -550,17 +548,16 @@ class RegistrationList(AdminBase):
                 search_par.insert(0,params['search']+'%%')
                 count_par.insert(0,params['search']+'%%')
                 count_par.insert(0,params['search']+'%%')
-        if 'alt_status' in params and params['alt_status'] is not None and 0 in params['alt_status']:
             q += " and office_alternate_status_id is null "
-        if 'alt_status' in params and params['alt_status'] is not None and 0 not in params['alt_status']:
-            q += " and office_alternate_status_id in ("
+        if 'alt_status' in params and params['alt_status'] is not None: 
+            q += " and ("
             arr = []
             for z in params['alt_status']:
                 if z == str(0) or z == 0:
-                    arr.append(None)
+                    arr.append("office_alternate_status_id is null")
                 else:
-                    arr.append(z)
-            q += ",".join(map(str,arr))
+                    arr.append("office_alternate_status_id = %s" % z)
+            q += " or ".join(map(str,arr))
             q += ")"
         if 'type' in params and params['type'] is not None:
             q += " and office_type_id in ("
@@ -569,6 +566,8 @@ class RegistrationList(AdminBase):
                 arr.append(z)
             q += ",".join(map(str,arr))
             q += ")"
+        prelimit = q
+        pre_par = json.loads(json.dumps(search_par))
         q += " group by o.id "
         cnt = db.query("select count(id) as cnt from (" + q + ") as t", count_par)
         ret['total'] = cnt[0]['cnt']
@@ -594,6 +593,8 @@ class RegistrationList(AdminBase):
             q += """
                 order by %s %s
             """ % (v,d)
+        search_par.append(int(limit))
+        search_par.append(int(offset)*int(limit))
         q += " limit %s offset %s " 
         o = []
         o = db.query(q,search_par)
@@ -800,8 +801,29 @@ class RegistrationList(AdminBase):
         ret['config']['strength'] = db.query("select id,name from provider_queue_lead_strength")
         ret['registrations'] = k
         if 'report' in params and params['report'] is not None:
+            myq = prelimit
+            if 'dnc' in params and params['dnc']:
+                myq += " and ("
+                myq += " office_alternate_status_id = %s " % ALT['DNC']
+                myq += " or office_alternate_status_id = %s " % ALT['Not interested']
+                myq += " or office_alternate_status_id = %s " % ALT['Not a Chiropractor']
+                myq += ")"
+                i = []
+                for g in params['alt_status']:
+                    if g == ALT['DNC']:
+                        continue
+                    if g == ALT['Not interested']:
+                        continue
+                    if g == ALT['Not a Chiropractor']:
+                        continue
+                    i.append(g)
+                myq += " and provider_queue_status_id not in (" 
+                myq += ",".join(map(str,i))
+                myq += ")"
+            myq += " group by o.id "
+            o = db.query(myq,pre_par)
             ret['filename'] = 'provider_report.csv'
-            frame = pd.DataFrame.from_dict(ret['registrations'])
+            frame = pd.DataFrame.from_dict(o)
             t = frame.to_csv()
             ret['content'] = base64.b64encode(t.encode('utf-8')).decode('utf-8')
         return ret
