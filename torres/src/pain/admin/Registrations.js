@@ -150,6 +150,7 @@ class Registrations extends Component {
                 if (p.registrationsAdminList.data.config.status[c].name === 'APPROVED') { continue; }
                 if (p.registrationsAdminList.data.config.status[c].name === 'DO_NOT_CONTACT') { continue; }
                 if (p.registrationsAdminList.data.config.status[c].name === 'INACTIVE') { continue; }
+                if (p.registrationsAdminList.data.config.status[c].name === 'DUPLICATE') { continue; }
                 if (p.registrationsAdminList.data.config.status[c].name === 'DENIED') { continue; }
                 t.push(p.registrationsAdminList.data.config.status[c]); 
                 t1.push(p.registrationsAdminList.data.config.status[c].id); 
