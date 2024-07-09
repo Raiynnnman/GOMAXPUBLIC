@@ -209,6 +209,8 @@ class RegistrationUpdate(AdminBase):
                 update provider_queue set website=%s where office_id = %s
                 """,(params['website'],params['office_id'])
             )
+        if 'provider_queue_status_id' not in params:
+            params['provider_queue_status_id'] = None
         db.update("""
             update provider_queue set 
                 provider_queue_status_id=%s,
@@ -597,7 +599,7 @@ class RegistrationList(AdminBase):
         if 'sort' not in params or params['sort'] == None:
             q += """
                 order by
-                    pq.id desc
+                    pq.id asc
             """
             ret['sort'][0]['active'] = True
             ret['sort'][0]['direction'] = 'desc'

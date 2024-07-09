@@ -505,6 +505,7 @@ class Registrations extends Component {
             {
                 dataField:'office_id',
                 sort:true,
+                hidden:true,
                 text:'ID'
             },
             {
