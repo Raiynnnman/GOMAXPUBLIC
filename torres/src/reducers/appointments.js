@@ -1,12 +1,15 @@
 import { RECEIVED_CUST_DATA_SUCCESS, RECEIVING_CUST_DATA } from '../actions/appointments';
 
-//const defaultState = { data: {}, isReceiving: false };
+const initialState = {
+    data: {},
+    isReceiving: false
+};
 
-export default function getAppointments(state = {data:{}},{type,payload}) {
+export default function getAppointments(state = initialState, { type, payload }) {
     switch (type) {
         case RECEIVED_CUST_DATA_SUCCESS:
             return Object.assign({}, state, {
-                data:payload,
+                data: payload,
                 isReceiving: false
             });
         case RECEIVING_CUST_DATA:

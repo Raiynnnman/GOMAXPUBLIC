@@ -103,9 +103,8 @@ class Reset extends React.Component {
     render() {
       return (
       <>
-      <ThemeProvider theme={defaultTheme}>
         <Navbar/>
-        <Box sx={{ height: '50vh', background: 'linear-gradient(to right, #fff7e6, #ffffff)', display: 'flex', alignItems: 'center', justifyContent: 'center', px: 2 }}>
+        <Box sx={{ height: '100vh', minHeight: '100vh', background: 'linear-gradient(to right, #fff7e6, #ffffff)', display: 'flex', alignItems: 'center', justifyContent: 'center', px: 2 }}>
           <Grid container justifyContent="center" alignItems="center" sx={{ width: '100%', maxWidth: '768px', padding: 2 }}>
             <Paper
               elevation={12}
@@ -136,7 +135,6 @@ class Reset extends React.Component {
             </Paper>
         </Grid>
         </Box>
-      </ThemeProvider>
       </>
       );
     }
