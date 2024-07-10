@@ -459,13 +459,13 @@ class RegisterProvider(RegistrationsBase):
             params['phone'] = p
 
         l = db.query("""
-            select id as a from users where email=lower(%s)
+            select id as a from users where lower(email)=lower(%s)
             UNION ALL
             select ou.user_id as a from 
                 office o,office_addresses oa,office_user ou
              where 
                 o.id=oa.office_id and o.id = ou.office_id
-                and o.email=lower(%s)
+                and lower(o.email)=lower(%s)
             UNION ALL
             select ou.user_id as a from 
                 office o,office_addresses oa,office_user ou
@@ -685,6 +685,7 @@ class RegisterProvider(RegistrationsBase):
         cust_id = ''
         card_id = ''
         stripe_id = ''
+        s_invoice_id = ''
         if 'card' in params and params['card'] is not None:
             stripe_id = None
             card_id = 0
@@ -780,6 +781,7 @@ class RegisterProvider(RegistrationsBase):
                         amount=int(PL[selplan]['upfront_cost']*PL[selplan]['duration']*100),
                         invoice=s.id
                     )
+                    s_invoice_id = s['id']
                     print("discount=%s" % discount)
                     if len(coup) > 0:
                         stripe.InvoiceItem.create(
@@ -805,6 +807,11 @@ class RegisterProvider(RegistrationsBase):
                             (%s,%s,%s)
                         """,(invid,1,'Submitted invoice to stripe' )
                     )
+                    db.update("""
+                        insert into office_history(office_id,user_id,text) values (
+                            %s,1,'Created initial invoice'
+                        )
+                    """,(off_id,))
                 if do_billing and BS==2: # square
                     # Create the customer
                     cust = self.createCustomer(params['name'],params['email'],off_id,db)
@@ -882,11 +889,8 @@ class RegisterProvider(RegistrationsBase):
                         if s.is_error():
                             raise Exception(json.dumps(s.errors))
                         s = s.body
+                        s_invoice_id = s['invoice']['id'];
                         print("s=%s" % s)
-                        db.update("""
-                            update invoices set stripe_invoice_id=%s,invoice_status_id=%s where id=%s
-                            """,(s['invoice']['id'],INV['PAID'],invid)
-                        )
                         pub = client.invoices.publish_invoice(
                             invoice_id = s['invoice']['id'],
                             body = { 'version': 0}
@@ -898,96 +902,100 @@ class RegisterProvider(RegistrationsBase):
                                 raise Exception(json.dumps(s.errors))
                             raise Exception(json.dumps(pub.errors))
                         db.update("""
-                            update invoices set invoice_status_id=%s where id=%s
-                            """,(INV['PAID'],invid)
-                        )
-                        db.update("""
                             insert into invoice_history (invoices_id,user_id,text) values 
                                 (%s,%s,%s)
                             """,(invid,1,'Submitted invoice to Square' )
                         )
-                        db.update("""
-                            insert into invoice_items 
-                                (invoices_id,description,price,quantity)
-                            values 
-                                (%s,%s,%s,%s)
-                            """,
-                            (invid,PL[selplan]['description'],PL[selplan]['upfront_cost']*PL[selplan]['duration'],1)
-                        )
-                        if len(coup) > 0:
-                            db.update("""
-                                insert into invoice_items 
-                                    (invoices_id,description,price,quantity)
-                                values 
-                                    (%s,%s,%s,%s)
-                                """,
-                                (invid,coup['name'],discount,1)
+                # --- Operations on all invoices
+                db.update("""
+                    update invoices set stripe_invoice_id=%s,invoice_status_id=%s where id=%s
+                    """,(s_invoice_id,INV['PAID'],invid)
+                )
+                db.update("""
+                    update invoices set invoice_status_id=%s where id=%s
+                    """,(INV['PAID'],invid)
+                )
+                db.update("""
+                    insert into invoice_items 
+                        (invoices_id,description,price,quantity)
+                    values 
+                        (%s,%s,%s,%s)
+                    """,
+                    (invid,PL[selplan]['description'],PL[selplan]['upfront_cost']*PL[selplan]['duration'],1)
+                )
+                if len(coup) > 0:
+                    db.update("""
+                        insert into invoice_items 
+                            (invoices_id,description,price,quantity)
+                        values 
+                            (%s,%s,%s,%s)
+                        """,
+                        (invid,coup['name'],discount,1)
+                    )
+                comm = db.query("""
+                    select id,commission from commission_structure
+                        where pricing_data_id=%s
+                    """,(params['plan'],)
+                )
+                if len(comm) > 0:
+                    comm = comm[0]
+                    db.update("""
+                        insert into commission_users (user_id,commission_structure_id,amount,office_id,invoices_id)
+                            values (%s,%s,%s,%s,%s)
+                        """,(1,
+                             comm['id'],
+                             plan_total*comm['commission'],off_id,invid
                             )
-                        comm = db.query("""
-                            select id,commission from commission_structure
-                                where pricing_data_id=%s
-                            """,(params['plan'],)
-                        )
-                        if len(comm) > 0:
-                            comm = comm[0]
-                            db.update("""
-                                insert into commission_users (user_id,commission_structure_id,amount,office_id,invoices_id)
-                                    values (%s,%s,%s,%s,%s)
-                                """,(1,
-                                     comm['id'],
-                                     plan_total*comm['commission'],off_id,invid
-                                    )
-                            )
-                            db.update("""
-                                insert into invoice_history (invoices_id,user_id,text) values 
-                                    (%s,%s,%s)
-                                """,(invid,1,'Calculated commission based on plan' )
-                            )
-                        months = 0
-                        months = PL[selplan]['duration']
-                        start_date = db.query("""
-                            select
-                                date_add(now(), INTERVAL %s month) as bp
-                            """,(0,)
-                        )
-                        start_date = start_date[0]['bp']
-                        for t in range(1,months):
-                            j = db.query("""
-                                select
-                                    date_add(%s, INTERVAL %s month) as bp
-                                """,(start_date,t)
-                            )
-                            bp = j[0]['bp']
-                            o = db.update("""
-                                insert into invoices (office_id,invoice_status_id,office_plans_id,billing_period,billing_system_id) 
-                                    values (%s,%s,%s,%s,%s)
-                                """,(off_id,INV['CREATED'],planid,bp,BS)
-                            )
-                            newid = db.query("select LAST_INSERT_ID()")
-                            newid = newid[0]['LAST_INSERT_ID()']
-                            db.update("""
-                                insert into invoice_items 
-                                    (invoices_id,description,price,quantity)
-                                values 
-                                    (%s,%s,%s,%s)
-                                """,
-                                (newid,PL[selplan]['description'],0,1)
-                            )
-                            db.update("""
-                                insert into invoice_history (invoices_id,user_id,text) values 
-                                    (%s,%s,%s)
-                                """,(newid,1,'Generated invoice' )
-                            )
-                            db.update("""
-                                insert into invoice_history (invoices_id,user_id,text) values 
-                                    (%s,%s,%s)
-                                """,(newid,1,'Set invoice to $0 for plan' )
-                            )
-                            db.update("""
-                                insert into stripe_invoice_status (office_id,invoices_id,status) values (%s,%s,%s)
-                                """,(off_id,newid,'draft')
-                            )
-                    db.commit()
+                    )
+                    db.update("""
+                        insert into invoice_history (invoices_id,user_id,text) values 
+                            (%s,%s,%s)
+                        """,(invid,1,'Calculated commission based on plan' )
+                    )
+                months = 0
+                months = PL[selplan]['duration']
+                start_date = db.query("""
+                    select
+                        date_add(now(), INTERVAL %s month) as bp
+                    """,(0,)
+                )
+                start_date = start_date[0]['bp']
+                for t in range(1,months):
+                    j = db.query("""
+                        select
+                            date_add(%s, INTERVAL %s month) as bp
+                        """,(start_date,t)
+                    )
+                    bp = j[0]['bp']
+                    o = db.update("""
+                        insert into invoices (office_id,invoice_status_id,office_plans_id,billing_period,billing_system_id) 
+                            values (%s,%s,%s,%s,%s)
+                        """,(off_id,INV['CREATED'],planid,bp,BS)
+                    )
+                    newid = db.query("select LAST_INSERT_ID()")
+                    newid = newid[0]['LAST_INSERT_ID()']
+                    db.update("""
+                        insert into invoice_items 
+                            (invoices_id,description,price,quantity)
+                        values 
+                            (%s,%s,%s,%s)
+                        """,
+                        (newid,PL[selplan]['description'],0,1)
+                    )
+                    db.update("""
+                        insert into invoice_history (invoices_id,user_id,text) values 
+                            (%s,%s,%s)
+                        """,(newid,1,'Generated invoice' )
+                    )
+                    db.update("""
+                        insert into invoice_history (invoices_id,user_id,text) values 
+                            (%s,%s,%s)
+                        """,(newid,1,'Set invoice to $0 for plan' )
+                    )
+                    db.update("""
+                        insert into stripe_invoice_status (office_id,invoices_id,status) values (%s,%s,%s)
+                        """,(off_id,newid,'draft')
+                    )
             except Exception as e:
                 print(str(e))
                 exc_type, exc_value, exc_traceback = sys.exc_info()
@@ -996,8 +1004,8 @@ class RegisterProvider(RegistrationsBase):
         db.update("""
             update provider_queue set 
             sf_lead_executed=1,
-            provider_queue_status_id = %s where id = %s
-            """,(PQ['INVITED'],pq_id)
+            provider_queue_status_id = %s where office_id = %s
+            """,(PQ['INVITED'],off_id)
         )
         db.update("""
             insert into office_history(office_id,user_id,text) values (
@@ -1066,6 +1074,7 @@ class RegisterProvider(RegistrationsBase):
         sysemail = config.getKey("support_email")
         m = Mail()
         data['__OFFICE_NAME__'] = params['name']
+        data['__OFFICE_ID__'] = off_id
         data['__OFFICE_URL__'] = "%s/#/app/main/admin/office/%s" % (url,off_id)
         if self.isUIV2(): 
             data['__OFFICE_URL__'] = "%s/app/main/admin/office/%s" % (url,off_id)

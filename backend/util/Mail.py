@@ -59,7 +59,7 @@ class Mail:
         with open(template, "rb") as H:
             body = H.read().decode('utf-8',errors='ignore')
         for x in data:
-            body = body.replace(x, data[x])
+            body = body.replace(x, str(data[x]))
         client = boto3.client(
             'ses', region_name='us-east-1',
             aws_access_key_id=access, aws_secret_access_key=secret, use_ssl=True

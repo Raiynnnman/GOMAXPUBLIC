@@ -26,6 +26,7 @@ class Template extends Component {
     }
 
     render() {
+        console.log("p",this.props);
         const OfficeDashboardData = this.props.providerDashboard.data.notifications
         return (
         <>
@@ -35,7 +36,7 @@ class Template extends Component {
             {(this.props.providerDashboard && this.props.providerDashboard.data && 
               this.props.providerDashboard.data.customers) && (
                 <OfficeDashboard 
-                name ={this.props.currentUser.contextValue.name}
+                name={this.props.currentUser.contextValue ? this.props.currentUser.contextValue.name : this.props.currentUser.first_name}
                 state={this.props.providerDashboard.data.customers} 
                 notifications={OfficeDashboardData} 
             />            
