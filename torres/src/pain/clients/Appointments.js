@@ -21,7 +21,6 @@ import Add from '@mui/icons-material/Add';
 import ChatIcon from '@mui/icons-material/Chat';
 import Navbar from '../../components/Navbar';
 import AppSpinner from '../utils/Spinner';
-import StepForm from './AppointmentsForms.js';
 import { createAppointment } from '../../actions/appointments';
 
 const spinnerContainerStyle = {
@@ -151,7 +150,7 @@ class Appointments extends Component {
           <Typography variant="h3" component="h1" fontWeight="bold" gutterBottom>
             Appointments
           </Typography>
-          <Box mb={2} display="flex" justifyContent="space-between">
+          {/* <Box mb={2} display="flex" justifyContent="space-between">
             <Button
               variant="contained"
               color="primary"
@@ -187,7 +186,7 @@ class Appointments extends Component {
                 handleSubmit={() => this.handleCreateAppointment(formValues)}
               />
             </Box>
-          </Modal>
+          </Modal> */}
           {appointmentsData.length > 0 ? (
             <TableContainer component={Paper} sx={{ mt: 2 }}>
               <Table>
