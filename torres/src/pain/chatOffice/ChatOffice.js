@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import ChatDialog from '../chatCommon/components/ChatDialog';
-import ChatInfo from '../chatCommon/components/ChatInfo';
-import ChatList from '../chatCommon/components/ChatList';
+import ChatDialog from '../chatCommon/components/ChatDialog/ChatDialog';
+import ChatInfo from '../chatCommon/components/ChatInfo/ChatInfo';
+import ChatList from '../chatCommon/components/ChatList/ChatList';
 import { connect } from 'react-redux';
 import { MobileChatStates } from '../../reducers/chat';
 import s from './Chat.module.scss';
@@ -12,7 +12,7 @@ import AppSpinner from '../utils/Spinner';
 import { setActiveChat } from '../../actions/chat';
 import Navbar from '../../components/Navbar';
 
-class ChatUser extends Component {
+class ChatOffice extends Component {
     constructor(props) { 
         super(props);
         this.state = { 
@@ -23,6 +23,7 @@ class ChatUser extends Component {
     }
     componentDidMount() {
         this.props.dispatch(getChatUser({appt:this.props.appt}))
+        console.log(this.props)
     }
     componentWillReceiveProps(p) { 
         // if (p.chatUser && p.chatUser.data && p.chatUser.data.rooms && !this.state.activeSet) { 
@@ -42,7 +43,7 @@ class ChatUser extends Component {
                 <AppSpinner/>
             )}
           <div style={{margin:20}}>
-                {(this.props.chatUser && this.props.chatUser.data && this.props.chatUser.data.rooms) && ( 
+                 {(this.props.chatUser && this.props.chatUser.data && this.props.chatUser.data.rooms) && ( 
                 <>
                     <Navbar/>
                     <ChatList onNewChat={this.onNewChat} data={this.props.chatUser.data}/>
@@ -64,4 +65,4 @@ function mapStateToProps(state) {
   }
 }
 
-export default connect(mapStateToProps)(ChatUser);
+export default connect(mapStateToProps)(ChatOffice);

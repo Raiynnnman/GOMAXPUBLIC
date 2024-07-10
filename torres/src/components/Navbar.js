@@ -204,6 +204,7 @@ class Navbar extends Component {
                                         <ul className="main-menu">
                                             <li className="active"><a href="/app">Home</a></li>
                                             <li><a href="/app/main/client/appointments">Appointments</a></li>
+                                            <li><a href="/app/main/client/chat">Chat</a></li>
                                             <li><a href="/app/main/client/search">Search</a></li>
                                             <li><a> 
                                                 <DropdownMenu currentUser={this.props.currentUser} 
