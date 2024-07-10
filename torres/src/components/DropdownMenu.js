@@ -23,7 +23,6 @@ function DropdownMenu({onChange,items,title,currentUser}) {
     setOpen(false);
   };
 
-    console.log("p",currentUser);
   return (
     <div onMouseEnter={handleClick} style={{marginLeft:10}}>
         <ClickAwayListener onClickAway={handleClickAway}>

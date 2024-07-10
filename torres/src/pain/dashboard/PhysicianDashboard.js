@@ -26,7 +26,6 @@ class Template extends Component {
     }
 
     render() {
-        console.log("p",this.props);
         const OfficeDashboardData = this.props.providerDashboard.data.notifications
         return (
         <>
