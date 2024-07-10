@@ -246,6 +246,7 @@ class Navbar extends Component {
                                             <li className="active"><a href="/app">Home</a></li>
                                             <li><a href="/app/main/office/clients">Clients</a></li>
                                             <li><a href="/app/main/office/locations">Locations</a></li>
+                                            <li><a href="/app/main/office/chat">Chat</a></li>
                                             {/*<li><a href="/app/main/office/invoices">Invoices</a></li>*/}
                                             <li><a href="#">
                                                 <DropdownMenu currentUser={this.props.currentUser} 

@@ -37,7 +37,8 @@ import Landing from './pain/landing/Landing.js';
 import Verified from './pain/landing/Verified';
 import Accept from './pain/referral_accept/Accept';
 import Reject from './pain/referral_accept/Reject';
-
+import ChatUser from './pain/chatUser/ChatUser.js';
+import ChatOffice from './pain/chatOffice/ChatOffice';
 import Pricing from './components/Pricing';
 const CloseButton = ({closeToast}) => <i onClick={closeToast} className="la la-close notifications-close"/>
 const App = () => {
@@ -61,8 +62,8 @@ const App = () => {
                     <Route exact path='/login' component={Login}/>
                     <Route exact path='/register' component={Register}/>
                     <Route exact path='/search' component={Search}/>
-                    <Route exact path="/accept/:token" exact component={Accept}/> 
-                    <Route exact path="/reject/:token" exact component={Reject}/> 
+                    <Route exact path="/accept/:token" component={Accept}/> 
+                    <Route exact path="/reject/:token" component={Reject}/> 
                     <Route exact path='/demo' component={Landing}/>
                     <Route exact path='/introduction' component={Landing}/>
                     <Route exact path='/meeting' component={Landing}/>
@@ -89,8 +90,10 @@ const App = () => {
                     <Route exact path='/app/main/admin/plans' component={PricingList}/>
                     <Route exact path='/app/main/admin/users' component={UserAdminList}/>
                     <Route exact path="/app/main/office/locations"  component={OfficeAddresses} />
+                    <Route exact path="/app/main/office/chat" component={ChatOffice} />
                     <Route exact path="/app/main/office/clients"  component={Customers} />
                     <Route exact path="/app/main/client/search" component={Search} />
+                    <Route exact path="/app/main/client/chat" component={ChatUser} />
                     <Route exact path="/app/main/client/appointments" component={Appointments} />
                     <Route exact path="/app/main/client/appointments/:id" component={Appointments} />
                     <Route exact path={`${process.env.PUBLIC_URL}/tf`} component={DemoTF}/>
