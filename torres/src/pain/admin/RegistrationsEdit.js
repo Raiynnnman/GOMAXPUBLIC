@@ -3,6 +3,7 @@ import LaunchIcon from '@mui/icons-material/Launch';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Cancel';
 import EditIcon from '@mui/icons-material/Edit';
+import Office365SSO from '../utils/Office365SSO';
 import { registrationAdminUpdate } from '../../actions/registrationAdminUpdate';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
@@ -84,6 +85,8 @@ class RegistrationsEdit extends Component {
         this.addComment = this.addComment.bind(this);
         this.saveComment = this.saveComment.bind(this);
         this.cancelComment = this.cancelComment.bind(this);
+        this.onCancelEvent = this.onCancelEvent.bind(this);
+        this.onCreateEvent = this.onCreateEvent.bind(this);
         this.comment = this.comment.bind(this);
         this.action = this.action.bind(this);
         this.addAction = this.addAction.bind(this);
@@ -209,6 +212,11 @@ class RegistrationsEdit extends Component {
         this.props.onSave(tosend);
         this.state.selected = null;
         this.setState(this.state);
+    } 
+
+    onCreateEvent(e) { 
+    } 
+    onCancelEvent(e) { 
     } 
 
     updateFirst(e) { 
@@ -358,6 +366,7 @@ class RegistrationsEdit extends Component {
         this.setState(this.state);
     }
     render() {
+        console.log("s",this.state);
         var offheads = [
             {
                 dataField:'id',
@@ -734,6 +743,21 @@ class RegistrationsEdit extends Component {
                             <>
                                 <TemplateButtonIcon onClick={() => this.addAction({id:"new"})} label={<AddBoxIcon/>}/>
                                 <Grid container xs="12">
+                                    {this.state.selected.actions.sort((a,b) => (a.created > b.created ? -1:1)).map((e) => { 
+                                        return (
+                                            <Grid item xs="3" key={e.id} style={{marginLeft:10}}>
+                                                <Office365SSO data={e} onCreateEvent={this.onCreateEvent} 
+                                                    onCancelEvent={this.onCancelEvent} showNewEvent={true}/>
+                                            </Grid>
+                                        )
+                                    })}
+                                </Grid>
+                            </>
+                            )}
+                            {(this.state.selected && this.state.selected.actions && this.state.subTab === 'activity2') && (
+                            <>
+                                <TemplateButtonIcon onClick={() => this.addAction({id:"new"})} label={<AddBoxIcon/>}/>
+                                <Grid container xs="12">
                                 {this.state.selected.actions.sort((a,b) => (a.created > b.created ? -1:1)).map((e) => { 
                                     return (
                                         <Grid item xs="4" key={e.id} style={{marginLeft:10}}>
@@ -760,41 +784,49 @@ class RegistrationsEdit extends Component {
                                                 <hr/>
                                                 <Grid container xs="12">
                                                     <Grid container xs="3">
-                                                        <Grid item xs="12">
-                                                          <TemplateSelect
-                                                              onChange={this.onActionTypeChange}
-                                                              style={{marginLeft:0}}
-                                                              disabled={!e.edit}
-                                                              label="Action Type"
-                                                              value={{
-                                                                label:
-                                                                    this.props.registrationsAdminList.data.config.action_type.filter((g) => 
-                                                                        e.action_type_id === g.id).length > 0 ?
+                                                        <Grid container xs="12">
+                                                            <Grid item xs="12">
+                                                              <TemplateSelect
+                                                                  onChange={this.onActionTypeChange}
+                                                                  style={{marginLeft:0}}
+                                                                  disabled={!e.edit}
+                                                                  label="Action Type"
+                                                                  value={{
+                                                                    label:
                                                                         this.props.registrationsAdminList.data.config.action_type.filter((g) => 
-                                                                            e.action_type_id === g.id)[0].name : ''
-                                                              }}
-                                                              options={
-                                                                    this.props.registrationsAdminList.data.config.action_type.map((g) => { return ({label:g.name,value:g.name}) }) 
-                                                                }
-                                                            />
+                                                                            e.action_type_id === g.id).length > 0 ?
+                                                                            this.props.registrationsAdminList.data.config.action_type.filter((g) => 
+                                                                                e.action_type_id === g.id)[0].name : ''
+                                                                  }}
+                                                                  options={
+                                                                        this.props.registrationsAdminList.data.config.action_type.map((g) => { return ({label:g.name,value:g.name}) }) 
+                                                                    }
+                                                                />
+                                                            </Grid>
                                                         </Grid>
-                                                        <Grid item xs="12">
-                                                          <TemplateSelect
-                                                              onChange={this.onActionStatusChange}
-                                                              disabled={!e.edit}
-                                                              style={{marginLeft:0}}
-                                                              label="Action Status"
-                                                              value={{
-                                                                label:
-                                                                    this.props.registrationsAdminList.data.config.action_status.filter((g) => 
-                                                                        e.action_status_id === g.id).length > 0 ?
+                                                        <Grid container xs="12">
+                                                            <Grid item xs="12">
+                                                              <TemplateSelect
+                                                                  onChange={this.onActionStatusChange}
+                                                                  disabled={!e.edit}
+                                                                  style={{marginLeft:0}}
+                                                                  label="Action Status"
+                                                                  value={{
+                                                                    label:
                                                                         this.props.registrationsAdminList.data.config.action_status.filter((g) => 
-                                                                            e.action_status_id === g.id)[0].name : ''
-                                                              }}
-                                                              options={
-                                                                    this.props.registrationsAdminList.data.config.action_status.map((g) => { return ({label:g.name,value:g.name}) }) 
-                                                                }
-                                                            />
+                                                                            e.action_status_id === g.id).length > 0 ?
+                                                                            this.props.registrationsAdminList.data.config.action_status.filter((g) => 
+                                                                                e.action_status_id === g.id)[0].name : ''
+                                                                  }}
+                                                                  options={
+                                                                        this.props.registrationsAdminList.data.config.action_status.map((g) => { return ({label:g.name,value:g.name}) }) 
+                                                                    }
+                                                                />
+                                                            </Grid>
+                                                        </Grid>
+                                                        <Grid container xs="12">
+                                                            <Grid item xs="12">
+                                                            </Grid>
                                                         </Grid>
                                                     </Grid>
                                                     <Grid container xs="8" style={{marginLeft:5,borderLeft:"1px solid black"}}>

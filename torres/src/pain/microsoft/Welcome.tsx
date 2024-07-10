@@ -5,29 +5,33 @@
 import { Button, Container } from '@mui/material';
 import { AuthenticatedTemplate, UnauthenticatedTemplate } from '@azure/msal-react';
 import { useAppContext } from './AppContext';
+import ProvideAppContext from './AppContext';
+import Calendar from './Calendar';
+import { MsalProvider, useMsal } from '@azure/msal-react';
+import { Login, Agenda, useIsSignedIn, Planner } from '@microsoft/mgt-react';
 
-export default function Welcome() {
+export default function Welcome({showCal}) {
   const app = useAppContext();
-  console.log("app",app);
 
+    const [ isSignedIn ] = useIsSignedIn();
+    const { instance } = useMsal();
+    const activeAccount = instance.getActiveAccount();
+    console.log("sign",isSignedIn);
+    console.log("inst",instance);
+    console.log("act",activeAccount);
   return (
-    <div className="p-5 mb-4 bg-light rounded-3">
-      <Container>
-        <h1>React Graph Tutorial</h1>
-        <p className="lead">
-          This sample app shows how to use the Microsoft Graph API to access a user's data from React
-        </p>
-        <AuthenticatedTemplate>
-          <div>
-            <h4>Welcome {app.user?.displayName || ''}!</h4>
-            <p>Use the navigation bar at the top of the page to get started.</p>
-          </div>
-        </AuthenticatedTemplate>
-        <UnauthenticatedTemplate>
-          <Button color="primary" onClick={app.signIn!}>Click here to sign in</Button>
-        </UnauthenticatedTemplate>
-      </Container>
-    </div>
+    <>
+        {(!activeAccount) && (
+            <div className="p-5 mb-4 bg-light rounded-3">
+              <Container>
+                <h5>Integrate with o365</h5>
+                <UnauthenticatedTemplate>
+                  <Button color="primary" onClick={app.signIn!}>Click here to sign in</Button>
+                </UnauthenticatedTemplate>
+              </Container>
+            </div>
+        )}
+    </>
   );
 }
 // </WelcomeSnippet>

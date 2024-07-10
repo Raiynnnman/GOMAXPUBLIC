@@ -688,6 +688,7 @@ class Registrations extends Component {
             )}
             <Navbar/>
             <Box style={{margin:20}}>
+                <Office365SSO showWelcome={true}/>
                 <Drawer
                   anchor="right"
                   open={this.state.drawerOpen}
@@ -929,7 +930,7 @@ class Registrations extends Component {
                             <Tab value='myactivities' label='My Activities'/>
                         </Tabs>
                         {(this.state.activeTab === 'myactivities')  && ( 
-                            <Office365SSO/>
+                            <Office365SSO showCalendar={true}/>
                         )}
                         {(this.state.activeTab === 'registrations' || this.state.activeTab === 'myregistrations') && ( 
                         <>

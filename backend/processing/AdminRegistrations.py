@@ -285,6 +285,8 @@ class RegistrationUpdate(AdminBase):
         )
         if 'actions' in params:
             for x in params['actions']:
+                if 'action' not in x:
+                    continue
                 if 'id' not in x:
                     bb2 = encryption.encrypt(
                         x['action'],
@@ -630,7 +632,8 @@ class RegistrationList(AdminBase):
                 select pqa.id,pqa.user_id,pqa.action,
                 pqat.name as action_type,pqat.id as action_type_id,
                 pqas.name as action_status, pqas.id as action_status_id,
-                concat(u.first_name, ' ', u.last_name) as activity_name
+                concat(u.first_name, ' ', u.last_name) as activity_name,
+                pqa.duration,pqa.due_date,pqa.end_date,pqa.start_date
                 from 
                     provider_queue_actions pqa
                     left join provider_queue_actions_status pqas on pqa.provider_queue_actions_status_id=pqas.id

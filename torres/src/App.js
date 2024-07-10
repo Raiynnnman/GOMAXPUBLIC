@@ -38,7 +38,6 @@ import Verified from './pain/landing/Verified';
 import Accept from './pain/referral_accept/Accept';
 import Reject from './pain/referral_accept/Reject';
 import ChatUser from './pain/chatUser/ChatUser.js';
-import ChatOffice from './pain/chatOffice/ChatOffice';
 import Pricing from './components/Pricing';
 const CloseButton = ({closeToast}) => <i onClick={closeToast} className="la la-close notifications-close"/>
 const App = () => {
@@ -90,7 +89,7 @@ const App = () => {
                     <Route exact path='/app/main/admin/plans' component={PricingList}/>
                     <Route exact path='/app/main/admin/users' component={UserAdminList}/>
                     <Route exact path="/app/main/office/locations"  component={OfficeAddresses} />
-                    <Route exact path="/app/main/office/chat" component={ChatOffice} />
+                    {/*<Route exact path="/app/main/office/chat" component={ChatOffice} />*/}
                     <Route exact path="/app/main/office/clients"  component={Customers} />
                     <Route exact path="/app/main/client/search" component={Search} />
                     <Route exact path="/app/main/client/chat" component={ChatUser} />

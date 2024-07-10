@@ -42,12 +42,11 @@ export default function Calendar() {
 
   return (
   <>
-    <h4>Test</h4>
     <AuthenticatedTemplate>
-      <div className="mb-3">
-        <h1 className="mb-3">{format(weekStart, 'MMMM d, yyyy')} - {format(weekEnd, 'MMMM d, yyyy')}</h1>
+      {/*<div className="mb-3">
+        <h3 className="mb-3">{format(weekStart, 'MMMM d, yyyy')} - {format(weekEnd, 'MMMM d, yyyy')}</h3>
         <RouterNavLink to="/newevent" className="btn btn-light btn-sm">New event</RouterNavLink>
-      </div>
+      </div>*/}
       <div className="calendar-week">
         <div className="table-responsive">
           {events && <table>
