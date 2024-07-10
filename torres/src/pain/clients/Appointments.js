@@ -37,7 +37,7 @@ class Appointments extends Component {
       selected: null,
       openModal: false,
       formValues: {
-        customerId:0 | this.props.currentUser.id,
+        customerId:'',
         dateOfAccident: '',
         description: '',
         hospital: '',
