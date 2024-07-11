@@ -52,10 +52,8 @@ const StepForm = ({ formValues, handleChange, handleSubmit }) => {
 
   const handleNext = () => {
     const newErrors = validateStepFields(activeStep);
-    console.log('Validation Errors:', newErrors); // Log validation errors
     if (Object.keys(newErrors).length === 0) {
       if (activeStep === steps.length - 1) {
-        console.log('Form Values on Submit:', formValues); // Log form values
         handleSubmit(); // Ensure handleSubmit is called
       } else {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);

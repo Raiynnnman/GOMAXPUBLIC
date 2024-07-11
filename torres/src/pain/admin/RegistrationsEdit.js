@@ -30,6 +30,7 @@ import TemplateBadge from '../utils/TemplateBadge';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
+import envConfig from '../../envConfig';
 
 
 const buttonStyle = {
@@ -106,6 +107,9 @@ class RegistrationsEdit extends Component {
 
     componentDidMount() { 
         this.state.selected = this.props.selected;
+        if (envConfig() !== 'prod') { 
+            this.state.selected.email = 'dev@poundpain.com';
+        } 
         this.setState(this.state);
     } 
 
@@ -131,7 +135,7 @@ class RegistrationsEdit extends Component {
     }
 
     addAction() { 
-        this.state.selected.actions.unshift({text:'',edit:true})
+        this.state.selected.actions.unshift({id:'new', text:'',edit:true})
         this.state.actionIdx = 0;
         this.setState(this.state);
     }
@@ -214,9 +218,24 @@ class RegistrationsEdit extends Component {
         this.setState(this.state);
     } 
 
-    onCreateEvent(e) { 
+    onCreateEvent(e,t) { 
+        var v1 = this.props.registrationsAdminList.data.config.action_status.filter((g) => "Scheduled" === g.name)
+        var v2 = this.props.registrationsAdminList.data.config.action_type.filter((g) => "Appointment" === g.name)
+        t.action_type_id = v2[0].id;
+        t.action_status_id = v1[0].id;
+        t.server_response = e.server_response;
+        var g = this.state.selected.actions.findIndex((f) => f.id === e.id);
+        if (g > -1) { 
+            this.state.selected.actions[g] = t;
+            this.state.selected.actions[g].edit = false;
+            this.setState(this.state);
+        } 
+        
+        this.save();
     } 
+
     onCancelEvent(e) { 
+        this.cancelAction(e);
     } 
 
     updateFirst(e) { 
@@ -366,7 +385,6 @@ class RegistrationsEdit extends Component {
         this.setState(this.state);
     }
     render() {
-        console.log("s",this.state);
         var offheads = [
             {
                 dataField:'id',
@@ -745,8 +763,8 @@ class RegistrationsEdit extends Component {
                                 <Grid container xs="12">
                                     {this.state.selected.actions.sort((a,b) => (a.created > b.created ? -1:1)).map((e) => { 
                                         return (
-                                            <Grid item xs="3" key={e.id} style={{marginLeft:10}}>
-                                                <Office365SSO data={e} onCreateEvent={this.onCreateEvent} 
+                                            <Grid item xs="5" key={e.id} style={{marginLeft:10}}>
+                                                <Office365SSO editMode={e.edit} client={this.state.selected} currentUser={this.props.currentUser} data={e} onCreateEvent={this.onCreateEvent} 
                                                     onCancelEvent={this.onCancelEvent} showNewEvent={true}/>
                                             </Grid>
                                         )
@@ -854,7 +872,8 @@ class RegistrationsEdit extends Component {
                                                     <Grid item xs="12">
                                                         <div style={{display:"flex",justifyContent:"center"}}>
                                                             <div style={{display:"flex",justifyContent:"spread-evenly"}}>
-                                                            <TemplateButtonIcon onClick={this.saveAction} label={<SaveIcon/>}/>
+                                                            <TemplateButtonIcon disabled={this.state.actionIdx !== null} 
+                                                                onClick={this.saveAction} label={<SaveIcon/>}/>
                                                             <TemplateButtonIcon outline style={{marginLeft:10}} 
                                                                 onClick={this.cancelAction} label={<CancelIcon/>}/>
                                                             </div>
@@ -1037,7 +1056,7 @@ class RegistrationsEdit extends Component {
             <Grid container xs="12" style={{marginTop:20}}>
                 <Grid item xs="12">
                     <Grid item xs="6">
-                        <TemplateButton onClick={this.save} color="primary" label="Save"/>
+                        <TemplateButton onClick={this.save} disabled={this.state.actionIdx !== null} label="Save"/>
                         <TemplateButton outline style={{marginLeft:10}} onClick={this.close} 
                             color="secondary" label="Close"/>
                     </Grid>

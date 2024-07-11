@@ -72,7 +72,6 @@ class Appointments extends Component {
     } else {
       // dispatch(fetchAppointments({}));
     }
-    console.log(this.state);
   }
 
   handleOpenModal = () => {
@@ -106,13 +105,10 @@ class Appointments extends Component {
 
   handleCreateAppointment = (formValues) => {
     const { currentUser, dispatch } = this.props;
-    // console.log("Look",this.props)
     // this.props.dispatch(loginUser({ email: this.state.email, password: this.state.password }));
-    console.log('Creating appointment with values:', formValues); // Add this line to log form values
     
         createAppointment(formValues, (err) => {
             if (!err) {
-                console.log('Appointment created successfully');  
                 this.handleCloseModal();
             } else {
                 console.error('Failed to create appointment:', err);

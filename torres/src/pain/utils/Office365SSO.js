@@ -19,7 +19,7 @@ import { msalConfig } from './authConfig';
 
 const msalInstance = new PublicClientApplication(msalConfig);
 
-function Office365SSO({onChange,showWelcome,showCalendar,showNewEvent,onCancelEvent,onCreateEvent,data}) {
+function Office365SSO({onChange,showWelcome,showCalendar,showNewEvent,onCancelEvent,onCreateEvent,data,currentUser,client}) {
 
     return (
     <>
@@ -29,7 +29,8 @@ function Office365SSO({onChange,showWelcome,showCalendar,showNewEvent,onCancelEv
                 <ProvideAppContext>
                     {showWelcome && (<Welcome/>)}
                     {showCalendar && (<Calendar/>)}
-                    {showNewEvent && (<NewEvent onCreateEvent={onCreateEvent} onCancelEvent={onCancelEvent} data={data}/>)}
+                    {showNewEvent && (<NewEvent onCreateEvent={onCreateEvent} currentUser={currentUser} 
+                        onCancelEvent={onCancelEvent} client={client} data={data}/>)}
                 </ProvideAppContext>
             </MsalProvider>
         </>

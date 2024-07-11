@@ -285,27 +285,53 @@ class RegistrationUpdate(AdminBase):
         )
         if 'actions' in params:
             for x in params['actions']:
-                if 'action' not in x:
-                    continue
+                if 'attendees' not in x:
+                    x['attendees'] = []
+                if 'body' not in x:
+                    x['body'] = {}
+                if 'subject' not in x:
+                    x['subject'] = None
+                if 'action_type_id' not in x:
+                    x['action_type_id'] = None
+                if 'action_status_id' not in x:
+                    x['action_status_id'] = None
+                if 'server_response' not in x:
+                    x['server_response'] = {}
+                if 'start' not in x:
+                    x['start'] = {'dateTime':'','timeZone':''}
+                if 'end' not in x:
+                    x['end'] = {'dateTime':'','timeZone':''}
+                if 'id' in x and x['id'] == 'new':
+                    del x['id']
+                print("x=%s" % x)
+                x['start_timezone'] = ''
+                x['end_timezone'] = ''
+                x['online'] = 0
+                if 'isOnlinMeeting' in x:
+                    x['online'] = x['isOnlineMeeting']
+                if 'dateTime' in x['start']:
+                    x['start_timezone'] = x['start']['timeZone']
+                    x['start'] = x['start']['dateTime']
+                if 'dateTime' in x['end']:
+                    x['end_timezone'] = x['end']['timeZone']
+                    x['end'] = x['end']['dateTime']
                 if 'id' not in x:
-                    bb2 = encryption.encrypt(
-                        x['action'],
-                        config.getKey('encryption_key')
-                        )
-                    if 'action_type_id' not in x:
-                        x['action_type_id'] = None
-                    if 'action_status_id' not in x:
-                        x['action_status_id'] = None
                     db.update("""
                         insert into provider_queue_actions(
-                            user_id,provider_queue_id,action,provider_queue_actions_type_id,
+                            user_id,provider_queue_id,body,subject,attendees,
+                            start_date,end_date,online,start_timezone,end_timezone,
+                            provider_queue_actions_type_id,server_response,
                             provider_queue_actions_status_id
                         )
                         values 
-                        (%s,%s,%s,%s,%s)
+                        (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
                         """,(user['user_id'],
-                            pqid,bb2,
-                            x['action_type_id'],x['action_status_id'])
+                            pqid,json.dumps(x['body']),x['subject'],
+                            json.dumps(x['attendees']),
+                            x['start'],x['end'],x['online'],x['start_timezone'],
+                            x['end_timezone'],x['action_type_id'],
+                            json.dumps(x['server_response']),
+                            x['action_status_id'])
                     )
                     db.update("""
                         insert into office_history (office_id,user_id,text) values
@@ -495,6 +521,7 @@ class RegistrationList(AdminBase):
                 pq.do_not_contact,pq.website,
                 o.commission_user_id,oa.state,op.start_date,
                 concat(comu.first_name, ' ', comu.last_name) as commission_name,
+                comu.email as commission_email,
                 o.office_alternate_status_id, oas1.name as office_alternate_status_name,
                 coup.id as coupon_id,coup.name as coupon_name
             from
@@ -629,11 +656,12 @@ class RegistrationList(AdminBase):
         for x in o:
             x['actions']  = []
             acts = db.query("""
-                select pqa.id,pqa.user_id,pqa.action,
+                select pqa.id,pqa.user_id,
                 pqat.name as action_type,pqat.id as action_type_id,
                 pqas.name as action_status, pqas.id as action_status_id,
                 concat(u.first_name, ' ', u.last_name) as activity_name,
-                pqa.duration,pqa.due_date,pqa.end_date,pqa.start_date
+                pqa.duration,pqa.due_date,pqa.end_date,pqa.start_date,pqa.attendees,
+                pqa.body,pqa.subject,pqa.server_response
                 from 
                     provider_queue_actions pqa
                     left join provider_queue_actions_status pqas on pqa.provider_queue_actions_status_id=pqas.id
@@ -644,16 +672,10 @@ class RegistrationList(AdminBase):
                 """,(x['id'],)
             )
             for cc in acts: 
-                # This happens when we switch environments, just skip
-                try:
-                    bb2 = encryption.decrypt(
-                        cc['action'],
-                        config.getKey('encryption_key')
-                        )
-                    cc['action'] = bb2
-                    x['actions'].append(cc)
-                except:
-                    pass
+                cc['server_response'] = json.loads(cc['server_response'])
+                cc['body'] = json.loads(cc['body'])
+                cc['attendees'] = json.loads(cc['attendees'])
+                x['actions'].append(cc)
             x['addr'] = db.query("""
                 select 
                     u.first_name,u.last_name,u.email,u.phone

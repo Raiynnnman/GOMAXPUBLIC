@@ -4,6 +4,9 @@
 // <NewEventSnippet>
 import { useEffect, useState } from 'react';
 // import { NavLink as RouterNavLink, Navigate } from 'react-router-dom';
+import TemplateWebEditor from '../utils/TemplateWebEditor';
+
+import moment from 'moment';
 import { Attendee, Event } from '@microsoft/microsoft-graph-types';
 import { Grid, Typography, Paper, Box, TextField, Divider, Button } from '@mui/material';
 import Datetime from 'react-datetime';
@@ -39,12 +42,14 @@ const cardStyle = {
     boxSizing: 'border-box'
 };
 
-const NewEvent = ({data,onCreateEvent,onCancelEvent}) => {
+const NewEvent = ({data,onCreateEvent,onCancelEvent,currentUser,client}) => {
   const app = useAppContext();
-  console.log("oc",onCreateEvent);
 
   const [subject, setSubject] = useState('');
-  const [attendees, setAttendees] = useState('');
+  const [attendees, setAttendees] = useState(
+        currentUser.email + ";" + 
+        client.email + ';' + client.commission_email + ';' 
+    );
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
   const [startFormatted, setStartFormatted] = useState('');
@@ -55,34 +60,38 @@ const NewEvent = ({data,onCreateEvent,onCancelEvent}) => {
 
   useEffect(() => {
     setFormDisabled(
-      subject.length === 0); //||
-      //start.length === 0 ||
-      //end.length === 0);
-  }, [subject, start, end]);
+      subject.length === 0 || 
+      startFormatted.length === 0 ||
+      endFormatted.length === 0);
+  }, [subject, start, end, body]);
   const timeZoneIANA = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  console.log("tz",timeZoneIANA);
+
+  const setBodyValue = (e) => { 
+    setBody(e);
+  } 
 
   const attendeUpdate = (e) => { 
-    console.log(e.target.value);
   } 
+
   const setStartDate = (e) => { 
+    if (!e.format) { return; }
     setStart(e);
     setStartFormatted(e.format('YYYY/MM/DDThh:mm'));
+    var t = moment(e);
+    setEndDate(t.add(moment.duration(15,'minutes')))
   } 
   const setEndDate = (e) => { 
+    if (!e.format) { return; }
     setEnd(e);
     setEndFormatted(e.format('YYYY/MM/DDThh:mm'));
   } 
 
-  console.log(new Date().toTimeString().slice(9));
-  console.log("s",start,"e",end)
 
   const cancel = () => { 
 
   } 
 
   const doCreate = async () => {
-    console.log("starting...");
     const attendeeEmails = attendees.split(';');
     const attendeeArray: Attendee[] = [];
 
@@ -95,7 +104,6 @@ const NewEvent = ({data,onCreateEvent,onCancelEvent}) => {
         });
       }
     });
-    console.log(start,end)
 
     const newEvent: Event = {
       subject: subject,
@@ -107,6 +115,7 @@ const NewEvent = ({data,onCreateEvent,onCancelEvent}) => {
         dateTime: startFormatted,
         timeZone: timeZoneIANA
       },
+      isOnlineMeeting: true,
       end: {
         dateTime: endFormatted,
         timeZone: timeZoneIANA
@@ -119,11 +128,13 @@ const NewEvent = ({data,onCreateEvent,onCancelEvent}) => {
     };
 
     try {
-        await createEvent(app.authProvider!, newEvent);
+        console.log("ne",newEvent);
+        var r = await createEvent(app.authProvider!, newEvent);
+        data['server_response'] = r;
         // setRedirect(true);
         onCreateEvent(data,newEvent);
     } catch (err) {
-      console.log("err",err)
+      console.error(err);
       app.displayError!('Error creating event', JSON.stringify(err));
     }
   };
@@ -161,11 +172,13 @@ const NewEvent = ({data,onCreateEvent,onCancelEvent}) => {
                             <Datetime onChange={setEndDate} value={end} />
                         </Grid>
                     </Grid>
-                    <Grid container xs={12} style={{marginTop:10}}>
+                    {/*<Grid container xs={12} style={{marginTop:10,height:400}}>
                         <Grid item xs={12}>
-                            <TextField multiline label="Body" style={{width:"100%"}} minRows={5} value={body} onChange={(ev) => setBody(ev.target.value)} />
+                            <TemplateWebEditor
+                                onSave={setBodyValue}
+                                value={body} />
                         </Grid>
-                    </Grid>
+                    </Grid>*/}
                     <Grid container xs={12} style={{marginTop:10}}>
                         <Grid item xs={12}>
                           <Button color="primary"

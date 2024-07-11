@@ -43,7 +43,6 @@ function TemplateSelectMulti({label,onChange,style,value,options}) {
   }
 
   const handleChange = (e,t) => {
-    console.log("hc",e,t);
     var v = e.target.value;
     if (v.includes('SelectAll')) { 
         var n = v.filter((f) => f !== 'SelectAll');

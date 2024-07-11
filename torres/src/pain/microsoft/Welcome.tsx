@@ -16,9 +16,6 @@ export default function Welcome({showCal}) {
     const [ isSignedIn ] = useIsSignedIn();
     const { instance } = useMsal();
     const activeAccount = instance.getActiveAccount();
-    console.log("sign",isSignedIn);
-    console.log("inst",instance);
-    console.log("act",activeAccount);
   return (
     <>
         {(!activeAccount) && (
