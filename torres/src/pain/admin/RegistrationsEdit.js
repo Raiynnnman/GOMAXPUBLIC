@@ -814,10 +814,10 @@ class RegistrationsEdit extends Component {
                                                                     {moment(e.created).format('LLL')}
                                                                 </font>
                                                             </Grid>
-                                                            <Grid item xs="2">
+                                                            {/*<Grid item xs="2">
                                                                 <TemplateButtonIcon sx={buttonStyle} style={{marginTop:0,marginRight:20}} 
                                                                     onClick={() => this.editAction(e)} label={<EditIcon/>}/>
-                                                            </Grid>
+                                                            </Grid>*/}
                                                         </Grid>
                                                         <hr/>
                                                         <Grid container xs="12">
