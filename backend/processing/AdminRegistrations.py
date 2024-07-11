@@ -231,6 +231,11 @@ class RegistrationUpdate(AdminBase):
                 update office set commission_user_id=%s where id=%s
                 """,(params['commission_user_id'],offid)
             )
+        if 'setter_user_id' in params:
+            db.update("""
+                update office set setter_user_id=%s where id=%s
+                """,(params['setter_user_id'],offid)
+            )
         if 'pricing_id' in params and params['pricing_id'] is not None and params['pricing_id'] > 0:
             db.update("""
                 update office_plans set pricing_data_id=%s where office_id=%s
@@ -519,8 +524,10 @@ class RegistrationList(AdminBase):
                 pqcs.name as call_status, pqcs.id as call_status_id,
                 ot.name as office_type,op.pricing_data_id as pricing_id,
                 pq.do_not_contact,pq.website,
+                o.setter_user_id,
                 o.commission_user_id,oa.state,op.start_date,
                 concat(comu.first_name, ' ', comu.last_name) as commission_name,
+                concat(setu.first_name, ' ', setu.last_name) as setter_name,
                 comu.email as commission_email,
                 o.office_alternate_status_id, oas1.name as office_alternate_status_name,
                 coup.id as coupon_id,coup.name as coupon_name
@@ -535,6 +542,7 @@ class RegistrationList(AdminBase):
                 left outer join coupons coup on coup.id = op.coupons_id
                 left outer join office_type ot on ot.id=o.office_type_id
                 left outer join users comu on comu.id = o.commission_user_id
+                left outer join users setu on setu.id = o.setter_user_id
                 left outer join office_alternate_status oas1 on o.office_alternate_status_id=oas1.id
             where
                 1 = 1 
@@ -552,7 +560,9 @@ class RegistrationList(AdminBase):
             search_par.insert(0,int(params['pq_id']))
             count_par.append(int(params['pq_id']))
         elif 'mine' in params and params['mine'] is not None:
-            q += " and o.commission_user_id = %s "
+            q += " and ( o.commission_user_id = %s or o.setter_user_id = %s )"
+            search_par.insert(0,user['id'])
+            count_par.append(user['id'])
             search_par.insert(0,user['id'])
             count_par.append(user['id'])
         if 'status' in params and len(params['status']) > 0:

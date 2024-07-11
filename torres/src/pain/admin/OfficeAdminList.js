@@ -85,6 +85,7 @@ class OfficeList extends Component {
         this.onAltStatusChange = this.onAltStatusChange.bind(this);
         this.websiteChange = this.websiteChange.bind(this);
         this.onCommissionChange = this.onCommissionChange.bind(this);
+        this.onSetterChange = this.onSetterChange.bind(this);
         this.save = this.save.bind(this);
         this.onAltStatusFilter = this.onAltStatusFilter.bind(this);
         this.delGrid = this.delGrid.bind(this);
@@ -254,10 +255,17 @@ class OfficeList extends Component {
         this.setState(this.state);
     }
 
+    onSetterChange(e,t) { 
+        this.state.selected.setter_name = e.target.value;
+        this.state.selected.setter_user_id = 
+            this.props.offices.data.config.commission_users.filter((g) => g.name === e.target.value)[0].id
+        this.setState(this.state);
+    }
+
     onCommissionChange(e,t) { 
-        this.state.selected.commission_user_id = e.value;
-        this.state.selected.commission_name = 
-            this.props.offices.data.config.commission_users.filter((g) => g.id === e.value)[0].name
+        this.state.selected.commission_name = e.target.value;
+        this.state.selected.commission_user_id = 
+            this.props.offices.data.config.commission_users.filter((g) => g.name === e.target.value)[0].id
         this.setState(this.state);
     }
 
@@ -974,6 +982,7 @@ class OfficeList extends Component {
                                     return (
                                         { 
                                         label: e.name,
+                                        name: e.name,
                                         value: e.name
                                         }
                                     )
@@ -986,13 +995,34 @@ class OfficeList extends Component {
                             this.props.offices.data.config &&
                             this.props.offices.data.config.commission_users) && (
                               <TemplateSelect
-                                  label='Commission Owner'
+                                  label='Commission User'
                                   onChange={this.onCommissionChange}
                                   value={{label:this.state.selected.commission_name}}
                                   options={this.props.offices.data.config.commission_users.map((e) => { 
                                     return (
                                         { 
                                         label: e.name,
+                                        name: e.name,
+                                        value: e.name
+                                        }
+                                    )
+                                  })}
+                                />
+                            )}
+                        </Grid>                
+                        <Grid item xs={3} style={{marginLeft:20}}>
+                          {(this.props.offices && this.props.offices.data && 
+                            this.props.offices.data.config &&
+                            this.props.offices.data.config.commission_users) && (
+                              <TemplateSelect
+                                  label='Setter User'
+                                  onChange={this.onSetterChange}
+                                  value={{label:this.state.selected.setter_name}}
+                                  options={this.props.offices.data.config.commission_users.map((e) => { 
+                                    return (
+                                        { 
+                                        label: e.name,
+                                        name: e.name,
                                         value: e.name
                                         }
                                     )

@@ -927,7 +927,7 @@ class Registrations extends Component {
                         <Tabs style={{marginBottom:20}} value={this.state.activeTab} onChange={this.toggleTab}>
                             <Tab value='myregistrations' label='Assigned to Me'/>
                             <Tab value='registrations' label='Registrations'/>
-                            <Tab value='myactivities' label='My Activities'/>
+                            {/*<Tab value='myactivities' label='My Activities'/>*/}
                         </Tabs>
                         {(this.state.activeTab === 'myactivities')  && ( 
                             <Office365SSO showCalendar={true}/>

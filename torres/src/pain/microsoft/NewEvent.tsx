@@ -193,68 +193,6 @@ const NewEvent = ({data,onCreateEvent,onCancelEvent,currentUser,client}) => {
                 </Box>
             </Paper>
         </Box>
-    {/*
-    <Form>
-      <Form.Group>
-        <Form.Label>Subject</Form.Label>
-        <Form.Control type="text"
-          name="subject"
-          id="subject"
-          className="mb-2"
-          value={subject}
-          onChange={(ev) => setSubject(ev.target.value)} />
-      </Form.Group>
-      <Form.Group>
-        <Form.Label>Attendees</Form.Label>
-        <Form.Control type="text"
-          name="attendees"
-          id="attendees"
-          className="mb-2"
-          placeholder="Enter a list of email addresses, separated by a semi-colon"
-          value={attendees}
-          onChange={(ev) => setAttendees(ev.target.value)} />
-      </Form.Group>
-      <Grid container className="mb-2">
-        <Grid item sx="12">
-          <Form.Group>
-            <Form.Label>Start</Form.Label>
-            <Form.Control type="datetime-local"
-              name="start"
-              id="start"
-              value={start}
-              onChange={(ev) => setStart(ev.target.value)} />
-          </Form.Group>
-        </Grid>
-        <Grid item sx="12">
-          <Form.Group>
-            <Form.Label>End</Form.Label>
-            <Form.Control type="datetime-local"
-              name="end"
-              id="end"
-              value={end}
-              onChange={(ev) => setEnd(ev.target.value)} />
-          </Form.Group>
-        </Grid>
-      </Grid>
-      <Form.Group>
-        <Form.Label>Body</Form.Label>
-        <Form.Control as="textarea"
-          name="body"
-          id="body"
-          className="mb-3"
-          style={{ height: '10em' }}
-          value={body}
-          onChange={(ev) => setBody(ev.target.value)} />
-      </Form.Group>
-      <Button color="primary"
-        className="me-2"
-        disabled={formDisabled}
-        onClick={() => doCreate()}>Create</Button>
-      <RouterNavLink to="/calendar"
-        className="btn btn-secondary"
-      >Cancel</RouterNavLink>
-    </Form>
-    */}
     </>
   );
 }

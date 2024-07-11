@@ -62,6 +62,7 @@ class OfficeList(AdminBase):
                     o.priority,pq.do_not_contact,pq.provider_queue_status_id pq_status_id,
                     pqs.name as provider_queue_status,ot.name as office_type,o.updated,o.commission_user_id,
                     trim(concat(comu.first_name, ' ', comu.last_name)) as commission_name,pq.website,
+                    trim(concat(setu.first_name, ' ', setu.last_name)) as setter_name,
                     o.office_alternate_status_id, oas1.name as office_alternate_status_name
                 from 
                     office o
@@ -70,6 +71,7 @@ class OfficeList(AdminBase):
                     left outer join provider_queue pq on pq.office_id = o.id
                     left outer join provider_queue_status pqs on pq.provider_queue_status_id=pqs.id
                     left outer join users comu on comu.id = o.commission_user_id
+                    left outer join users setu on setu.id = o.setter_user_id
                     left outer join office_alternate_status oas1 on o.office_alternate_status_id=oas1.id
                 where 
                     o.office_type_id <> %s 
@@ -325,7 +327,7 @@ class OfficeList(AdminBase):
             ret['content'] = base64.b64encode(t.encode('utf-8')).decode('utf-8')
         ret['config'] = {}
         ret['config']['commission_users'] = db.query("""
-            select 1,'System' as name
+            select 1 as id,'System' as name
             UNION ALL
             select id,concat(first_name,' ',last_name) as name from users u
                 where u.active=1 and id in (select user_id from user_entitlements where entitlements_id=10)
@@ -400,6 +402,11 @@ class OfficeSave(AdminBase):
             db.update("""
                 update office set office_alternate_status_id=%s where id = %s
                 """,(params['office_alternate_status_id'],params['id'])
+            )
+        if 'setter_user_id' in params:
+            db.update("""
+                update office set setter_user_id=%s where id = %s
+                """,(params['setter_user_id'],insid)
             )
         if 'commission_user_id' in params:
             db.update("""
