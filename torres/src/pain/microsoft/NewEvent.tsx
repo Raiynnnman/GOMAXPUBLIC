@@ -48,7 +48,8 @@ const NewEvent = ({data,onCreateEvent,onCancelEvent,currentUser,client}) => {
   const [subject, setSubject] = useState('');
   const [attendees, setAttendees] = useState(
         currentUser.email + ";" + 
-        client.email + ';' + client.commission_email + ';' 
+        (client.email ? client.email + ';' : '') + 
+        (client.commission_email ? client.commission_email + ";": '') 
     );
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');

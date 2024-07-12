@@ -85,7 +85,7 @@ function useProvideAppContext() {
   const authProvider = new AuthCodeMSALBrowserAuthenticationProvider(
     msal.instance as PublicClientApplication,
     {
-      account: msal.instance.getActiveAccount()!,
+      account: msal.instance.getActiveAccount()!, 
       scopes: config.scopes,
       interactionType: InteractionType.Popup
     }
@@ -95,6 +95,10 @@ function useProvideAppContext() {
   // <UseEffectSnippet>
   useEffect(() => {
     const checkUser = async () => {
+      var act = msal.instance.getAllAccounts();
+      if (act.length > 0) { 
+          msal.instance.setActiveAccount(act[0]);
+      }
       if (!user) {
         try {
           // Check if user is already signed in
@@ -111,6 +115,7 @@ function useProvideAppContext() {
             });
           }
         } catch (err: any) {
+          console.log("err",err);
           displayError(err.message);
         }
       }
@@ -121,10 +126,10 @@ function useProvideAppContext() {
 
   // <SignInSnippet>
   const signIn = async () => {
-    await msal.instance.loginPopup({
+    var g = await msal.instance.loginPopup({
       scopes: config.scopes,
       prompt: 'select_account'
-    });
+    }).then((e) => { });
 
     // Get the user from Microsoft Graph
     const user = await getUser(authProvider);
