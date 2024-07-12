@@ -77,14 +77,14 @@ const NewEvent = ({data,onCreateEvent,onCancelEvent,currentUser,client}) => {
   const setStartDate = (e) => { 
     if (!e.format) { return; }
     setStart(e);
-    setStartFormatted(e.format('YYYY/MM/DDThh:mm'));
+    setStartFormatted(e.format('YYYY/MM/DDTHH:mm'));
     var t = moment(e);
     setEndDate(t.add(moment.duration(15,'minutes')))
   } 
   const setEndDate = (e) => { 
     if (!e.format) { return; }
     setEnd(e);
-    setEndFormatted(e.format('YYYY/MM/DDThh:mm'));
+    setEndFormatted(e.format('YYYY/MM/DDTHH:mm'));
   } 
 
 
