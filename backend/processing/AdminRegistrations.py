@@ -698,6 +698,7 @@ class RegistrationList(AdminBase):
                     x['actions'].append(cc)
                 except Exception as e:
                     print("ERROR: ACTS: %s" % str(e))
+                    print(cc)
             x['addr'] = db.query("""
                 select 
                     ou.addr1,ou.addr2,ou.city,ou.state,ou.zipcode,ou.phone
