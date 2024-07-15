@@ -514,6 +514,7 @@ class RegistrationList(AdminBase):
             if params['search'] == None or len(params['search']) == 0:
                 del params['search']
         db = Query()
+        print(params)
         ALT = self.getAltStatus()
         q = """
             select 
@@ -603,6 +604,8 @@ class RegistrationList(AdminBase):
                 count_par.insert(0,params['search']+'%%')
                 count_par.insert(0,params['search']+'%%')
             q += " and office_alternate_status_id is null "
+        if 'alt_status' not in params or len(params['alt_status']) == 0:
+            params['alt_status'] = [-1]
         if 'alt_status' in params and params['alt_status'] is not None and len(params['alt_status']) > 0: 
             q += " and ("
             arr = []
@@ -613,6 +616,9 @@ class RegistrationList(AdminBase):
                     arr.append("office_alternate_status_id = %s" % z)
             q += " or ".join(map(str,arr))
             q += ")"
+        if 'users' not in params or len(params['users']) == 0:
+            print("NO_USERS")
+            params['users'] = [-1]
         if 'users' in params and params['users'] is not None and len(params['users']) > 0: 
             q += " and ("
             arr = []
@@ -623,6 +629,8 @@ class RegistrationList(AdminBase):
                     arr.append("o.commission_user_id = %s" % z)
             q += " or ".join(map(str,arr))
             q += ")"
+        if 'type' not in params or len(params['type']) == 0:
+            params['type'] = [-1]
         if 'type' in params and params['type'] is not None and len(params['type']) > 0:
             q += " and office_type_id in ("
             arr = []
@@ -633,6 +641,7 @@ class RegistrationList(AdminBase):
         prelimit = q
         pre_par = json.loads(json.dumps(search_par))
         q += " group by o.id "
+        print(q)
         cnt = db.query("select count(id) as cnt from (" + q + ") as t", count_par)
         ret['total'] = cnt[0]['cnt']
         if 'sort' not in params or params['sort'] == None:
@@ -688,15 +697,15 @@ class RegistrationList(AdminBase):
                 x['actions'].append(cc)
             x['addr'] = db.query("""
                 select 
-                    u.first_name,u.last_name,u.email,u.phone
+                    ou.addr1,ou.addr2,ou.city,ou.state,ou.zipcode,ou.phone
                 from 
-                    office_user ou,
-                    users u
+                    office_addresses ou
                 where 
-                    office_id=%s and
-                    ou.user_id = u.id
+                    office_id=%s
                 """,(x['office_id'],)
             )
+            if len(x['addr']) > 0:
+                x['state'] = x['addr'][0]['state']
             x['assignee'] = db.query("""
                 select
                     u.id,u.first_name,u.last_name
@@ -847,6 +856,7 @@ class RegistrationList(AdminBase):
         ret['config']['call_status'] = db.query("select id,name from provider_queue_call_status")
         ret['config']['action_status'] = db.query("select id,name from provider_queue_actions_status")
         ret['config']['action_type'] = db.query("select id,name from provider_queue_actions_type")
+        ret['config']['states'] = db.query("select state,count(state) from office_addresses where length(state) > 0 group by state")
         ret['config']['status'] = db.query("select id,name from provider_queue_status")
         ret['config']['coupons'] = db.query("select id,name,total,perc,reduction from coupons")
         ret['config']['commission_users'] = db.query("""

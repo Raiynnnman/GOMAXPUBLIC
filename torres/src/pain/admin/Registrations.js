@@ -128,6 +128,10 @@ class Registrations extends Component {
             var t = [];
             var t1 = [];
             for (c = 0; c < p.registrationsAdminList.data.config.alternate_status.length; c++) { 
+                if (p.registrationsAdminList.data.config.alternate_status[c].name === 'NO PI') { continue; }
+                if (p.registrationsAdminList.data.config.alternate_status[c].name === 'DNC') { continue; }
+                if (p.registrationsAdminList.data.config.alternate_status[c].name === 'Not interested') { continue; }
+                if (p.registrationsAdminList.data.config.alternate_status[c].name === 'Not a Chiropractor') { continue; }
                 t.push(p.registrationsAdminList.data.config.alternate_status[c]); 
                 t1.push(p.registrationsAdminList.data.config.alternate_status[c].id); 
             } 
@@ -303,10 +307,8 @@ class Registrations extends Component {
     } 
     pageChange(e) { 
         this.state.page = e
-        this.props.dispatch(getRegistrations(
-            {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
-        ));
         this.setState(this.state);
+        this.reload();
     } 
 
     onMassChange(e) { 
@@ -319,10 +321,8 @@ class Registrations extends Component {
         if (this.state.search.length === 0) { 
             this.state.search = null;
         } 
-        this.props.dispatch(getRegistrations(
-            {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
-        ));
         this.setState(this.state);
+        this.reload();
     } 
 
 
@@ -445,6 +445,7 @@ class Registrations extends Component {
         this.setState(this.state);
     } 
     reload() { 
+        console.log("rl",this.state);
         if (this.state.pq_id) { 
             this.props.dispatch(getRegistrations(
                 {alt_status:this.state.altFilter,users:this.state.userFilter,
@@ -513,6 +514,7 @@ class Registrations extends Component {
 
     render() {
         console.log("S",this.state);
+        console.log("P",this.props);
         var regheads = [
             {
                 dataField:'office_id',
@@ -529,6 +531,12 @@ class Registrations extends Component {
                 dataField:'email',
                 sort:true,
                 text:'Email'
+            },
+            {
+                dataField:'state',
+                sort:true,
+                align:'center',
+                text:'State'
             },
             {
                 dataField:'office_type',
