@@ -19,6 +19,9 @@ function TemplateSelectMulti({label,onChange,style,value,options}) {
 
   const [selected, setSelected] = React.useState(sel);
   const [open,setOpen] = React.useState(false);
+  console.log(label,sel);
+  console.log(label,value)
+  console.log(label,options);
 
   const handleClose = () => {
     setOpen(false);

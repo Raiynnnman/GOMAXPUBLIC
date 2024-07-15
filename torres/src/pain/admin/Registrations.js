@@ -102,6 +102,7 @@ class Registrations extends Component {
         var changed = false;
         if (p.registrationsAdminList.data && p.registrationsAdminList.data.config && 
             p.registrationsAdminList.data.config.commission_users && this.state.userSelected === null) { 
+            console.log("reset user")
             var c = 0;
             var t = [];
             var t1 = [];
@@ -122,6 +123,7 @@ class Registrations extends Component {
         if (p.registrationsAdminList.data && p.registrationsAdminList.data.config && 
             p.registrationsAdminList.data.config.alternate_status && 
             this.state.statusAltSelected === null) { 
+            console.log("reset alt")
             var c = 0;
             var t = [];
             var t1 = [];
@@ -141,6 +143,7 @@ class Registrations extends Component {
         } 
         if (p.registrationsAdminList.data && p.registrationsAdminList.data.config && 
             p.registrationsAdminList.data.config.status && this.state.statusSelected === null) { 
+            console.log("reset status")
             var c = 0;
             var t = [];
             var t1 = [];
@@ -324,6 +327,7 @@ class Registrations extends Component {
 
 
     onTypeFilter(e,t) { 
+        console.log("type",e,t);
         var c = 0;
         var t = [];
         var t1 = [];
@@ -333,6 +337,7 @@ class Registrations extends Component {
         } 
         this.state.typeSelected = t;
         this.state.filterType = t1;
+        console.log("type",t,t1);
         localStorage.setItem("reg_type",JSON.stringify([t,t1]));
         // this.reload();
         this.setState(this.state)
@@ -348,6 +353,7 @@ class Registrations extends Component {
     }
 
     onAltStatusFilter(e) { 
+        console.log("alt",e,t);
         var c = 0;
         var t = [];
         var t1 = [];
@@ -358,12 +364,14 @@ class Registrations extends Component {
         } 
         this.state.statusAltSelected = t;
         this.state.altFilter = t1;
+        console.log("alt",t,t1);
         localStorage.setItem("reg_alt_status",JSON.stringify([t,t1]));
         this.setState(this.state)
         // this.reload();
     } 
 
     onUserFilter(e,t) { 
+        console.log("user",e,t);
         var c = 0;
         var t = [];
         var t1 = [];
@@ -374,12 +382,14 @@ class Registrations extends Component {
         } 
         this.state.userSelected = t;
         this.state.userFilter = t1;
+        console.log("user",t,t1);
         localStorage.setItem("reg_user",JSON.stringify([t,t1]));
         this.setState(this.state)
         // this.reload();
     } 
 
     onStatusFilter(e,t) { 
+        console.log("status",e,t);
         var c = 0;
         var t = [];
         var t1 = [];
@@ -390,6 +400,7 @@ class Registrations extends Component {
         } 
         this.state.statusSelected = t;
         this.state.filter = t1;
+        console.log("status",t,t1);
         localStorage.setItem("reg_status",JSON.stringify([t,t1]));
         this.setState(this.state)
         // this.reload();
@@ -501,6 +512,7 @@ class Registrations extends Component {
     } 
 
     render() {
+        console.log("S",this.state);
         var regheads = [
             {
                 dataField:'office_id',
