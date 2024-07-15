@@ -855,10 +855,10 @@ class RegistrationList(AdminBase):
             select 1 as id,'System' as name
             UNION ALL
             select id,concat(first_name,' ',last_name) as name from users u
-                where u.active=1 and id in (select user_id from user_entitlements where entitlements_id=10)
+                where id in (select user_id from user_entitlements where entitlements_id=10)
             UNION ALL
             select id,concat(first_name,' ',last_name) as name from users u
-                where u.active=1 and id in (select user_id from user_entitlements where entitlements_id=14)
+                where id in (select user_id from user_entitlements where entitlements_id=14)
         """)
         ret['config']['strength'] = db.query("select id,name from provider_queue_lead_strength")
         ret['registrations'] = k
