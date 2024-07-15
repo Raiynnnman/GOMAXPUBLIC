@@ -691,10 +691,13 @@ class RegistrationList(AdminBase):
                 """,(x['id'],)
             )
             for cc in acts: 
-                cc['server_response'] = json.loads(cc['server_response'])
-                cc['body'] = json.loads(cc['body'])
-                cc['attendees'] = json.loads(cc['attendees'])
-                x['actions'].append(cc)
+                try:
+                    cc['server_response'] = json.loads(cc['server_response'])
+                    cc['body'] = json.loads(cc['body'])
+                    cc['attendees'] = json.loads(cc['attendees'])
+                    x['actions'].append(cc)
+                except Exception as e:
+                    print("ERROR: ACTS: %s" % str(e))
             x['addr'] = db.query("""
                 select 
                     ou.addr1,ou.addr2,ou.city,ou.state,ou.zipcode,ou.phone
