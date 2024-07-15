@@ -38,6 +38,7 @@ import Navbar from '../../components/Navbar';
 import LocationCard from '../office/LocationCard';
 import UserCard from '../office/UserCard';
 import { useState } from 'react';
+import ContactCard from '../office/ContactCard';
 
 
 
@@ -1084,12 +1085,35 @@ class OfficeList extends Component {
                                 </Grid>
                             </>
                         )}
+
+
                         {(this.state.subTab === 'contact') && (
-                          <PainTable
-                              keyField="id"
-                              data={this.state.selected.phones} 
-                              columns={ phonesheads }/>
-                        )}
+                            <>
+                                {this.state.addButton && ( 
+                                <TemplateButtonIcon
+                                    style={{ width:50,marginBottom: 10 }}
+                                    onClick={this.addUser}
+                                    label={<AddBoxIcon />}
+                                />
+                                )}
+                                <Grid container xs={12}>
+                                {this.state.selected.users && this.state.selected.users.length > 0 && (
+                                    this.state.selected.users.map((u, i) => (
+                                    <>
+                                        {!u.deleted && (
+                                        <Grid item xs={3} style={{margin:20}}>
+                                        <ContactCard onEdit={this.editUser} key={i} 
+                                            provider={u} />
+                                        </Grid>
+                                        )}
+                                    </>
+                                    ))
+                                )}
+                                </Grid>
+                            </>
+                        )}      
+
+                        
                         {(this.state.subTab === 'clients') && (
                           <PainTable
                               keyField="id"
