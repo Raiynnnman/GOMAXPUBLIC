@@ -603,7 +603,7 @@ class RegistrationList(AdminBase):
                 count_par.insert(0,params['search']+'%%')
                 count_par.insert(0,params['search']+'%%')
             q += " and office_alternate_status_id is null "
-        if 'alt_status' in params and params['alt_status'] is not None: 
+        if 'alt_status' in params and params['alt_status'] is not None and len(params['alt_status']) > 0: 
             q += " and ("
             arr = []
             for z in params['alt_status']:
@@ -613,7 +613,7 @@ class RegistrationList(AdminBase):
                     arr.append("office_alternate_status_id = %s" % z)
             q += " or ".join(map(str,arr))
             q += ")"
-        if 'users' in params and params['users'] is not None: 
+        if 'users' in params and params['users'] is not None and len(params['users']) > 0: 
             q += " and ("
             arr = []
             for z in params['users']:
@@ -623,7 +623,7 @@ class RegistrationList(AdminBase):
                     arr.append("o.commission_user_id = %s" % z)
             q += " or ".join(map(str,arr))
             q += ")"
-        if 'type' in params and params['type'] is not None:
+        if 'type' in params and params['type'] is not None len(params['type']) > 0:
             q += " and office_type_id in ("
             arr = []
             for z in params['type']:
