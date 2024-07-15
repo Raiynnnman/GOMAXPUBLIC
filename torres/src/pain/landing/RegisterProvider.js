@@ -29,16 +29,21 @@ import TemplateTextFieldPhone from '../utils/TemplateTextFieldPhone';
 import TemplateTextField from '../utils/TemplateTextField';
 import TemplateButton from '../utils/TemplateButton';
 import BillingCreditCardForm from './BillingCreditCardForm';
-import {stripeKey} from '../../stripeConfig.js';
+import {stripeKey} from '../../stripeConfig';
+import {staxxKey} from '../../staxxConfig';
 import {CardElement,ElementsConsumer,Elements} from '@stripe/react-stripe-js';
 
+var StaxJs = window.StaxJs;
 const stripePromise = loadStripe(stripeKey());
+
 class RegisterProvider extends Component {
     formRef = createRef();
 
+    stackJs = {}
     state = {
         page: -1,
         plan: 0,
+        staxxLoaded: false,
         card: null,
         cardObj: null,
         currentName: '',
@@ -46,6 +51,7 @@ class RegisterProvider extends Component {
         disableRegister:true,
         first: '',
         last: '',
+        formValues: {},
         phone: '',
         email: '',
         zipcode: '',
@@ -68,7 +74,57 @@ class RegisterProvider extends Component {
         snackbarSeverity: 'success'
     };
 
+    initStax() { 
+        var staxJs = new StaxJs( staxxKey() , {
+          number: {
+            id: 'card-number',     // the html id of the div you want to contain the credit card number field
+            placeholder: '0000 0000 0000 0000',    // the placeholder the field should contain
+            style: 'border:1px solid #d4d4d4;height: 35px; width: 100%; font-size: 15px;',    // the style to apply to the field
+            type: 'text',    // the input type (optional)
+            format: 'prettyFormat'    // the formatting of the CC number (prettyFormat || plainFormat || maskedFormat)
+          },
+          cvv: {
+            id: 'card-cvv',    // the html id of the div you want to contain the cvv field
+            placeholder: 'CVV',    // the placeholder the field should contain
+            style: 'border:1px solid #d4d4d4;height: 35px; width: 100%; font-size: 15px;',    // the style to apply to the field
+            type: 'text'    // the input type (optional)
+          }
+        });
+
+        staxJs.showCardForm().then(handler => {
+          if (this.state.staxxLoaded) { return; } 
+          this.setState({staxxLoaded: true});
+
+          handler.setTestPan("4111111111111111");
+          handler.setTestCvv("123");
+
+          this.setState({
+            formValues: {
+              month: "11",
+              year: "2025",
+              firstname: "Jon",
+              lastname: "Doe",
+              phone: "+1111111111111111"
+            }
+          });
+        });
+
+        staxJs.on("card_form_complete", message => {
+          console.log("card_form_complete", message);
+          // activate pay button
+          //this.setState({ isPayButtonDisabled: false });
+        });
+
+        /*staxJs.on("card_form_uncomplete", message => {
+          console.log("card_form_uncomplete", message);
+          // deactivate pay button
+          this.setState({ isPayButtonDisabled: true });
+        });*/
+        this.staxJs = staxJs;
+    } 
+
     componentDidMount() {
+
         const { id, pq_id } = this.props.match.params;
         this.setState({ plan: id, pq_id });
         this.props.dispatch(getLandingData({ type: this.state.provtype, pq_id }));
@@ -210,6 +266,7 @@ class RegisterProvider extends Component {
             name,
             phone,
             card: this.state.cardObj,
+            billing_system_id: this.props.landingData.data.billing_system_id,
             cust_id: this.props.setupIntent.data.data.cust_id,
             intent_id: this.props.setupIntent.data.data.id,
             plan: selPlan.id,
@@ -234,6 +291,11 @@ class RegisterProvider extends Component {
         }));
     };
 
+    handleFieldChange = event => {
+        const { formValues } = this.state;
+        const { name, value } = event.target;
+        this.setState({ formValues: { ...formValues, [name]: value } });
+    };
     checkValid = () => {
         this.setState({ isValid: true });
     };
@@ -341,6 +403,7 @@ class RegisterProvider extends Component {
             case 1:
                 return (
                     <Box sx={{ mt: 3 }}>
+                        {this.initStax()}
                         <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
                             <Typography variant="h6" gutterBottom>
                                 Checkout
@@ -383,6 +446,42 @@ class RegisterProvider extends Component {
                                     <Typography variant="body1">{this.calculatePrice()}</Typography>
                                 </Grid>
                             </Grid>
+                            {(this.props.landingData && this.props.landingData.data && this.props.landingData.data.billing_system_id===3) && (
+                            <Grid container spacing={2} sx={{ mt: 2 }}>
+                                <Grid item xs={12}>
+                                    <div id="card-element" classname="field">
+                                        <div style={{height:100,display:"flex",justifyContent:"space-evenly"}}>
+                                            <div id="card-number" classname="card-number"></div>
+                                            <div id="card-cvv" classname="card-cvv"></div>
+                                            <div style={{color:'black'}} className="expiry-month">
+                                                <input
+                                                  className="field"
+                                                  name="month"
+                                                  style={{color:'black'}}
+                                                  maxLength="2"
+                                                  placeholder="MM"
+                                                  onChange={this.handleFieldChange}
+                                                  value={this.state.formValues.month || ""}
+                                                />
+                                            </div>
+                                            <div>/</div>
+                                            <div style={{color:'black'}} className="expiry-year">
+                                                <input
+                                                  className="field"
+                                                  name="year"
+                                                  style={{color:'black'}}
+                                                  maxLength="4"
+                                                  placeholder="YYYY"
+                                                  onChange={this.handleFieldChange}
+                                                  value={this.state.formValues.year || ""}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Grid>
+                            </Grid>
+                            )}
+                            {(this.props.landingData && this.props.landingData.data && this.props.landingData.data.billing_system_id===1) && (
                             <Grid container spacing={2} sx={{ mt: 2 }}>
                                 <Grid item xs={12}>
                                 {(this.props.setupIntent && this.props.setupIntent.data &&
@@ -397,6 +496,7 @@ class RegisterProvider extends Component {
                                 )}
                                 </Grid>
                             </Grid>
+                            )}
                         </Paper>
                         <Box sx={{ display:'flex',justifyContent:'center', mt: 3 }}>
                             <Button
@@ -419,6 +519,8 @@ class RegisterProvider extends Component {
     render() {
         const { page, selPlan, snackbarOpen, snackbarMessage, snackbarSeverity } = this.state;
         const { registerProvider, landingData } = this.props;
+        console.log("ld",landingData);
+        console.log("s",this.state);
 
     
         var steps = ['Register Information', 'Payment Details'];

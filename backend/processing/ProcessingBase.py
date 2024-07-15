@@ -3,6 +3,7 @@ from util.DBOps import Query
 from util import Jenkins
 from common import settings
 from flask import request
+import random
 
 
 config = settings.config()
@@ -39,6 +40,9 @@ class ProcessingBase:
         db = Query()
         ret = {}
         o = db.query("select billing_system_id from billing_system_current")
+        random.shuffle(o)
+        if config.getKey("force_billing_system") is not None:
+            o = [{'billing_system_id':int(config.getKey("force_billing_system"))}]
         ret = o[0]['billing_system_id']
         return ret
 

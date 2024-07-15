@@ -365,6 +365,7 @@ class RegistrationLandingData(RegistrationsBase):
         ret['do_billing_charge'] = db.query("""
             select value from system_settings where name='do_billing_charge'
             """)[0]['value']
+        ret['billing_system_id'] = self.getBillingSystem()
         return ret
 
 class RegisterProvider(RegistrationsBase):
@@ -448,6 +449,8 @@ class RegisterProvider(RegistrationsBase):
         off_id = 0
         userid = 0
         pq_id = 0
+        if 'billing_system_id' in params:
+            BS = params['billing_system_id']
         if 'cust_id' not in params:
             params['cust_id'] = "cust-%s" % (encryption.getSHA256(params['email']))
         if 'phone' in params and params['phone'] is not None:
