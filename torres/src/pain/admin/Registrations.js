@@ -338,7 +338,6 @@ class Registrations extends Component {
         this.state.typeSelected = t;
         this.state.filterType = t1;
         console.log("type",t,t1);
-        localStorage.setItem("reg_type",JSON.stringify([t,t1]));
         // this.reload();
         this.setState(this.state)
     } 
@@ -365,7 +364,6 @@ class Registrations extends Component {
         this.state.statusAltSelected = t;
         this.state.altFilter = t1;
         console.log("alt",t,t1);
-        localStorage.setItem("reg_alt_status",JSON.stringify([t,t1]));
         this.setState(this.state)
         // this.reload();
     } 
@@ -383,7 +381,6 @@ class Registrations extends Component {
         this.state.userSelected = t;
         this.state.userFilter = t1;
         console.log("user",t,t1);
-        localStorage.setItem("reg_user",JSON.stringify([t,t1]));
         this.setState(this.state)
         // this.reload();
     } 
@@ -401,26 +398,33 @@ class Registrations extends Component {
         this.state.statusSelected = t;
         this.state.filter = t1;
         console.log("status",t,t1);
-        localStorage.setItem("reg_status",JSON.stringify([t,t1]));
         this.setState(this.state)
         // this.reload();
     } 
 
     componentDidMount() {
-        var i = null;
+        var pq = null;
         if (this.props.match.params.id) { 
-            i = this.props.match.params.id;
+            pq = this.props.match.params.id;
         } 
         this.props.dispatch(getRegistrations({
             status:[0],
             limit:this.state.pageSize,
-            pq_id:i,
+            pq_id:pq,
             offset:this.state.page
         }));
         this.state.saveSearches = 
             localStorage.getItem("reg_saved_filters") ? JSON.parse(localStorage.getItem("reg_saved_filters"))
          : []
         this.props.dispatch(getPlansList({}));
+        var i = localStorage.getItem("reg_tab_sel"); 
+        console.log("i",i);
+        if (i && i !== 'undefined') { 
+            this.state.activeTab = i;
+            this.toggleTab(null,i);
+        } 
+        this.setState(this.state);
+        
     }
 
     add() { 
@@ -461,6 +465,10 @@ class Registrations extends Component {
     }
 
     updateFilter() { 
+        localStorage.setItem("reg_type",JSON.stringify([this.state.statusSelected,this.state.filter]));
+        localStorage.setItem("reg_alt_status",JSON.stringify([this.state.statusAltSelected,this.state.altFilter]));
+        localStorage.setItem("reg_user",JSON.stringify([this.state.userSelected,this.state.userFilter]));
+        localStorage.setItem("reg_status",JSON.stringify([this.state.statusSelected,this.state.filter]));
         this.reload();
         this.toggleDrawer();
         this.setState(this.state);
@@ -487,6 +495,7 @@ class Registrations extends Component {
         this.state.activeTab = t;
         if (t !== 'myassigned') { this.state.mine = null; }
         if (t === 'myassigned') { this.state.mine = true; }
+        localStorage.setItem("reg_tab_sel",t);
         this.setState(this.state);
         this.reload();
     } 
