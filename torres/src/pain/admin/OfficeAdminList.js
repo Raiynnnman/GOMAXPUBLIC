@@ -1087,23 +1087,23 @@ class OfficeList extends Component {
                         )}
 
 
-                        {(this.state.subTab === 'contact') && (
+                        {this.state.subTab === 'contact' && (
                             <>
                                 {this.state.addButton && ( 
                                 <TemplateButtonIcon
                                     style={{ width:50,marginBottom: 10 }}
-                                    onClick={this.addUser}
+                                    onClick={this.addAddress}
                                     label={<AddBoxIcon />}
                                 />
                                 )}
                                 <Grid container xs={12}>
-                                {this.state.selected.users && this.state.selected.users.length > 0 && (
-                                    this.state.selected.users.map((u, i) => (
+                                {this.state.selected.addr && this.state.selected.addr.length > 0 && (
+                                    this.state.selected.addr.map((address, index) => (
                                     <>
-                                        {!u.deleted && (
+                                        {!address.deleted && (
                                         <Grid item xs={3} style={{margin:20}}>
-                                        <ContactCard onEdit={this.editUser} key={i} 
-                                            provider={u} />
+                                        <ContactCard onEdit={this.editAddress} key={index} 
+                                            provider={address} />
                                         </Grid>
                                         )}
                                     </>
@@ -1111,7 +1111,7 @@ class OfficeList extends Component {
                                 )}
                                 </Grid>
                             </>
-                        )}      
+                        )}    
 
                         
                         {(this.state.subTab === 'clients') && (
