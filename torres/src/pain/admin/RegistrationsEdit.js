@@ -89,6 +89,7 @@ class RegistrationsEdit extends Component {
         this.onPlansChange = this.onPlansChange.bind(this);
         this.addComment = this.addComment.bind(this);
         this.saveComment = this.saveComment.bind(this);
+        this.saveContact = this.saveContact.bind(this);
         this.cancelComment = this.cancelComment.bind(this);
         this.onCancelEvent = this.onCancelEvent.bind(this);
         this.onCreateEvent = this.onCreateEvent.bind(this);
@@ -103,6 +104,7 @@ class RegistrationsEdit extends Component {
         this.state = { 
             selected: null,
             savedAction:{},
+            addContactButton:true,
             statusAltSelected:null,
             actionIdx:null,
             subTab: "activity",
@@ -136,6 +138,11 @@ class RegistrationsEdit extends Component {
             this.state.selected.addr[v] = e;
         } 
         this.state.addButton = true;
+        this.setState(this.state)
+    } 
+
+    saveContact() { 
+        this.state.addContactButton = true;
         this.setState(this.state)
     } 
 
@@ -380,6 +387,7 @@ class RegistrationsEdit extends Component {
     }
 
     addContact() { 
+        this.state.addContactButton = false;
         this.state.selected.phones.push({
             id:0,
             phone:'',
@@ -787,20 +795,18 @@ class RegistrationsEdit extends Component {
                             </Tabs>
                             {this.state.subTab === 'contact' && (
                                 <>
-                                    {this.state.addButton && ( 
                                     <TemplateButtonIcon
                                         style={{ width:50,marginBottom: 10 }}
                                         onClick={this.addContact}
                                         label={<AddBoxIcon />}
                                     />
-                                    )}
                                     <Grid container xs={12}>
                                     {this.state.selected.phones && this.state.selected.phones.length > 0 && (
                                         this.state.selected.phones.map((p, i) => (
                                         <>
                                             {!p.deleted && (
                                             <Grid item xs={3} style={{margin:20}}>
-                                            <ContactCard onEdit={this.editContact} key={i} 
+                                            <ContactCard onSave={this.saveContact} onEdit={this.editContact} key={i} 
                                                 provider={p} />
                                             </Grid>
                                             )}
