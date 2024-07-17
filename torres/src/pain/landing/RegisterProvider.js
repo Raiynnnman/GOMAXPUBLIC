@@ -51,8 +51,9 @@ class RegisterProvider extends Component {
         disableRegister:true,
         first: '',
         last: '',
-        formValues: {},
+        staxxValues: {},
         phone: '',
+        staxJsInit:false,
         email: '',
         zipcode: '',
         error_message: null,
@@ -73,55 +74,6 @@ class RegisterProvider extends Component {
         snackbarMessage: '',
         snackbarSeverity: 'success'
     };
-
-    initStax() { 
-        var staxJs = new StaxJs( staxxKey() , {
-          number: {
-            id: 'card-number',     // the html id of the div you want to contain the credit card number field
-            placeholder: '0000 0000 0000 0000',    // the placeholder the field should contain
-            style: 'border:1px solid #d4d4d4;height: 35px; width: 100%; font-size: 15px;',    // the style to apply to the field
-            type: 'text',    // the input type (optional)
-            format: 'prettyFormat'    // the formatting of the CC number (prettyFormat || plainFormat || maskedFormat)
-          },
-          cvv: {
-            id: 'card-cvv',    // the html id of the div you want to contain the cvv field
-            placeholder: 'CVV',    // the placeholder the field should contain
-            style: 'border:1px solid #d4d4d4;height: 35px; width: 100%; font-size: 15px;',    // the style to apply to the field
-            type: 'text'    // the input type (optional)
-          }
-        });
-
-        staxJs.showCardForm().then(handler => {
-          if (this.state.staxxLoaded) { return; } 
-          this.setState({staxxLoaded: true});
-
-          handler.setTestPan("4111111111111111");
-          handler.setTestCvv("123");
-
-          this.setState({
-            formValues: {
-              month: "11",
-              year: "2025",
-              firstname: "Jon",
-              lastname: "Doe",
-              phone: "+1111111111111111"
-            }
-          });
-        });
-
-        staxJs.on("card_form_complete", message => {
-          console.log("card_form_complete", message);
-          // activate pay button
-          //this.setState({ isPayButtonDisabled: false });
-        });
-
-        /*staxJs.on("card_form_uncomplete", message => {
-          console.log("card_form_uncomplete", message);
-          // deactivate pay button
-          this.setState({ isPayButtonDisabled: true });
-        });*/
-        this.staxJs = staxJs;
-    } 
 
     componentDidMount() {
 
@@ -177,6 +129,56 @@ class RegisterProvider extends Component {
             this.state.disableRegister = true;
             this.setState(this.state);
         } 
+    } 
+
+    onStaxTokenize() { 
+    } 
+
+    initStax() { 
+        if (this.state.staxJsInit) { return; }
+        var staxJs = new StaxJs( staxxKey() , {
+          number: {
+            id: 'card-number',     // the html id of the div you want to contain the credit card number field
+            placeholder: '0000 0000 0000 0000',    // the placeholder the field should contain
+            style: 'border:1px solid #d4d4d4;height: 35px; width: 100%; font-size: 15px;',    // the style to apply to the field
+            type: 'text',    // the input type (optional)
+            format: 'prettyFormat'    // the formatting of the CC number (prettyFormat || plainFormat || maskedFormat)
+          },
+          cvv: {
+            id: 'card-cvv',    // the html id of the div you want to contain the cvv field
+            placeholder: 'CVV',    // the placeholder the field should contain
+            style: 'border:1px solid #d4d4d4;height: 35px; width: 100%; font-size: 15px;',    // the style to apply to the field
+            type: 'text'    // the input type (optional)
+          }
+        });
+
+        staxJs.showCardForm().then(handler => {
+              if (this.state.staxxLoaded) { return; } 
+              this.setState({staxxLoaded: true});
+        });
+
+        staxJs.on("card_form_complete", message => {
+          console.log("card_form_complete", message, this.state.staxxValues);
+          if (!this.state.staxxValues.month || this.state.staxxValues.month.length !== 2) { 
+              this.setState({ disableRegister: true});
+          }
+          else if (!this.state.staxxValues.year || this.state.staxxValues.year.length !== 4) { 
+              this.setState({ disableRegister: true});
+          }
+          else if (!message.validNumber || !message.validCvv) { 
+              this.setState({ disableRegister: true });
+          } else { 
+              this.setState({ disableRegister: false });
+          }
+          console.log(this.state.staxxValues);
+        }); 
+
+        staxJs.on("card_form_incomplete", message => {
+          this.setState({ disableRegister: true});
+        }); 
+        this.staxJs = staxJs;
+        this.state.staxJsInit = true;
+        this.setState(this.state);
     } 
 
     handleNameChange = (event) => {
@@ -278,24 +280,74 @@ class RegisterProvider extends Component {
             pq_id,
         };
 
-        this.props.dispatch(registerProvider(registrationData, (err, args) => {
-            if (err) {
-                this.setState({
-                    snackbarOpen: true,
-                    snackbarMessage: err.message,
-                    snackbarSeverity: 'error'
+        if (this.props.landingData.data.billing_system_id===3) { 
+            const details = { 
+                method:"card",
+                first_name:this.state.first,
+                last_name:this.state.last,
+                email: this.state.email,
+                month:this.state.staxxValues.month,
+                year:this.state.staxxValues.year,
+                address_state:"FL",
+                validate:false,
+                match_customer:false
+            } 
+            console.log("det",details);
+            this.staxJs
+                .tokenize(details)
+                .then((response) => {
+                  console.log("payment method object:", response);
+                  console.log("customer object:", response.customer);
+                  registrationData.card = response;
+                  this.props.dispatch(registerProvider(registrationData, (err, args) => {
+                            if (err) {
+                                this.setState({
+                                    snackbarOpen: true,
+                                    snackbarMessage: err.message,
+                                    snackbarSeverity: 'error'
+                                });
+                                return;
+                            }
+                            window.location = '/welcome';
+                  })); 
+                })
+                .catch((err) => {
+                  this.state.message = err.message;
+                  this.setState(this.state);
+                  console.log("unsuccessful tokenization:", err);
                 });
-                return;
-            }
-            window.location = '/welcome';
-        }));
+        } else { 
+            this.props.dispatch(registerProvider(registrationData, (err, args) => {
+                if (err) {
+                    this.setState({
+                        snackbarOpen: true,
+                        snackbarMessage: err.message,
+                        snackbarSeverity: 'error'
+                    });
+                    return;
+                }
+                window.location = '/welcome';
+            }));
+        }
     };
 
     handleFieldChange = event => {
-        const { formValues } = this.state;
+        const { staxxValues } = this.state;
         const { name, value } = event.target;
-        this.setState({ formValues: { ...formValues, [name]: value } });
+        this.setState({ staxxValues : { ...staxxValues, [name]: value } });
+        console.log("fff",this.state.staxxValues);
+        if (name === 'month' && value.length !== 2) { 
+            this.setState({ disableRegister: true});
+        } else { 
+            this.setState({ disableRegister: false});
+        } 
+        if (name === 'year' && value.length !== 4) { 
+            this.setState({ disableRegister: true});
+        } else { 
+            this.setState({ disableRegister: false});
+        } 
     };
+
     checkValid = () => {
         this.setState({ isValid: true });
     };
@@ -349,7 +401,7 @@ class RegisterProvider extends Component {
                                     required
                                     label="First Name"
                                     name="first"
-                                    onChange={this.handleLastChange}
+                                    onChange={this.handleFirstChange}
                                     margin="normal"
                                     sx={{ backgroundColor: '#eee', borderRadius: '8px' }}
                                 />
@@ -461,7 +513,7 @@ class RegisterProvider extends Component {
                                                   maxLength="2"
                                                   placeholder="MM"
                                                   onChange={this.handleFieldChange}
-                                                  value={this.state.formValues.month || ""}
+                                                  value={this.state.staxxValues.month || ""}
                                                 />
                                             </div>
                                             <div>/</div>
@@ -473,7 +525,7 @@ class RegisterProvider extends Component {
                                                   maxLength="4"
                                                   placeholder="YYYY"
                                                   onChange={this.handleFieldChange}
-                                                  value={this.state.formValues.year || ""}
+                                                  value={this.state.staxxValues.year || ""}
                                                 />
                                             </div>
                                         </div>

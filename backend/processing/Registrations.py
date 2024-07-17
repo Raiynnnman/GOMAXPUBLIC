@@ -27,6 +27,7 @@ from common.DataException import DataException
 from common.InvalidCredentials import InvalidCredentials
 from util.Permissions import check_admin
 from util.Mail import Mail
+from processing.StaxxPayments import StaxxPayments
 
 log = Logging()
 config = settings.config()
@@ -608,6 +609,7 @@ class RegisterProvider(RegistrationsBase):
             """,(userid,)
         )
         planid = 0
+        invid = 0
         coup = {}
         selplan = 0
         discount = 0
@@ -688,6 +690,7 @@ class RegisterProvider(RegistrationsBase):
         cust_id = ''
         card_id = ''
         stripe_id = ''
+        mode = "charge_automatically"
         s_invoice_id = ''
         if 'card' in params and params['card'] is not None:
             stripe_id = None
@@ -745,12 +748,31 @@ class RegisterProvider(RegistrationsBase):
                     ) values (%s,%s,%s,%s,%s,%s,1,%s)
                     """,(
                         off_id,
-                        card['token']['token'],
-                        card['token']['token'],
-                        card['token']['details']['card']['last4'],
+                        card['token'],
+                        card['token'],
+                        card['last4'],
                         card['token']['details']['card']['expMonth'],
                         card['token']['details']['card']['expYear'],
                         card['token']['details']['card']['brand']
+                        )
+                )
+                card_id = db.query("select LAST_INSERT_ID()");
+                card_id = card_id[0]['LAST_INSERT_ID()']
+            elif BS == 3:
+                card = params['card']
+                db.update("""
+                    insert into office_cards(
+                        office_id,card_id,payment_id,last4,
+                        exp_month,exp_year,is_default,brand
+                    ) values (%s,%s,%s,%s,%s,%s,1,%s)
+                    """,(
+                        off_id,
+                        card['id'],
+                        card['id'],
+                        card['card_last_four'],
+                        card['card_exp'][:2],
+                        card['card_exp'][2:],
+                        card['method']
                         )
                 )
                 card_id = db.query("select LAST_INSERT_ID()");
@@ -763,13 +785,70 @@ class RegisterProvider(RegistrationsBase):
                 )
                 if len(check) > 0:
                     do_billing = check[0]['value']
-                if do_billing and BS==3: # authorize.net
-                    merchantAuth = apicontractsv1.merchantAuthenticationType()
-                    merchantAuth.name = config.getKey("auth_net_key1")
-                    merchantAuth.transactionKey = config.getKey("auth_net_key2")
-                    refId = "ref {}".format(time.time())    
-                    pass 
-                mode = "charge_automatically"
+                if do_billing and BS==3: # staxx
+                    card_id = card['id']
+                    cust_id = card['customer']['id']
+                    db.update(""" 
+                        update office set stripe_cust_id = %s where id=%s
+                        """,(card['customer']['id'],off_id)
+                    )
+                    lines = []
+                    lines.append({
+                        'item': PL[selplan]['description'],
+                        'details': PL[selplan]['description'],
+                        'quantity': 1,
+                        'price':PL[selplan]['upfront_cost']*PL[selplan]['duration']
+                    })
+                    if len(coup) > 0:
+                        lines.append({
+                            'item': coup['name'],
+                            'details': coup['name'],
+                            'quantity': 1,
+                            'price':discount
+                        })
+                    body = { 
+                        'customer_id':card['customer']['id'],
+                        'send_now': False,
+                        'url': 'https://app.staxpayments.com/#/bill/',
+                        'total': str(plan_total + discount),
+                        'meta': { 
+                            'lineItems':lines,
+                            'isCCPaymentEnabled': True,
+                            'isACHPaymentEnabled': True,
+                            'isTipEnabled': False,
+                        } 
+                    } 
+                    sp = StaxxPayments()
+                    s = sp.createInvoice(body)
+                    s_invoice_id = s['id']
+                    body = { 
+                        'payment_method_id':card_id,
+                        'email_receipt':True,
+                        'apply_balance': plan_total + discount
+                    } 
+                    s = sp.payInvoice(s_invoice_id,body)
+                    db.update("""
+                        insert into invoices (office_id,invoice_status_id,
+                            office_plans_id,billing_period,total,billing_system_id) 
+                            values (%s,%s,%s,date(now()),%s,%s)
+                        """,(off_id,INV['PAID'],planid,plan_total,BS)
+                    )
+                    invid = db.query("select LAST_INSERT_ID()")
+                    invid = invid[0]['LAST_INSERT_ID()']
+                    db.update("""
+                        insert into stripe_invoice_status (office_id,invoices_id,status) values (%s,%s,%s)
+                        """,(off_id,invid,'draft')
+                    )
+                    db.update("""
+                        insert into invoice_history (invoices_id,user_id,text) values 
+                            (%s,%s,%s)
+                        """,(invid,1,'Submitted invoice to Staxx' )
+                    )
+                    db.update("""
+                        insert into office_history(office_id,user_id,text) values (
+                            %s,1,'Created initial invoice'
+                        )
+                    """,(off_id,))
                 if do_billing and BS==1: # Stripe
                     items = []
                     s = stripe.Invoice.create(
