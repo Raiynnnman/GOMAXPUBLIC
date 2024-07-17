@@ -12,8 +12,8 @@ function TemplateTextFieldPhone({label,onChange,helpText,initialValue,style,valu
     if (!style) { style = {width:'100%'}}
 
     const onUpdate = (e) => { 
-        let val = e.target.value.replace(/\D/g, "")
-        .match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+        let val = e.target.value.replace(/\D/g, "").match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+        if (val[0].length > 10) { return; }
         let validPhone = !val[2] ? val[1]: "(" + val[1] + ") " + val[2] + (val[3] ? "-" + val[3] : "");
         onChange({target:{value:validPhone}});
     } 

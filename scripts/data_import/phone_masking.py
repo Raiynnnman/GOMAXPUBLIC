@@ -81,4 +81,36 @@ db.update("""
     update users set phone = substring(phone,2,10)
         where length(phone) = 11
     """)
+# ---- 
+db.update("""
+    update office_phones set phone = replace(phone,'+1','')
+        where phone like '+1%'
+    """)
+db.update("""
+    update office_phones set phone = replace(phone,'(','')
+        where locate('(',phone) > 0;
+    """)
+db.update("""
+    update office_phones set phone = replace(phone,')','')
+        where locate(')',phone) > 0;
+    """)
+db.update("""
+    update office_phones set phone = replace(phone,' ','')
+        where locate(' ',phone) > 0;
+    """)
+db.update("""
+    update office_phones set phone = replace(phone,'-','')
+        where locate('-',phone) > 0;
+    """)
+db.update("""
+    update office_phones set phone = replace(phone,'.','')
+        where locate('-',phone) > 0;
+    """)
+db.update("""
+    update office_phones set phone = substring(phone,2,10)
+        where length(phone) = 11
+    """)
+db.update("""
+    delete from office_phones where phone is null
+    """)
 db.commit()

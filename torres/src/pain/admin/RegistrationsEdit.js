@@ -31,6 +31,7 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import envConfig from '../../envConfig';
+import ContactCard from '../office/ContactCard';
 
 
 const buttonStyle = {
@@ -66,6 +67,8 @@ class RegistrationsEdit extends Component {
         this.editUser = this.editUser.bind(this);
         this.addAddress = this.addAddress.bind(this);
         this.editAddress = this.editAddress.bind(this);
+        this.addContact = this.addContact.bind(this);
+        this.editContact = this.editContact.bind(this);
         this.save = this.save.bind(this);
         this.updateName = this.updateName.bind(this);
         this.onCommissionChange = this.onCommissionChange.bind(this);
@@ -112,6 +115,17 @@ class RegistrationsEdit extends Component {
             this.state.selected.email = 'dev@poundpain.com';
         } 
         this.setState(this.state);
+    } 
+
+    editContact(e,t) { 
+        var v = this.state.selected.phones.findIndex((f) => f.id === e.id)
+        if (v < 0) { 
+            this.state.selected.phones.push(e);
+        } else { 
+            this.state.selected.phones[v] = e;
+        } 
+        this.state.addContactButton = true;
+        this.setState(this.state)
     } 
 
     editAddress(e,t) { 
@@ -189,6 +203,7 @@ class RegistrationsEdit extends Component {
             email:this.state.selected.email,
             name: this.state.selected.name,
             do_not_contact: this.state.selected.do_not_contact,
+            phones:this.state.selected.phones,
             first_name:this.state.selected.first_name,
             office_alternate_status_id:this.state.selected.office_alternate_status_id,
             initial_payment:this.state.selected.initial_payment,
@@ -363,6 +378,15 @@ class RegistrationsEdit extends Component {
             this.props.registrationsAdminList.data.config.commission_users.filter((g) => g.name === e.target.value)[0].id
         this.setState(this.state);
     }
+
+    addContact() { 
+        this.state.selected.phones.push({
+            id:0,
+            phone:'',
+            iscell:false,
+        })
+        this.setState(this.state);
+    } 
 
     addAddress() { 
         this.state.selected.addr.push({
@@ -754,12 +778,38 @@ class RegistrationsEdit extends Component {
                             <Tabs style={{marginBottom:20}} value={this.state.subTab} onChange={this.toggleSubTab}>
                                 <Tab value='activity' label='Activity'/>
                                 <Tab value='plans' label='Plans'/>
+                                <Tab value='contact' label='Contact'/>
                                 <Tab value='registrationsAdminList' label='Offices'/>
                                 <Tab value='invoice' label='Invoice'/>
                                 <Tab value='history' label='History'/>
                                 <Tab value='users' label='Users'/>
                                 <Tab value='comments' label='Comments'/>
                             </Tabs>
+                            {this.state.subTab === 'contact' && (
+                                <>
+                                    {this.state.addButton && ( 
+                                    <TemplateButtonIcon
+                                        style={{ width:50,marginBottom: 10 }}
+                                        onClick={this.addContact}
+                                        label={<AddBoxIcon />}
+                                    />
+                                    )}
+                                    <Grid container xs={12}>
+                                    {this.state.selected.phones && this.state.selected.phones.length > 0 && (
+                                        this.state.selected.phones.map((p, i) => (
+                                        <>
+                                            {!p.deleted && (
+                                            <Grid item xs={3} style={{margin:20}}>
+                                            <ContactCard onEdit={this.editContact} key={i} 
+                                                provider={p} />
+                                            </Grid>
+                                            )}
+                                        </>
+                                        ))
+                                    )}
+                                    </Grid>
+                                </>
+                            )}    
                             {(this.state.subTab === 'users') && (
                                 <>
                                     {this.state.addButton && ( 

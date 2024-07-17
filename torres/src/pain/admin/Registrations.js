@@ -53,6 +53,7 @@ class Registrations extends Component {
             Selected:null,
             search:null,
             altFilter: [],
+            filterName: null,
             statusAltSelected:null,
             filter: [],
             saveSearches:[],
@@ -222,6 +223,7 @@ class Registrations extends Component {
         var g = this.state.saveSearches.findIndex((f) => f.name === e.name)
         if (g !== -1) { 
             var vals = this.state.saveSearches[g];
+            this.state.filterName = e;
             this.state.typeSelected = vals.type[0];
             this.state.filterType = vals.type[1];
             this.state.statusAltSelected = vals.alt_status[0];
@@ -979,7 +981,7 @@ class Registrations extends Component {
                                     <TemplateTextField type="text" id="normal-field" onChange={this.search}
                                     label="Search" value={this.state.search}/>
                                 </Grid>
-                                <Grid item xs={3}></Grid>
+                                <Grid item xs={2}></Grid>
                                 <Grid item xs={2.5} style={{margin:10}}>
                                     <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                                         <div style={{display:'flex',justifyContent:"spread-evenly"}}>
@@ -991,6 +993,17 @@ class Registrations extends Component {
                                         </div>
                                     </div>
                                 </Grid>
+                                <Grid item xs={2} style={{height:50}}>
+                                    {this.state.filterName && (
+                                    <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
+                                        <font style={{fontSize:20,fontWeight:'bold'}}>
+                                            Selected Filter: {this.state.filterName.name}
+                                        </font>
+                                    </div>
+                                    )}
+                                </Grid>
+                            </Grid>
+                            <Grid container xs="12" style={{marginTop:10}}>
                                 <Grid item xs="12">
                                     <>
                                     {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 

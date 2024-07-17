@@ -379,6 +379,29 @@ class RegistrationUpdate(AdminBase):
                 update provider_queue set provider_queue_status_id=%s where office_id=%s
                 """,(PQS['DO_NOT_CONTACT'],offid,)
             )
+        for a in params['phones']:
+            if 'id' in a and a['id'] is not None:
+                db.update("""
+                    update office_phones set 
+                      phone=%s,iscell=%s
+                    where id=%s
+                    """,(
+                        a['phone'],a['iscell'],a['id']
+                    )
+                )
+                if 'deleted' in x and x['deleted']:
+                    db.update("""
+                        update office_phones set deleted=1 where id=%s
+                    """,(a['id'],)
+                    )
+            else:
+                db.update(
+                    """
+                        insert into office_phones (
+                            office_id,phone,iscell
+                        ) values (%s,%s,%s)
+                    """,(offid,x['phone'],x['iscell'])
+                )
         for a in params['addr']:
             if 'id' in a and a['id'] is not None:
                 db.update("""
@@ -673,6 +696,11 @@ class RegistrationList(AdminBase):
         o = db.query(q,search_par)
         k = [] 
         for x in o:
+            x['phones'] = db.query("""
+                select id,iscell,phone from office_phones 
+                    where office_id = %s and deleted = 0
+                """,(x['office_id'],)
+            )
             x['actions']  = []
             acts = db.query("""
                 select pqa.id,pqa.user_id,

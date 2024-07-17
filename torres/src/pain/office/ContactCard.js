@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import DeleteIcon from '@mui/icons-material/Delete';
 import formatPhoneNumber from '../utils/formatPhone';
 import { Grid, Typography, Paper, Box, TextField, Divider, Button, FormControlLabel, Checkbox } from '@mui/material';
+import TemplateTextFieldPhone from '../utils/TemplateTextFieldPhone';
 
 const buttonStyle = {
     backgroundColor: '#fa6a0a',
@@ -74,48 +75,19 @@ class ContactCard extends Component {
         this.props.onCancel();
     }
 
-    changeEmail = (e) => {
-        this.setState({
-            selected: { ...this.state.selected, email: e.target.value }
-        });
-    }
-
-    changeName = (e) => {
-        this.setState({
-            selected: { ...this.state.selected, name: e.target.value }
-        });
-    }
-
-    changeAddr1 = (e) => {
-        this.setState({
-            selected: { ...this.state.selected, ...e }
-        });
-    }
-
-    changeAddr2 = (e) => {
-        this.setState({
-            selected: { ...this.state.selected, addr2: e.target.value }
-        });
-    }
-
     changePhone = (e) => {
-        var g = e.target.value;
-        if (g.length > 10 && !g.includes('(')) { return; }
-        if (g.length > 12 && g.includes('(')) { return; }
-        const phone = formatPhoneNumber(g);
         this.setState({
-            selected: { ...this.state.selected, phone: phone }
+            selected: { ...this.state.selected, phone: e.target.value }
         });
     }
 
-    togglePhoneVisibility = () => {
+    toggleIsCell= () => {
         this.setState((prevState) => ({
-            showPhone: !prevState.showPhone,
+            showPhone: !prevState.iscell
         }));
     }
 
     render() {
-        console.log("p", this.props);
         return (
             <>
                 {this.props.provider && (
@@ -123,18 +95,6 @@ class ContactCard extends Component {
                         <Paper elevation={3} sx={cardStyle}>
                             <Box>
                                 <Grid container spacing={1}>
-                                    <Grid item xs={this.state.edit ? 12 : 10}>
-                                        {this.state.edit && this.state.selected ? (
-                                            <TextField
-                                                fullWidth
-                                                value={this.state.selected.name}
-                                                onChange={this.changeName}
-                                                label="Name"
-                                            />
-                                        ) : (
-                                            <Typography variant="h6">{this.props.provider.name}</Typography>
-                                        )}
-                                    </Grid>
                                     {!this.state.edit && (
                                         <Grid item xs={1}>
                                             <Button variant="contained" sx={buttonStyle} style={{ marginTop: 0, marginRight: 20 }}
@@ -147,23 +107,37 @@ class ContactCard extends Component {
                                 <Divider sx={{ my: 2 }} />
                                 <Grid container spacing={2}>
                                     <Grid item xs={12}>
-                                        <FormControlLabel
-                                            control={
-                                                <Checkbox
-                                                    checked={this.state.showPhone}
-                                                    onChange={this.togglePhoneVisibility}
-                                                    name="showPhone"
-                                                    color="primary"
-                                                />
-                                            }
-                                            label="Phone"
-                                        />
+                                        {this.state.edit && this.state.selected ? (
+                                            <FormControlLabel
+                                                control={
+                                                    <Checkbox
+                                                        checked={this.state.selected.iscell}
+                                                        onChange={this.togglePhoneVisibility}
+                                                        name="showPhone"
+                                                        color="primary"
+                                                    />
+                                                }
+                                                label="Is Cell"
+                                            />
+                                        ) : (
+                                            <FormControlLabel
+                                                control={
+                                                    <Checkbox
+                                                        readOnly
+                                                        checked={this.props.provider.iscell}
+                                                        onChange={this.toggleIsCell}
+                                                        name="showPhone"
+                                                        color="primary"
+                                                    />
+                                                }
+                                                label="Is Cell"
+                                            />
+                                        )}
                                     </Grid>
                                     {this.state.showPhone && (
                                         <Grid item xs={12}>
                                             {this.state.edit && this.state.selected ? (
-                                                <TextField
-                                                    fullWidth
+                                                <TemplateTextFieldPhone
                                                     value={this.state.selected.phone}
                                                     onChange={this.changePhone}
                                                     label="Phone"
