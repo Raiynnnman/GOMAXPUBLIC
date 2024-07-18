@@ -4,6 +4,16 @@ import GoogleAutoComplete from '../utils/GoogleAutoComplete';
 import DeleteIcon from '@mui/icons-material/Delete';
 import formatPhoneNumber from '../utils/formatPhone';
 import { Grid, Typography, Paper, Box, TextField, Divider, Button } from '@mui/material';
+import TemplateTextField from '../utils/TemplateTextField';
+
+const inputStyle = {
+    input: {
+        '&::placeholder': {
+          color:'red',
+          fontStyle: 'italic',
+        },
+      },
+};
 
 const buttonStyle = {
     backgroundColor: '#fa6a0a',
@@ -122,17 +132,20 @@ class LocationCard extends Component {
                                         )}
                                     </Grid>
                                     <Grid item xs={1}>
+                                        {!this.state.edit && (
                                         <Button variant="contained" sx={buttonStyle} style={{marginTop:0,marginRight:20}} 
                                                 onClick={this.delCard} >
                                             <DeleteIcon/>
                                         </Button>
+                                        )}
                                     </Grid>
                                 </Grid>
-                                <Divider sx={{ my: 2 }} />
                                 <Grid container spacing={2}>
-                                    <Grid item xs={12}>
+                                    <Grid item xs={12} style={{marginTop:10}}>
                                         {this.state.edit && this.state.selected ? (
-                                            <GoogleAutoComplete onChange={this.changeAddr1} />
+                                            <div style={{zIndex:999}}>
+                                            <GoogleAutoComplete initVal={this.state.selected.addr1} onChange={this.changeAddr1} />
+                                            </div>
                                         ) : (
                                             <Typography>
                                                 {`${this.props.provider.addr1} ${this.props.provider.addr2 || ''}`}<br />
@@ -151,9 +164,8 @@ class LocationCard extends Component {
                                         </Grid>
                                     )}
                                 </Grid>
-                                <Divider sx={{ my: 2 }} />
                                 <Grid container spacing={2}>
-                                    <Grid item xs={12}>
+                                    <Grid item xs={12} style={{marginTop:10}}>
                                         {this.state.edit && this.state.selected ? (
                                             <TextField
                                                 fullWidth

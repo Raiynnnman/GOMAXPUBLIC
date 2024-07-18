@@ -116,7 +116,7 @@ class OfficeAddresses extends Component {
     }
 
     addAddress = () => { 
-        this.state.selected.addr.push({});
+        this.state.selected.addr.push({addr1:''});
         this.setState(this.state);
     } 
 
@@ -152,9 +152,11 @@ class OfficeAddresses extends Component {
                             </>
                         ))
                     ) : (
-                        <Typography variant="h6" color="textSecondary" sx={{ mt: 5 }}>
-                            No office locations available.
-                        </Typography>
+                        <Grid item xs={6} sm={6}>
+                            <Typography variant="h6" color="textSecondary" sx={{ mt: 5 }}>
+                                No office locations available.
+                            </Typography>
+                        </Grid>
                     )}
                 </Grid>
                 </Box>
