@@ -640,8 +640,7 @@ class RegistrationList(AdminBase):
             q += " or ".join(map(str,arr))
             q += ")"
         if 'users' not in params or len(params['users']) == 0:
-            print("NO_USERS")
-            params['users'] = [-1]
+            del params['users']
         if params['mine'] is not None and params['mine']: # Delete users if mine is True
             del params['users']
         if 'users' in params and params['users'] is not None and len(params['users']) > 0: 
