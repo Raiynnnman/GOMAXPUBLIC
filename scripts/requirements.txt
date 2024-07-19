@@ -111,7 +111,6 @@ redis==3.5.3
 requests==2.31.0
 requests-file==2.0.0
 requests-toolbelt==1.0.0
-requirements-detector==0.7
 s3transfer==0.3.3
 scipy==1.7.3
 selenium==4.4.1
