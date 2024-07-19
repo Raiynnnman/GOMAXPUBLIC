@@ -224,7 +224,7 @@ class ReferralUpdate(OfficeBase):
         finally:
             db.update("""delete from referrer_users_lock where id = %s""",(lck_id,))
             db.commit()
-        return {'success':False,'message':"ZOMG"}
+        return {'success':False,'message':"Successfully claimed this client. Login to check status."}
 
 class ReferrerUpdate(OfficeBase):
 
