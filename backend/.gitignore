@@ -16,3 +16,6 @@ bin/conf/flyway.conf.*
 sql.2/*
 bin/data
 */*.pyc
+/myenv
+po.sh
+push.sh
