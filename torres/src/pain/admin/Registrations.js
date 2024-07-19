@@ -483,7 +483,7 @@ class Registrations extends Component {
     toggleTab(e,t) { 
         this.state.activeTab = t;
         if (t !== 'myassigned') { this.state.mine = null; }
-        if (t === 'myassigned') { this.state.mine = true; }
+        if (t === 'myregistrations') { this.state.mine = true; }
         localStorage.setItem("reg_tab_sel",t);
         this.setState(this.state);
         this.reload();
