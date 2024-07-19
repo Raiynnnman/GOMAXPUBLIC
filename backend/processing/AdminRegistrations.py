@@ -1079,27 +1079,6 @@ class AdminBookingRegister(AdminBase):
                         return {'success': False,'message': 'OFFICE_NOT_FOUND'}
                     dest_office_id = g[0]['office_id']
                 rus_id = r.processRow(1,tosave,insid,sha256,db,dest_office_id=dest_office_id,status=status)
-                # Hmm we shouldnt do this since it bypasses the accept/reject process. Commented out for now
-                if False and 'office_id' in params:
-                    db.update("""
-                        insert into client_intake 
-                            (user_id,date_of_accident,attny_name,languages_id,sha256,office_type_id) 
-                            values (%s,%s,%s,%s,%s,%s)
-                        """,(user_id,tosave['doa'],tosave['attny'],tosave['language'],sha256,params['office_type_id'])
-                    )
-                    ci = db.query("select LAST_INSERT_ID()")
-                    ci = ci[0]['LAST_INSERT_ID()']
-                    db.update("""
-                        insert into client_intake_offices(
-                            client_intake_id,office_id,office_addresses_id
-                        ) values (%s,%s,%s)
-                    """,(ci,dest_office_id,params['office_id'])
-                    )
-                    db.update("""
-                        update referrer_users set client_intake_id = %s
-                            where id = %s
-                        """,(rus_id,ci)
-                    )
                 db.commit()
         except Exception as e:
             print(str(e))

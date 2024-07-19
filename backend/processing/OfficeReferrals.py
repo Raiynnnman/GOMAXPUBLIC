@@ -151,6 +151,13 @@ class ReferralUpdate(OfficeBase):
                 if off['email'] is None or len(off['email']) < 1:
                     log.error("ERROR: No office email found for %s" % o)
                     return {'success': False, 'message': 'INVALID_EMAIL_FOUND_FOR_PRACTICE'}
+                userid = None
+                userid_q = db.query("""
+                    select referral_user_id from referrer_users where id=%s
+                    """,(r,)
+                )
+                if len(userid_q) > 0:
+                    userid = userid_q[0]['referral_user_id']
                 db.update("""
                     update referrer_users set 
                         referrer_users_status_id=%s,office_id=%s 
@@ -176,7 +183,7 @@ class ReferralUpdate(OfficeBase):
                 db.update("""
                     insert into client_intake 
                         (user_id,date_of_accident) values (%s,%s)
-                    """,(q['user_id'],doa.strftime('%Y-%m-%d'))
+                    """,(user,doa.strftime('%Y-%m-%d'))
                 )
                 clid = db.query("select LAST_INSERT_ID()");
                 clid = clid[0]['LAST_INSERT_ID()']
