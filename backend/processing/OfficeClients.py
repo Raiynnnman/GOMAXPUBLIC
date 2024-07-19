@@ -130,23 +130,24 @@ class ClientUpdate(OfficeBase):
     def execute(self, *args, **kwargs):
         ret = {}
         job,user,off_id,params = self.getArgs(*args,**kwargs)
+        print(*args,**kwargs)
         db = Query()
         REF = self.getReferrerUserStatus()
         CI = self.getClientIntake()
         db.update("""
-            update client_intake_office set client_intake_status_id = %s
+            update client_intake_offices set client_intake_status_id = %s
                 where client_intake_id = %s and office_id = %s
             """,(params['status_id'],params['id'],off_id)
         )
         if params['status_id'] == CI['SCHEDULED']:
             db.update("""
-                update referrer_users set referral_users_status_id = %s
+                update referrer_users set referrer_users_status_id = %s
                     where client_intake_id = %s
                 """,(REF['SCHEDULED'],params['id'])
             )
         if params['status_id'] == CI['COMPLETED']:
             db.update("""
-                update referrer_users set referral_users_status_id = %s
+                update referrer_users set referrer_users_status_id = %s
                     where client_intake_id = %s
                 """,(REF['COMPLETED'],params['id'])
             )

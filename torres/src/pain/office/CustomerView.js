@@ -203,6 +203,7 @@ class CustomerView extends Component {
             id:this.props.data.id,
             status_id: t[0].id
         })
+
     } 
     markComplete() { 
         var t = this.props.config.status.filter((g) => g.name === 'COMPLETED')
@@ -220,6 +221,7 @@ class CustomerView extends Component {
     } 
 
     render() {
+        console.log(this.state)
         var value = '';
         var cntr = 1;
         return (

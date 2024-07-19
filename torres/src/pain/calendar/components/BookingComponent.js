@@ -1,4 +1,3 @@
-import * as React from 'react';
 import dayjs from 'dayjs';
 import Badge from '@mui/material/Badge';
 import Avatar from '@mui/material/Avatar';
@@ -10,15 +9,12 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { PickersDay } from '@mui/x-date-pickers/PickersDay';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
-import { Grid, Button, Divider, TextField } from '@mui/material';
-import { ArrowBack, CalendarToday, Phone } from '@mui/icons-material';
-import { PeoplePicker } from '@microsoft/mgt-react';
-import { Msal2Provider } from '@microsoft/mgt-msal2-provider';
-import { Providers, ProviderState } from '@microsoft/mgt-element';
-import crmSSOConfig from '../../../crmSSOConfig';
+import { Grid, Button, TextField } from '@mui/material';
+import { CalendarToday, Phone } from '@mui/icons-material';
 import { useDispatch } from 'react-redux';
 import { findMeetingTimes } from '../../../actions/findMeetingTimes';
 import { createMeeting } from '../../../actions/createMeeting';
+import React, { useState, useEffect, useRef } from 'react';
 
 function getRandomNumber(min, max) {
   return Math.round(Math.random() * (max - min) + min);
@@ -40,7 +36,8 @@ function fakeFetch(date, { signal }) {
 }
 
 const initialValue = dayjs('2022-04-17');
- function ServerDay(props) {
+
+function ServerDay(props) {
   const { highlightedDays = [], day, outsideCurrentMonth, ...other } = props;
   const isSelected = !props.outsideCurrentMonth && highlightedDays.indexOf(props.day.date()) >= 0;
 
@@ -53,18 +50,18 @@ const initialValue = dayjs('2022-04-17');
 
 export default function BookingComponent() {
   const dispatch = useDispatch();
-  const requestAbortController = React.useRef(null);
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [highlightedDays, setHighlightedDays] = React.useState([1, 2, 15]);
-  const [selectedDate, setSelectedDate] = React.useState(initialValue);
-  const [selectedUser, setSelectedUser] = React.useState({
+  const requestAbortController = useRef(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [highlightedDays, setHighlightedDays] = useState([1, 2, 15]);
+  const [selectedDate, setSelectedDate] = useState(initialValue);
+  const [selectedUser, setSelectedUser] = useState({
     name: ' ',
     profileImage: '',
     email: ''
   });
-  const [availableTimes, setAvailableTimes] = React.useState([]);
-  const [selectedTime, setSelectedTime] = React.useState(null);
-  const [showForm, setShowForm] = React.useState(false);
+  const [availableTimes, setAvailableTimes] = useState([]);
+  const [selectedTime, setSelectedTime] = useState(null);
+  const [showForm, setShowForm] = useState(false);
 
   const fetchHighlightedDays = (date) => {
     const controller = new AbortController();
@@ -82,7 +79,7 @@ export default function BookingComponent() {
     requestAbortController.current = controller;
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchHighlightedDays(initialValue);
     return () => requestAbortController.current?.abort();
   }, []);
@@ -99,9 +96,9 @@ export default function BookingComponent() {
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
-    dispatch(findMeetingTimes(date));
+    // dispatch(findMeetingTimes(date));
     // Fake fetch available times for the selected date
-    setAvailableTimes(['09:00 AM', '9:30 AM', '10:00 AM', '10:30 PM', '11:00 PM','11:30 PM','12:00 AM', '12:30 AM', '1:00 AM', '1:30 PM', '2:00 PM','2:30 PM']);
+    setAvailableTimes(['09:00 AM', '9:30 AM', '10:00 AM', '10:30 PM', '11:00 PM', '11:30 PM', '12:00 AM', '12:30 AM', '1:00 AM', '1:30 PM', '2:00 PM', '2:30 PM']);
   };
 
   const handleTimeSelect = (time) => {
@@ -121,7 +118,7 @@ export default function BookingComponent() {
     };
     // Process the form data (e.g., send to the server)
     console.log(data);
-    dispatch(createMeeting(data));
+    // dispatch(createMeeting(data));
   };
 
   const handleUserChange = (e) => {
@@ -142,7 +139,6 @@ export default function BookingComponent() {
   return (
     <Card sx={{ display: 'flex', flexDirection: 'column', height: 'auto', maxWidth: 600, margin: 'auto', mt: 4, borderRadius: 5, p: 2 }}>
       <CardContent>
-        <PeoplePicker selectionChanged={handleUserChange} />
         <Grid container spacing={2} alignItems="center" sx={{ mt: 2 }}>
           <Grid item>
             <Avatar alt="Profile Image" src={selectedUser.profileImage} sx={{ width: 56, height: 56 }} />
@@ -223,7 +219,7 @@ export default function BookingComponent() {
                   <Grid item key={time}>
                     <Button
                       variant="contained"
-                      color='warning'
+                      color="warning"
                       onClick={() => handleTimeSelect(time)}
                     >
                       {time}

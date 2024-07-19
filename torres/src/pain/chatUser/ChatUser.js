@@ -25,12 +25,12 @@ class ChatUser extends Component {
         this.props.dispatch(getChatUser({appt:this.props.appt}))
     }
     componentWillReceiveProps(p) { 
-        // if (p.chatUser && p.chatUser.data && p.chatUser.data.rooms && !this.state.activeSet) { 
-        //     this.state.activeSet = true;
-        //     var t = p.chatUser.data.rooms[0].id
-        //     this.props.dispatch(setActiveChat(t))
-        //     this.setState(this.state);
-        // } 
+        if (p.chatUser && p.chatUser.data && p.chatUser.data.rooms && !this.state.activeSet) { 
+            this.state.activeSet = true;
+            var t = p.chatUser.data.rooms[0].id
+            this.props.dispatch(setActiveChat(t))
+            this.setState(this.state);
+        } 
     }
     onNewChat(e) { 
     }
@@ -44,7 +44,6 @@ class ChatUser extends Component {
           <div style={{margin:20}}>
                 {(this.props.chatUser && this.props.chatUser.data && this.props.chatUser.data.rooms) && ( 
                 <>
-                    <Navbar/>
                     <ChatList onNewChat={this.onNewChat} data={this.props.chatUser.data}/>
                     <ChatDialog data={this.props.chatUser.data}/>
                     {(false && window.innerWidth > 1024) && ( <ChatInfo data={this.props.chatUser.data}/>)}

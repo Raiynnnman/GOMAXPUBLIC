@@ -13,7 +13,7 @@ import {
   Typography,
   Grid,
   IconButton,
-  Modal,
+  Drawer,
   Button
 } from '@mui/material';
 import { withRouter } from 'react-router-dom';
@@ -21,7 +21,8 @@ import Add from '@mui/icons-material/Add';
 import ChatIcon from '@mui/icons-material/Chat';
 import Navbar from '../../components/Navbar';
 import AppSpinner from '../utils/Spinner';
-import { createAppointment } from '../../actions/appointments';
+import { getAppointments } from '../../actions/appointments';
+import ChatUser from '../chatUser/ChatUser';
 
 const spinnerContainerStyle = {
   display: 'flex',
@@ -35,31 +36,8 @@ class Appointments extends Component {
     super(props);
     this.state = {
       selected: null,
-      openModal: false,
-      formValues: {
-        customerId:'',
-        dateOfAccident: '',
-        description: '',
-        hospital: '',
-        ambulance: '',
-        witnesses: '',
-        repLawEnforcement: '',
-        policeReportNum: '',
-        citations: '',
-        citationsPerson: '',
-        passengers: '',
-        defInsurance: '',
-        defClaimNum: '',
-        defName: '',
-        insInfo: '',
-        insClaimNum: '',
-        insPolicyHolder: '',
-        caseNum: '',
-        picsOfDamage: '',
-        clientIntakeStatusId: '',
-        attnyName: '',
-        officeTypeId: '',
-      },
+      openDrawer: false,
+      selectedAppointment: null,
       error: false,
     };
   }
@@ -68,65 +46,23 @@ class Appointments extends Component {
     const { match, dispatch } = this.props;
     if (match.params && match.params.id) {
       this.setState({ selected: match.params.id });
-      // dispatch(fetchAppointments({ uuid: null, id: match.params.id }));
+      dispatch(getAppointments({ uuid: null, id: match.params.id }));
     } else {
-      // dispatch(fetchAppointments({}));
+      dispatch(getAppointments({}));
     }
   }
 
-  handleOpenModal = () => {
-    this.setState({ openModal: true });
-  };
-  
-  handleCloseModal = () => {
-    this.setState({ openModal: false, error: false });
-  };
-
-  handleInputChange = (event) => {
-    const { name, value } = event.target;
-    this.setState((prevState) => ({
-      formValues: {
-        ...prevState.formValues,
-        [name]: value,
-      },
-    }));
-  };
-
-  handleProviderSelect = (provider, currentUserId) => {
-    this.setState((prevState) => ({
-      formValues: {
-        ...prevState.formValues,
-        userId: provider.id,
-        customerId: currentUserId,
-      },
-      openModal: false,
-    }));
-  };
-
-  handleCreateAppointment = (formValues) => {
-    const { currentUser, dispatch } = this.props;
-    // this.props.dispatch(loginUser({ email: this.state.email, password: this.state.password }));
-    
-        createAppointment(formValues, (err) => {
-            if (!err) {
-                this.handleCloseModal();
-            } else {
-                console.error('Failed to create appointment:', err);
-            }
-        });
-    };
-
   handleChatClick = (appointment) => {
-    const { history } = this.props;
-    history.push({
-      pathname: `/app/main/client/chat`,
-      state: { appointment }
-    });
+    this.setState({ openDrawer: true, selectedAppointment: appointment });
+  };
+
+  handleDrawerClose = () => {
+    this.setState({ openDrawer: false, selectedAppointment: null });
   };
 
   render() {
-    const { openModal, formValues, error } = this.state;
     const { appointments } = this.props;
+    const { openDrawer, selectedAppointment } = this.state;
 
     if (appointments.isReceiving) {
       return (
@@ -146,50 +82,11 @@ class Appointments extends Component {
           <Typography variant="h3" component="h1" fontWeight="bold" gutterBottom>
             Appointments
           </Typography>
-          {/* <Box mb={2} display="flex" justifyContent="space-between">
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<Add />}
-              onClick={this.handleOpenModal}
-            >
-              Create Appointment
-            </Button>
-          </Box>
-          <Modal open={openModal} onClose={this.handleCloseModal}>
-            <Box
-              sx={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                width: 600,
-                bgcolor: 'background.paper',
-                boxShadow: 24,
-                p: 4,
-                borderRadius: '16px',
-              }}
-            >
-              <Typography id="create-appointment-title" variant="h6" component="h2">
-                Create Appointment
-              </Typography>
-              <Typography id="create-appointment-description" sx={{ mt: 2 }}>
-                Fill in the details to create an appointment.
-              </Typography>
-              <StepForm
-                formValues={formValues}
-                handleChange={this.handleInputChange}
-                handleSubmit={() => this.handleCreateAppointment(formValues)}
-              />
-            </Box>
-          </Modal> */}
           {appointmentsData.length > 0 ? (
             <TableContainer component={Paper} sx={{ mt: 2 }}>
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Date</TableCell>
-                    <TableCell>Time</TableCell>
                     <TableCell>Physician</TableCell>
                     <TableCell>Location</TableCell>
                     <TableCell>Chat</TableCell>
@@ -198,9 +95,7 @@ class Appointments extends Component {
                 <TableBody>
                   {appointmentsData.map((appointment) => (
                     <TableRow key={appointment.id}>
-                      <TableCell>{appointment.date}</TableCell>
-                      <TableCell>{appointment.time || 'N/A'}</TableCell>
-                      <TableCell>{appointment.physician}</TableCell>
+                      <TableCell>{appointment.profile[0].first_name}{" "}{appointment.profile[0].last_name}</TableCell>
                       <TableCell>{appointment.office_name}</TableCell>
                       <TableCell>
                         <IconButton
@@ -221,7 +116,7 @@ class Appointments extends Component {
             </Typography>
           )}
           <Box mt={4}>
-            <Typography sx={{mb:2}} variant="h4" component="h2" fontWeight="bold" gutterBottom>
+            <Typography sx={{ mb: 2 }} variant="h4" component="h2" fontWeight="bold" gutterBottom>
               Upcoming Appointments
             </Typography>
             <Grid container spacing={2}>
@@ -257,6 +152,26 @@ class Appointments extends Component {
             </Grid>
           </Box>
         </Container>
+        <Drawer
+          anchor="right"
+          open={openDrawer}
+          onClose={this.handleDrawerClose}
+        >
+          <Box
+            sx={{
+              width: 1000,
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            {selectedAppointment && (
+              <Box sx={{ width:1000, height:1000, overflow: 'auto' }}>
+                <ChatUser appointment={selectedAppointment} />
+              </Box>
+            )}
+          </Box>
+        </Drawer>
       </>
     );
   }
@@ -266,10 +181,6 @@ Appointments.defaultProps = {
   appointments: { appt: [], isReceiving: false },
 };
 
-const mapDispatchToProps = {
-  createAppointment,
-};
-
 function mapStateToProps(store) {
   return {
     currentUser: store.auth.currentUser,
@@ -277,4 +188,4 @@ function mapStateToProps(store) {
   };
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Appointments));
+export default withRouter(connect(mapStateToProps)(Appointments));

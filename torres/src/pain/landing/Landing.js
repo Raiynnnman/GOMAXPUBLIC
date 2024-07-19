@@ -13,7 +13,6 @@ import { getLandingData } from '../../actions/landingData';
 import './Landing.scss';
 import Grid from '@mui/material/Grid';
 import Container from '@mui/material/Container';
-import Calender from '../calendar/Calender';
 
 const handleDragStart = (e) => e.preventDefault();
 
@@ -225,7 +224,15 @@ class Landing extends Component {
                         </div>
                     </Grid>
                     <Grid item xs="12" md="6" style={{marginTop:20,paddingRight:0,marginRight:0}}>
-                        <Calender/>
+                        <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                            <iframe 
+                                src='https://calendly.com/matt-qd-s/pound-pain-tech-patient-referral-introduction'
+                                style={{width:window.innerWidth < 500 ? window.innerWidth : "600px",
+                                        height:window.innerWidth < 500 ? "800px" : "1000px",
+                                        }}
+                                title="PoundPain Invite">
+                            </iframe>
+                        </div>
                     </Grid>
                 </Grid>
             </div>
