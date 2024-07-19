@@ -107,3 +107,4 @@ squareup==35.0.0.20240222
 pyap==0.3.1
 pycurl==7.43.0.6; sys_platform != "win32"
 googlemaps==4.10.0
+boto3==1.34.145

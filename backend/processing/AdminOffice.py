@@ -68,6 +68,7 @@ class OfficeList(AdminBase):
                     office o
                     left outer join office_type ot on o.office_type_id = ot.id
                     left outer join provider_queue pq on pq.office_id = o.id
+                    left outer join office_phones op on op.office_id = o.id 
                     left outer join provider_queue_status pqs on pq.provider_queue_status_id=pqs.id
                     left outer join users comu on comu.id = o.commission_user_id
                     left outer join users setu on setu.id = o.setter_user_id
