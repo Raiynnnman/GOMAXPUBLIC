@@ -94,6 +94,9 @@ class OfficeList extends Component {
         this.addUser = this.addUser.bind(this);
         this.nameChange = this.nameChange.bind(this);
         this.emailChange = this.emailChange.bind(this);
+        this.addContact = this.addContact.bind(this);
+        this.editContact = this.editContact.bind(this);
+        this.saveContact = this.saveContact.bind(this);
     } 
 
     componentWillReceiveProps(p) { 
@@ -176,6 +179,18 @@ class OfficeList extends Component {
         this.setState(this.state)
     } 
 
+    editContact(e,t) { 
+        var v = this.state.selected.phones.findIndex((f) => f.id === e.id)
+        if (v < 0) { 
+            this.state.selected.phones.push(e);
+        } else { 
+            this.state.selected.phones[v] = e;
+        } 
+        this.state.addContactButton = true;
+        this.setState(this.state)
+    } 
+
+
     editAddress(e,t) { 
         var v = this.state.selected.addr.findIndex((f) => f.id === e.id)
         if (v < 0) { 
@@ -184,6 +199,11 @@ class OfficeList extends Component {
             this.state.selected.addr[v] = e;
         } 
         this.state.addButton = true;
+        this.setState(this.state)
+    } 
+
+    saveContact() { 
+        this.state.addContactButton = true;
         this.setState(this.state)
     } 
 
@@ -360,6 +380,17 @@ class OfficeList extends Component {
         this.state.addButton = true;
         this.setState(this.state);
     } 
+
+    addContact() { 
+        this.state.addContactButton = false;
+        this.state.selected.phones.push({
+            id:0,
+            phone:'',
+            iscell:false,
+        })
+        this.setState(this.state);
+    } 
+
     addAddress() { 
         this.state.selected.addr.push({
             name:'',
@@ -1087,31 +1118,31 @@ class OfficeList extends Component {
                         )}
 
 
-                        {this.state.subTab === 'contact' && (
-                            <>
-                                {this.state.addButton && ( 
-                                <TemplateButtonIcon
-                                    style={{ width:50,marginBottom: 10 }}
-                                    onClick={this.addAddress}
-                                    label={<AddBoxIcon />}
-                                />
-                                )}
-                                <Grid container xs={12}>
-                                {this.state.selected.addr && this.state.selected.addr.length > 0 && (
-                                    this.state.selected.addr.map((address, index) => (
-                                    <>
-                                        {!address.deleted && (
-                                        <Grid item xs={3} style={{margin:20}}>
-                                        <ContactCard onEdit={this.editAddress} key={index} 
-                                            provider={address} />
-                                        </Grid>
-                                        )}
-                                    </>
-                                    ))
-                                )}
-                                </Grid>
-                            </>
-                        )}    
+
+
+                    {this.state.subTab === 'contact' && (
+                                <>
+                                    <TemplateButtonIcon
+                                        style={{ width:50,marginBottom: 10 }}
+                                        onClick={this.addContact}
+                                        label={<AddBoxIcon />}
+                                    />
+                                    <Grid container xs={12}>
+                                    {this.state.selected.phones && this.state.selected.phones.length > 0 && (
+                                        this.state.selected.phones.map((p, i) => (
+                                        <>
+                                            {!p.deleted && (
+                                            <Grid item xs={3} style={{margin:20}}>
+                                            <ContactCard onSave={this.saveContact} onEdit={this.editContact} key={i} 
+                                                provider={p} />
+                                            </Grid>
+                                            )}
+                                        </>
+                                        ))
+                                    )}
+                                    </Grid>
+                                </>
+                            )}    
 
                         
                         {(this.state.subTab === 'clients') && (
