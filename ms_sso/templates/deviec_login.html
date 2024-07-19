@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Device Login</title>
+</head>
+<body>
+    <h1>Device Login</h1>
+    <p>To sign in, use another device to navigate to <a href="{{ device_flow['verification_uri'] }}">{{ device_flow['verification_uri'] }}</a> and enter the code <strong>{{ device_flow['user_code'] }}</strong>.</p>
+    <a href="{{ url_for('device_login_status') }}">Check Login Status</a>
+</body>
+</html>
