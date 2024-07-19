@@ -639,9 +639,7 @@ class RegistrationList(AdminBase):
                     arr.append("office_alternate_status_id = %s" % z)
             q += " or ".join(map(str,arr))
             q += ")"
-        if 'users' not in params or len(params['users']) == 0:
-            del params['users']
-        if params['mine'] is not None and params['mine']: # Delete users if mine is True
+        if 'users' in params and params['mine'] is not None and params['mine']: # Delete users if mine is True
             del params['users']
         if 'users' in params and params['users'] is not None and len(params['users']) > 0: 
             q += " and ("
