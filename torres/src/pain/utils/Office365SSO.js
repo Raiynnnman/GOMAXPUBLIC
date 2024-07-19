@@ -19,7 +19,6 @@ import { msalConfig } from './authConfig';
 
 const msalInstance = new PublicClientApplication(msalConfig);
 
-console.log("inst",msalInstance);
 
 function Office365SSO({onChange,showWelcome,showCalendar,showNewEvent,onCancelEvent,onCreateEvent,data,currentUser,client}) {
 

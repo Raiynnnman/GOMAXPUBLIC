@@ -67,7 +67,7 @@ import convertToFormat from '../utils/convertToFormat';
                     <Grid item xs={12} sm={6} md={4} lg={3}>
                         <AnalyticEcommerce 
                             title="Total Revenue"
-                            count={`${convertToFormat(revenue_month.num1 || 0)}`}  
+                            count={`$${convertToFormat(revenue_month.num1 || 0)}`}  
                             percentage={((revenue_month.num2 || 0) * 100).toFixed(2)}  
                             isLoss={revenue_month.num2 < 0}  
                             color={revenue_month.num2 < 0 ? 'warning' : 'success'}

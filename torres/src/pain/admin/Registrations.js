@@ -103,7 +103,6 @@ class Registrations extends Component {
         var changed = false;
         if (p.registrationsAdminList.data && p.registrationsAdminList.data.config && 
             p.registrationsAdminList.data.config.commission_users && this.state.userSelected === null) { 
-            console.log("reset user")
             var c = 0;
             var t = [];
             var t1 = [];
@@ -124,7 +123,6 @@ class Registrations extends Component {
         if (p.registrationsAdminList.data && p.registrationsAdminList.data.config && 
             p.registrationsAdminList.data.config.alternate_status && 
             this.state.statusAltSelected === null) { 
-            console.log("reset alt")
             var c = 0;
             var t = [];
             var t1 = [];
@@ -148,7 +146,6 @@ class Registrations extends Component {
         } 
         if (p.registrationsAdminList.data && p.registrationsAdminList.data.config && 
             p.registrationsAdminList.data.config.status && this.state.statusSelected === null) { 
-            console.log("reset status")
             var c = 0;
             var t = [];
             var t1 = [];
@@ -329,7 +326,6 @@ class Registrations extends Component {
 
 
     onTypeFilter(e,t) { 
-        console.log("type",e,t);
         var c = 0;
         var t = [];
         var t1 = [];
@@ -339,7 +335,6 @@ class Registrations extends Component {
         } 
         this.state.typeSelected = t;
         this.state.filterType = t1;
-        console.log("type",t,t1);
         // this.reload();
         this.setState(this.state)
     } 
@@ -354,7 +349,6 @@ class Registrations extends Component {
     }
 
     onAltStatusFilter(e) { 
-        console.log("alt",e,t);
         var c = 0;
         var t = [];
         var t1 = [];
@@ -365,13 +359,11 @@ class Registrations extends Component {
         } 
         this.state.statusAltSelected = t;
         this.state.altFilter = t1;
-        console.log("alt",t,t1);
         this.setState(this.state)
         // this.reload();
     } 
 
     onUserFilter(e,t) { 
-        console.log("user",e,t);
         var c = 0;
         var t = [];
         var t1 = [];
@@ -382,13 +374,11 @@ class Registrations extends Component {
         } 
         this.state.userSelected = t;
         this.state.userFilter = t1;
-        console.log("user",t,t1);
         this.setState(this.state)
         // this.reload();
     } 
 
     onStatusFilter(e,t) { 
-        console.log("status",e,t);
         var c = 0;
         var t = [];
         var t1 = [];
@@ -399,7 +389,6 @@ class Registrations extends Component {
         } 
         this.state.statusSelected = t;
         this.state.filter = t1;
-        console.log("status",t,t1);
         this.setState(this.state)
         // this.reload();
     } 
@@ -420,7 +409,6 @@ class Registrations extends Component {
          : []
         this.props.dispatch(getPlansList({}));
         var i = localStorage.getItem("reg_tab_sel"); 
-        console.log("i",i);
         if (i && i !== 'undefined') { 
             this.state.activeTab = i;
             this.toggleTab(null,i);
@@ -451,7 +439,6 @@ class Registrations extends Component {
         this.setState(this.state);
     } 
     reload() { 
-        console.log("rl",this.state);
         if (this.state.pq_id) { 
             this.props.dispatch(getRegistrations(
                 {alt_status:this.state.altFilter,users:this.state.userFilter,
@@ -524,8 +511,6 @@ class Registrations extends Component {
     } 
 
     render() {
-        console.log("S",this.state);
-        console.log("P",this.props);
         var regheads = [
             {
                 dataField:'office_id',

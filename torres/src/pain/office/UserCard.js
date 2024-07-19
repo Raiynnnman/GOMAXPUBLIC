@@ -109,7 +109,6 @@ class UserCard extends Component {
     }
 
     render() {
-        console.log("p",this.props);
         return (
             <>
                 {this.props.provider && (

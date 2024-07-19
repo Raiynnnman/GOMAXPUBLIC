@@ -23,7 +23,6 @@ class ChatOffice extends Component {
     }
     componentDidMount() {
         this.props.dispatch(getChatUser({appt:this.props.appt}))
-        console.log(this.props)
     }
     componentWillReceiveProps(p) { 
         // if (p.chatUser && p.chatUser.data && p.chatUser.data.rooms && !this.state.activeSet) { 

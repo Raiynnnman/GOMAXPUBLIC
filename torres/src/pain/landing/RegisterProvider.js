@@ -158,7 +158,6 @@ class RegisterProvider extends Component {
         });
 
         staxJs.on("card_form_complete", message => {
-          console.log("card_form_complete", message, this.state.staxxValues);
           if (!this.state.staxxValues.month || this.state.staxxValues.month.length !== 2) { 
               this.setState({ disableRegister: true});
           }
@@ -170,7 +169,6 @@ class RegisterProvider extends Component {
           } else { 
               this.setState({ disableRegister: false });
           }
-          console.log(this.state.staxxValues);
         }); 
 
         staxJs.on("card_form_incomplete", message => {
@@ -292,12 +290,9 @@ class RegisterProvider extends Component {
                 validate:false,
                 match_customer:false
             } 
-            console.log("det",details);
             this.staxJs
                 .tokenize(details)
                 .then((response) => {
-                  console.log("payment method object:", response);
-                  console.log("customer object:", response.customer);
                   registrationData.card = response;
                   this.props.dispatch(registerProvider(registrationData, (err, args) => {
                             if (err) {
@@ -314,7 +309,6 @@ class RegisterProvider extends Component {
                 .catch((err) => {
                   this.state.message = err.message;
                   this.setState(this.state);
-                  console.log("unsuccessful tokenization:", err);
                 });
         } else { 
             this.props.dispatch(registerProvider(registrationData, (err, args) => {
@@ -335,7 +329,6 @@ class RegisterProvider extends Component {
         const { staxxValues } = this.state;
         const { name, value } = event.target;
         this.setState({ staxxValues : { ...staxxValues, [name]: value } });
-        console.log("fff",this.state.staxxValues);
         if (name === 'month' && value.length !== 2) { 
             this.setState({ disableRegister: true});
         } else { 
@@ -571,8 +564,6 @@ class RegisterProvider extends Component {
     render() {
         const { page, selPlan, snackbarOpen, snackbarMessage, snackbarSeverity } = this.state;
         const { registerProvider, landingData } = this.props;
-        console.log("ld",landingData);
-        console.log("s",this.state);
 
     
         var steps = ['Register Information', 'Payment Details'];

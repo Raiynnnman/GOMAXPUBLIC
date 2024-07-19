@@ -22,11 +22,6 @@ function TemplateSelectMulti({label,onChange,style,value,options}) {
   const [selectAll, setSelectAll] = React.useState(value.length === options.length);
   const [selected, setSelected] = React.useState(sel);
   const [open,setOpen] = React.useState(false);
-  console.log(label,"selall",selectAll);
-  console.log(label,"v.len",value.length,options.length);
-  console.log(label,"sel",sel);
-  console.log(label,"val",value)
-  console.log(label,"opt",options);
 
   const handleClose = () => {
     setOpen(false);
@@ -51,7 +46,6 @@ function TemplateSelectMulti({label,onChange,style,value,options}) {
         v = []
         setSelectAll(false);
     } 
-    console.log("v",v);
     v = [...new Set(v)];
     setSelected(v);
     var c = 0;
@@ -59,7 +53,6 @@ function TemplateSelectMulti({label,onChange,style,value,options}) {
     for (c = 0; c < v.length; c++) { 
         var b = v[c];
         var r = options.findIndex((f) => f.label === b);
-        console.log("R",r);
         n.push(options[r]);
     } 
     onChange(n);

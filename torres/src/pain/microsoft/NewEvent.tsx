@@ -129,7 +129,6 @@ const NewEvent = ({data,onCreateEvent,onCancelEvent,currentUser,client}) => {
     };
 
     try {
-        console.log("ne",newEvent);
         var r = await createEvent(app.authProvider!, newEvent);
         data['server_response'] = r;
         // setRedirect(true);
