@@ -82,13 +82,17 @@ class ContactCard extends Component {
     }
 
     toggleIsCell= () => {
+        console.log('tog')
         this.setState((prevState) => ({
-            showPhone: !prevState.iscell
+            selected: { ...this.state.selected, iscell: !this.state.selected.iscell }
+        
         }));
     }
 
     render() {
+        console.log("s", this.state)
         return (
+            
             <>
                 {this.props.provider && (
                     <Box sx={{ mt: 3 }}>
@@ -112,7 +116,7 @@ class ContactCard extends Component {
                                                 control={
                                                     <Checkbox
                                                         checked={this.state.selected.iscell}
-                                                        onChange={this.togglePhoneVisibility}
+                                                        onChange={this.toggleIsCell}
                                                         name="showPhone"
                                                         color="primary"
                                                     />
@@ -125,7 +129,6 @@ class ContactCard extends Component {
                                                     <Checkbox
                                                         readOnly
                                                         checked={this.props.provider.iscell}
-                                                        onChange={this.toggleIsCell}
                                                         name="showPhone"
                                                         color="primary"
                                                     />

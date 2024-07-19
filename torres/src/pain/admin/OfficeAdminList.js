@@ -180,6 +180,7 @@ class OfficeList extends Component {
     } 
 
     editContact(e,t) { 
+        console.log(e,t)
         var v = this.state.selected.phones.findIndex((f) => f.id === e.id)
         if (v < 0) { 
             this.state.selected.phones.push(e);
@@ -189,7 +190,6 @@ class OfficeList extends Component {
         this.state.addContactButton = true;
         this.setState(this.state)
     } 
-
 
     editAddress(e,t) { 
         var v = this.state.selected.addr.findIndex((f) => f.id === e.id)
