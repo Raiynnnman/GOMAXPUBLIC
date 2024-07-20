@@ -1,4 +1,4 @@
-// NOTE : this section of the application is me (tedy) rebuilding the chat application, I am putting a pause on building this feature to work on the calendly feature. So, I am blocking this from being seen.
+// // NOTE : this section of the application is me (tedy) rebuilding the chat application, I am putting a pause on building this feature to work on the calendly feature. So, I am blocking this from being seen.
 
 
 
@@ -12,7 +12,7 @@
 // import Navbar from '../../../components/Navbar';
 // import { connect } from 'react-redux';
 
-// const socket = socketIO('http://localhost:4000');
+// const socket = socketIO('http://localhost:8000');
 
 // class ChatUser extends Component {
 //   constructor(props) {

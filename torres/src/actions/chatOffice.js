@@ -39,7 +39,7 @@ export function receivingData(params) {
               Accept: "application/json",
               "Content-Type": "application/json",
             },
-        }).post('/myday/chat/get',{})
+        }).post('/office/chat/get',{})
       .then((e) => { 
           dispatch({
                 type: RECEIVED_CHATO_DATA_SUCCESS,

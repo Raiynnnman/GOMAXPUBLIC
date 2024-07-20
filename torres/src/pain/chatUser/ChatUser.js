@@ -11,48 +11,52 @@ import { createRoom } from '../../actions/createRoom';
 import AppSpinner from '../utils/Spinner';
 import { setActiveChat } from '../../actions/chat';
 import Navbar from '../../components/Navbar';
+import { getChatOffice } from '../../actions/chatOffice';
 
 class ChatUser extends Component {
-    constructor(props) { 
-        super(props);
-        this.state = { 
-            activeSet: false,
-            appt:null
-        }
-        this.onNewChat = this.onNewChat.bind(this)
+  constructor(props) {
+    super(props);
+    this.state = {
+      activeSet: false,
+      appt: null
+    };
+    this.onNewChat = this.onNewChat.bind(this);
+  }
+
+  componentDidMount() {
+    this.props.dispatch(getChatUser({ appt: this.props.appt }));
+    this.props.dispatch(getChatOffice({ appt: this.props.appt }));
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.chatUser && nextProps.chatUser.data && nextProps.chatUser.data.rooms && !this.state.activeSet) {
+      this.setState({ activeSet: true });
+      const roomId = nextProps.chatUse?.data?.rooms[0]?.id;
+      this.props.dispatch(setActiveChat(roomId));
     }
-    componentDidMount() {
-        this.props.dispatch(getChatUser({appt:this.props.appt}))
-    }
-    componentWillReceiveProps(p) { 
-        if (p.chatUser && p.chatUser.data && p.chatUser.data.rooms && !this.state.activeSet) { 
-            this.state.activeSet = true;
-            var t = p.chatUser.data.rooms[0].id
-            this.props.dispatch(setActiveChat(t))
-            this.setState(this.state);
-        } 
-    }
-    onNewChat(e) { 
-    }
-    render() {
-        const { mobileState } = this.props;
-        return (
-        <>
-            {(this.props.chatUser && this.props.chatUser.isReceiving) && (
-                <AppSpinner/>
-            )}
-          <div style={{margin:20}}>
-                {(this.props.chatUser && this.props.chatUser.data && this.props.chatUser.data.rooms) && ( 
-                <>
-                    <ChatList onNewChat={this.onNewChat} data={this.props.chatUser.data}/>
-                    <ChatDialog data={this.props.chatUser.data}/>
-                    {(false && window.innerWidth > 1024) && ( <ChatInfo data={this.props.chatUser.data}/>)}
-                </>
-                )}
-          </div>
-        </>
-        )
-    }
+  }
+
+  onNewChat(e) {}
+
+  render() {
+    const { mobileState } = this.props;
+    return (
+      <>
+        {(this.props.chatUser && this.props.chatUser.isReceiving) && (
+          <AppSpinner />
+        )}
+        <div style={{ margin: 20 }}>
+          {(this.props.chatUser && this.props.chatUser.data && this.props.chatUser.data.rooms) && (
+            <>
+              <ChatList onNewChat={this.onNewChat} data={this.props.chatUser.data} />
+              <ChatDialog data={this.props.chatUser.data} />
+              {(false && window.innerWidth > 1024) && (<ChatInfo data={this.props.chatUser.data} />)}
+            </>
+          )}
+        </div>
+      </>
+    );
+  }
 }
 
 function mapStateToProps(state) {
@@ -60,7 +64,7 @@ function mapStateToProps(state) {
     mobileState: state.chat.mobileState,
     chatUser: state.chatUser,
     createRoom: state.createRoom
-  }
+  };
 }
 
 export default connect(mapStateToProps)(ChatUser);

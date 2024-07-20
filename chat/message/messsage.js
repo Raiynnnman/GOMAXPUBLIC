@@ -3,7 +3,7 @@ const db = require("../util/DBOps.js")
 const log = require("../util/logging.js")
 
 module.exports.saveMessage = function(room_id,to_user,from_user,user_id,message) { 
-    log.debug('savingMessage',room_id);
+     log.debug('savingMessage',room_id);
     db.query(`
         insert into chat_room_discussions 
             (chat_rooms_id,from_user_id,to_user_id,text) values
