@@ -238,7 +238,7 @@ class MapContainer extends Component {
                     };
                     return <Marker key={e.index} {...markerProps} icon={{ 
                             url:'/maki_road-accident.png',
-                            scaledSize:{width:40,height:40}
+                            scaledSize:{width:30,height:30}
                           }} />
                   })}
                 </Map>
