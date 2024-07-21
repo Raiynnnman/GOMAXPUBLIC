@@ -90,6 +90,7 @@ class PainTable extends Component {
         allSelected:false
     };
     this.handleChangePage = this.handleChangePage.bind(this);
+    this.handleClick = this.handleClick.bind(this);
     this.onSelectRow = this.onSelectRow.bind(this);
     this.onSelectAll = this.onSelectAll.bind(this);
     this.handleChangeSort = this.handleChangeSort.bind(this);
@@ -131,6 +132,12 @@ class PainTable extends Component {
     }
   } 
 
+  handleClick(e,r) { 
+    if (r.onClick) { 
+        console.log("click",e,r);
+        r.onClick(e,r)
+    }
+  } 
   handleChangeSort(e, t) {
     this.props.onSort(e);
   }
@@ -169,11 +176,12 @@ class PainTable extends Component {
                     )}
                     {this.props.columns.map((e) => {
                       if (!e.hidden) {
+                        console.log("W",e.width)
                         return (
                           <TableCell
                             key={e.dataField}
                             align={e.align}
-                            style={{ backgroundColor: '#fa6a0a', color: 'white' }}
+                            style={{ width:e.width, backgroundColor: '#fa6a0a', color: 'white' }}
                           >
                             {!e.sort && e.text}
                             {e.sort && (
@@ -210,9 +218,13 @@ class PainTable extends Component {
                         )}
                       {this.props.columns.map((e) => {
                         if (!e.hidden) {
+                          console.log("e",e,this.props.columns[e])
                           return (
-                            <TableCell key={e.dataField} align={e.align}>
-                              {e.formatter ? e.formatter(e, row) : row[e.dataField]}
+                            <TableCell key={e.dataField} 
+                                align={e.align} onClick={() => this.handleClick(row,e)}>
+                              <font style={{color:e.onClick ? "blue":'black',cursor:e.onClick ? "pointer":null}}>
+                                {e.formatter ? e.formatter(e, row) : row[e.dataField]}
+                              </font>
                             </TableCell>
                           );
                         } else {
@@ -222,6 +234,7 @@ class PainTable extends Component {
                     </TableRow>
                   ))}
                 </TableBody>
+                {(!this.props.noPaging) && (
                 <TableFooter>
                   <TablePagination
                     rowsPerPageOptions={[5, 10, 25, 100, 250]}
@@ -233,6 +246,7 @@ class PainTable extends Component {
                     ActionsComponent={TablePaginationActions}
                   />
                 </TableFooter>
+                )}
               </Table>
             </TableContainer>
           </Grid>

@@ -55,6 +55,15 @@ class TrafficGet(AdminBase):
                 del params['zipcode']
             if params['zipcode'] is None:
                 del params['zipcode']
+        limit = 10000
+        lat = lng = None
+        if 'limit' in params:
+            limit = params['limit']
+        if 'offset' in params:
+            offset = params['offset']
+        if 'location' in params:
+            lat = params['lat']
+            lng = parans['lng']
         STR = self.getLeadStrength()
         OT = self.getOfficeTypes()
         db = Query()
@@ -156,7 +165,8 @@ class TrafficGet(AdminBase):
                     ti.uuid,ti.traffic_categories_id as category_id,
                     tcat.name as category,ti.zipcode,ti.city,ti.traf_start_time,
                     ti.traf_end_time,ti.traf_num_reports,ti.lat,ti.lon as lng,
-                    ti.traf_magnitude,ti.traf_delay,ti.state,
+                    ti.traf_magnitude,ti.traf_delay,ti.state,ti.created,
+                    ti.traffic_incidents_contact_id,
                     json_arrayagg(
                         json_object(
                             'lat',tc.lat,
@@ -196,11 +206,29 @@ class TrafficGet(AdminBase):
                     ti.id
                 order by
                     tc.ord
+                limit %s offset %s
             """
+            sqlp.append(limit)
+            sqlp.append(offset*limit)
             print(q,sqlp)
             l = db.query(q,sqlp)
+            ret['total'] = limit
             for x in l:
                 x['coords'] = json.loads(x['coords'])
+                x['contact'] = []
+                if x['traffic_incidents_contact_id'] is not None:
+                    x['contact'] = db.query("""
+                        select 
+                            tic.id,tic.first_name,tic.last_name,tic.dob,tic.twitter,
+                            facebook,instagram,email,phone,contacted,cis.name as status,cis.id
+                        from 
+                            traffic_incidents_contact tic
+                            left outer join client_intake_status cis on cis.id = tic.client_intake_status_id
+                        where
+                            tic.id = %s
+                        """,(x['traffic_incidents_contact_id'],)
+                    )
+                    x['contact'] = x['contact'][0]
                 ret['data'].append(x)
             print("len",len(ret['data']))
         zipcoords = {}

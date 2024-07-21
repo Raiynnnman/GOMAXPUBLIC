@@ -32,7 +32,7 @@ function DropdownMenu({onChange,items,title,currentUser}) {
             </div>
             {open ? (
               <Box sx={{ position: 'absolute', top: 28, width:180,
-                        right: 0, left: 0, border: '1px solid', p: 1, zIndex:9999,
+                        right: 0, left: -100, border: '1px solid', p: 1, zIndex:9999,
                         bgcolor: 'black' }}>
                 {items.map((e) => { 
                     if (e.v(currentUser)) { 

@@ -10,6 +10,7 @@ import BlogTwoColumn from './pages/BlogTwoColumn';
 import HomeHorizontal from './pages/HomeHorizontal';
 import {Redirect, BrowserRouter, Switch, Route} from 'react-router-dom';
 import Login from './pain/login/Login';
+import InvestorMap from './pain/investor/InvestorMap';
 import Dashboard from './pain/dashboard/Dashboard';
 import RegisterProvider from './pain/landing/RegisterProvider';
 import RegisterReferrer from './pain/landing/RegisterReferrer';
@@ -77,6 +78,7 @@ const App = () => {
                     <Route exact path='/register-legal' component={RegisterLegal}/>
                     <Route exact path='/register-legal/:id' component={RegisterLegal}/>
                     <Route exact path='/app/main/dashboard' component={Dashboard}/>
+                    <Route exact path='/app/main/admin/investors' component={InvestorMap}/>
                     <Route exact path='/app/main/admin/search' component={SearchAdmin}/>
                     <Route exact path='/app/main/admin/search/:id' component={SearchAdmin}/>
                     <Route exact path='/app/main/admin/map' component={Map}/>

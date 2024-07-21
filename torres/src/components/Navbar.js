@@ -1,4 +1,5 @@
 import React ,  { Component } from "react";
+import MenuIcon from '@mui/icons-material/Menu';
 import { connect } from 'react-redux';
 import DropdownMenu from './DropdownMenu';
 import { logoutUser } from '../actions/auth';
@@ -70,6 +71,44 @@ class Navbar extends Component {
     } 
 
     render(){
+        const mobileAdminItems= [
+            {
+             n:'Home',
+             v:function(c) { 
+                return true;
+             },
+             a:function() { 
+                window.location = '/app';
+             }
+            },
+            {
+             n:'Map',
+             v:function(c) { 
+                return true;
+             },
+             a:function() { 
+                window.location = '/app/main/admin/map';
+             }
+            },
+            {
+             n:'Search',
+             v:function(c) { 
+                return true;
+             },
+             a:function() { 
+                window.location = '/app/main/admin/search';
+             }
+            },
+            {
+             n:'Investors',
+             v:function(c) { 
+                return true;
+             },
+             a:function() { 
+                window.location = '/app/main/admin/investors';
+             }
+            },
+        ]
         const profileItems = [
             {n:'Leave Context',
              v:function(c) { 
@@ -290,6 +329,7 @@ class Navbar extends Component {
                                             <li className="active"><a href="/app">Home</a></li>
                                             <li><a href="/app/main/admin/search">Search</a></li>
                                             <li><a href="/app/main/admin/customers">Customers</a></li>
+                                            <li><a href="/app/main/admin/investors">Investors</a></li>
                                             <li><a href="/app/main/admin/map">Map</a></li>
                                             <li><a href="/app/main/admin/registrations">CRM</a></li>
                                             <li><a>
@@ -308,17 +348,19 @@ class Navbar extends Component {
                                     </nav>
                                 </div>
                             </div>
-                            <div className="col-sm-9 col-9 d-block d-lg-none">
-                                <div className="mobile-menu">
+                            <div className="col-sm-8 col-8 d-block d-lg-none">
+                                <div className="mobile-menu" style={{color:'white'}}>
+                                    <div style={{float:"right"}}>
                                     <nav>
-                                        <ul>                              
-                                            <li className="active"><a href="/">Home</a></li>
-                                            <li><a href="/app/main/admin/search">Search</a></li>
-                                            <li><a href="/app/main/admin/customers">Customers</a></li>
-                                            <li><a href="/app/main/admin/map">Map</a></li>
-                                            <li><a href="/app/main/admin/registrations">CRM</a></li>
+                                        <ul className="main-menu">
+                                            <li><a>
+                                                <DropdownMenu currentUser={this.props.currentUser} 
+                                                    title={<MenuIcon/>} items={mobileAdminItems} dispatch={this.props.dispatch}/>
+                                                </a>
+                                            </li>
                                         </ul>
                                     </nav>
+                                    </div>
                                 </div>
                             </div>
                             </>

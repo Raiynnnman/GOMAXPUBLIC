@@ -146,3 +146,23 @@ def getOfficeNotificationCategories():
         i = x['id']
         ret[n] = i
     return ret
+
+def getFirstNames():
+    db = Query()
+    o = db.query("select value from stub_last_names")
+    return o
+
+def getAreaCodes():
+    db = Query()
+    o = db.query("select label,value from stub_area_codes")
+    ret = {}
+    for x in o:
+        if x['label'] not in ret:
+            ret[x['label']] = []
+        ret[x['label']].append(x['value'])
+    return ret
+
+def getLastNames():
+    db = Query()
+    o = db.query("select value from stub_first_names")
+    return o
