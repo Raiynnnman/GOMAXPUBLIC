@@ -134,7 +134,6 @@ class PainTable extends Component {
 
   handleClick(e,r) { 
     if (r.onClick) { 
-        console.log("click",e,r);
         r.onClick(e,r)
     }
   } 
@@ -154,12 +153,13 @@ class PainTable extends Component {
   }
 
   render() {
+    console.log("p",this.props);
     return (
       <>
         <Grid container>
           <Grid item xs={12}>
             <TableContainer component={Paper}>
-              <Table sx={{ minWidth: 650 }} size="small" aria-label="">
+              <Table sx={{ minWidth: this.props.minWidth? this.props.minWidth : 650 }} size="small" aria-label="">
                 <TableHead>
                   <TableRow>
                     {this.props.selectAll && (
@@ -176,7 +176,6 @@ class PainTable extends Component {
                     )}
                     {this.props.columns.map((e) => {
                       if (!e.hidden) {
-                        console.log("W",e.width)
                         return (
                           <TableCell
                             key={e.dataField}
@@ -218,7 +217,6 @@ class PainTable extends Component {
                         )}
                       {this.props.columns.map((e) => {
                         if (!e.hidden) {
-                          console.log("e",e,this.props.columns[e])
                           return (
                             <TableCell key={e.dataField} 
                                 align={e.align} onClick={() => this.handleClick(row,e)}>

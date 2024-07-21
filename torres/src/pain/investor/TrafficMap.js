@@ -1,5 +1,18 @@
 import React, { useState, useEffect, Component } from 'react';
 import { TextField, Grid, Paper, Typography, Button } from '@mui/material';
+import {
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableFooter,
+  TableHead,
+  TablePagination,
+  TableRow,
+  TableSortLabel,
+  IconButton,
+} from '@mui/material';
 import googleKey from '../../googleConfig';
 import moment from 'moment';
 import MapMetaData from "../../components/MapMetaData";
@@ -167,7 +180,6 @@ class MapContainer extends Component {
         {
             dataField:'uuid',
             text:'ID',
-            width:"20%",
             onClick: (content,row) => (
                 this.viewRow(content,row)
             ),
@@ -181,7 +193,6 @@ class MapContainer extends Component {
             dataField:'city',
             text:'Location',
             align:'center',
-            width:"20%",
             formatter: (cellContent,row) => (
                 <div>
                     {row.city + ", " + row.state}
@@ -234,6 +245,7 @@ class MapContainer extends Component {
             <Grid item xs={12} md={12}>
                   <PainTable
                         keyField='id' 
+                        minWidth={300}
                         data={this.props.data.data.data} 
                         total={this.props.data.total}
                         noPaging
