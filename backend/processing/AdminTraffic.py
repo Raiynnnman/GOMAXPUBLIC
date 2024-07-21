@@ -205,7 +205,7 @@ class TrafficGet(AdminBase):
                 group by
                     ti.id
                 order by
-                    tc.ord
+                    ti.created desc
                 limit %s offset %s
             """
             sqlp.append(limit)
