@@ -25,6 +25,7 @@ import GoogleAutoComplete from '../utils/GoogleAutoComplete';
 import PainTable from '../utils/PainTable';
 import UserCard from './UserCard';
 import TemplateButton from '../utils/TemplateButton';
+import AccidentIcon from '../../assets/maki_road-accident.png';
 
 const darkModeStyle = [
   { "elementType": "geometry", "stylers": [{ "color": "#1e1e1e" }] },
@@ -229,13 +230,16 @@ class MapContainer extends Component {
                     options={{ styles: darkModeStyle }} // Apply dark mode style here
                 >
                   {(this.props.targeted && this.props.targeted.length < 1) && this.props.data.data.data.map((e) => {
+                    { console.log(window.google.maps.Size) }
                     let markerProps = {
                       onClick: (map) => this.handleMarkerClick(e, map),
                       position: e.coords[0],
                       data: e,
-                      icon: this.getMarkerIcon(e)
                     };
-                    return <Marker key={e.index} {...markerProps} />;
+                    return <Marker key={e.index} {...markerProps} icon={{ 
+                            url:'/maki_road-accident.png',
+                            scaledSize:{width:40,height:40}
+                          }} />
                   })}
                 </Map>
               </APIProvider>
@@ -271,42 +275,7 @@ class MapContainer extends Component {
   }
 
   getMarkerIcon(e) {
-    switch (e.category_id) {
-      case 2:
-        return "http://maps.google.com/mapfiles/ms/icons/red-dot.png";
-      case 99:
-        if (e.lead_strength_id === 1 && e.office_type_id === 1) {
-          return "http://maps.google.com/mapfiles/ms/icons/orange-dot.png";
-        } else if (e.lead_strength_id === 1 && e.office_type_id === 6) {
-          return "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png";
-        } else if (e.lead_strength_id === 2 && e.office_type_id === 6) {
-          return "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png";
-        } else if (e.lead_strength_id === 3 && e.office_type_id === 6) {
-          return "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png";
-        } else if (e.lead_strength_id === 4 && e.office_type_id === 6) {
-          return "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png";
-        } else if (e.lead_strength_id === 2 && e.office_type_id === 1) {
-          return "http://maps.google.com/mapfiles/ms/icons/orange-dot.png";
-        } else if (e.lead_strength_id === 3 && e.office_type_id === 1) {
-          return "http://maps.google.com/mapfiles/ms/icons/purple-dot.png";
-        }
-        break;
-      case 101:
-        return "http://maps.google.com/mapfiles/ms/icons/purple-dot.png";
-      case 104:
-        if (e.office_type_id === 1) {
-          return "https://maps.gstatic.com/mapfiles/ms2/micons/purple-pushpin.png";
-        } else if (e.office_type_id === 6) {
-          return "https://maps.gstatic.com/mapfiles/ms2/micons/ylw-pushpin.png";
-        }
-        break;
-      case 103:
-        return "http://maps.google.com/mapfiles/ms/icons/green-dot.png";
-      case 100:
-        return "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
-      default:
-        return null;
-    }
+    return <AccidentIcon />
   }
 }
 
