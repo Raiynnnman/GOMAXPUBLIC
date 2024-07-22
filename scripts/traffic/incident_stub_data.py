@@ -68,10 +68,9 @@ for x in l:
                 traffic_incidents ti
             where
                 ti.traffic_incidents_contact_id = tic.id and
-                ti.city = %s and ti.state = %s and
                 tic.first_name = %s and tic.last_name = %s
             """,(
-                city,state,f,l
+                f,l
             )
         )
         if len(j) < 1:
