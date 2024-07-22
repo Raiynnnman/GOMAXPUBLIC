@@ -268,7 +268,7 @@ class Registrations extends Component {
     onMassUpdateValue(e,t) { 
         this.state.massUpdateValue[e] = t.target.value;
         var c = 0;
-        if (e === 'commission_users_id') { 
+        if (e === 'commission_user_id') { 
             var v = this.props.registrationsAdminList.data.config.commission_users.filter((f) => f.name === t.target.value)
             for (c = 0; c < this.state.massSel.length; c++) { 
                 this.state.massSel[c][e] = v[0].id
@@ -890,16 +890,16 @@ class Registrations extends Component {
                         <Grid item xs="3">
                           <TemplateSelect
                               label='Assignee'
-                              onChange={(e) => this.onMassUpdateValue('commission_users_id',e)}
+                              onChange={(e) => this.onMassUpdateValue('commission_user_id',e)}
                               value={{
                                 label:this.props.registrationsAdminList.data.config.commission_users.filter(
-                                    (f) => f.name === this.state.massUpdateValue['commission_users_id']).length > 0 ? 
+                                    (f) => f.name === this.state.massUpdateValue['commission_user_id']).length > 0 ? 
                                     this.props.registrationsAdminList.data.config.commission_users.filter(
-                                    (f) => f.name === this.state.massUpdateValue['commission_users_id'])[0].name : '', 
+                                    (f) => f.name === this.state.massUpdateValue['commission_user_id'])[0].name : '', 
                                 value:this.props.registrationsAdminList.data.config.commission_users.filter(
-                                    (f) => f.name === this.state.massUpdateValue['commission_users_id']).length > 0 ? 
+                                    (f) => f.name === this.state.massUpdateValue['commission_user_id']).length > 0 ? 
                                     this.props.registrationsAdminList.data.config.commission_users.filter(
-                                    (f) => f.name === this.state.massUpdateValue['commission_users_id'])[0].name : '', 
+                                    (f) => f.name === this.state.massUpdateValue['commission_user_id'])[0].name : '', 
                               }}
                               options={this.props.registrationsAdminList.data.config.commission_users.map((e) => { 
                                 return (

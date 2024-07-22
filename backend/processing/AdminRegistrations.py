@@ -227,6 +227,7 @@ class RegistrationUpdate(AdminBase):
                 """,(params['office_alternate_status_id'],offid)
             )
         if 'commission_user_id' in params:
+            print("COMM",params['commission_user_id'],offid)
             db.update("""
                 update office set commission_user_id=%s where id=%s
                 """,(params['commission_user_id'],offid)

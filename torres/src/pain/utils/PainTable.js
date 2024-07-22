@@ -153,7 +153,6 @@ class PainTable extends Component {
   }
 
   render() {
-    console.log("p",this.props);
     return (
       <>
         <Grid container>
