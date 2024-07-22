@@ -206,7 +206,7 @@ class MapContainer extends Component {
             align:'center',
             formatter: (cellContent,row) => (
                 <div>
-                    {moment(row.created).fromNow()}
+                    {moment(row.created + "-07:00").fromNow()}
                 </div>
             )
         },
