@@ -104,11 +104,17 @@ class UserCard extends Component {
                                         </Grid>
                                         <Grid container spacing={2}>
                                             <Grid item xs={12} style={{marginTop:10}}>
-                                                 <div style={{display:'flex',alignContent:'center',justifyContent:'space-around'}}>
-                                                    <a href="#"><img style={{width:"50px", objectFit:"contain"}} src='/facebook_logo.svg'/></a> 
-                                                    <a href="#"><img style={{width:"50px", objectFit:"contain"}} src='/instagram_logo.svg'/></a> 
-                                                    <a href="#"><img style={{width:"50px", objectFit:"contain"}} src='/twitter_logo.svg'/></a> 
-                                                 </div>
+                                                <a style={{color:'blue'}} href="#">Facebook: {this.props.data.contact.facebook}</a>
+                                            </Grid>
+                                        </Grid>
+                                        <Grid container spacing={2}>
+                                            <Grid item xs={12} style={{marginTop:10}}>
+                                                <a style={{color:'blue'}} href="#">Instagram: {this.props.data.contact.instagram}</a>
+                                            </Grid>
+                                        </Grid>
+                                        <Grid container spacing={2}>
+                                            <Grid item xs={12} style={{marginTop:10}}>
+                                                <a style={{color:'blue'}} href="#">Twitter: {this.props.data.contact.twitter}</a>
                                             </Grid>
                                         </Grid>
                                     </Grid>

@@ -55,6 +55,7 @@ class TrafficGet(AdminBase):
             if params['zipcode'] is None:
                 del params['zipcode']
         limit = 10000
+        offset = 0
         lat = lng = None
         if 'limit' in params:
             limit = params['limit']

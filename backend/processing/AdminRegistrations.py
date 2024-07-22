@@ -909,6 +909,7 @@ class RegistrationList(AdminBase):
             if 'dnc' in params and params['dnc']:
                 myq += " and ("
                 myq += " office_alternate_status_id = %s " % ALT['DNC']
+                myq += " or pq.provider_queue_status_id = %s " % PQS['INVITED']
                 myq += " or office_alternate_status_id = %s " % ALT['Not interested']
                 myq += " or office_alternate_status_id = %s " % ALT['Not a Chiropractor']
                 myq += ")"
@@ -924,6 +925,7 @@ class RegistrationList(AdminBase):
                 myq += " and provider_queue_status_id not in (" 
                 myq += ",".join(map(str,i))
                 myq += ")"
+            print(myq)
             myq += " group by o.id "
             o = db.query(myq,pre_par)
             ret['filename'] = 'provider_report.csv'
