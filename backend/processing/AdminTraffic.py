@@ -42,7 +42,6 @@ class TrafficGet(AdminBase):
     def isDeferred(self):
         return False
 
-    @check_admin
     def execute(self, *args, **kwargs):
         ret = {}
         job,user,off_id,params = self.getArgs(*args,**kwargs)

@@ -1,4 +1,4 @@
-import React from 'react';
+import React ,  { Component } from "react";
 import { connect } from 'react-redux';
 import Demo from './demo/Demo';
 import { ToastContainer } from 'react-toastify';
@@ -41,76 +41,84 @@ import Reject from './pain/referral_accept/Reject';
 import ChatUser from './pain/chatUser/ChatUser.js';
 import Pricing from './components/Pricing';
 const CloseButton = ({closeToast}) => <i onClick={closeToast} className="la la-close notifications-close"/>
-const App = () => {
-    if (window.location.hash.startsWith('#/')) {
-        window.location = window.location.hash.replace('#', '')
+
+class App extends Component {
+
+    render() { 
+        console.log("p",this.props);
+        if (window.location.hash.startsWith('#/')) {
+            window.location = window.location.hash.replace('#', '')
+        }
+        if (this.props.currentUser && this.props.currentUser.entitlements && 
+              this.props.currentUser.entitlements.includes('InvestorView') &&
+              !window.location.href.includes("incidentmap")) {
+            window.location =  '/app/main/view/incidentmap'
+        } else if (this.props.currentUser && this.props.currentUser.entitlements && 
+            !window.location.href.includes("/app/main")) { 
+            window.location =  '/app/main/dashboard'
+        } 
+        return (
+            <div className="App">
+                <ToastContainer
+                    autoClose={5000}
+                    hideProgressBar
+                    theme='colored'
+                    closeOnClick
+                    closeButton={<CloseButton/>}
+                />
+                <BrowserRouter basename={'/'}>
+                    <Switch>
+                        <Route path="/app" exact render={() => <Redirect to="/app/main"/>}/>
+                        <Route path="/app/main" exact render={() => <Redirect to="/app/main/dashboard"/>}/>
+                        <Route exact path='/' component={HomeHorizontal}/>
+                        <Route exact path='/login' component={Login}/>
+                        <Route exact path='/register' component={Register}/>
+                        <Route exact path='/search' component={Search}/>
+                        <Route exact path="/accept/:token" component={Accept}/> 
+                        <Route exact path="/reject/:token" component={Reject}/> 
+                        <Route exact path='/demo' component={Landing}/>
+                        <Route exact path='/introduction' component={Landing}/>
+                        <Route exact path='/meeting' component={Landing}/>
+                        <Route exact path='/referral' component={Landing}/>
+                        <Route exact path='/forgot' component={Forgot}/>
+                        <Route exact path='/verify/:token' component={Verified}/>
+                        <Route exact path='/reset/:token' component={Reset}/>
+                        <Route exact path='/register-provider' component={RegisterProvider}/>
+                        <Route exact path='/register-referrer' component={RegisterReferrer}/>
+                        <Route exact path='/welcome' component={Welcome}/>
+                        <Route exact path='/register-provider/:id' component={RegisterProvider}/>
+                        <Route exact path='/register-legal' component={RegisterLegal}/>
+                        <Route exact path='/register-legal/:id' component={RegisterLegal}/>
+                        <Route exact path='/app/main/dashboard' component={Dashboard}/>
+                        <Route exact path='/app/main/admin/investors' component={InvestorMap}/>
+                        <Route exact path='/app/main/view/incidentmap' component={InvestorMap}/>
+                        <Route exact path='/app/main/admin/search' component={SearchAdmin}/>
+                        <Route exact path='/app/main/admin/search/:id' component={SearchAdmin}/>
+                        <Route exact path='/app/main/admin/map' component={Map}/>
+                        <Route exact path='/app/main/admin/registrations' component={Registrations}/>
+                        <Route exact path='/app/main/admin/customers' component={Referrers}/>
+                        <Route exact path='/app/main/admin/providers' component={OfficeAdminList}/>
+                        <Route exact path='/app/main/admin/invoices' component={InvoiceAdminList}/>
+                        <Route exact path='/app/main/admin/commissions' component={CommissionAdminList}/>
+                        <Route exact path='/app/main/admin/coupons' component={CouponAdminList}/>
+                        <Route exact path='/app/main/admin/plans' component={PricingList}/>
+                        <Route exact path='/app/main/admin/users' component={UserAdminList}/>
+                        <Route exact path="/app/main/office/locations"  component={OfficeAddresses} />
+                        {/*<Route exact path="/app/main/office/chat" component={ChatOffice} />*/}
+                        <Route exact path="/app/main/office/clients"  component={Customers} />
+                        <Route exact path="/app/main/client/search" component={Search} />
+                        <Route exact path="/app/main/client/chat" component={ChatUser} />
+                        <Route exact path="/app/main/client/appointments" component={Appointments} />
+                        <Route exact path="/app/main/client/appointments/:id" component={Appointments} />
+                    </Switch>
+                </BrowserRouter>
+            </div>
+        );
     }
-    return (
-        <div className="App">
-            <ToastContainer
-                autoClose={5000}
-                hideProgressBar
-                theme='colored'
-                closeOnClick
-                closeButton={<CloseButton/>}
-            />
-            <BrowserRouter basename={'/'}>
-                <Switch>
-                    <Route path="/app" exact render={() => <Redirect to="/app/main"/>}/>
-                    <Route path="/app/main" exact render={() => <Redirect to="/app/main/dashboard"/>}/>
-                    <Route exact path='/' component={HomeHorizontal}/>
-                    <Route exact path='/login' component={Login}/>
-                    <Route exact path='/register' component={Register}/>
-                    <Route exact path='/search' component={Search}/>
-                    <Route exact path="/accept/:token" component={Accept}/> 
-                    <Route exact path="/reject/:token" component={Reject}/> 
-                    <Route exact path='/demo' component={Landing}/>
-                    <Route exact path='/introduction' component={Landing}/>
-                    <Route exact path='/meeting' component={Landing}/>
-                    <Route exact path='/referral' component={Landing}/>
-                    <Route exact path='/forgot' component={Forgot}/>
-                    <Route exact path='/verify/:token' component={Verified}/>
-                    <Route exact path='/reset/:token' component={Reset}/>
-                    <Route exact path='/register-provider' component={RegisterProvider}/>
-                    <Route exact path='/register-referrer' component={RegisterReferrer}/>
-                    <Route exact path='/welcome' component={Welcome}/>
-                    <Route exact path='/register-provider/:id' component={RegisterProvider}/>
-                    <Route exact path='/register-legal' component={RegisterLegal}/>
-                    <Route exact path='/register-legal/:id' component={RegisterLegal}/>
-                    <Route exact path='/app/main/dashboard' component={Dashboard}/>
-                    <Route exact path='/app/main/admin/investors' component={InvestorMap}/>
-                    <Route exact path='/app/main/admin/search' component={SearchAdmin}/>
-                    <Route exact path='/app/main/admin/search/:id' component={SearchAdmin}/>
-                    <Route exact path='/app/main/admin/map' component={Map}/>
-                    <Route exact path='/app/main/admin/registrations' component={Registrations}/>
-                    <Route exact path='/app/main/admin/customers' component={Referrers}/>
-                    <Route exact path='/app/main/admin/providers' component={OfficeAdminList}/>
-                    <Route exact path='/app/main/admin/invoices' component={InvoiceAdminList}/>
-                    <Route exact path='/app/main/admin/commissions' component={CommissionAdminList}/>
-                    <Route exact path='/app/main/admin/coupons' component={CouponAdminList}/>
-                    <Route exact path='/app/main/admin/plans' component={PricingList}/>
-                    <Route exact path='/app/main/admin/users' component={UserAdminList}/>
-                    <Route exact path="/app/main/office/locations"  component={OfficeAddresses} />
-                    {/*<Route exact path="/app/main/office/chat" component={ChatOffice} />*/}
-                    <Route exact path="/app/main/office/clients"  component={Customers} />
-                    <Route exact path="/app/main/client/search" component={Search} />
-                    <Route exact path="/app/main/client/chat" component={ChatUser} />
-                    <Route exact path="/app/main/client/appointments" component={Appointments} />
-                    <Route exact path="/app/main/client/appointments/:id" component={Appointments} />
-                    <Route exact path={`${process.env.PUBLIC_URL}/tf`} component={DemoTF}/>
-                    <Route exact path={`${process.env.PUBLIC_URL}/home-one`} component={HomeOlive}/>
-                    <Route exact path={`${process.env.PUBLIC_URL}/home-two`} component={HomeHorizontal}/>
-                    <Route exact path={`${process.env.PUBLIC_URL}/blog-grid`} component={BlogGrid}/>
-                    <Route exact path={`${process.env.PUBLIC_URL}/blog-two-column`} component={BlogTwoColumn}/>
-                    <Route exact path={`${process.env.PUBLIC_URL}/blog-details`} component={BlogDetails}/>
-                </Switch>
-            </BrowserRouter>
-        </div>
-    );
 }
 
 const mapStateToProps = store => ({
-  currentUser: store.auth
+  currentUser: store.auth.currentUser
 });
 
 export default connect(mapStateToProps)(App);

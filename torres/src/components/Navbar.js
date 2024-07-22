@@ -71,6 +71,22 @@ class Navbar extends Component {
     } 
 
     render(){
+        const mobileInvestorItems = [
+            {
+             n:'Home',
+             v:function(c) { 
+                return true;
+             },
+             a:function() { 
+                window.location = '/app/main/view/incidentmap';
+             }
+            },
+            {n:'Logout',
+             a:this.logout,
+             v:function(c) { return true; },
+             u:'/'  
+            },
+        ];
         const mobileAdminItems= [
             {
              n:'Home',
@@ -315,6 +331,42 @@ class Navbar extends Component {
                                             </li>
                                         </ul>
                                     </nav>
+                                </div>
+                            </div>
+                            </>
+                        )}
+                        {(this.props.currentUser && this.props.currentUser.entitlements && 
+                          this.props.currentUser.entitlements.includes('InvestorView') && !this.props.currentUser.context) && (
+                            <>
+                            <div className="col-lg-9 d-none d-lg-block">
+                                <div className="mainmenu-wrapper">
+                                    <nav>
+                                        <ul className="main-menu">
+                                            <li className="active"><a href="/app/main/view/incidentmap">Incidents</a></li>
+                                            <li><a>
+                                                <DropdownMenu currentUser={this.props.currentUser} 
+                                                    title={
+                                                    this.props.currentUser.first_name + " " + this.props.currentUser.last_name
+                                                          } items={profileItems} dispatch={this.props.dispatch}/>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </div>
+                            </div>
+                            <div className="col-sm-8 col-8 d-block d-lg-none">
+                                <div className="mobile-menu" style={{color:'white'}}>
+                                    <div style={{float:"right"}}>
+                                    <nav>
+                                        <ul className="main-menu">
+                                            <li><a>
+                                                <DropdownMenu currentUser={this.props.currentUser} 
+                                                    title={<MenuIcon/>} items={mobileInvestorItems} dispatch={this.props.dispatch}/>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                    </div>
                                 </div>
                             </div>
                             </>
