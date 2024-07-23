@@ -49,7 +49,7 @@ class InvestorMap extends Component {
 
     setNextLoad() { 
         console.log("set")
-        setTimeout((e) => { e.setNextLoad() }, 20000, this)
+        setTimeout((e) => { e.setNextLoad() }, 30000, this)
         this.state.nextReloadTimer = moment(this.state.nextReload).fromNow()
         this.setState(this.state);
     }
@@ -72,6 +72,7 @@ class InvestorMap extends Component {
 
     render() {
         console.log("S",this.state);
+        console.log("P",this.props);
         return (
             <>
             <div style={{backgroundColor:"black"}}>

@@ -106,6 +106,11 @@ class TrafficGet(AdminBase):
             select 104,'Pending Provider'
             """)
         ret['config']['categories'] = l
+        ret['config']['timezones_offset'] = db.query("""
+            select tz_name,tz_hours
+                from position_zip group by tz_name;
+            """
+        )
         if 'categories' not in params or len(params['categories']) == 0:
             return ret
         #Incase we need to do time offsets
@@ -432,4 +437,5 @@ class TrafficGet(AdminBase):
                 )[0]['cnt']
                 t['coords'] = json.loads(t['coords'])
                 ret['data'].append(t) 
+    
         return ret

@@ -180,6 +180,7 @@ class PainTable extends Component {
                             key={e.dataField}
                             align={e.align}
                             style={{ width:e.width, 
+                                display: e.hideOnMobile ? (window.innerWidth < 600 ? "none" : null) : null,
                                 backgroundColor: this.props.headerBackgroundColor ? this.props.headerBackgroundColor : '#fa6a0a', 
                                 color : this.props.headerColor ? this.props.headerColor : '#fa6a0a', 
                                 }}
@@ -223,15 +224,16 @@ class PainTable extends Component {
                             <TableCell key={e.dataField} 
                                     style={{
                                         color:this.props.dataColor ? this.props.dataColor : "black",
+                                        display: e.hideOnMobile ? (window.innerWidth < 600 ? "none" : null) : null,
                                         backgroundColor:this.props.dataBackgroundColor ? this.props.dataBackgroundColor : "white"
                                     }}
                                 align={e.align} onClick={() => this.handleClick(row,e)}>
-                              <font style={{
-                                    color:this.props.dataColor ? this.props.dataColor : "black",
-                                    backgroundColor:this.props.dataBackgroundColor ? this.props.dataBackgroundColor : "white",
-                                    cursor:e.onClick ? "pointer":null}}>
-                                {e.formatter ? e.formatter(e, row) : row[e.dataField]}
-                              </font>
+                                  <font style={{
+                                        color:this.props.dataColor ? this.props.dataColor : "black",
+                                        backgroundColor:this.props.dataBackgroundColor ? this.props.dataBackgroundColor : "white",
+                                        cursor:e.onClick ? "pointer":null}}>
+                                    {e.formatter ? e.formatter(e, row) : row[e.dataField]}
+                                  </font>
                             </TableCell>
                           );
                         } else {

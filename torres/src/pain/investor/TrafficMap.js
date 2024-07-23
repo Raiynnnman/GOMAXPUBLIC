@@ -27,6 +27,8 @@ import UserCard from './UserCard';
 import TemplateButton from '../utils/TemplateButton';
 import AccidentIcon from '../../assets/maki_road-accident.png';
 
+const timeZoneIANA = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
 const darkModeStyle = [
   { "elementType": "geometry", "stylers": [{ "color": "#1e1e1e" }] },
   { "elementType": "labels.icon", "stylers": [{ "visibility": "off" }] },
@@ -131,6 +133,9 @@ class MapContainer extends Component {
   };
 
   render() {
+    console.log("tz",timeZoneIANA);
+    console.log("p",this.props);
+    console.log("win",window);
     const styles = {
       mapContainer: {
         justifyContent: 'center',
@@ -200,12 +205,36 @@ class MapContainer extends Component {
             )
         },
         {
+            dataField:'lat',
+            text:'Lat/Lng',
+            hideOnMobile:true,
+            align:'center',
+            formatter: (cellContent,row) => (
+                <div>
+                    {row.lat+ ", " + row.lng}
+                </div>
+            )
+        },
+        {
+            dataField:'traf_from',
+            text:'Intersection',
+            hideOnMobile:true,
+            align:'center',
+            formatter: (cellContent,row) => (
+                <div>
+                    {row.traf_from}
+                </div>
+            )
+        },
+        {
             dataField:'traf_start_time',
             text:'Incident Time',
             align:'center',
             formatter: (cellContent,row) => (
                 <div>
-                    {moment(row.traf_start_time).utcOffset(row.tz_hours).format("LLL") + " (" + row.tz_short + ")"}
+                    {
+                        moment(row.traf_start_time).utcOffset(row.tz_hours).format("LLL") + " (" + row.tz_short + ")" 
+                    }
                 </div>
             )
         },
