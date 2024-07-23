@@ -212,52 +212,56 @@ class GetCustChat(ChatBase):
             return ret
         dest_off = d[0]['office_id']
         o = db.query("""
-            select /* Office */
-                o.id,o.name,0 as is_user
-            from
-                office o
-            where
-                o.id = %s
-            UNION
-            select  /* The user */
-                u.id,concat(first_name,' ',last_name),1 as is_user
-            from
-                users u
-            where
-                u.id = %s
-            UNION
-            select /* Admin Users */
-                u.id,concat(first_name,' ',last_name),2 as is_user
-            from
-                users u 
-            where
-                u.id in (select user_id from user_entitlements where
-                            entitlements_id=%s) 
-            """,(dest_off,user['user_id'],ENT['Admin'])
+            WITH office_cte AS (
+                SELECT o.id, o.name, 0 AS is_user
+                FROM office o
+                WHERE o.id = %s
+            ),
+            user_cte AS (
+                SELECT u.id, CONCAT(first_name, ' ', last_name) AS name, 1 AS is_user
+                FROM users u
+                WHERE u.id = %s
+            ),
+            admin_users_cte AS (
+                SELECT u.id, CONCAT(first_name, ' ', last_name) AS name, 2 AS is_user
+                FROM users u
+                WHERE u.id IN (
+                    SELECT user_id
+                    FROM user_entitlements
+                    WHERE entitlements_id = %s
+                )
+            )
+            SELECT id, name, is_user FROM office_cte
+            UNION ALL
+            SELECT id, name, is_user FROM user_cte
+            UNION ALL
+            SELECT id, name, is_user FROM admin_users_cte
+            """, (dest_off, user['user_id'], ENT['Admin'])
         )
         ret['users'] = o
         o = db.query("""
-            select distinct room_name,label,id from (
-                select
-                    cr.name as room_name,
-                    cr.label as label,
-                    cr.id
-                from
-                    chat_rooms cr
-                    left join client_intake_offices cio on cio.id=cr.client_intake_offices_id 
-                where 
-                   cio.id = %s
-                UNION ALL
-                select
-                    cr.name as room_name,
-                    cr.label as label,
-                    cr.id
-                from
-                    chat_rooms cr
-                    left join client_intake_offices cio on cio.id=cr.client_intake_offices_id 
-                where 
-                   cio.office_id = %s and
-                   cio.id = %s
+        SELECT DISTINCT room_name, label, id
+        FROM (
+            SELECT
+                cr.name AS room_name,
+                cr.label AS label,
+                cr.id
+            FROM
+                chat_rooms cr
+                LEFT JOIN client_intake_offices cio ON cio.id = cr.client_intake_offices_id 
+            WHERE 
+                cio.id = %s
+            UNION ALL
+            SELECT
+                cr.name AS room_name,
+                cr.label AS label,
+                cr.id
+            FROM
+                chat_rooms cr
+                LEFT JOIN client_intake_offices cio ON cio.id = cr.client_intake_offices_id 
+            WHERE 
+                cio.office_id = %s AND
+                cio.id = %s
                 ) as t
             """,(appt_id,off_id,appt_id,)
         )
@@ -330,6 +334,7 @@ class GetCustChat(ChatBase):
             )
             x['chats'] = ch
             ret['rooms'].append(x)
+            print("LOOK",ret['users'])
         db.commit()
         return ret
 

@@ -166,7 +166,7 @@ class Appointments extends Component {
           >
             {selectedAppointment && (
               <Box sx={{ width:1000, height:1000, overflow: 'auto' }}>
-                <ChatUser appointment={selectedAppointment?.id} />
+                <ChatUser currentUser={this.props.currentUser.id} appt={this.props.appointments.appt[0].appt_id} />
               </Box>
             )}
           </Box>

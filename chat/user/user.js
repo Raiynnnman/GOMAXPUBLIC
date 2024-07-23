@@ -23,7 +23,10 @@ module.exports.verifyUser = function(header,callback) {
 
 module.exports.userOffices = function(user_id) { 
     db.query(`
-            select 1
+    select 
+        name,id
+        from office u
+        where u.id = ?
         `,[user_id],
         function(err,res) {
         }

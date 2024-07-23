@@ -2,21 +2,22 @@ const config = require('config');
 const db = require("../util/DBOps.js")
 const log = require("../util/logging.js")
 
-module.exports.saveMessage = function(room_id,to_user,from_user,user_id,message) { 
-     log.debug('savingMessage',room_id);
+module.exports.saveMessage = function(room_id, to_user, from_user, user_id, message) { 
+    log.debug('savingMessage', room_id, to_user, from_user, user_id, message);
     db.query(`
-        insert into chat_room_discussions 
-            (chat_rooms_id,from_user_id,to_user_id,text) values
+        INSERT INTO chat_room_discussions 
+            (chat_rooms_id, from_user_id, to_user_id, text) 
+        VALUES
             (?, ?, ?, ?)
-    `,[room_id,from_user,to_user,message],
-    function(err,res) {
+    `, [room_id, from_user, to_user, message], function(err, res) {
         if (err) { 
-            log.debug("err",err);
-            log.debug("res",res);
+            log.error("Error saving message:", err);
+        } else {
+            log.debug("Message saved successfully:", res);
         }
-    })
+    });
+}
 
-} 
 
 module.exports.getMissedMessages = function(last,user_id,room_id,callback) { 
     log.debug("gmm:",user_id,room_id)

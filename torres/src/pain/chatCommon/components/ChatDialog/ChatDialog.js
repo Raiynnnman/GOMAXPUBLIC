@@ -2,186 +2,170 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
+import io from 'socket.io-client';
 import ChatMessage from './ChatMessage';
 import OnlineStatus from '../OnlineStatus';
-import { newMessageRequest, changeMobileState } from '../../../../actions/chat';
+import {
+  newMessageRequest,
+  changeMobileState,
+  setActiveChat,
+} from '../../../../actions/chat';
 import { MobileChatStates } from '../../../../reducers/chat';
 import s from './ChatDialog.module.scss';
-import io from 'socket.io-client';
+import { chatURL } from '../../../../chatConfig';
+import { chatUploadDoc } from '../../../../actions/chatUploadDoc';
 import AppSpinner from '../../../utils/Spinner';
-import { encryptData, decryptData } from '../../../utils/encryption';
-import { setActiveChat } from '../../../../actions/chat';
+import { encryptData } from '../../../utils/encryption';
 import TemplateButton from '../../../utils/TemplateButton';
 import TemplateTextField from '../../../utils/TemplateTextField';
-import { chatUploadDoc } from '../../../../actions/chatUploadDoc';
-
-
-const chatURL = 'http://localhost:8000';  // Ensure this matches your server configuration
 
 class ChatDialog extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      newMessage: '',
       message: '',
       socket: null,
       newMessages: [],
       currentChannel: 0,
       dialogParts: [],
     };
-    this.handleOutgoingMessage = this.handleOutgoingMessage.bind(this);
-    this.handleIncomingMessage = this.handleIncomingMessage.bind(this);
-    this.joinChannel = this.joinChannel.bind(this);
-    this.onChangeInputFiles = this.onChangeInputFiles.bind(this);
   }
 
   componentDidMount() {
-    this.initializeSocket();
+    this.setState({ dialogParts: this.dialogParts() });
+    const room = JSON.parse(localStorage.getItem('chatroom'));
+     if (room) this.props.dispatch(setActiveChat(room.room_id));
+    this.setupSocket();
+    this.scrollToBottom();
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.activeChatId !== this.state.currentChannel) {
-      this.joinChannel(nextProps.activeChatId);
+  componentDidUpdate(prevProps) {
+    if (prevProps !== this.props) {
+      this.setState({ dialogParts: this.dialogParts() });
+      this.scrollToBottom();
     }
   }
 
-  initializeSocket() {
-    const token = `Bearer ${localStorage.getItem('token')}`;
-    const socket = io(chatURL, {
-      extraHeaders: { Authorization: token },
-      transports: ['websocket'],  // Ensure only WebSocket is used
-    });
+  componentWillUnmount() {
+    this.state.socket?.disconnect();
+  }
 
+  setupSocket() {
+    const token = `Bearer ${localStorage.getItem('token')}`;
+    const socket = io(chatURL(), { extraHeaders: { Authorization: token } });
     socket.on('connect', () => {
       console.log('Socket connected');
+      this.joinChannel(this.props.activeChatId);
     });
 
-    socket.on('disconnect', () => {
-      console.log('Socket disconnected');
-    });
-
-    socket.on('connect_error', (err) => {
-      console.error('Socket connection error:', err);
-    });
-
-    socket.on('connect_timeout', (timeout) => {
-      console.error('Socket connection timeout:', timeout);
-    });
-
-    socket.on('error', (err) => {
-      console.error('Socket error:', err);
-    });
-
+    socket.on('connect_error', (err) => console.error('Connection Error: ', err));
+    socket.on('disconnect', () => console.log('Socket disconnected'));
     socket.on('message', this.handleIncomingMessage);
 
     this.setState({ socket });
   }
 
   joinChannel(activeChatId) {
-    const { socket } = this.state;
-    const room = this.props.data.rooms.find((room) => room.id === activeChatId);
-    if (room && socket) {
-      socket.emit('joinRoom', { room_id: room.id });
+    
+    const room = this.props.data?.rooms.find((room) => room.id === activeChatId);
+    if (room && this.state.socket) {
+      const last = room.chats?.sort((a, b) => (a.created > b.created ? -1 : 1))[0]?.id || 0;
+      this.state.socket.emit('joinRoom', { last, room_id: room.id });
       this.setState({ currentChannel: activeChatId });
     }
   }
 
-  async handleOutgoingMessage(e) {
+  handleOutgoingMessage = (e) => {
     e.preventDefault();
-    const { socket, message } = this.state;
-    if (socket && socket.connected) {
+    const { message, socket, currentChannel } = this.state;
+    if (message.trim() && socket) {
       const encryptedMessage = encryptData(message);
-      const params = {
-        room_id: this.props.activeChatId,
-        message: encryptedMessage,
-      };
-      socket.emit('chat', params);
-      this.setState({ message: '' });
-    } else {
-      console.error('Socket is not connected');
+      socket.emit('chat', { room_id: currentChannel, message: encryptedMessage });
+      this.setState({ message: '' }, this.scrollToBottom);
     }
-  }
+  };
 
-  handleIncomingMessage(message) {
-    this.setState((prevState) => ({
-      newMessages: [...prevState.newMessages, message],
-    }));
-    this.props.dispatch(newMessageRequest({ dialogId: this.chat().id, message: message.message }));
-  }
+  handleIncomingMessage = (message) => {
+    this.setState(
+      (prevState) => ({ newMessages: [...prevState.newMessages, message] }),
+      () => {
+        this.props.dispatch(newMessageRequest({ dialogId: this.chat().id, message: message.text }));
+        this.scrollToBottom();
+      }
+    );
+  };
 
   handleChange = (e) => {
-    this.setState({ message: e.target.value });
-  }
+    this.setState({ message: e.target.value ?? '' });
+  };
+
+  scrollToBottom = () => {
+    if (this.chatDialogBodyRef) {
+      setTimeout(() => {
+        this.chatDialogBodyRef.scrollTop = this.chatDialogBodyRef.scrollHeight;
+      }, 10);
+    }
+  };
 
   chat = () => {
-    return this.props.data.rooms.find(chat => chat.id === this.props.activeChatId) || {};
-  }
+    return this.props.data.rooms.find((chat) => chat.id === this.props.activeChatId) || {};
+  };
 
   title = () => {
-    return this.chat().isGroup ? this.chat().name : `${this.interlocutor().name} ${this.interlocutor().surname}`;
-  }
+    const chat = this.chat();
+    return chat.isGroup ? chat.name : `${this.interlocutor().name} ${this.interlocutor().surname}`;
+  };
 
   dialogParts = () => {
-    if (!this.chat().id) {
-      return [];
-    }
-    var chat = this.chat();
-    if (this.state.newMessages.length > 0) {
-      chat.chats = chat.chats.concat(this.state.newMessages);
+    const chat = this.chat();
+    if (!chat.id) return [];
+    if (this.state.newMessages.length) {
+      chat.chats = [...chat.chats, ...this.state.newMessages];
       this.setState({ newMessages: [] });
     }
-    if (!chat.chats || chat.chats.length < 1) {
-      return [];
-    }
+    if (!chat.chats?.length) return [];
+
     let dialogParts = [[this.shortCalendarDate(chat.chats[0].created)], [chat.chats[0]]];
     for (let i = 1; i < chat.chats.length; i++) {
-      let lastDialogPart = dialogParts[dialogParts.length - 1];
-      let prevMessage = lastDialogPart[lastDialogPart.length - 1];
-      let message = chat.chats[i];
-      let messageDate = moment(message.created).format('YYYY MM DD');
-      let prevMessageDate = moment(prevMessage.created).format('YYYY MM DD');
-      let shortDate = this.shortCalendarDate(message.created);
-      var index = dialogParts.findIndex((e) => e[0] === shortDate);
+      const lastDialogPart = dialogParts[dialogParts.length - 1];
+      const prevMessage = lastDialogPart[lastDialogPart.length - 1];
+      const message = chat.chats[i];
+      const messageDate = moment(message.created).format('YYYY MM DD');
+      const prevMessageDate = moment(prevMessage.created).format('YYYY MM DD');
+      const shortDate = this.shortCalendarDate(message.created);
+      const index = dialogParts.findIndex((e) => e[0] === shortDate);
+
       if (messageDate === prevMessageDate) {
         lastDialogPart.push(message);
+      } else if (index !== -1) {
+        dialogParts[index + 1].push(message);
       } else {
-        if (index !== -1) {
-          dialogParts[index + 1].push(message);
-        } else {
-          dialogParts.push([this.shortCalendarDate(message.created)], [message]);
-        }
+        dialogParts.push([this.shortCalendarDate(message.created)], [message]);
       }
     }
-    dialogParts = dialogParts.reduce((acc, cur, idx, src) => {
-      if (idx % 2 === 0) {
-        acc.push(src[idx + 1], src[idx]);
-      }
+
+    return dialogParts.reduce((acc, cur, idx, src) => {
+      if (idx % 2 === 0) acc.push(src[idx + 1], src[idx]);
       return acc;
     }, []);
-    this.setState({ dialogParts });
-    return dialogParts;
-  }
+  };
 
   interlocutor = () => {
-    if (this.chat().isGroup) {
-      return;
-    }
+    if (this.chat().isGroup) return;
     return this.findInterlocutor(this.chat()) || {};
-  }
+  };
 
   findInterlocutor = (chat) => {
-    if (!chat || !chat.id) {
-      return null;
-    }
-    let id = this.props.data.users.find(uid => uid !== this.props.currentUser.id);
+     if (!chat?.id) return null;
+    const id = this.props.data.users.find((uid) => uid !== this.props.currentUser.id);
     return this.findUser(id);
-  }
+  };
 
   findUser = (userId) => {
-    if (!userId) {
-      return null;
-    }
-    return this.props.data.users.find(user => user.id === userId);
-  }
+    if (!userId) return null;
+    return this.props.data.users.find((user) => user.id === userId);
+  };
 
   shortCalendarDate = (date) => {
     return moment(date).calendar(null, {
@@ -190,104 +174,94 @@ class ChatDialog extends Component {
       nextWeek: 'dddd',
       lastDay: '[Yesterday]',
       lastWeek: '[Last] dddd',
-      sameElse: 'dddd, MMMM Do'
+      sameElse: 'dddd, MMMM Do',
     });
-  }
+  };
 
   isTimeDivider = (dialogPart) => {
     return typeof dialogPart[0] === 'string';
-  }
+  };
 
   showAvatar = (dialogPart, message, index) => {
     return true;
-  }
+  };
 
   newMessage = (e) => {
     e.preventDefault();
-    this.props.dispatch(newMessageRequest({ dialogId: this.chat().id, message: this.state.newMessage }));
     this.setState({ newMessage: '' });
-  }
+    this.props.dispatch(newMessageRequest({ dialogId: this.chat().id, message: this.state.newMessage }));
+  };
 
   readDataAsUrl = (file) => {
     return new Promise((resolve, reject) => {
-      var reader = new FileReader();
-      reader.onload = function (e) {
-        resolve(e.target.result);
-      };
+      const reader = new FileReader();
+      reader.onload = (e) => resolve(e.target.result);
       reader.readAsDataURL(file);
     });
-  }
+  };
 
-  onChangeInputFiles(e) {
+  onChangeInputFiles = (e) => {
     Promise.all(Array.from(e.target.files).map(this.readDataAsUrl)).then((files) => {
-      var room = this.props.data.rooms.find((room) => room.id === this.props.activeChatId);
-      var params = {
-        user_id: this.props.currentUser.id,
-        room_id: this.props.activeChatId,
-        appt_id: room.appt.id,
-        content: [files[0]]
-      };
-      this.props.dispatch(chatUploadDoc(params));
+      const room = this.props.data.rooms.find((room) => room.id === this.props.activeChatId);
+      this.props.dispatch(
+        chatUploadDoc({
+          user_id: this.props.currentUser.id,
+          room_id: this.props.activeChatId,
+          appt_id: room.appt.id,
+          content: [files[0]],
+        })
+      );
     });
-  }
+  };
 
   render() {
-    const { sendingMessage, user } = this.props;
-    const { dialogParts } = this.state;
+    const { sendingMessage, chatUploadDoc } = this.props;
+    const { dialogParts, message } = this.state;
+
     return (
       <>
-        {this.props.chatUploadDoc && this.props.chatUploadDoc.isReceiving && (
-          <AppSpinner />
-        )}
-        <div className={`d-flex flex-column chat-dialog-section`}
-          style={{ height: 300, overflow: "auto", border: "1px solid #e3e3e3", borderRadius: "10px", boxShadow: "rgba(0, 0, 0, 0.15) 0px 5px 15px 0px" }}>
+        {chatUploadDoc?.isReceiving && <AppSpinner />}
+        <div className={`d-flex flex-column chat-dialog-section`} style={{ height: 300, overflow: 'auto', border: '1px solid #e3e3e3', borderRadius: '10px', boxShadow: 'rgba(0, 0, 0, 0.15) 0px 5px 15px 0px' }}>
           <header className={s.chatDialogHeader}>
             <div>
-              {false && (<h5 className="fw-normal mb-0">{this.title()}</h5>)}
-              {false && !this.chat().isGroup ?
-                <OnlineStatus user={this.interlocutor()} />
-                : null}
+              {false && <h5 className="fw-normal mb-0">{this.title()}</h5>}
+              {false && !this.chat().isGroup ? <OnlineStatus user={this.interlocutor()} /> : null}
             </div>
           </header>
-          <div className={s.chatDialogBody}
-            ref={chatDialogBody => {
-              this.chatDialogBodyRef = chatDialogBody;
-            }}
-          >
-            {dialogParts.map((part, i) => {
-              if (this.isTimeDivider(part)) {
-                return (
-                  <div key={uuidv4()} className={s.dialogDivider}>{part[0]}</div>
-                )
-              } else {
-                return (
-                  <div key={uuidv4()} className={s.dialogMessage} >
-                    {part.sort((a, b) => (a.created > b.created ? 1 : -1)).map((message, j) =>
+          <div className={s.chatDialogBody} ref={(chatDialogBody) => (this.chatDialogBodyRef = chatDialogBody)}>
+            {dialogParts.map((part) =>
+              this.isTimeDivider(part) ? (
+                <div key={uuidv4()} className={s.dialogDivider}>
+                  {part[0]}
+                </div>
+              ) : (
+                <div key={uuidv4()} className={s.dialogMessage}>
+                  {part
+                    .sort((a, b) => (a.created > b.created ? 1 : -1))
+                    .map((message, j) => (
                       <ChatMessage
+                        key={message.id}
                         user={message.from_user_id === this.props.currentUser.id ? this.props.currentUser : this.findUser(message.from_user_id)}
                         owner={message.from_user_id === this.props.currentUser.id}
                         size={40}
                         showStatus={false}
-                        key={message.id}
                         message={message}
                         showAvatar={this.showAvatar(part, message, j)}
                       />
-                    )}
-                  </div>
-                )
-              }
-            })}
+                    ))}
+                </div>
+              )
+            )}
           </div>
           <form className={`chat-section ${s.newMessage} mb-0`} onSubmit={this.newMessage}>
             <label style={{ cursor: 'pointer' }} htmlFor="file-upload" className="custom-file-upload">
-              <div className={s.attachment} outline>
+              <div className={s.attachment}>
                 <i className="la la-plus"></i>
               </div>
             </label>
             <input onChange={this.onChangeInputFiles} id="file-upload" type="file" />
-            <TemplateTextField onChange={this.handleChange} value={this.state.message} label="Message" />
-            <TemplateButton color="danger" onClick={this.handleOutgoingMessage} className={`px-4 ${s.newMessageBtn}`} type="submit"
-              label={sendingMessage ? "" : <span>Send</span>} />
+            <TemplateTextField onChange={this.handleChange} value={message || ''} label="Message" />
+            <TemplateButton color="danger" onClick={this.handleOutgoingMessage} className={`px-4 ${s.newMessageBtn}`} type="submit" label={sendingMessage ? '' : <span>Send</span>} />
           </form>
         </div>
       </>
@@ -295,14 +269,12 @@ class ChatDialog extends Component {
   }
 }
 
-function mapStateToProps(state) {
-  return {
-    currentUser: state.auth.currentUser,
-    chats: state.chat.chats,
-    sendingMessage: state.chat.sendingMessage,
-    chatUploadDoc: state.chatUploadDoc,
-    activeChatId: state.chat.activeChatId,
-  };
-}
+const mapStateToProps = (state) => ({
+  currentUser: state.auth.currentUser,
+  chats: state.chat.chats,
+  sendingMessage: state.chat.sendingMessage,
+  chatUploadDoc: state.chatUploadDoc,
+  activeChatId: state.chat.activeChatId,
+});
 
 export default connect(mapStateToProps)(ChatDialog);

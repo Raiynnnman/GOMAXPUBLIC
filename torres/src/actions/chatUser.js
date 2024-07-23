@@ -7,10 +7,14 @@ export const RECEIVED_CHATU_DATA_SUCCESS = 'RECEIVED_CHATU_DATA_SUCCESS';
 export const RECEIVING_CHATU_DATA = 'RECEIVING_CHATU_DATA';
 
 export function receiveDataRequest(params) {
-    return (dispatch) => {
-        dispatch(receivingData(params)).then(data => {
+    return async (dispatch) => {
+        try {
+            await dispatch(receivingData(params));
+            const data = await getChatUser(params)(dispatch);
             dispatch(receiveDataSuccess(data));
-        });
+        } catch (error) {
+            handleError(error);
+        }
     };
 }
 
@@ -22,38 +26,39 @@ export function receiveDataSuccess(payload) {
 }
 
 export function getChatUser(params) { 
-  return async (dispatch) => {
-    dispatch(receivingData(params));
-  };
+    return async (dispatch) => {
+        try {
+            dispatch(receivingData(params));
+        } catch (error) {
+            handleError(error);
+        }
+    };
 } 
 
 export function receivingData(params) {
-  return async (dispatch) => {
-    dispatch({
-        type: RECEIVING_CHATU_DATA
-    });
-    const response = await axios.create({ //eslint-disable-line no-unused-vars
-            baseURL: apiBaseUrl(),
-            withCredentials: true,
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-            },
-        }).post('/client/chat/get',params)
-      .then((e) => { 
-          dispatch({
+    return async (dispatch) => {
+        dispatch({
+            type: RECEIVING_CHATU_DATA
+        });
+
+        try {
+            const response = await axios.create({
+                baseURL: apiBaseUrl(),
+                withCredentials: true,
+                headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                },
+            }).post('/client/chat/get', params);
+
+            // console.log('Response:', response);
+
+            dispatch({
                 type: RECEIVED_CHATU_DATA_SUCCESS,
-                payload: e.data.data
+                payload: response.data.data
             });
-      })
-      .catch((e) => { 
-        handleError(e);
-      })
-      .finally(() => { 
-      });
-    }
+        } catch (error) {
+            handleError(error);
+        }
+    };
 }
-
-
-
-
