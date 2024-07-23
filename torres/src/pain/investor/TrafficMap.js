@@ -85,7 +85,6 @@ class MapContainer extends Component {
     this.setState(this.state)
   }
   viewRow = (c,r) => { 
-    console.log("vr",c,r);
     this.state.selected = c
     this.setState(this.state)
   } 
@@ -201,36 +200,34 @@ class MapContainer extends Component {
             )
         },
         {
-            dataField:'created',
-            text:'Timestamp',
+            dataField:'traf_start_time',
+            text:'Incident Time',
             align:'center',
             formatter: (cellContent,row) => (
                 <div>
-                    {moment(row.created + "-07:00").fromNow()}
+                    {moment(row.traf_start_time).utcOffset(row.tz_hours).format("LLL") + " (" + row.tz_short + ")"}
                 </div>
             )
         },
     ]
-    console.log("p",this.props);
     return (
     <>
         {(!this.state.selected) && (
         <>
-          <Grid container spacing={2} sx={{ mt: 5, mr: 2 }}>
+          <Grid container spacing={2} sx={{ mt: 0, mr: 2 }}>
             <Grid item xs={12} md={12}>
               <APIProvider apiKey={googleKey()}>
                 <Map
                     style={{ width: '100%', height: '50vh' }}
                     defaultCenter={position}
                     onIdle={this.handleMapLoad}
-                    defaultZoom={9}
+                    defaultZoom={4}
                     disableDefaultUI={true}
                     gestureHandling={'greedy'}
                     fullscreenControl={false}
                     options={{ styles: darkModeStyle }} // Apply dark mode style here
                 >
                   {(this.props.targeted && this.props.targeted.length < 1) && this.props.data.data.data.map((e) => {
-                    { console.log(window.google.maps.Size) }
                     let markerProps = {
                       onClick: (map) => this.handleMarkerClick(e, map),
                       position: e.coords[0],
@@ -250,6 +247,10 @@ class MapContainer extends Component {
                   <PainTable
                         keyField='id' 
                         minWidth={300}
+                        headerBackgroundColor="black"
+                        headerColor="lightgreen"
+                        dataColor="lightgreen"
+                        dataBackgroundColor="black"
                         data={this.props.data.data.data} 
                         total={this.props.data.total}
                         noPaging
@@ -264,11 +265,13 @@ class MapContainer extends Component {
       </>
       )}
       {(this.state.selected) && (
-          <Grid container spacing={2} sx={{ mt: 5, mr: 2 }}>
+        <div style={{height:"100%vh"}}>
+          <Grid container spacing={2} sx={{ height:800,mt: 5, mr: 2 }}>
             <Grid item xs={12} md={6}>
                     <UserCard data={this.state.selected} onCancel={this.cancel}/>
             </Grid>
           </Grid>
+        </div>
       )}
     </>
     );

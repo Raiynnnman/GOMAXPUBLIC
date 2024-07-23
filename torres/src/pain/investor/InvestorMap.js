@@ -22,27 +22,40 @@ class InvestorMap extends Component {
             dateSelected: null,
             officeFilter:'',
             officeTarget:[],
+            currentTable:[],
             categories: null,
             categoriesFilter:[],
             officeTypeFilter:[],
             office_types: null,
             zipSelected: null,
+            delay:180000, // 3m
             address: '', // New state for address
             center: null, // New state for map center
             recentlyViewed: [] 
         }
+        this.reload = this.reload.bind(this);
     }
 
     componentWillReceiveProps(p) {
     }
 
     componentDidMount() {
-        this.props.dispatch(getTraffic({categories:[2],limit:20,offset:0}));
+        this.reload();
     }
+
+    reload() { 
+        this.props.dispatch(
+            getTraffic(
+                {nationwide:true,categories:[2],limit:50,offset:0},
+                function(e,t) { } 
+        ),this);
+        // setTimeout((e) => { e.reload() }, this.state.delay, this)
+    } 
 
     render() {
         return (
             <>
+            <div style={{backgroundColor:"black"}}>
                 {(this.props.trafficData && this.props.trafficData.isReceiving) && (
                     <AppSpinner />
                 )}
@@ -61,6 +74,7 @@ class InvestorMap extends Component {
                     </Grid>
                 </Grid>
             </Box>
+        </div>
         </>
         )
     }

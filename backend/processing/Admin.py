@@ -178,6 +178,80 @@ class AdminDashboard(AdminBase):
         )
         return o[0]
 
+    def getTrafficStatsMonth(self):
+        db = Query()
+        ret = {}
+        o = db.query("""
+            WITH RECURSIVE t as (
+                select date(date_add(now(),INTERVAL -6 MONTH)) as dt,
+                 (select count(id) from traffic_incidents p
+                    where 
+                    month(date(date_add(now(),INTERVAL -6 MONTH)))=month(p.created) 
+                    and p.traffic_categories_id = 2 
+                    and year(date(date_add(now(),INTERVAL -6 MONTH)))=year(p.created) 
+                 ) as count1,
+                 (select count(id) from traffic_incidents p
+                    where 
+                    month(date(date_add(now(),INTERVAL -6 MONTH)))=month(p.created) 
+                    and p.traffic_categories_id = 2 
+                    and year(date(date_add(now(),INTERVAL -6 MONTH)))=year(p.created) 
+                 ) as count2
+                UNION 
+                 SELECT DATE_ADD(t.dt, INTERVAL 1 MONTH) as month,
+                 (select count(id) from traffic_incidents p
+                    where 
+                    date_format(t.dt,'%Y-%m-01') = date_format(p.created,'%Y-%m-01')
+                    and p.traffic_categories_id = 2 
+                 ) as count1,
+                 (select count(id) from traffic_incidents p
+                    where 
+                    date_format(t.dt,'%Y-%m-01') = date_format(p.created,'%Y-%m-01')
+                    and p.traffic_categories_id = 2 
+                 ) as count2
+                 FROM t
+                 WHERE DATE_ADD(t.dt, INTERVAL 1 day) <= now() 
+            )
+            select dt as label,count1,count2 FROM t ;
+            """,)
+        ret['month'] = o
+        o = db.query("""
+            WITH RECURSIVE t as (
+                select date(date_add(now(),INTERVAL -7 day)) as dt,
+                 (select count(id) from traffic_incidents p
+                    where 
+                    day(date(date_add(now(),INTERVAL -7 day)))=day(p.created) 
+                    and p.traffic_categories_id = 2 
+                    and month(date(date_add(now(),INTERVAL -7 day)))=month(p.created) 
+                    and year(date(date_add(now(),INTERVAL -7 day)))=year(p.created) 
+                 ) as count1,
+                 (select count(id) from traffic_incidents p
+                    where 
+                    day(date(date_add(now(),INTERVAL -7 day)))=day(p.created) 
+                    and p.traffic_categories_id = 2 
+                    and month(date(date_add(now(),INTERVAL -7 day)))=month(p.created) 
+                    and year(date(date_add(now(),INTERVAL -7 day)))=year(p.created) 
+                 ) as count2
+                UNION 
+                 SELECT DATE_ADD(t.dt, INTERVAL 1 day) as month,
+                 (select count(id) from traffic_incidents p
+                    where 
+                    day(t.dt)=day(p.created) and month(t.dt)=month(p.created) and year(t.dt)=year(p.created) 
+                    and p.traffic_categories_id = 2 
+                 ) as count1,
+                 (select count(id) from traffic_incidents p
+                    where 
+                    day(t.dt)=day(p.created) and month(t.dt)=month(p.created) and year(t.dt)=year(p.created) 
+                    and p.traffic_categories_id = 2 
+                 ) as count2
+                 FROM t
+                 WHERE DATE_ADD(t.dt, INTERVAL 1 DAY) <= now()
+            )
+            select date_format(dt,'%a, %D') as label,count1,count2 FROM t ;
+            """,)
+        ret['week'] = o
+        ret['labels'] = ['Accidents per day','Accidents per day']
+        return ret
+
     def getWebsiteStatsMonth(self):
         db = Query()
         ret = {}
@@ -386,6 +460,7 @@ class AdminDashboard(AdminBase):
         ret['lead_status'] = self.getLeadsStatus()
         # ret['traffic'] = self.getTrafficStats()
         ret['traffic'] = self.getTrafficMonth()
+        ret['traffic_trend'] = self.getTrafficStatsMonth()
         ret['website_stats'] = self.getWebsiteTraffic()
         ret['website_performance'] = self.getWebsiteStatsMonth()
         return ret

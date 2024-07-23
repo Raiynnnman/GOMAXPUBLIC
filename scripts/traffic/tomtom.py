@@ -89,13 +89,13 @@ for x in l:
 for x in CITIES:
     l = []
     if int(x['zipcode']) != 0:
-        print('zip',x['zipcode'])
+        # print('zip',x['zipcode'])
         l = db.query("""
             select lat,lon,zipcode from position_zip where zipcode=%s 
         """,(x['zipcode'],)
         )
     else:
-        print('city',x['city'],x['state'])
+        # print('city',x['city'],x['state'])
         l = db.query("""
             select lat,lon,zipcode from position_zip where name=%s and code1=%s 
         """,(x['city'],x['state']))
@@ -131,7 +131,7 @@ TC=getIDs.getTrafficCategories()
 VER=5
 JS=[]
 for x in TOGET:
-    print("Checking %s" % x)
+    # print("Checking %s" % x)
     F="%s.json" % x
     F=F.replace(' ','_')
     BOX=[
@@ -144,6 +144,8 @@ for x in TOGET:
     )
     # print(U)
     if not os.path.exists(F):
+        if args.usecache:
+            raise Exception("usecache specified, but call required")
         r = requests.get(U)
         if r.status_code != 200:
             print("ERROR: %s" % r.text)

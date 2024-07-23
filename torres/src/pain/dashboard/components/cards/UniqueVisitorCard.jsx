@@ -4,15 +4,14 @@ import { Button, Grid, Stack, Typography, Box } from '@mui/material';
 import AreaChart from '../charts/AreaChart';
 import MainCard from './MainCard';
 
-export default function UniqueVisitorCard({ data }) {
+export default function UniqueVisitorCard({ label,data }) {
     const [slot, setSlot] = useState('week');
-
     return (
         <>
             <Grid container alignItems="center" justifyContent="space-between">
                 <Grid item>
                     <Typography variant="h5" style={{ color: 'black' }}>  
-                        Platform Stats
+                        {label}
                     </Typography>
                 </Grid>
                 <Grid item>

@@ -34,8 +34,11 @@ const cardStyle = {
     height: '100%',
     marginBottom:12,
     borderRadius:5,
+    backgroundColor:"black",
+    color:"lightgreen",
+    border:"1px solid white",
     '&:hover': {
-        backgroundColor: '#FFFAF2',
+        backgroundColor: 'black',
     },
     display: 'flex',
     flexDirection: 'column',
@@ -68,11 +71,11 @@ class UserCard extends Component {
     }
 
     render() {
-        console.log("p",this.props);
         return (
             <>
+            <div style={{backgroundColor:"black",color:"lightgreen"}}>
                 {this.props.data && (
-                    <Box sx={{ mt: 3 }}>
+                    <Box sx={{ mt: 0, backgroundColor:"black",color:"lightgreen"}}>
                         <Paper elevation={3} sx={cardStyle}>
                             <Box>
                                 <Grid container xs={12}>
@@ -82,17 +85,17 @@ class UserCard extends Component {
                                                 <Typography >Name: {this.props.data.contact.first_name + " " + this.props.data.contact.last_name}</Typography>
                                             </Grid>
                                         </Grid>
-                                        <Grid container spacing={1}>
+                                        <Grid container spacing={1} style={{marginTop:10}}>
                                             <Grid item xs={12}>
                                                 <Typography >DOB: {this.props.data.contact.dob}</Typography>
                                             </Grid>
                                         </Grid>
-                                        <Grid container spacing={1}>
+                                        <Grid container spacing={1} style={{marginTop:10}}>
                                             <Grid item xs={12}>
-                                                <Typography >Phone:{formatPhoneNumber(this.props.data.contact.phone)}</Typography>
+                                                <Typography >Phone: {formatPhoneNumber(this.props.data.contact.phone)}</Typography>
                                             </Grid>
                                         </Grid>
-                                        <Grid container spacing={1}>
+                                        <Grid container spacing={1} style={{marginTop:10}}>
                                             <Grid item xs={12}>
                                                 <Typography >Email: {this.props.data.contact.email}</Typography>
                                             </Grid>
@@ -102,37 +105,73 @@ class UserCard extends Component {
                                                 <Typography>{formatPhoneNumber(this.props.data.phone)}</Typography>
                                             </Grid>
                                         </Grid>
-                                        <Grid container spacing={2}>
-                                            <Grid item xs={12} style={{marginTop:10}}>
-                                                <a style={{color:'blue'}} href="#">Facebook: {this.props.data.contact.facebook}</a>
+                                        <Grid container spacing={2} style={{marginTop:0}}>
+                                            <Grid item xs={12}>
+                                                <a style={{color:'lightgreen'}} href="#">Facebook: {this.props.data.contact.facebook}</a>
                                             </Grid>
                                         </Grid>
-                                        <Grid container spacing={2}>
-                                            <Grid item xs={12} style={{marginTop:10}}>
-                                                <a style={{color:'blue'}} href="#">Instagram: {this.props.data.contact.instagram}</a>
+                                        <Grid container spacing={2} style={{marginTop:10}}>
+                                            <Grid item xs={12}>
+                                                <a style={{color:'lightgreen'}} href="#">Instagram: {this.props.data.contact.instagram}</a>
                                             </Grid>
                                         </Grid>
-                                        <Grid container spacing={2}>
-                                            <Grid item xs={12} style={{marginTop:10}}>
-                                                <a style={{color:'blue'}} href="#">Twitter: {this.props.data.contact.twitter}</a>
+                                        <Grid container spacing={2} style={{marginTop:10}}>
+                                            <Grid item xs={12}> 
+                                                <a style={{color:'lightgreen'}} href="#">Twitter: {this.props.data.contact.twitter}</a>
                                             </Grid>
                                         </Grid>
                                     </Grid>
-                                    <Grid item xs={.5} style={{borderLeft:"1px solid black"}}></Grid>
+                                    <Grid item xs={.5} style={{borderLeft:"1px solid white"}}></Grid>
                                     <Grid item xs={6} style={{marginLeft:0}}>
                                         <Grid container spacing={1}>
                                             <Grid item xs={12}>
-                                                <Typography>Incident: {moment(this.props.data.created).fromNow()}</Typography>
+                                                <Typography>Incident: {
+                                                    moment(
+                                                        this.props.data.contact.traf_start_time
+                                                    ).utcOffset(
+                                                        this.props.data.tz_hours
+                                                    ).format("LLL") + 
+                                                    " (" + this.props.data.tz_short + ")"
+                                                    }</Typography>
                                             </Grid>
                                         </Grid>
                                         <Grid container spacing={2}>
                                             <Grid item xs={12} style={{marginTop:10}}>
-                                                <Typography>Contacted: {moment(this.props.data.contact.contacted).fromNow()}</Typography>
+                                                <Typography>First Contact: {this.props.data.contact.contacted_timer + "m"}</Typography>
                                             </Grid>
                                         </Grid>
                                         <Grid container spacing={2}>
                                             <Grid item xs={12} style={{marginTop:10}}>
                                                 <Typography>Status: {this.props.data.contact.status}</Typography>
+                                            </Grid>
+                                        </Grid>
+                                        <Grid container spacing={2}>
+                                            <Grid item xs={12} style={{marginTop:10}}>
+                                                <Typography>Make: {
+                                                    this.props.data.contact.car_year + " " + 
+                                                    this.props.data.contact.car_make + " " + this.props.data.contact.car_model
+                                                    }</Typography>
+                                            </Grid>
+                                        </Grid>
+                                        <Grid container spacing={2}>
+                                            <Grid item xs={12} style={{marginTop:10}}>
+                                                <Typography>Color: {
+                                                    this.props.data.contact.car_color
+                                                    }</Typography>
+                                            </Grid>
+                                        </Grid>
+                                        <Grid container spacing={2}>
+                                            <Grid item xs={12} style={{marginTop:10}}>
+                                                <Typography>Intersection: {
+                                                    this.props.data.traf_from
+                                                    }</Typography>
+                                            </Grid>
+                                        </Grid>
+                                        <Grid container spacing={2}>
+                                            <Grid item xs={12} style={{marginTop:10}}>
+                                                <Typography>lat, lng: {
+                                                    this.props.data.lat + ", " + this.props.data.lng
+                                                    }</Typography>
                                             </Grid>
                                         </Grid>
                                     </Grid>
@@ -146,6 +185,7 @@ class UserCard extends Component {
                         </Paper>
                     </Box>
                 )}
+            </div>
             </>
         );
     }

@@ -9,12 +9,16 @@ from util.DBOps import Query
 from common import settings
 from util import encryption,calcdate,getIDs
 
+CACHE={}
 
 def importTraffic(db,JS,city,state,zipcode,lat,lon):
     NEW=0
     TC=getIDs.getTrafficCategories()
     SKIP=0
+    CACHE_HIT=0
+    TOTAL=0
     for z in JS['incidents']:
+        TOTAL += 1 
         # print(json.dumps(z,indent=4))
         # print("---")
         # print(json.dumps(x,indent=4))
@@ -23,12 +27,17 @@ def importTraffic(db,JS,city,state,zipcode,lat,lon):
         HAVE=False
         props = z['properties']
         # print(json.dumps(props,indent=4))
-        l = db.query("""
-            select id from traffic_incidents where vendor_id = %s
-            """,(props['id'],)
-        )
-        for h in l:
-            HAVE=True
+        if props['id'] in CACHE:
+            CACHE_HIT += 1
+            HAVE = True
+        elif props['id'] not in CACHE:
+            l = db.query("""
+                select id from traffic_incidents where vendor_id = %s
+                """,(props['id'],)
+            )
+            for h in l:
+                HAVE=True
+            CACHE[props['id']] = 1
         if HAVE:
             # print("already loaded incident %s" % props['id'])
             SKIP += 1
@@ -41,10 +50,10 @@ def importTraffic(db,JS,city,state,zipcode,lat,lon):
                 traffic_categories_id,vendor_id,traf_len,
                 traf_magnitude,traf_num_reports,probability,
                 traf_start_time,traf_to,city,state,zipcode,
-                lat,lon
+                lat,lon,created
             ) values (
                 %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
-                %s, %s, %s, %s,%s
+                %s, %s, %s, %s,%s,%s
             )
         """,(
             uuid,props['delay'],props['endTime'],props['from'],
@@ -53,7 +62,7 @@ def importTraffic(db,JS,city,state,zipcode,lat,lon):
             props['numberOfReports'] if props['numberOfReports'] is not None else 0,
             props['probabilityOfOccurrence'], props['startTime'],
             props['to'],
-            city,state,zipcode,lat,lon
+            city,state,zipcode,lat,lon,props['startTime']
         ))
         l = db.query("""
             select LAST_INSERT_ID()
@@ -69,4 +78,4 @@ def importTraffic(db,JS,city,state,zipcode,lat,lon):
             """,(incid,t[0],t[1],order))
             order += 1
     db.commit()   
-    print("Added %s, skipped %s" % (NEW, SKIP))
+    print("Added %s, skipped %s, hit %s (%2.2f%%)" % (NEW, SKIP,CACHE_HIT,(CACHE_HIT/TOTAL)*100))

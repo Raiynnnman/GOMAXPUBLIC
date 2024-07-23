@@ -57,6 +57,7 @@ class TrafficGet(AdminBase):
         limit = 10000
         offset = 0
         lat = lng = None
+        print(params)
         if 'limit' in params:
             limit = params['limit']
         if 'offset' in params:
@@ -166,7 +167,10 @@ class TrafficGet(AdminBase):
                     tcat.name as category,ti.zipcode,ti.city,ti.traf_start_time,
                     ti.traf_end_time,ti.traf_num_reports,ti.lat,ti.lon as lng,
                     ti.traf_magnitude,ti.traf_delay,ti.state,ti.created,
-                    ti.traffic_incidents_contact_id,
+                    ti.traffic_incidents_contact_id,ti.traf_from,
+                    ifnull(pz.tz_name,'UTC') as tz_name,
+                    ifnull(pz.tz_hours,0) as tz_hours,
+                    ifnull(pz.tz_short,'UTC') as tz_short,
                     json_arrayagg(
                         json_object(
                             'lat',tc.lat,
@@ -175,20 +179,23 @@ class TrafficGet(AdminBase):
                         )
                     ) as coords
                 from
-                    traffic_incidents ti,
-                    traffic_coordinates tc,
-                    traffic_categories tcat
+                    traffic_incidents ti
+                    left join traffic_categories tcat on ti.traffic_categories_id = tcat.id
+                    left join traffic_coordinates tc on tc.traffic_incidents_id = ti.id
+                    left join traffic_incidents_contact tic on tic.id = traffic_incidents_contact_id
+                    left outer join position_zip pz on ti.zipcode = pz.zipcode
                 where
-                    1 = 1 and
-                    round(st_distance_sphere(point(%s,%s),point(ti.lon,ti.lat))*.000621371192,2) < 50 and
-                    tc.traffic_incidents_id = ti.id and
-                    ti.traffic_categories_id = tcat.id 
+                    1 = 1 
             """
+            if 'nationwide' not in params:
+                q += """ 
+                    and round(st_distance_sphere(point(%s,%s),point(ti.lon,ti.lat))*.000621371192,2) < 50 and
+                    """
+                sqlp.append(ret['center']['lng'])
+                sqlp.append(ret['center']['lat'])
             sqlp = []
-            sqlp.append(ret['center']['lng'])
-            sqlp.append(ret['center']['lat'])
             if 'date' in params:
-                q += " date(ti.created) = %s "
+                q += " and date(ti.created) = %s "
                 sqlp.append(params['date'])
             #if 'zipcode' in params:
             #    q += " ti.zipcode = %s and "
@@ -220,7 +227,9 @@ class TrafficGet(AdminBase):
                     x['contact'] = db.query("""
                         select 
                             tic.id,tic.first_name,tic.last_name,tic.dob,tic.twitter,
-                            facebook,instagram,email,phone,contacted,cis.name as status,cis.id
+                            facebook,instagram,email,phone,contacted,cis.name as status,cis.id,
+                            car_make,car_model,car_year,car_color,
+                            timestampdiff(MINUTE,created,contacted) as contacted_timer
                         from 
                             traffic_incidents_contact tic
                             left outer join client_intake_status cis on cis.id = tic.client_intake_status_id

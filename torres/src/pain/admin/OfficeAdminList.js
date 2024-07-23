@@ -180,7 +180,6 @@ class OfficeList extends Component {
     } 
 
     editContact(e,t) { 
-        console.log(e,t)
         var v = this.state.selected.phones.findIndex((f) => f.id === e.id)
         if (v < 0) { 
             this.state.selected.phones.push(e);
@@ -474,16 +473,17 @@ class OfficeList extends Component {
         this.props.dispatch(officeSave(g,function(err,args) { 
             args.props.dispatch(
                 getOffices(
-                    {limit:args.state.pageSize,offset:args.state.page,status:args.state.filter},function(err,args) { 
-              toast.success('Successfully saved office.',
-                {
-                    position:"top-right",
-                    autoClose:3000,
-                    hideProgressBar:true
-                }
-              );
-              args.cancel()
-            },args))
+                  {limit:args.state.pageSize,offset:args.state.page,status:args.state.filter},
+                  function(err,args) { 
+                  toast.success('Successfully saved office.',
+                    {
+                        position:"top-right",
+                        autoClose:3000,
+                        hideProgressBar:true
+                    }
+                  );
+                  args.cancel()
+                },args))
         },this));
     } 
 

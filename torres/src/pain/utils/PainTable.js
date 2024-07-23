@@ -179,7 +179,10 @@ class PainTable extends Component {
                           <TableCell
                             key={e.dataField}
                             align={e.align}
-                            style={{ width:e.width, backgroundColor: '#fa6a0a', color: 'white' }}
+                            style={{ width:e.width, 
+                                backgroundColor: this.props.headerBackgroundColor ? this.props.headerBackgroundColor : '#fa6a0a', 
+                                color : this.props.headerColor ? this.props.headerColor : '#fa6a0a', 
+                                }}
                           >
                             {!e.sort && e.text}
                             {e.sort && (
@@ -218,8 +221,15 @@ class PainTable extends Component {
                         if (!e.hidden) {
                           return (
                             <TableCell key={e.dataField} 
+                                    style={{
+                                        color:this.props.dataColor ? this.props.dataColor : "black",
+                                        backgroundColor:this.props.dataBackgroundColor ? this.props.dataBackgroundColor : "white"
+                                    }}
                                 align={e.align} onClick={() => this.handleClick(row,e)}>
-                              <font style={{color:e.onClick ? "blue":'black',cursor:e.onClick ? "pointer":null}}>
+                              <font style={{
+                                    color:this.props.dataColor ? this.props.dataColor : "black",
+                                    backgroundColor:this.props.dataBackgroundColor ? this.props.dataBackgroundColor : "white",
+                                    cursor:e.onClick ? "pointer":null}}>
                                 {e.formatter ? e.formatter(e, row) : row[e.dataField]}
                               </font>
                             </TableCell>

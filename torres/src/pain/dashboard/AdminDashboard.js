@@ -37,6 +37,7 @@ import convertToFormat from '../utils/convertToFormat';
                 commissions = {},
                 website_performance={},
                 revenue_month = {},
+                traffic_trend = {},
                 revenue_leads_month = {},
                 traffic = {}
             } = data;
@@ -47,7 +48,7 @@ import convertToFormat from '../utils/convertToFormat';
                 <Grid container rowSpacing={4.5} columnSpacing={2.75}>
                     {/* Row 1 */}
                     <Grid item xs={12} sx={{ mb: 4.25 }}>
-                        <Typography variant="h3">Dashboard</Typography>
+                        <Typography variant="h3">Admin Dashboard</Typography>
                     </Grid>
                      <Grid item xs={12} sm={6} md={4} lg={3}>
                         <AnalyticEcommerce 
@@ -89,8 +90,8 @@ import convertToFormat from '../utils/convertToFormat';
 
                     {/* Row 2 */}
                     <Grid item xs={12} md={7} lg={8}>
-                        {(website_performance && website_performance.labels && website_performance.labels.length > 0) && (
-                            <UniqueVisitorCard data={website_performance} />
+                        {(traffic_trend && traffic_trend.labels && traffic_trend.labels.length > 0) && (
+                            <UniqueVisitorCard label="Traffic Accidents" data={traffic_trend} />
                         )}
                     </Grid>
                     <Grid item xs={12} md={5} lg={4}>
@@ -105,6 +106,12 @@ import convertToFormat from '../utils/convertToFormat';
                                 <MonthlyBarChart data={traffic} />
                             )}
                         </MainCard>
+                    </Grid>
+                    {/* Row 3 */}
+                    <Grid item xs={12} md={7} lg={8}>
+                        {(website_performance && website_performance.labels && website_performance.labels.length > 0) && (
+                            <UniqueVisitorCard label="Platform Stats" data={website_performance} />
+                        )}
                     </Grid>
                 </Grid>
             );
