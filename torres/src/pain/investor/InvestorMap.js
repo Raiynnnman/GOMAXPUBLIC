@@ -44,12 +44,13 @@ class InvestorMap extends Component {
     }
 
     reload() { 
+        console.log('reload',new Date());
         this.props.dispatch(
             getTraffic(
                 {nationwide:true,categories:[2],limit:50,offset:0},
                 function(e,t) { } 
         ),this);
-        // setTimeout((e) => { e.reload() }, this.state.delay, this)
+        setTimeout((e) => { e.reload() }, this.state.delay, this)
     } 
 
     render() {
