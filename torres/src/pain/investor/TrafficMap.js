@@ -210,6 +210,8 @@ class MapContainer extends Component {
             )
         },
     ]
+    console.log("p",this.props);
+    console.log("s",this.state);
     return (
     <>
         {(!this.state.selected) && (
@@ -242,7 +244,12 @@ class MapContainer extends Component {
               </APIProvider>
             </Grid>
           </Grid>
-          <Grid container spacing={2} sx={{ mt: 5, mr: 2 }}>
+          <Grid container spacing={2} sx={{ mt: 0, mr: 2 }}>
+            <Grid item xs={12} md={12}>
+                <font style={{"color":"lightgreen"}}>Refresh: {this.props.nextReloadTimer}</font>
+            </Grid>
+          </Grid>
+          <Grid container spacing={2} sx={{ marginTop:0, paddingTop:0 }}>
             <Grid item xs={12} md={12}>
                   <PainTable
                         keyField='id' 

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import moment from 'moment';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Tabs from '@mui/material/Tabs';
@@ -27,6 +28,8 @@ class InvestorMap extends Component {
             categoriesFilter:[],
             officeTypeFilter:[],
             office_types: null,
+            nextReload:null,
+            nextReloadTimer:null,
             zipSelected: null,
             delay:180000, // 3m
             address: '', // New state for address
@@ -34,6 +37,7 @@ class InvestorMap extends Component {
             recentlyViewed: [] 
         }
         this.reload = this.reload.bind(this);
+        this.setNextLoad = this.setNextLoad.bind(this);
     }
 
     componentWillReceiveProps(p) {
@@ -43,17 +47,31 @@ class InvestorMap extends Component {
         this.reload();
     }
 
+    setNextLoad() { 
+        console.log("set")
+        setTimeout((e) => { e.setNextLoad() }, 20000, this)
+        this.state.nextReloadTimer = moment(this.state.nextReload).fromNow()
+        this.setState(this.state);
+    }
+
     reload() { 
         console.log('reload',new Date());
         this.props.dispatch(
             getTraffic(
                 {nationwide:true,categories:[2],limit:50,offset:0},
-                function(e,t) { } 
-        ),this);
+                function(e,t) { 
+                    console.log("t",t);
+                    var c = new moment().add("ms",t.state.delay);
+                    t.state.nextReload = moment(c)
+                    t.setState(t.state);
+                    t.setNextLoad(e);
+                } 
+        ,this));
         setTimeout((e) => { e.reload() }, this.state.delay, this)
     } 
 
     render() {
+        console.log("S",this.state);
         return (
             <>
             <div style={{backgroundColor:"black"}}>
@@ -67,7 +85,8 @@ class InvestorMap extends Component {
                         <Box sx={{  }}>
                             {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.center) && (
                                 <>
-                                    <TrafficMap targeted={this.state.officeTarget} 
+                                    <TrafficMap targeted={this.state.officeTarget} nextReload={this.state.nextReload}
+                                        nextReloadTimer={this.state.nextReloadTimer}
                                         data={this.props.trafficData} centerPoint={this.state.center || this.props.trafficData.data.center} />
                                 </>
                             )}
