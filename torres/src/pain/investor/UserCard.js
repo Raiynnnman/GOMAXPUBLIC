@@ -82,22 +82,22 @@ class UserCard extends Component {
                                     <Grid item xs={5.5}>
                                         <Grid container spacing={1}>
                                             <Grid item xs={12}>
-                                                <Typography >Name: {this.props.data.contact.first_name + " " + this.props.data.contact.last_name}</Typography>
+                                                <Typography >Name:<br/>{this.props.data.contact.first_name + " " + this.props.data.contact.last_name}</Typography>
                                             </Grid>
                                         </Grid>
                                         <Grid container spacing={1} style={{marginTop:10}}>
                                             <Grid item xs={12}>
-                                                <Typography >DOB: {this.props.data.contact.dob}</Typography>
+                                                <Typography >DOB:<br/>{this.props.data.contact.dob}</Typography>
                                             </Grid>
                                         </Grid>
                                         <Grid container spacing={1} style={{marginTop:10}}>
                                             <Grid item xs={12}>
-                                                <Typography >Phone: {formatPhoneNumber(this.props.data.contact.phone)}</Typography>
+                                                <Typography >Phone:<br/> {formatPhoneNumber(this.props.data.contact.phone)}</Typography>
                                             </Grid>
                                         </Grid>
                                         <Grid container spacing={1} style={{marginTop:10}}>
                                             <Grid item xs={12}>
-                                                <Typography >Email: {this.props.data.contact.email}</Typography>
+                                                <Typography >Email:<br/>{this.props.data.contact.email}</Typography>
                                             </Grid>
                                         </Grid>
                                         <Grid container spacing={2}>
@@ -107,17 +107,17 @@ class UserCard extends Component {
                                         </Grid>
                                         <Grid container spacing={2} style={{marginTop:0}}>
                                             <Grid item xs={12}>
-                                                <a style={{color:'lightgreen'}} href="#">Facebook: {this.props.data.contact.facebook}</a>
+                                                <a style={{color:'lightgreen'}} href="#">Facebook:<br/>{this.props.data.contact.facebook}</a>
                                             </Grid>
                                         </Grid>
                                         <Grid container spacing={2} style={{marginTop:10}}>
                                             <Grid item xs={12}>
-                                                <a style={{color:'lightgreen'}} href="#">Instagram: {this.props.data.contact.instagram}</a>
+                                                <a style={{color:'lightgreen'}} href="#">Instagram:<br/>{this.props.data.contact.instagram}</a>
                                             </Grid>
                                         </Grid>
                                         <Grid container spacing={2} style={{marginTop:10}}>
                                             <Grid item xs={12}> 
-                                                <a style={{color:'lightgreen'}} href="#">Twitter: {this.props.data.contact.twitter}</a>
+                                                <a style={{color:'lightgreen'}} href="#">Twitter:<br/>{this.props.data.contact.twitter}</a>
                                             </Grid>
                                         </Grid>
                                     </Grid>
@@ -125,7 +125,7 @@ class UserCard extends Component {
                                     <Grid item xs={6} style={{marginLeft:0}}>
                                         <Grid container spacing={1}>
                                             <Grid item xs={12}>
-                                                <Typography>Incident: {
+                                                <Typography>DOI:<br/>{
                                                     moment(
                                                         this.props.data.contact.traf_start_time
                                                     ).utcOffset(
@@ -137,17 +137,17 @@ class UserCard extends Component {
                                         </Grid>
                                         <Grid container spacing={2}>
                                             <Grid item xs={12} style={{marginTop:10}}>
-                                                <Typography>First Contact: {this.props.data.contact.contacted_timer + "m"}</Typography>
+                                                <Typography>First Contact:<br/>{this.props.data.contact.contacted_timer + "m"}</Typography>
                                             </Grid>
                                         </Grid>
                                         <Grid container spacing={2}>
                                             <Grid item xs={12} style={{marginTop:10}}>
-                                                <Typography>Status: {this.props.data.contact.status}</Typography>
+                                                <Typography>Status:<br/>{this.props.data.contact.status}</Typography>
                                             </Grid>
                                         </Grid>
                                         <Grid container spacing={2}>
                                             <Grid item xs={12} style={{marginTop:10}}>
-                                                <Typography>Make: {
+                                                <Typography>Make:<br/>{
                                                     this.props.data.contact.car_year + " " + 
                                                     this.props.data.contact.car_make + " " + this.props.data.contact.car_model
                                                     }</Typography>
@@ -155,21 +155,21 @@ class UserCard extends Component {
                                         </Grid>
                                         <Grid container spacing={2}>
                                             <Grid item xs={12} style={{marginTop:10}}>
-                                                <Typography>Color: {
+                                                <Typography>Color:<br/>{
                                                     this.props.data.contact.car_color
                                                     }</Typography>
                                             </Grid>
                                         </Grid>
                                         <Grid container spacing={2}>
                                             <Grid item xs={12} style={{marginTop:10}}>
-                                                <Typography>Intersection: {
+                                                <Typography>Intersection:<br/>{
                                                     this.props.data.traf_from
                                                     }</Typography>
                                             </Grid>
                                         </Grid>
                                         <Grid container spacing={2}>
                                             <Grid item xs={12} style={{marginTop:10}}>
-                                                <Typography>lat, lng: {
+                                                <Typography>lat, lng:<br/>{
                                                     this.props.data.lat + ", " + this.props.data.lng
                                                     }</Typography>
                                             </Grid>

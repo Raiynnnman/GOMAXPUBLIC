@@ -234,7 +234,7 @@ class TrafficGet(AdminBase):
                             tic.id,tic.first_name,tic.last_name,tic.dob,tic.twitter,
                             facebook,instagram,email,phone,contacted,cis.name as status,cis.id,
                             car_make,car_model,car_year,car_color,
-                            timestampdiff(MINUTE,created,contacted) as contacted_timer
+                            timestampdiff(MINUTE,contacted,created) as contacted_timer
                         from 
                             traffic_incidents_contact tic
                             left outer join client_intake_status cis on cis.id = tic.client_intake_status_id
