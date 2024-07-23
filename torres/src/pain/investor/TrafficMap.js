@@ -184,7 +184,7 @@ class MapContainer extends Component {
     var heads = [
         {
             dataField:'uuid',
-            text:'ID',
+            text:'Incident ID',
             onClick: (content,row) => (
                 this.viewRow(content,row)
             ),
