@@ -119,8 +119,14 @@ for x in l:
     email = "%s%s%s@gmail.com" % (f[2:],l,str(year)[2:])
     email = email.lower()
     num1 = random.randrange(999)
+    if num1 < 100:
+        num1 += 100
+    if num1 < 200:
+        num1 += 100
     num2 = random.randrange(9999)
-    minutes = random.randrange(10)
+    if num2 < 1000:
+        num2 = str(num2).zfill(4)
+    minutes = random.randrange(10) + 2
     min_updated = db.query("""
         select date_add(%s,INTERVAL %s minute) as t
         """,(x['created'],minutes)
