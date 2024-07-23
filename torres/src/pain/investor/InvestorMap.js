@@ -31,7 +31,7 @@ class InvestorMap extends Component {
             nextReload:null,
             nextReloadTimer:null,
             zipSelected: null,
-            delay:180000, // 3m
+            delay:360000, // 6m
             address: '', // New state for address
             center: null, // New state for map center
             recentlyViewed: [] 
@@ -49,7 +49,7 @@ class InvestorMap extends Component {
 
     setNextLoad() { 
         console.log("set")
-        setTimeout((e) => { e.setNextLoad() }, 30000, this)
+        setTimeout((e) => { e.setNextLoad() }, 60000, this)
         this.state.nextReloadTimer = moment(this.state.nextReload).fromNow()
         this.setState(this.state);
     }
