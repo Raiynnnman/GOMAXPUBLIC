@@ -275,7 +275,7 @@ class MapContainer extends Component {
           </Grid>
           <Grid container spacing={2} sx={{ mt: 0, mr: 2 }}>
             <Grid item xs={12} md={12}>
-                <font style={{"color":"lightgreen"}}>Refresh: {this.props.nextReloadTimer}</font>
+                <font style={{"color":"lightgreen"}}>Reloading {this.props.nextReloadTimer}</font>
             </Grid>
           </Grid>
           <Grid container spacing={2} sx={{ marginTop:0, paddingTop:0 }}>
