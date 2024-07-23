@@ -15,23 +15,27 @@ import TemplateButton from '../../../utils/TemplateButton';
 import TemplateTextField from '../../../utils/TemplateTextField';
 import { chatUploadDoc } from '../../../../actions/chatUploadDoc';
 
-const chatURL = () => 'http://localhost:8000';
+
+const chatURL = 'http://localhost:8000';  // Ensure this matches your server configuration
 
 class ChatDialog extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      newMessage: '',
       message: '',
       socket: null,
       newMessages: [],
       currentChannel: 0,
-      dialogParts: []
+      dialogParts: [],
     };
     this.handleOutgoingMessage = this.handleOutgoingMessage.bind(this);
     this.handleIncomingMessage = this.handleIncomingMessage.bind(this);
     this.joinChannel = this.joinChannel.bind(this);
     this.onChangeInputFiles = this.onChangeInputFiles.bind(this);
+  }
+
+  componentDidMount() {
+    this.initializeSocket();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -40,97 +44,68 @@ class ChatDialog extends Component {
     }
   }
 
-  componentDidMount() {
-    let dialogParts = this.dialogParts();
-    this.setState({ dialogParts });
-    var room = localStorage.getItem("chatroom");
-    if (room) {
-      room = JSON.parse(room);
-      this.props.dispatch(setActiveChat(room.room_id));
-    }
-    this.joinChannel(this.props.activeChatId);
-    if (this.chatDialogBodyRef && this.chatDialogBodyRef.scrollHeight) {
-      setTimeout(() => (this.chatDialogBodyRef.scrollBottom = this.chatDialogBodyRef.scrollHeight), 10);
-    }
-  }
+  initializeSocket() {
+    const token = `Bearer ${localStorage.getItem('token')}`;
+    const socket = io(chatURL, {
+      extraHeaders: { Authorization: token },
+      transports: ['websocket'],  // Ensure only WebSocket is used
+    });
 
-  componentDidUpdate(prevProps, prevState, snapshot) {
-    if (prevProps !== this.props) {
-      let dialogParts = this.dialogParts();
-      this.setState({ dialogParts });
-      if (this.chatDialogBodyRef && this.chatDialogBodyRef.scrollHeight) {
-        setTimeout(() => {
-          this.chatDialogBodyRef.scrollTop = this.chatDialogBodyRef.scrollHeight;
-        }, 10);
-      }
-    }
+    socket.on('connect', () => {
+      console.log('Socket connected');
+    });
+
+    socket.on('disconnect', () => {
+      console.log('Socket disconnected');
+    });
+
+    socket.on('connect_error', (err) => {
+      console.error('Socket connection error:', err);
+    });
+
+    socket.on('connect_timeout', (timeout) => {
+      console.error('Socket connection timeout:', timeout);
+    });
+
+    socket.on('error', (err) => {
+      console.error('Socket error:', err);
+    });
+
+    socket.on('message', this.handleIncomingMessage);
+
+    this.setState({ socket });
   }
 
   joinChannel(activeChatId) {
-    var room = this.props.data.rooms.filter((room) => room.id === activeChatId);
-    if (room.length > 0) {
-      if (this.state.socket !== null) {
-        this.state.socket.close();
-      }
-      var lastMessageId = 0;
-      if (room[0].chats) {
-        var sortedChats = room[0].chats.sort((a, b) => (a.created > b.created ? -1 : 1));
-        if (sortedChats.length > 0) {
-          lastMessageId = sortedChats[0].id;
-        }
-      }
-      var token = "Bearer " + localStorage.getItem("token");
-      const newSocket = io.connect(chatURL(), {
-        extraHeaders: { Authorization: token }
-      });
-      this.setState({ socket: newSocket, currentChannel: activeChatId }, () => {
-        this.state.socket.on("message", this.handleIncomingMessage);
-        this.state.socket.emit("joinRoom", { last: lastMessageId, room_id: room[0].id });
-      });
+    const { socket } = this.state;
+    const room = this.props.data.rooms.find((room) => room.id === activeChatId);
+    if (room && socket) {
+      socket.emit('joinRoom', { room_id: room.id });
+      this.setState({ currentChannel: activeChatId });
     }
-  }
-
-  isSocketConnected() {
-    return new Promise((resolve) => {
-      if (this.state.socket && this.state.socket.connected) {
-        resolve(true);
-      } else if (this.state.socket) {
-        this.state.socket.on('connect', () => {
-          resolve(true);
-        });
-      } else {
-        resolve(false);
-      }
-    });
   }
 
   async handleOutgoingMessage(e) {
     e.preventDefault();
-    const isConnected = await this.isSocketConnected();
-    if (isConnected) {
-      var encryptedMessage = encryptData(this.state.message);
-      var params = {
+    const { socket, message } = this.state;
+    if (socket && socket.connected) {
+      const encryptedMessage = encryptData(message);
+      const params = {
         room_id: this.props.activeChatId,
-        message: encryptedMessage
+        message: encryptedMessage,
       };
-      this.state.socket.emit("chat", params);
-      if (this.chatDialogBodyRef && this.chatDialogBodyRef.scrollHeight) {
-        this.chatDialogBodyRef.scrollTop = this.chatDialogBodyRef.scrollHeight;
-      }
+      socket.emit('chat', params);
       this.setState({ message: '' });
     } else {
-      console.error("Socket is not connected");
+      console.error('Socket is not connected');
     }
   }
 
   handleIncomingMessage(message) {
     this.setState((prevState) => ({
-      newMessages: [...prevState.newMessages, message]
+      newMessages: [...prevState.newMessages, message],
     }));
-    this.props.dispatch(newMessageRequest({ dialogId: this.chat().id, message: message.text }));
-    if (this.chatDialogBodyRef && this.chatDialogBodyRef.scrollHeight) {
-      this.chatDialogBodyRef.scrollTop = this.chatDialogBodyRef.scrollHeight;
-    }
+    this.props.dispatch(newMessageRequest({ dialogId: this.chat().id, message: message.message }));
   }
 
   handleChange = (e) => {
