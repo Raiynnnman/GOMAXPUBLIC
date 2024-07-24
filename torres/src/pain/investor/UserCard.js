@@ -82,12 +82,18 @@ class UserCard extends Component {
                                     <Grid item xs={5.5}>
                                         <Grid container spacing={1}>
                                             <Grid item xs={12}>
-                                                <Typography >Name:<br/>{this.props.data.contact.first_name + " " + this.props.data.contact.last_name}</Typography>
+                                                <Typography >Name:<br/>{
+                                                    this.props.data.contact.first_name ? 
+                                                        this.props.data.contact.first_name + " " + this.props.data.contact.last_name :
+                                                        "Processing..."}
+                                                </Typography>
                                             </Grid>
                                         </Grid>
                                         <Grid container spacing={1} style={{marginTop:10}}>
                                             <Grid item xs={12}>
-                                                <Typography >DOB:<br/>{this.props.data.contact.dob}</Typography>
+                                                <Typography >DOB:<br/>
+                                                    {this.props.data.contact.dob ? this.props.data.contact.dob : ''}
+                                                </Typography>
                                             </Grid>
                                         </Grid>
                                         <Grid container spacing={1} style={{marginTop:10}}>
@@ -97,7 +103,9 @@ class UserCard extends Component {
                                         </Grid>
                                         <Grid container spacing={1} style={{marginTop:10}}>
                                             <Grid item xs={12}>
-                                                <Typography >Email:<br/>{this.props.data.contact.email}</Typography>
+                                                <Typography >Email:<br/>{
+                                                    this.props.data.contact.email ?  this.props.data.contact.email : ""
+                                                }</Typography>
                                             </Grid>
                                         </Grid>
                                         <Grid container spacing={2}>
@@ -107,17 +115,20 @@ class UserCard extends Component {
                                         </Grid>
                                         <Grid container spacing={2} style={{marginTop:0}}>
                                             <Grid item xs={12}>
-                                                <a style={{color:'lightgreen'}} href="#">Facebook:<br/>{this.props.data.contact.facebook}</a>
+                                                <a style={{color:'lightgreen'}} href="#">Facebook:<br/>{
+                                                    this.props.data.contact.facebook ? this.props.data.contact.facebook : ""
+                                                    }
+                                                </a>
                                             </Grid>
                                         </Grid>
                                         <Grid container spacing={2} style={{marginTop:10}}>
                                             <Grid item xs={12}>
-                                                <a style={{color:'lightgreen'}} href="#">Instagram:<br/>{this.props.data.contact.instagram}</a>
+                                                <a style={{color:'lightgreen'}} href="#">Instagram:<br/>{this.props.data.contact.instagram ? this.props.data.contact.instagram : ''}</a>
                                             </Grid>
                                         </Grid>
                                         <Grid container spacing={2} style={{marginTop:10}}>
                                             <Grid item xs={12}> 
-                                                <a style={{color:'lightgreen'}} href="#">Twitter:<br/>{this.props.data.contact.twitter}</a>
+                                                <a style={{color:'lightgreen'}} href="#">Twitter:<br/>{this.props.data.contact.twitter ? this.props.data.contact.twitter : ''}</a>
                                             </Grid>
                                         </Grid>
                                     </Grid>
@@ -137,26 +148,28 @@ class UserCard extends Component {
                                         </Grid>
                                         <Grid container spacing={2}>
                                             <Grid item xs={12} style={{marginTop:10}}>
-                                                <Typography>First Contact:<br/>{this.props.data.contact.contacted_timer + "m"}</Typography>
+                                                <Typography>First Contact:<br/>{this.props.data.contact.contacted_timer  ? this.props.data.contact.contacted_timer + "m" : ''}</Typography>
                                             </Grid>
                                         </Grid>
                                         <Grid container spacing={2}>
                                             <Grid item xs={12} style={{marginTop:10}}>
-                                                <Typography>Status:<br/>{this.props.data.contact.status}</Typography>
+                                                <Typography>Status:<br/>{this.props.data.contact.status ? this.props.data.contact.status : ''}</Typography>
                                             </Grid>
                                         </Grid>
                                         <Grid container spacing={2}>
                                             <Grid item xs={12} style={{marginTop:10}}>
+                                                {(this.props.data.contact.car_year) && (
                                                 <Typography>Make:<br/>{
                                                     this.props.data.contact.car_year + " " + 
                                                     this.props.data.contact.car_make + " " + this.props.data.contact.car_model
                                                     }</Typography>
+                                                )}
                                             </Grid>
                                         </Grid>
                                         <Grid container spacing={2}>
                                             <Grid item xs={12} style={{marginTop:10}}>
                                                 <Typography>Color:<br/>{
-                                                    this.props.data.contact.car_color
+                                                    this.props.data.contact.car_color ? this.props.data.contact.car_color : ''
                                                     }</Typography>
                                             </Grid>
                                         </Grid>
