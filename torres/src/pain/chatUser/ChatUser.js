@@ -29,7 +29,6 @@ class ChatUser extends Component {
    }
 
   componentWillReceiveProps(nextProps) {
-    console.log('asdasdasda', nextProps);
     if (nextProps.chatUser && nextProps.chatUser.data && nextProps.chatUser.data.rooms && !this.state.activeSet) {
       this.setState({ activeSet: true });
       const roomId = nextProps.chatUser?.data?.rooms[0]?.id;
@@ -42,7 +41,6 @@ class ChatUser extends Component {
   render() {
     const { mobileState } = this.props;
     const filteredUsers = this.props.chatUser?.data?.users?.slice(0, 2) || [];
-    console.log("look",this.props.currentUser)
     const chatUserData = {
       ...this.props.chatUser?.data,
       users: filteredUsers,

@@ -113,7 +113,6 @@ io.on("connect", (socket) => {
             }
 
             // Verify the room is legal
-            log.debug("LOOK HERE THIS IS THE USER MAKING MESSAGE", u);
             message.verifyRoom(u.user_id, room_id, function(err, res) {
                 if (err) {
                     log.error("Error verifying room:", err);

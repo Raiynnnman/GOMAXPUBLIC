@@ -131,6 +131,7 @@ class ChatDialog extends Component {
       const lastDialogPart = dialogParts[dialogParts.length - 1];
       const prevMessage = lastDialogPart[lastDialogPart.length - 1];
       const message = chat.chats[i];
+      console.log(message)
       const messageDate = moment(message.created).format('YYYY MM DD');
       const prevMessageDate = moment(prevMessage.created).format('YYYY MM DD');
       const shortDate = this.shortCalendarDate(message.created);

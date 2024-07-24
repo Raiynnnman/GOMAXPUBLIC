@@ -69,23 +69,47 @@ module.exports.verifyRoom = function(user_id,room_id,callback) {
 module.exports.getRoomUsers = function(room_id,callback) { 
     console.log("roomUsers:",room_id,callback)
     db.query(
-      `select 
-            cri.user_id,cr.name,u.first_name,
-            u.last_name,u.title
-        from 
-            chat_room_invited cri,
-            chat_rooms cr, users u
-        where
-           cr.id = cri.chat_rooms_id and
-           cri.user_id = u.id and
-           cri.chat_rooms_id = ? 
-        UNION
-        select
-            u.id as user_id,'' as name,u.first_name,
-            u.last_name,u.title
-        from 
-            users u, context c 
-        where 
+            `  SELECT 
+            cri.from_user_id AS user_id, 
+            cr.name AS room_name, 
+            sender.first_name AS first_name, 
+            sender.last_name AS last_name, 
+            sender.title AS title
+            FROM 
+            chat_room_discussions cri
+            JOIN 
+            chat_rooms cr ON cr.id = cri.chat_rooms_id
+            JOIN 
+            users sender ON cri.from_user_id = sender.id
+            WHERE
+            cri.chat_rooms_id = ?
+            UNION
+            SELECT
+            cri.to_user_id AS user_id, 
+            cr.name AS room_name, 
+            receiver.first_name AS first_name, 
+            receiver.last_name AS last_name, 
+            receiver.title AS title
+            FROM 
+            chat_room_discussions cri
+            JOIN 
+            chat_rooms cr ON cr.id = cri.chat_rooms_id
+            JOIN 
+            users receiver ON cri.to_user_id = receiver.id
+            WHERE
+            cri.chat_rooms_id = ?
+            UNION
+            SELECT
+            u.id AS user_id, 
+            '' AS room_name, 
+            u.first_name AS first_name, 
+            u.last_name AS last_name, 
+            u.title AS title
+            FROM 
+            users u
+            JOIN 
+            context c ON c.user_id = u.id
+            WHERE 
             c.user_id = u.id
-        `,[room_id],callback)
+        `,[room_id,room_id],callback)
 }
