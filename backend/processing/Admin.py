@@ -20,6 +20,7 @@ from util import encryption
 from util import calcdate
 from util import S3Processing
 from util.Logging import Logging
+from util import tzInfo
 from common import settings
 from util.DBOps import Query
 from processing.SubmitDataRequest import SubmitDataRequest
@@ -1015,12 +1016,7 @@ class OnlineDemoSave(AdminBase):
         ret['config'] = {}
         # Input from front end comes in straight form. Set it to UTC date by adding offset
         # TODO: Compensate for CDT/CST
-        TZ = {
-            'America/Chicago':5,
-            'America/New_York':4,
-            'America/Denver':6,
-            'America/Los_Angeles':7,
-        } 
+        TZ = tzInfo.getTZ()
         mytz = 0
         if params['timezone'] in TZ:
             mytz = TZ[params['timezone']]

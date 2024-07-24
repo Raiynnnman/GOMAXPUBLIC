@@ -233,7 +233,7 @@ class MapContainer extends Component {
             formatter: (cellContent,row) => (
                 <div>
                     {
-                        moment(row.traf_start_time).utcOffset(row.tz_hours).format("LLL") + " (" + row.tz_short + ")" 
+                        moment(row.traf_start_time_offset).utcOffset(row.tz_hours).fromNow() 
                     }
                 </div>
             )

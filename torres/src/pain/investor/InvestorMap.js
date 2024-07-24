@@ -17,6 +17,8 @@ import { getTraffic } from '../../actions/trafficGet';
 import { getTrafficData } from '../../actions/onlineDemoTraffic';
 import TrafficMap from './TrafficMap';
 
+const timeZoneIANA = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
 class InvestorMap extends Component {
     constructor(props) {
         super(props);
@@ -60,7 +62,7 @@ class InvestorMap extends Component {
         if (this.props.anonymous) { 
             this.props.dispatch(
                 getTrafficData(
-                    {nationwide:true,categories:[2],limit:50,offset:0},
+                    {timezone:timeZoneIANA,nationwide:true,categories:[2],limit:50,offset:0},
                     function(e,t) { 
                         console.log("t",t);
                         var c = new moment().add("ms",t.state.delay);
@@ -72,7 +74,7 @@ class InvestorMap extends Component {
         } else { 
             this.props.dispatch(
                 getTraffic(
-                    {nationwide:true,categories:[2],limit:50,offset:0},
+                    {timezone:timeZoneIANA,nationwide:true,categories:[2],limit:50,offset:0},
                     function(e,t) { 
                         console.log("t",t);
                         var c = new moment().add("ms",t.state.delay);
