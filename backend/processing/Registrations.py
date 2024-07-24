@@ -389,7 +389,6 @@ class RegisterProvider(RegistrationsBase):
         if r.is_error():
             print(r.errors)
             raise Exception("ERROR retrieving cards")
-        print(r.body)
         r = r.body
         db.update("update office set stripe_cust_id=%s where id=%s",
             (r['customer']['id'],off_id)
@@ -402,7 +401,6 @@ class RegisterProvider(RegistrationsBase):
         return r['customer']['id']
 
     def customerCard(self,cust_id,token,card,pcard_id,off_id,db):
-        print(cust_id,card)
         r = client.cards.create_card(body = {
                 'source_id':token,
                 'idempotency_key': encryption.getSHA256()[:45],
@@ -419,8 +417,6 @@ class RegisterProvider(RegistrationsBase):
             print(r.errors)
             raise Exception("ERROR retrieving cards")
         r = r.body
-        print("card=%s" % card)
-        print("r=%s" % r)
         db.update("""
             insert into office_history(office_id,user_id,text) values (
                 %s,1,'Added card to Square'
@@ -436,7 +432,6 @@ class RegisterProvider(RegistrationsBase):
         ret = {}
         ret['success'] = True
         params = args[1][0]
-        print(params)
         db = Query()
         RT = self.getRegistrationTypes()
         OT = self.getOfficeTypes()
@@ -704,8 +699,6 @@ class RegisterProvider(RegistrationsBase):
                     select stripe_key from setupIntents where uuid=%s
                 """,(cust_id,))
                 stripe_id = l[0]['stripe_key']
-                print("CARD----")
-                print(json.dumps(card,indent=4))
                 st = Stripe.Stripe()
                 email = params['email']
                 if config.getKey("email_to_override") is not None:
@@ -717,8 +710,6 @@ class RegisterProvider(RegistrationsBase):
                     email=email,
                     phone=params['phone']
                 )
-                print("p=%s" % pid)
-                print("s=%s" % src)
                 card_id = src['id']
                 db.update("""
                     update office set stripe_cust_id=%s where id=%s
@@ -865,7 +856,6 @@ class RegisterProvider(RegistrationsBase):
                         invoice=s.id
                     )
                     s_invoice_id = s['id']
-                    print("discount=%s" % discount)
                     if len(coup) > 0:
                         stripe.InvoiceItem.create(
                             customer=stripe_id,
@@ -921,7 +911,6 @@ class RegisterProvider(RegistrationsBase):
                             'scope': 'ORDER',
                             'amount_money':{'amount':-discount * 100,'currency':'USD'}
                         })
-                    print("ord=%s" % order)
                     if plan_total > 0:
                         db.update("""
                             insert into invoices (office_id,invoice_status_id,
@@ -939,7 +928,6 @@ class RegisterProvider(RegistrationsBase):
                         if r.is_error():
                             raise Exception(json.dumps(r.errors))
                         r = r.body
-                        # print(json.dumps(r,indent=4))
                         order_id = r['order']['id']
                         db.update("""
                             update invoices set order_id = %s where id = %s
@@ -973,7 +961,6 @@ class RegisterProvider(RegistrationsBase):
                             raise Exception(json.dumps(s.errors))
                         s = s.body
                         s_invoice_id = s['invoice']['id'];
-                        print("s=%s" % s)
                         pub = client.invoices.publish_invoice(
                             invoice_id = s['invoice']['id'],
                             body = { 'version': 0}
@@ -1099,7 +1086,6 @@ class RegisterProvider(RegistrationsBase):
             update office set active = 1,import_sf=1 where id = %s
             """,(off_id,)
         )
-        print("userid=%s" % userid)
         db.update("""
             update users set active = 1 where id = %s
             """,(userid,)
@@ -1427,7 +1413,6 @@ class ContactUs(RegistrationsBase):
         ret = {}
         ret['success'] = True
         params = args[1][0]
-        print(params)
         db = Query()
         o = db.query("""
             select id from contactus_emails 
@@ -1473,7 +1458,6 @@ class Subscribe(RegistrationsBase):
         ret['success'] = True
         params = args[1][0]
         db = Query()
-        print(params)
         sysemail = config.getKey("contact_us_email")
         url = config.getKey("host_url")
         o = db.query("""
@@ -1553,7 +1537,6 @@ class OnlineDemoJoin(RegistrationsBase):
     def execute(self, *args, **kwargs):
         ret = {}
         params = args[1][0]
-        print(params)
         if 'token' not in params:
             return {'success': False, 'message':'NO_UUID_SPECIFIED'}
         db = Query()
@@ -1568,13 +1551,11 @@ class OnlineDemoJoin(RegistrationsBase):
                 date_add(end_date,INTERVAL -4 HOUR) > date_add(now(),INTERVAL -4 HOUR)
             """,(params['token'],)
         )
-        print("o=%s" % o)
         if len(o) < 1:
             return {'success':False,'message':'MEETING_EXPIRED'}
         sd = o[0]['t1']
         if sd < 1:
             return {'success':False,'message':'MEETING_WAIT_START'}
-        print("ret success")
         return {'success':True}
 
 class OnlineDemoTraffic(RegistrationsBase):
@@ -1588,7 +1569,6 @@ class OnlineDemoTraffic(RegistrationsBase):
     def execute(self, *args, **kwargs):
         ret = {}
         params = args[1][0]
-        print(params)
         t = AdminTraffic.TrafficGet()
         ret = t.getTrafficData(params)
         return ret

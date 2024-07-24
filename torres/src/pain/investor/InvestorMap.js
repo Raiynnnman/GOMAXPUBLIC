@@ -51,20 +51,17 @@ class InvestorMap extends Component {
     }
 
     setNextLoad() { 
-        console.log("set")
         setTimeout((e) => { e.setNextLoad() }, 60000, this)
         this.state.nextReloadTimer = moment(this.state.nextReload).fromNow()
         this.setState(this.state);
     }
 
     reload() { 
-        console.log('reload',new Date());
         if (this.props.anonymous) { 
             this.props.dispatch(
                 getTrafficData(
                     {timezone:timeZoneIANA,nationwide:true,categories:[2],limit:50,offset:0},
                     function(e,t) { 
-                        console.log("t",t);
                         var c = new moment().add("ms",t.state.delay);
                         t.state.nextReload = moment(c)
                         t.setState(t.state);
@@ -76,7 +73,6 @@ class InvestorMap extends Component {
                 getTraffic(
                     {timezone:timeZoneIANA,nationwide:true,categories:[2],limit:50,offset:0},
                     function(e,t) { 
-                        console.log("t",t);
                         var c = new moment().add("ms",t.state.delay);
                         t.state.nextReload = moment(c)
                         t.setState(t.state);
@@ -88,8 +84,6 @@ class InvestorMap extends Component {
     } 
 
     render() {
-        console.log("S",this.state);
-        console.log("P",this.props);
         return (
             <>
             <div style={{backgroundColor:"black"}}>

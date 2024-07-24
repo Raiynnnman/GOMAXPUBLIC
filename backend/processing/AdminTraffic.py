@@ -61,7 +61,6 @@ class TrafficGet(AdminBase):
         TZ = tzInfo.getTZ()
         OT = self.getOfficeTypes()
         db = Query()
-        print(params)
         ret['config'] = {}
         ret['data'] = []
         ret['config']['avail'] = []
@@ -190,7 +189,7 @@ class TrafficGet(AdminBase):
                 where
                     1 = 1 
             """
-            sqlp.append(-tz_off)
+            sqlp.append(-tz_off) # Make it negative because that dict has it set to positive
             if 'nationwide' not in params:
                 q += """ 
                     and round(st_distance_sphere(point(%s,%s),point(ti.lon,ti.lat))*.000621371192,2) < 50 and
@@ -220,7 +219,6 @@ class TrafficGet(AdminBase):
             """
             sqlp.append(limit)
             sqlp.append(offset*limit)
-            print(q,sqlp)
             l = db.query(q,sqlp)
             ret['total'] = limit
             for x in l:
@@ -232,7 +230,7 @@ class TrafficGet(AdminBase):
                             tic.id,tic.first_name,tic.last_name,tic.dob,tic.twitter,
                             facebook,instagram,email,phone,contacted,cis.name as status,cis.id,
                             car_make,car_model,car_year,car_color,
-                            timestampdiff(MINUTE,contacted,created) as contacted_timer
+                            timestampdiff(MINUTE,created,contacted) as contacted_timer
                         from 
                             traffic_incidents_contact tic
                             left outer join client_intake_status cis on cis.id = tic.client_intake_status_id
@@ -242,7 +240,6 @@ class TrafficGet(AdminBase):
                     )
                     x['contact'] = x['contact'][0]
                 ret['data'].append(x)
-            print("len",len(ret['data']))
         zipcoords = {}
         if 'zipcode' in params:
             ret['data'].append({
@@ -451,5 +448,4 @@ class TrafficGet(AdminBase):
                 del params['zipcode']
             if params['zipcode'] is None:
                 del params['zipcode']
-        print(params)
         return self.getTrafficData(params)

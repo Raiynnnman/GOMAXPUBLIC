@@ -498,8 +498,9 @@ class Navbar extends Component {
                                     <button onClick={this.doLogin} className="button-default button-olive" type="button">Login</button>
                                 </div>
                             </div>
-                            <div className="col-sm-7 col-7 d-block d-lg-none">
-                                <div className="mobile-menu">
+                            <div className="col-sm-8 col-8 d-block d-lg-none">
+                                <div className="mobile-menu" style={{color:'white'}}>
+                                    <div style={{float:"right"}}>
                                     <nav>
                                         <ul>                              
                                             <li><a>
@@ -509,6 +510,7 @@ class Navbar extends Component {
                                             </li>
                                         </ul>                              
                                     </nav>
+                                    </div>
                                 </div>
                             </div>
                             </>

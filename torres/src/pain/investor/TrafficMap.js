@@ -96,8 +96,7 @@ class MapContainer extends Component {
   } 
 
   handleMarkerClick = (ref, map) => {
-    const location = ref.addr1 + " " + ref.city + " " + ref.state;
-    this.setState({ office: ref, destination: location });
+    this.setState({ selected: ref });
   };
 
   updateAddress = (r) => { 
@@ -133,9 +132,6 @@ class MapContainer extends Component {
   };
 
   render() {
-    console.log("tz",timeZoneIANA);
-    console.log("p",this.props);
-    console.log("win",window);
     const styles = {
       mapContainer: {
         justifyContent: 'center',
@@ -184,7 +180,7 @@ class MapContainer extends Component {
     var heads = [
         {
             dataField:'uuid',
-            text:'Incident ID',
+            text:'ID',
             onClick: (content,row) => (
                 this.viewRow(content,row)
             ),
@@ -196,7 +192,7 @@ class MapContainer extends Component {
         },
         {
             dataField:'city',
-            text:'Location',
+            text:'Loc',
             align:'center',
             formatter: (cellContent,row) => (
                 <div>
@@ -228,19 +224,19 @@ class MapContainer extends Component {
         },
         {
             dataField:'traf_start_time',
-            text:'Incident Time',
+            text:'Time',
             align:'center',
             formatter: (cellContent,row) => (
                 <div>
                     {
-                        moment(row.traf_start_time_offset).utcOffset(row.tz_hours).fromNow() 
+                        (moment(row.traf_start_time_offset).utcOffset(row.tz_hours).diff(new Date(),'minutes')*-1) <= 90 ? 
+                            moment(row.traf_start_time_offset).utcOffset(row.tz_hours).fromNow()  :
+                            moment(row.traf_start_time_offset).utcOffset(row.tz_hours).format('MMMM Do YYYY, h:mm:ss a') 
                     }
                 </div>
             )
         },
     ]
-    console.log("p",this.props);
-    console.log("s",this.state);
     return (
     <>
         {(!this.state.selected) && (

@@ -130,7 +130,7 @@ class UserCard extends Component {
                                                         this.props.data.contact.traf_start_time
                                                     ).utcOffset(
                                                         this.props.data.tz_hours
-                                                    ).format("LLL") + 
+                                                    ).format("MMMM Do YYYY, h:mm:ss a") + 
                                                     " (" + this.props.data.tz_short + ")"
                                                     }</Typography>
                                             </Grid>

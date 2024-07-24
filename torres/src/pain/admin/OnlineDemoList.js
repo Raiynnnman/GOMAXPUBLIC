@@ -170,7 +170,6 @@ class OnlineDemoList extends Component {
     }
     setStartDate(e) { 
         if (!e.format) { return; }
-        console.log("sd",e);
         this.state.selected.start_date = e
         var t = moment(e);
         this.setEndDate(t.add(moment.duration(30,'minutes')))
@@ -178,7 +177,6 @@ class OnlineDemoList extends Component {
     } 
     setEndDate(e) { 
         if (!e.format) { return; }
-        console.log("ed",e);
         this.state.selected.end_date = e
         this.setState(this.state);
     } 
@@ -189,7 +187,6 @@ class OnlineDemoList extends Component {
         t = moment(tosend.end_date);
         tosend.end_date = t.format('YYYY-MM-DDTHH:mm')
         tosend.timezone = timeZoneIANA;
-        console.log("ts",tosend);
         if (tosend.id === "new") { delete tosend.id; } 
         this.props.dispatch(onlineDemoSave(tosend,function(err,args) { 
             args.props.dispatch(
@@ -227,7 +224,6 @@ class OnlineDemoList extends Component {
                 text:'URL',
                 formatter:(cellContent,row) => (
                     <div>
-                        {console.log(row.url)}
                         <a style={{color:"black"}} href={row.url} target="_blank">URL</a>
                     </div>
                 )
@@ -261,7 +257,6 @@ class OnlineDemoList extends Component {
                 )
             }
         ];
-        console.log("p",this.props);
         return (
         <>
         <Navbar/>

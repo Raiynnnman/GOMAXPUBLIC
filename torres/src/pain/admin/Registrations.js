@@ -130,6 +130,7 @@ class Registrations extends Component {
                 if (p.registrationsAdminList.data.config.alternate_status[c].name === 'NO PI') { continue; }
                 if (p.registrationsAdminList.data.config.alternate_status[c].name === 'DNC') { continue; }
                 if (p.registrationsAdminList.data.config.alternate_status[c].name === 'Not interested') { continue; }
+                if (p.registrationsAdminList.data.config.alternate_status[c].name === 'NOT INTERESTED IN PI NOW') { continue; }
                 if (p.registrationsAdminList.data.config.alternate_status[c].name === 'Not a Chiropractor') { continue; }
                 t.push(p.registrationsAdminList.data.config.alternate_status[c]); 
                 t1.push(p.registrationsAdminList.data.config.alternate_status[c].id); 

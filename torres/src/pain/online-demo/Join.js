@@ -55,7 +55,6 @@ class Join extends React.Component {
         this.props.dispatch(getDemoStart(
             tosend,
             function(err,args,data) { 
-                console.log("args",err,args,data);
                 args.state.response_received = true;
                 if (err) { 
                     args.state.message = err.message;
@@ -75,8 +74,6 @@ class Join extends React.Component {
     } 
 
     render() {
-        console.log("p",this.props);
-        console.log("s",this.state);
         return (
         <>
             <Navbar/>

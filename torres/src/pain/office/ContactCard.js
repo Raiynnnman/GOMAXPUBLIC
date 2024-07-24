@@ -82,7 +82,6 @@ class ContactCard extends Component {
     }
 
     toggleIsCell= () => {
-        console.log('tog')
         this.setState((prevState) => ({
             selected: { ...this.state.selected, iscell: !this.state.selected.iscell }
         
@@ -90,7 +89,6 @@ class ContactCard extends Component {
     }
 
     render() {
-        console.log("s", this.state)
         return (
             
             <>

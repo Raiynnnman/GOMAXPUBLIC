@@ -131,7 +131,7 @@ for x in l:
         select date_add(%s,INTERVAL %s minute) as t
         """,(x['created'],minutes)
     )
-    stat_d = [1,10,20]
+    stat_d = [1,10]
     v = random.randrange(3)
     # print("v=%s" % v)
     stat = stat_d[v]
