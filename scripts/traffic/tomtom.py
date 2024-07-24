@@ -56,6 +56,7 @@ l = db.query("""
         0 as zipcode
     from 
         traffic_cities
+    where disabled = 0
     UNION ALL
     select 
         id,
@@ -64,6 +65,7 @@ l = db.query("""
         zipcode
     from 
         traffic_zipcodes
+    where disabled = 0
     """)
 for x in l:
     CITIES.append({'id':x['id'],'city':x['city'],'state':x['state'],'zipcode':x['zipcode']})
