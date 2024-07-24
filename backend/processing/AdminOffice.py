@@ -55,6 +55,7 @@ class OfficeList(AdminBase):
         INV = self.getInvoiceIDs()
         db = Query()
         OT = self.getOfficeTypes()
+        PQS = self.getProviderQueueStatus()
         q = """
                 select 
                     o.id,o.name,o.active,o.email,pqs.name as status,
@@ -297,6 +298,7 @@ class OfficeList(AdminBase):
                 x['plans']['items'] = json.loads(x['plans']['items'])
             ret['offices'].append(x)
         if 'report' in params:
+            print(repquery,count_par)
             j = db.query(repquery,count_par)
             v = []
             for g in j:
@@ -358,6 +360,7 @@ class OfficeSave(AdminBase):
         db = Query()
         insid = 0
         OT = self.getOfficeTypes()
+        PQS = self.getProviderQueueStatus()
         if 'id' not in params:
             db.update("insert into office (name,office_type_id,email,billing_system_id) values (%s,%s,%s,%s,%s)",
                 (params['name'],OT['Provider'],params['email'],BS)

@@ -227,7 +227,6 @@ class RegistrationUpdate(AdminBase):
                 """,(params['office_alternate_status_id'],offid)
             )
         if 'commission_user_id' in params:
-            print("COMM",params['commission_user_id'],offid)
             db.update("""
                 update office set commission_user_id=%s where id=%s
                 """,(params['commission_user_id'],offid)
@@ -309,7 +308,6 @@ class RegistrationUpdate(AdminBase):
                     x['end'] = {'dateTime':'','timeZone':''}
                 if 'id' in x and x['id'] == 'new':
                     del x['id']
-                print("x=%s" % x)
                 x['start_timezone'] = ''
                 x['end_timezone'] = ''
                 x['online'] = 0
@@ -537,8 +535,8 @@ class RegistrationList(AdminBase):
         if 'search' in params:
             if params['search'] == None or len(params['search']) == 0:
                 del params['search']
+        PQS = self.getProviderQueueStatus()
         db = Query()
-        print(params)
         ALT = self.getAltStatus()
         q = """
             select 
@@ -572,6 +570,7 @@ class RegistrationList(AdminBase):
             where
                 1 = 1 
         """
+        prefilter = q
         status_ids = []
         search_par = [
         ]
@@ -664,7 +663,6 @@ class RegistrationList(AdminBase):
         prelimit = q
         pre_par = json.loads(json.dumps(search_par))
         q += " group by o.id "
-        print(q)
         cnt = db.query("select count(id) as cnt from (" + q + ") as t", count_par)
         ret['total'] = cnt[0]['cnt']
         if 'sort' not in params or params['sort'] == None:
@@ -907,12 +905,14 @@ class RegistrationList(AdminBase):
         if 'report' in params and params['report'] is not None:
             myq = prelimit
             if 'dnc' in params and params['dnc']:
-                myq += " and ("
+                myq = prefilter
+                myq += "\n /* DNC */ and ("
                 myq += " office_alternate_status_id = %s " % ALT['DNC']
                 myq += " or pq.provider_queue_status_id = %s " % PQS['INVITED']
                 myq += " or office_alternate_status_id = %s " % ALT['Not interested']
+                myq += " or office_alternate_status_id = %s " % ALT['NOT INTERESTED IN PI NOW']
                 myq += " or office_alternate_status_id = %s " % ALT['Not a Chiropractor']
-                myq += ")"
+                myq += ")\n"
                 i = []
                 for g in params['alt_status']:
                     if g == ALT['DNC']:
@@ -922,10 +922,9 @@ class RegistrationList(AdminBase):
                     if g == ALT['Not a Chiropractor']:
                         continue
                     i.append(g)
-                myq += " and provider_queue_status_id not in (" 
+                myq += " /* PQS */ and provider_queue_status_id not in (" 
                 myq += ",".join(map(str,i))
-                myq += ")"
-            print(myq)
+                myq += ")\n"
             myq += " group by o.id "
             o = db.query(myq,pre_par)
             ret['filename'] = 'provider_report.csv'
