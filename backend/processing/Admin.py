@@ -1026,7 +1026,7 @@ class OnlineDemoSave(AdminBase):
                     start_date=date_add(%s,interval %s HOUR),
                     end_date=date_add(%s,interval %s HOUR)
                 where id = %s
-                """,(params['start_date'],mytz,params['end_date'],mytz)
+                """,(params['start_date'],mytz,params['end_date'],mytz,params['id'])
             )
         else:
             u = config.getKey("host_url")

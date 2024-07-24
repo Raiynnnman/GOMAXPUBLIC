@@ -190,6 +190,7 @@ class OnlineDemoList extends Component {
         tosend.end_date = t.format('YYYY-MM-DDTHH:mm')
         tosend.timezone = timeZoneIANA;
         console.log("ts",tosend);
+        if (tosend.id === "new") { delete tosend.id; } 
         this.props.dispatch(onlineDemoSave(tosend,function(err,args) { 
             args.props.dispatch(
                 getDemoList(
