@@ -93,10 +93,12 @@ class Join extends React.Component {
                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                         <img width="20%" height="20%" src='/painlogo.png' alt='logo'/>
                     </div>
-                    <p className="widget-auth-info" style={{color:'black'}}>
-                        <Typography variant="h5">{translate(this.state.error_message)}</Typography>
-                    <br/>
-                    </p>
+                    <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                        <p className="widget-auth-info" style={{color:'black'}}>
+                            <Typography variant="h5">{translate(this.state.error_message)}</Typography>
+                        <br/>
+                        </p>
+                    </div>
                     </>
                     )}
                 </>
