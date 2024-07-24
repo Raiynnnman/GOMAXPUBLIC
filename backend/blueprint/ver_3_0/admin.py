@@ -218,3 +218,18 @@ def customerslist(*args, **kwargs):
 def customersupdate(*args, **kwargs):
     po = AdminRest.CustomersUpdateRest()
     return po.postWrapper(*args,**kwargs)
+
+@admin.route('/admin/demo/update', methods=['POST'])
+@token_required
+@swag_from(docs_dir + 'admin_office_list.yaml')
+def onlinedemosave(*args, **kwargs):
+    po = AdminRest.OnlineDemoSaveRest()
+    return po.postWrapper(*args,**kwargs)
+
+
+@admin.route('/admin/demo/list', methods=['POST'])
+@token_required
+@swag_from(docs_dir + 'admin_office_list.yaml')
+def onlinedemolist(*args, **kwargs):
+    po = AdminRest.OnlineDemoListRest()
+    return po.postWrapper(*args,**kwargs)

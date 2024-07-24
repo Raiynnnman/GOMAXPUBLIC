@@ -23,13 +23,17 @@ function DropdownMenu({onChange,items,title,currentUser}) {
     setOpen(false);
   };
 
+  console.log("i1",items);
+  console.log("i2",title);
   return (
     <div onMouseEnter={handleClick} style={{marginLeft:10}}>
         <ClickAwayListener onClickAway={handleClickAway}>
           <Box sx={{ position: 'relative',backgroundColor:'black'}}>
-            <div style={{cursor:"pointer",color:"white",fontWeight:'bold',fontSize:12}}>
-              {title}{currentUser.context && currentUser.contextValue ? " - " + currentUser.contextValue.name:'' }
-            </div>
+            {(currentUser) && (
+                <div style={{cursor:"pointer",color:"white",fontWeight:'bold',fontSize:12}}>
+                  {title}{currentUser.context && currentUser.contextValue ? " - " + currentUser.contextValue.name:'' }
+                </div>
+            )}
             {open ? (
               <Box sx={{ position: 'absolute', top: 28, width:180,
                         right: 0, left: -100, border: '1px solid', p: 1, zIndex:9999,

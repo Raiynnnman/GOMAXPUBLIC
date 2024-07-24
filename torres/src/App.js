@@ -40,6 +40,8 @@ import Accept from './pain/referral_accept/Accept';
 import Reject from './pain/referral_accept/Reject';
 import ChatUser from './pain/chatUser/ChatUser.js';
 import Pricing from './components/Pricing';
+import Join from './pain/online-demo/Join';
+import OnlineDemoList from './pain/admin/OnlineDemoList';
 const CloseButton = ({closeToast}) => <i onClick={closeToast} className="la la-close notifications-close"/>
 
 class App extends Component {
@@ -89,6 +91,7 @@ class App extends Component {
                         <Route exact path='/register-provider/:id' component={RegisterProvider}/>
                         <Route exact path='/register-legal' component={RegisterLegal}/>
                         <Route exact path='/register-legal/:id' component={RegisterLegal}/>
+                        <Route exact path='/online-demo/:token' component={Join}/>
                         <Route exact path='/app/main/dashboard' component={Dashboard}/>
                         <Route exact path='/app/main/admin/investors' component={InvestorMap}/>
                         <Route exact path='/app/main/view/incidentmap' component={InvestorMap}/>
@@ -100,6 +103,7 @@ class App extends Component {
                         <Route exact path='/app/main/admin/providers' component={OfficeAdminList}/>
                         <Route exact path='/app/main/admin/invoices' component={InvoiceAdminList}/>
                         <Route exact path='/app/main/admin/commissions' component={CommissionAdminList}/>
+                        <Route exact path='/app/main/admin/demos' component={OnlineDemoList}/>
                         <Route exact path='/app/main/admin/coupons' component={CouponAdminList}/>
                         <Route exact path='/app/main/admin/plans' component={PricingList}/>
                         <Route exact path='/app/main/admin/users' component={UserAdminList}/>

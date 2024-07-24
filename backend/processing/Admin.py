@@ -2,6 +2,7 @@
 
 import sys
 import os
+import uuid
 import pyap
 import json
 import unittest
@@ -335,7 +336,6 @@ class AdminDashboard(AdminBase):
             )
             select date_format(dt,'%b, %Y') as label,count FROM t ;
             """,)
-        print(o)
         return o
 
     def getLeadsRevenueMonth(self):
@@ -955,3 +955,93 @@ class BDRDashboard(AdminBase):
         u = args[1][0]
         ret['commissions'] = self.getCommissionsThisMonth(u)
         return ret
+
+class OnlineDemoList(AdminBase):
+
+    def __init__(self):
+        super().__init__()
+
+    def isDeferred(self):
+        return False
+
+    @check_admin
+    def execute(self, *args, **kwargs):
+        ret = {}
+        job,user,off_id,params = self.getArgs(*args,**kwargs)
+        limit = 10000
+        if 'limit' in params:
+            limit = params['limit']
+        offset = 0
+        if 'offset' in params:
+            offset = params['offset']
+        db = Query()
+        ret['config'] = {}
+        q = """
+            select 
+                id,meeting_id,start_date,end_date,url
+            from 
+                online_demo_meetings
+            """
+        p = []
+        p.append(limit)
+        p.append(offset*limit)
+        cnt = db.query("select count(id) as cnt from (%s) as t" % (q,))
+        ret['total'] = cnt[0]['cnt']
+        q += " order by updated desc " 
+        q += " limit %s offset %s " 
+        o = db.query(q,p)
+        ret['data'] = o
+        return ret
+
+class OnlineDemoSave(AdminBase):
+
+    def __init__(self):
+        super().__init__()
+
+    def isDeferred(self):
+        return False
+
+    @check_admin
+    def execute(self, *args, **kwargs):
+        ret = {}
+        job,user,off_id,params = self.getArgs(*args,**kwargs)
+        limit = 10000
+        if 'limit' in params:
+            limit = params['limit']
+        offset = 0
+        if 'offset' in params:
+            offset = params['offset']
+        db = Query()
+        ret['config'] = {}
+        # Input from front end comes in straight form. Set it to UTC date by adding offset
+        # TODO: Compensate for CDT/CST
+        TZ = {
+            'America/Chicago':5,
+            'America/New_York':4,
+            'America/Denver':6,
+            'America/Los_Angeles':7,
+        } 
+        mytz = 0
+        if params['timezone'] in TZ:
+            mytz = TZ[params['timezone']]
+        if 'id' in params:
+            db.update("""
+                update online_demo_meetings set 
+                    start_date=date_add(%s,interval %s HOUR),
+                    end_date=date_add(%s,interval %s HOUR)
+                where id = %s
+                """,(params['start_date'],mytz,params['end_date'],mytz)
+            )
+        else:
+            u = config.getKey("host_url")
+            ud = str(uuid.uuid4())
+            url = "%s/online-demo/%s" % (u,ud)
+            print(params,ud,url)
+            db.update("""
+                insert into online_demo_meetings 
+                    (meeting_id, start_date,end_date, url)
+                    values (%s,date_add(%s, INTERVAL %s HOUR),date_add(%s,INTERVAL %s HOUR),%s)
+                """,(ud,params['start_date'],mytz,params['end_date'],mytz,url)
+            )
+        db.commit()
+        return {'success':True}

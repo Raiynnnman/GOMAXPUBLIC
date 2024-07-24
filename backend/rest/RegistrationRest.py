@@ -78,3 +78,17 @@ class LocationRest(RestBase):
         u = Registrations.Location()
         ret = u.process(args[0])
         return ret
+
+class OnlineDemoJoinRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Registrations.OnlineDemoJoin()
+        ret = u.process(args[0])
+        return ret
+
+class OnlineDemoTrafficRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Registrations.OnlineDemoTraffic()
+        ret = u.process(args[0])
+        return ret

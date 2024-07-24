@@ -172,3 +172,17 @@ class CustomersListRest(RestBase):
         u = AdminCustomers.CustomerList()
         ret = u.process(args[0])
         return ret
+
+class OnlineDemoSaveRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Admin.OnlineDemoSave()
+        ret = u.process(args[0])
+        return ret
+
+class OnlineDemoListRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Admin.OnlineDemoList()
+        ret = u.process(args[0])
+        return ret

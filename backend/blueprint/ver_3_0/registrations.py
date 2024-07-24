@@ -68,3 +68,15 @@ def subscribe(*args, **kwargs):
 def location(*args, **kwargs):
     po = RegistrationRest.LocationRest()
     return po.postWrapper(*args,**kwargs)
+
+@registrations.route('/online-demo', methods=['POST'])
+@swag_from(docs_dir + 'registerprovider.yaml')
+def onlinedemojoin(*args, **kwargs):
+    po = RegistrationRest.OnlineDemoJoinRest()
+    return po.postWrapper(*args,**kwargs)
+
+@registrations.route('/demo-traffic', methods=['POST'])
+@swag_from(docs_dir + 'registerprovider.yaml')
+def trafficdemo(*args, **kwargs):
+    po = RegistrationRest.OnlineDemoTrafficRest()
+    return po.postWrapper(*args,**kwargs)

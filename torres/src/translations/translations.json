@@ -3,6 +3,8 @@
     },
     "en": {
         "PASSWORD_EIGHT_LENGTH_REQUIRED":"Eight characters required",
+        "MEETING_WAIT_START":"Demo has not started yet.",
+        "MEETING_EXPIRED":"This demo has expired.",
         "ALREADY_ACCEPTED_BY_ANOTHER_PROVIDER":"This appointment has been accepted by another provider.",
         "NO_EMAIL_FOUND_FOR_PRACTICE":"We are unable to find your email in our system. Please visit your dashboard.",
         "INVALID_TOKEN_EXPIRED":"Token has expired. Please request a password reset",

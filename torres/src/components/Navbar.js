@@ -87,6 +87,62 @@ class Navbar extends Component {
              u:'/'  
             },
         ];
+        const anonymousMenuItems= [
+            {
+             n:'Home',
+             v:function(c) { 
+                return true;
+             },
+             a:function() { 
+                window.location = '/';
+             }
+            },
+            {
+             n:'About',
+             v:function(c) { 
+                return true;
+             },
+             a:function() { 
+                window.location = '/#about';
+             }
+            },
+            {
+             n:'Pricing',
+             v:function(c) { 
+                return true;
+             },
+             a:function() { 
+                window.location = '/#pricing';
+             }
+            },
+            {
+             n:'Reviews',
+             v:function(c) { 
+                return true;
+             },
+             a:function() { 
+                window.location = '/#reviews';
+             }
+            },
+            {
+             n:'Support',
+             v:function(c) { 
+                return true;
+             },
+             a:function() { 
+                window.location = '/#support';
+             }
+            },
+            {
+             n:'Login',
+             v:function(c) { 
+                return true;
+             },
+             a:function() { 
+                window.location = '/login';
+             }
+            },
+        ]
         const mobileAdminItems= [
             {
              n:'Home',
@@ -183,6 +239,15 @@ class Navbar extends Component {
              },
              a:function() { 
                 window.location = '/app/main/admin/plans';
+             }
+            },
+            {
+             n:'Online Demos',
+             v:function(c) { 
+                return true;
+             },
+             a:function() { 
+                window.location = '/app/main/admin/demos';
              }
             },
             {
@@ -437,13 +502,12 @@ class Navbar extends Component {
                                 <div className="mobile-menu">
                                     <nav>
                                         <ul>                              
-                                            <li className="active"><a href="/">Home</a></li>
-                                            <li><a href="/#about">About</a></li>
-                                            <li><a href="/#pricing">Pricing</a></li>
-                                            <li><a href="/#reviews">Reviews</a></li>
-                                            <li><a href="/#support">Support</a></li>
-                                            <li><a href="/login">Login</a></li>
-                                        </ul>
+                                            <li><a>
+                                                <DropdownMenu currentUser={this.props.currentUser} 
+                                                    title={<MenuIcon/>} items={anonymousMenuItems} dispatch={this.props.dispatch}/>
+                                                </a>
+                                            </li>
+                                        </ul>                              
                                     </nav>
                                 </div>
                             </div>

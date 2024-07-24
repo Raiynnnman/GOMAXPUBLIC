@@ -1,5 +1,9 @@
 import { combineReducers } from 'redux';
 import auth from './auth';
+import demoStart from './demoStart';
+import onlineDemoTraffic from './onlineDemoTraffic';
+import onlineDemo from './onlineDemo';
+import onlineDemoSave from './onlineDemoSave';
 import contactus from './contactus';
 import appointments from './appointments';
 import subscribe from './subscribe';
@@ -191,4 +195,8 @@ export default combineReducers({
     registerReferrer,
     userDocumentsUpdate,
     chat,
+    demoStart,
+    onlineDemo,
+    onlineDemoTraffic,
+    onlineDemoSave
 });

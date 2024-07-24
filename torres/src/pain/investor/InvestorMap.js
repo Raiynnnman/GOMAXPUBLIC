@@ -14,6 +14,7 @@ import TemplateTextField from '../utils/TemplateTextField';
 import TemplateSelectMulti from '../utils/TemplateSelectMulti';
 import AppSpinner from '../utils/Spinner';
 import { getTraffic } from '../../actions/trafficGet';
+import { getTrafficData } from '../../actions/onlineDemoTraffic';
 import TrafficMap from './TrafficMap';
 
 class InvestorMap extends Component {
@@ -56,17 +57,31 @@ class InvestorMap extends Component {
 
     reload() { 
         console.log('reload',new Date());
-        this.props.dispatch(
-            getTraffic(
-                {nationwide:true,categories:[2],limit:50,offset:0},
-                function(e,t) { 
-                    console.log("t",t);
-                    var c = new moment().add("ms",t.state.delay);
-                    t.state.nextReload = moment(c)
-                    t.setState(t.state);
-                    t.setNextLoad(e);
-                } 
-        ,this));
+        if (this.props.anonymous) { 
+            this.props.dispatch(
+                getTrafficData(
+                    {nationwide:true,categories:[2],limit:50,offset:0},
+                    function(e,t) { 
+                        console.log("t",t);
+                        var c = new moment().add("ms",t.state.delay);
+                        t.state.nextReload = moment(c)
+                        t.setState(t.state);
+                        t.setNextLoad(e);
+                    } 
+            ,this));
+        } else { 
+            this.props.dispatch(
+                getTraffic(
+                    {nationwide:true,categories:[2],limit:50,offset:0},
+                    function(e,t) { 
+                        console.log("t",t);
+                        var c = new moment().add("ms",t.state.delay);
+                        t.state.nextReload = moment(c)
+                        t.setState(t.state);
+                        t.setNextLoad(e);
+                    } 
+            ,this));
+        } 
         setTimeout((e) => { e.reload() }, this.state.delay, this)
     } 
 
@@ -79,9 +94,11 @@ class InvestorMap extends Component {
                 {(this.props.trafficData && this.props.trafficData.isReceiving) && (
                     <AppSpinner />
                 )}
-                <Navbar />
-                <Box style={{margin:20}}>
-                <Grid container spacing={2} style={{ marginLeft: {xs:4}, marginTop: 0 }}>
+                {(!this.props.hideNav) && (
+                    <Navbar />
+                )}
+                <Box style={{marginLeft:20,marginRight:20}}>
+                <Grid container spacing={2} style={{ marginLeft: {xs:4} }}>
                     <Grid item xs={12}>
                         <Box sx={{  }}>
                             {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.center) && (
@@ -104,7 +121,7 @@ class InvestorMap extends Component {
 function mapStateToProps(store) {
     return {
         currentUser: store.auth.currentUser,
-        trafficData: store.trafficData
+        trafficData: store.trafficData.data.data ?  store.trafficData : store.onlineDemoTraffic
     }
 }
 

@@ -182,7 +182,7 @@ class PainTable extends Component {
                             style={{ width:e.width, 
                                 display: e.hideOnMobile ? (window.innerWidth < 600 ? "none" : null) : null,
                                 backgroundColor: this.props.headerBackgroundColor ? this.props.headerBackgroundColor : '#fa6a0a', 
-                                color : this.props.headerColor ? this.props.headerColor : '#fa6a0a', 
+                                color : this.props.headerColor ? this.props.headerColor : 'white', 
                                 }}
                           >
                             {!e.sort && e.text}

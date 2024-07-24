@@ -42,22 +42,12 @@ class TrafficGet(AdminBase):
     def isDeferred(self):
         return False
 
-    def execute(self, *args, **kwargs):
+    def getTrafficData(self,*args,**kwargs):
         ret = {}
-        job,user,off_id,params = self.getArgs(*args,**kwargs)
-        today = calcdate.getYearToday()
-        if 'date' in params:
-            if params['date'] == 'All':
-                del params['date']
-        if 'zipcode' in params:
-            if params['zipcode'] == 'All':
-                del params['zipcode']
-            if params['zipcode'] is None:
-                del params['zipcode']
+        params = args[0]
         limit = 10000
         offset = 0
         lat = lng = None
-        print(params)
         if 'limit' in params:
             limit = params['limit']
         if 'offset' in params:
@@ -439,3 +429,19 @@ class TrafficGet(AdminBase):
                 ret['data'].append(t) 
     
         return ret
+
+    @check_admin
+    def execute(self, *args, **kwargs):
+        ret = {}
+        job,user,off_id,params = self.getArgs(*args,**kwargs)
+        today = calcdate.getYearToday()
+        if 'date' in params:
+            if params['date'] == 'All':
+                del params['date']
+        if 'zipcode' in params:
+            if params['zipcode'] == 'All':
+                del params['zipcode']
+            if params['zipcode'] is None:
+                del params['zipcode']
+        print(params)
+        return self.getTrafficData(params)

@@ -28,6 +28,7 @@ from common.InvalidCredentials import InvalidCredentials
 from util.Permissions import check_admin
 from util.Mail import Mail
 from processing.StaxxPayments import StaxxPayments
+from processing import AdminTraffic
 
 log = Logging()
 config = settings.config()
@@ -1540,3 +1541,54 @@ class Location(RegistrationsBase):
         )
         db.commit()
         return {'success':True}
+
+class OnlineDemoJoin(RegistrationsBase):
+
+    def __init__(self):
+        super().__init__()
+
+    def isDeferred(self):
+        return False
+
+    def execute(self, *args, **kwargs):
+        ret = {}
+        params = args[1][0]
+        print(params)
+        if 'token' not in params:
+            return {'success': False, 'message':'NO_UUID_SPECIFIED'}
+        db = Query()
+        # Get the time in EDT
+        o = db.query("""
+            select 
+                start_date,end_date,now(),timestampdiff(SECOND,start_date,now()) as t1
+            from 
+                online_demo_meetings odm
+            where 
+                meeting_id=%s and
+                date_add(end_date,INTERVAL -4 HOUR) > date_add(now(),INTERVAL -4 HOUR)
+            """,(params['token'],)
+        )
+        print("o=%s" % o)
+        if len(o) < 1:
+            return {'success':False,'message':'MEETING_EXPIRED'}
+        sd = o[0]['t1']
+        if sd < 1:
+            return {'success':False,'message':'MEETING_WAIT_START'}
+        print("ret success")
+        return {'success':True}
+
+class OnlineDemoTraffic(RegistrationsBase):
+
+    def __init__(self):
+        super().__init__()
+
+    def isDeferred(self):
+        return False
+
+    def execute(self, *args, **kwargs):
+        ret = {}
+        params = args[1][0]
+        print(params)
+        t = AdminTraffic.TrafficGet()
+        ret = t.getTrafficData(params)
+        return ret
