@@ -35,7 +35,7 @@ class ChatDialog extends Component {
   componentDidMount() {
     this.setState({ dialogParts: this.dialogParts() });
     const room = JSON.parse(localStorage.getItem('chatroom'));
-     if (room) this.props.dispatch(setActiveChat(room.room_id));
+    if (room) this.props.dispatch(setActiveChat(room.room_id));
     this.setupSocket();
     this.scrollToBottom();
   }
@@ -67,7 +67,6 @@ class ChatDialog extends Component {
   }
 
   joinChannel(activeChatId) {
-    
     const room = this.props.data?.rooms.find((room) => room.id === activeChatId);
     if (room && this.state.socket) {
       const last = room.chats?.sort((a, b) => (a.created > b.created ? -1 : 1))[0]?.id || 0;
@@ -131,7 +130,6 @@ class ChatDialog extends Component {
       const lastDialogPart = dialogParts[dialogParts.length - 1];
       const prevMessage = lastDialogPart[lastDialogPart.length - 1];
       const message = chat.chats[i];
-      console.log(message)
       const messageDate = moment(message.created).format('YYYY MM DD');
       const prevMessageDate = moment(prevMessage.created).format('YYYY MM DD');
       const shortDate = this.shortCalendarDate(message.created);
@@ -158,7 +156,7 @@ class ChatDialog extends Component {
   };
 
   findInterlocutor = (chat) => {
-     if (!chat?.id) return null;
+    if (!chat?.id) return null;
     const id = this.props.data.users.find((uid) => uid !== this.props.currentUser.id);
     return this.findUser(id);
   };
@@ -218,7 +216,6 @@ class ChatDialog extends Component {
   render() {
     const { sendingMessage, chatUploadDoc } = this.props;
     const { dialogParts, message } = this.state;
-
     return (
       <>
         {chatUploadDoc?.isReceiving && <AppSpinner />}

@@ -28,13 +28,12 @@ class ChatMessage extends PureComponent {
           {this.decrypt(message.text)}
         </p> :''}
 
-      {message.attachments ? message.attachments.map(attachment => (
-        <p key={uuidv4()} className={`${s.messageBody} ${s.messageAttachment}`}>
-          {attachment.type === 'image' ?
-          <img src={attachment.src} alt="attachment" />
-          :null}
-        </p>
-      )) : null}
+        {message.attachments ? message.attachments.map(attachment => (
+          <p key={uuidv4()} attachmentKey={uuidv4()} className={`${s.messageBody} ${s.messageAttachment}`}>
+            {attachment.type === 'image' ? <img src={attachment.src} alt="attachment" /> : null}
+          </p>
+        )) : null}
+
 
       <small className="d-block text-muted">
         {this.messageDate(message)}

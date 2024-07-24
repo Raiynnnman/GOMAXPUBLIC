@@ -294,7 +294,7 @@ class CustomerView extends Component {
                     </Grid>
                 </Grid>
                 <Grid item xs={6}>
-                    <ChatUser currentUser={this.props.currentUser} appt={this.props.data.appt_id}/>
+                    <ChatUser appt={this.props.data.appt_id}/>
                 </Grid>
             </Grid>
             </>
