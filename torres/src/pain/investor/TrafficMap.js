@@ -192,7 +192,7 @@ class MapContainer extends Component {
         },
         {
             dataField:'city',
-            text:'Loc',
+            text:'City',
             align:'center',
             formatter: (cellContent,row) => (
                 <div>

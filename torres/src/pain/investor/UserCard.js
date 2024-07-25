@@ -71,6 +71,7 @@ class UserCard extends Component {
     }
 
     render() {
+        console.log("p",this.props);
         return (
             <>
             <div style={{backgroundColor:"black",color:"lightgreen"}}>
@@ -84,7 +85,7 @@ class UserCard extends Component {
                                             <Grid item xs={12}>
                                                 <Typography >Name:<br/>{
                                                     this.props.data.contact.first_name ? 
-                                                        this.props.data.contact.first_name + " " + this.props.data.contact.last_name :
+                                                        this.props.data.contact.last_name + ", " + this.props.data.contact.first_name :
                                                         "Processing..."}
                                                 </Typography>
                                             </Grid>
@@ -153,13 +154,29 @@ class UserCard extends Component {
                                         </Grid>
                                         <Grid container spacing={2}>
                                             <Grid item xs={12} style={{marginTop:10}}>
-                                                <Typography>Status:<br/>{this.props.data.contact.status ? this.props.data.contact.status : ''}</Typography>
+                                                <Typography>Intersection:<br/>{
+                                                    this.props.data.traf_from
+                                                    }</Typography>
+                                            </Grid>
+                                        </Grid>
+                                        <Grid container spacing={2}>
+                                            <Grid item xs={12} style={{marginTop:10}}>
+                                                <Typography>lat, lng:<br/>{
+                                                    this.props.data.lat + ", " + this.props.data.lng
+                                                    }</Typography>
+                                            </Grid>
+                                        </Grid>
+                                        <Grid container spacing={2}>
+                                            <Grid item xs={12} style={{marginTop:10}}>
+                                                <Typography>City:<br/>{
+                                                    this.props.data.city+ ", " + this.props.data.state
+                                                    }</Typography>
                                             </Grid>
                                         </Grid>
                                         <Grid container spacing={2}>
                                             <Grid item xs={12} style={{marginTop:10}}>
                                                 {(this.props.data.contact.car_year) && (
-                                                <Typography>Make:<br/>{
+                                                <Typography>Make/Model:<br/>{
                                                     this.props.data.contact.car_year + " " + 
                                                     this.props.data.contact.car_make + " " + this.props.data.contact.car_model
                                                     }</Typography>
@@ -175,16 +192,7 @@ class UserCard extends Component {
                                         </Grid>
                                         <Grid container spacing={2}>
                                             <Grid item xs={12} style={{marginTop:10}}>
-                                                <Typography>Intersection:<br/>{
-                                                    this.props.data.traf_from
-                                                    }</Typography>
-                                            </Grid>
-                                        </Grid>
-                                        <Grid container spacing={2}>
-                                            <Grid item xs={12} style={{marginTop:10}}>
-                                                <Typography>lat, lng:<br/>{
-                                                    this.props.data.lat + ", " + this.props.data.lng
-                                                    }</Typography>
+                                                <Typography>Status:<br/>{this.props.data.contact.status ? this.props.data.contact.status : ''}</Typography>
                                             </Grid>
                                         </Grid>
                                     </Grid>

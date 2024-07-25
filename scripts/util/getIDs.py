@@ -149,7 +149,7 @@ def getOfficeNotificationCategories():
 
 def getFirstNames():
     db = Query()
-    o = db.query("select value from stub_last_names")
+    o = db.query("select value from stub_first_names")
     return o
 
 def getAreaCodes():
@@ -164,5 +164,5 @@ def getAreaCodes():
 
 def getLastNames():
     db = Query()
-    o = db.query("select value from stub_first_names")
+    o = db.query("select value from stub_last_names")
     return o
