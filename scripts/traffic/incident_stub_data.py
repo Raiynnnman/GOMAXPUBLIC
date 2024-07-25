@@ -132,7 +132,7 @@ for x in l:
         """,(x['created'],minutes)
     )
     stat_d = [1,10]
-    v = random.randrange(3)
+    v = random.randrange(2)
     # print("v=%s" % v)
     stat = stat_d[v]
     phone = "%s%s%s" % (ac,num1,num2)
