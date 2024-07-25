@@ -63,7 +63,8 @@ class Appointments extends Component {
   render() {
     const { appointments } = this.props;
     const { openDrawer, selectedAppointment } = this.state;
-      if (appointments.isReceiving) {
+    console.log(selectedAppointment)
+    if (appointments.isReceiving) {
       return (
         <div style={spinnerContainerStyle}>
           <AppSpinner />
@@ -165,8 +166,8 @@ class Appointments extends Component {
             }}
           >
             {selectedAppointment && (
-              <Box sx={{ width:1000, height:1000, overflow: 'auto' }}>
-                <ChatUser  appt={this.props.appointments.appt[0].appt_id} />
+              <Box sx={{ width: 1000, height: 1000, overflow: 'auto' }}>
+                <ChatUser appt={selectedAppointment.appt_id} />
               </Box>
             )}
           </Box>
