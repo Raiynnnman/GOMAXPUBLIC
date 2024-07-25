@@ -270,6 +270,7 @@ class Navbar extends Component {
                                     <img className="logo-1" 
                                         style={{
                                             height:this.props.currentUser !== null ? '100px': '200px',
+                                            objectFit:'contain',
                                             width:this.props.currentUser !== null ? '100px': '200px'
                                         }} 
                                         src={require('../assets/images/logo/logo.png')} alt="app landing"/>
