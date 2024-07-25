@@ -51,6 +51,7 @@ class OnlineDemoList extends Component {
         this.save = this.save.bind(this);
         this.setStartDate = this.setStartDate.bind(this);
         this.setEndDate = this.setEndDate.bind(this);
+        this.descChange = this.descChange.bind(this);
         this.pageChange = this.pageChange.bind(this);
         this.pageGridsChange = this.pageGridsChange.bind(this);
     } 
@@ -132,6 +133,10 @@ class OnlineDemoList extends Component {
         } 
         this.setState(this.state);
     } 
+    descChange(e) { 
+        this.state.selected.description = e.target.value;
+        this.setState(this.state);
+    } 
     planChange(e) { 
         this.state.selected.pricing_data_id = e.value;
         this.setState(this.state);
@@ -182,6 +187,7 @@ class OnlineDemoList extends Component {
     } 
     save() { 
         var tosend = this.state.selected
+        console.log("tosend")
         var t = moment(tosend.start_date);
         tosend.start_date = t.format('YYYY-MM-DDTHH:mm')
         t = moment(tosend.end_date);
@@ -205,10 +211,20 @@ class OnlineDemoList extends Component {
     } 
 
     render() {
+        console.log("s",this.state);
         var heads = [
             {
                 dataField:'id',
                 text:'ID'
+            },
+            {
+                dataField:'description',
+                text:'Description',
+                formatter:(cellContent,row) => (
+                    <div>
+                        <a style={{color:"black"}} href={row.url} target="_blank">{row.description}</a>
+                    </div>
+                )
             },
             {
                 dataField:'meeting_id',
@@ -332,6 +348,12 @@ class OnlineDemoList extends Component {
                         <Grid item xs={8}>
                             <TemplateTextField type="text" id="normal-field" readOnly 
                             label="URL" value={this.state.selected.url ? this.state.selected.url : "Set By System"}/>
+                        </Grid>
+                    </Grid>
+                    <Grid container xs="12" style={{marginTop:20}}>
+                        <Grid item xs={8}>
+                            <TemplateTextField type="text" id="normal-field" onChange={this.descChange}
+                            label="Description" value={this.state.selected.description}/>
                         </Grid>
                     </Grid>
                     <Grid container xs="12" style={{marginTop:20}}>

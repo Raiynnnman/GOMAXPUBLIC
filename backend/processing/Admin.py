@@ -979,7 +979,7 @@ class OnlineDemoList(AdminBase):
         ret['config'] = {}
         q = """
             select 
-                id,meeting_id,start_date,end_date,url
+                id,description,meeting_id,start_date,end_date,url
             from 
                 online_demo_meetings
             """
@@ -988,7 +988,7 @@ class OnlineDemoList(AdminBase):
         p.append(offset*limit)
         cnt = db.query("select count(id) as cnt from (%s) as t" % (q,))
         ret['total'] = cnt[0]['cnt']
-        q += " order by updated desc " 
+        q += " order by created desc " 
         q += " limit %s offset %s " 
         o = db.query(q,p)
         ret['data'] = o
@@ -1018,15 +1018,17 @@ class OnlineDemoSave(AdminBase):
         # TODO: Compensate for CDT/CST
         TZ = tzInfo.getTZ()
         mytz = 0
+        print(params)
         if params['timezone'] in TZ:
             mytz = TZ[params['timezone']]
         if 'id' in params:
             db.update("""
                 update online_demo_meetings set 
+                    description=%s,
                     start_date=date_add(%s,interval %s HOUR),
                     end_date=date_add(%s,interval %s HOUR)
                 where id = %s
-                """,(params['start_date'],mytz,params['end_date'],mytz,params['id'])
+                """,(params['description'],params['start_date'],mytz,params['end_date'],mytz,params['id'])
             )
         else:
             u = config.getKey("host_url")
@@ -1035,9 +1037,9 @@ class OnlineDemoSave(AdminBase):
             print(params,ud,url)
             db.update("""
                 insert into online_demo_meetings 
-                    (meeting_id, start_date,end_date, url)
-                    values (%s,date_add(%s, INTERVAL %s HOUR),date_add(%s,INTERVAL %s HOUR),%s)
-                """,(ud,params['start_date'],mytz,params['end_date'],mytz,url)
+                    (description,meeting_id, start_date,end_date, url)
+                    values (%s,%s,date_add(%s, INTERVAL %s HOUR),date_add(%s,INTERVAL %s HOUR),%s)
+                """,(params['description'],ud,params['start_date'],mytz,params['end_date'],mytz,url)
             )
         db.commit()
         return {'success':True}
