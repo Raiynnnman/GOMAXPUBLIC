@@ -71,7 +71,6 @@ class UserCard extends Component {
     }
 
     render() {
-        console.log("p",this.props);
         return (
             <>
             <div style={{backgroundColor:"black",color:"lightgreen"}}>
@@ -139,7 +138,7 @@ class UserCard extends Component {
                                             <Grid item xs={12}>
                                                 <Typography>DOI:<br/>{
                                                     moment(
-                                                        this.props.data.contact.traf_start_time
+                                                        this.props.data.traf_start_time_offset
                                                     ).utcOffset(
                                                         this.props.data.tz_hours
                                                     ).format("MMMM Do YYYY, h:mm:ss a") + 
