@@ -99,47 +99,47 @@ module.exports.verifyRoom = function(user_id,room_id,callback) {
 module.exports.getRoomUsers = function(room_id,callback) { 
     console.log("roomUsers:",room_id,callback)
     db.query(
-            `  SELECT 
-            cri.from_user_id AS user_id, 
-            cr.name AS room_name, 
-            sender.first_name AS first_name, 
-            sender.last_name AS last_name, 
-            sender.title AS title
+            `  
+            WITH chat_rooms_cte AS (
+                SELECT 
+                    client_intake_id, 
+                    client_intake_offices_id,
+                    name
+                FROM 
+                    chat_rooms
+                WHERE 
+                    id = ?
+            )
+            
+            SELECT 
+                ci.user_id AS user_id, 
+                cte.name AS room_name, 
+                u.first_name AS first_name, 
+                u.last_name AS last_name, 
+                u.title AS title
             FROM 
-            chat_room_discussions cri
+                chat_rooms_cte cte
             JOIN 
-            chat_rooms cr ON cr.id = cri.chat_rooms_id
+                client_intake ci ON ci.id = cte.client_intake_id
             JOIN 
-            users sender ON cri.from_user_id = sender.id
-            WHERE
-            cri.chat_rooms_id = ?
+                users u ON ci.user_id = u.id
+            
             UNION
-            SELECT
-            cri.to_user_id AS user_id, 
-            cr.name AS room_name, 
-            receiver.first_name AS first_name, 
-            receiver.last_name AS last_name, 
-            receiver.title AS title
+            
+            SELECT 
+                ou.user_id AS user_id, 
+                cte.name AS room_name, 
+                u.first_name AS first_name, 
+                u.last_name AS last_name, 
+                u.title AS title
             FROM 
-            chat_room_discussions cri
+                chat_rooms_cte cte
             JOIN 
-            chat_rooms cr ON cr.id = cri.chat_rooms_id
+                client_intake_offices cio ON cio.id = cte.client_intake_offices_id
             JOIN 
-            users receiver ON cri.to_user_id = receiver.id
-            WHERE
-            cri.chat_rooms_id = ?
-            UNION
-            SELECT
-            u.id AS user_id, 
-            '' AS room_name, 
-            u.first_name AS first_name, 
-            u.last_name AS last_name, 
-            u.title AS title
-            FROM 
-            users u
+                office_user ou ON cio.office_id = ou.office_id
             JOIN 
-            context c ON c.user_id = u.id
-            WHERE 
-            c.user_id = u.id
-        `,[room_id,room_id],callback)
+                users u ON ou.user_id = u.id;
+            
+        `,[room_id],callback)
 }
