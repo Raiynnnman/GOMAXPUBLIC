@@ -122,8 +122,8 @@ io.on('connection', (socket) => {
 
           socket.emit('message', messageData);
           socket.to(room_name).emit('message', messageData);
-
-          message.saveMessage(room_id, u.user_id, to_user_id, u.user_id, text.message);
+          
+          message.saveMessage(room_id, to_user_id, u.user_id, u.user_id, text.message);  
         });
       });
     });

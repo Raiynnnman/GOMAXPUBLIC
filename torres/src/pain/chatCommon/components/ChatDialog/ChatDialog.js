@@ -3,6 +3,9 @@ import { connect } from 'react-redux';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 import io from 'socket.io-client';
+import { Box, Paper, Typography, TextField, IconButton, Button, CircularProgress } from '@mui/material';
+import AttachFileIcon from '@mui/icons-material/AttachFile';
+import SendIcon from '@mui/icons-material/Send';
 import ChatMessage from './ChatMessage';
 import OnlineStatus from '../OnlineStatus';
 import {
@@ -11,13 +14,9 @@ import {
   setActiveChat,
 } from '../../../../actions/chat';
 import { MobileChatStates } from '../../../../reducers/chat';
-import s from './ChatDialog.module.scss';
 import { chatURL } from '../../../../chatConfig';
 import { chatUploadDoc } from '../../../../actions/chatUploadDoc';
-import AppSpinner from '../../../utils/Spinner';
 import { encryptData } from '../../../utils/encryption';
-import TemplateButton from '../../../utils/TemplateButton';
-import TemplateTextField from '../../../utils/TemplateTextField';
 
 class ChatDialog extends Component {
   constructor(props) {
@@ -162,8 +161,10 @@ class ChatDialog extends Component {
   };
 
   findUser = (userId) => {
+    const { data } = this.props;
+    const user = data?.users?.find(user => user.id === userId) ?? null;
     if (!userId) return null;
-    return this.props.data.users.find((user) => user.id === userId);
+    return user;
   };
 
   shortCalendarDate = (date) => {
@@ -218,22 +219,19 @@ class ChatDialog extends Component {
     const { dialogParts, message } = this.state;
     return (
       <>
-        {chatUploadDoc?.isReceiving && <AppSpinner />}
-        <div className={`d-flex flex-column chat-dialog-section`} style={{ height: 300, overflow: 'auto', border: '1px solid #e3e3e3', borderRadius: '10px', boxShadow: 'rgba(0, 0, 0, 0.15) 0px 5px 15px 0px' }}>
-          <header className={s.chatDialogHeader}>
-            <div>
-              {false && <h5 className="fw-normal mb-0">{this.title()}</h5>}
-              {false && !this.chat().isGroup ? <OnlineStatus user={this.interlocutor()} /> : null}
-            </div>
-          </header>
-          <div className={s.chatDialogBody} ref={(chatDialogBody) => (this.chatDialogBodyRef = chatDialogBody)}>
+        {chatUploadDoc?.isReceiving && <CircularProgress />}
+        <Paper elevation={3} sx={{ height: '500px', display: 'flex', flexDirection: 'column', borderRadius: 2, boxShadow: 3 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'right', p: 2, borderBottom: '1px solid #e0e0e0' }}>
+            {!this.chat().isGroup && <OnlineStatus user={this.interlocutor()} />}
+          </Box>
+          <Box ref={(chatDialogBody) => (this.chatDialogBodyRef = chatDialogBody)} sx={{ flexGrow: 1, overflowY: 'auto', p: 2 }}>
             {dialogParts.map((part) =>
               this.isTimeDivider(part) ? (
-                <div key={uuidv4()} className={s.dialogDivider}>
+                <Typography key={uuidv4()} sx={{ textAlign: 'center', color: 'grey', my: 2 }}>
                   {part[0]}
-                </div>
+                </Typography>
               ) : (
-                <div key={uuidv4()} className={s.dialogMessage}>
+                <Box key={uuidv4()}>
                   {part
                     .sort((a, b) => (a.created > b.created ? 1 : -1))
                     .map((message, j) => (
@@ -241,27 +239,43 @@ class ChatDialog extends Component {
                         key={message.id}
                         user={message.from_user_id === this.props.currentUser.id ? this.props.currentUser : this.findUser(message.from_user_id)}
                         owner={message.from_user_id === this.props.currentUser.id}
-                        size={40}
+                        size={23}
                         showStatus={false}
                         message={message}
                         showAvatar={this.showAvatar(part, message, j)}
                       />
                     ))}
-                </div>
+                </Box>
               )
             )}
-          </div>
-          <form className={`chat-section ${s.newMessage} mb-0`} onSubmit={this.newMessage}>
-            <label style={{ cursor: 'pointer' }} htmlFor="file-upload" className="custom-file-upload">
-              <div className={s.attachment}>
-                <i className="la la-plus"></i>
-              </div>
+          </Box>
+          <Box component="form" onSubmit={this.handleOutgoingMessage} sx={{ display: 'flex', alignItems: 'center', p: 2, borderTop: '1px solid #e0e0e0' }}>
+            <input
+              accept="image/*"
+              style={{ display: 'none' }}
+              id="file-upload"
+              type="file"
+              onChange={this.onChangeInputFiles}
+            />
+            <label htmlFor="file-upload">
+              <IconButton component="span">
+                <AttachFileIcon />
+              </IconButton>
             </label>
-            <input onChange={this.onChangeInputFiles} id="file-upload" type="file" />
-            <TemplateTextField onChange={this.handleChange} value={message || ''} label="Message" />
-            <TemplateButton color="danger" onClick={this.handleOutgoingMessage} className={`px-4 ${s.newMessageBtn}`} type="submit" label={sendingMessage ? '' : <span>Send</span>} />
-          </form>
-        </div>
+            <TextField
+              variant="outlined"
+              fullWidth
+              size="small"
+              value={message}
+              onChange={this.handleChange}
+              placeholder="Type a message"
+              sx={{ mx: 1 }}
+            />
+            <Button variant="contained" color="primary" type="submit" disabled={sendingMessage}>
+              {sendingMessage ? <CircularProgress size={24} /> : <SendIcon />}
+            </Button>
+          </Box>
+        </Paper>
       </>
     );
   }
@@ -269,7 +283,7 @@ class ChatDialog extends Component {
 
 const mapStateToProps = (state) => ({
   currentUser: state.auth.currentUser,
-  chats: state.chat.chats,
+  chats: state.chat,
   sendingMessage: state.chat.sendingMessage,
   chatUploadDoc: state.chatUploadDoc,
   activeChatId: state.chat.activeChatId,

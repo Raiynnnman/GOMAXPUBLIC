@@ -2,22 +2,52 @@ const config = require('config');
 const db = require("../util/DBOps.js")
 const log = require("../util/logging.js")
 
-module.exports.saveMessage = function(room_id, to_user, from_user, user_id, message) { 
+module.exports.saveMessage = function(room_id, to_user, from_user, user_id, message) {
     log.debug('savingMessage', room_id, to_user, from_user, user_id, message);
+    
     db.query(`
-        INSERT INTO chat_room_discussions 
-            (chat_rooms_id, from_user_id, to_user_id, text) 
-        VALUES
-            (?, ?, ?, ?)
-    `, [room_id, from_user, to_user, message], function(err, res) {
-        if (err) { 
-            log.error("Error saving message:", err);
-        } else {
-            log.debug("Message saved successfully:", res);
+        SELECT office_id FROM office_user WHERE user_id = ?
+    `, [to_user], function(err, results) {
+        if (err) {
+            log.error("Error fetching office ID:", err);
+            return;
         }
+
+        if (results.length === 0) {
+            log.error("No office ID found for user:", to_user);
+            return;
+        }
+
+        log.debug("Look here", results)
+
+        const office_id = results[0].office_id;
+        db.query(`
+            SELECT COUNT(*) AS count FROM office WHERE id = ?
+        `, [office_id], function(err, officeResults) {
+            if (err) {
+                log.error("Error checking office ID:", err);
+                return;
+            }
+            if (officeResults[0].count === 0) {
+                log.debug("Office with id", office_id, "does not exist. Ignoring...");
+                return;
+            }
+                log.debug("Office with id", office_id, "exists. Proceeding to save the message.");
+            db.query(`
+                INSERT INTO chat_room_discussions 
+                    (chat_rooms_id, from_user_id, to_user_id, to_office_id, text) 
+                VALUES
+                    (?, ?, ?, ?, ?)
+            `, [room_id, from_user, to_user, office_id, message], function(err, res) {
+                if (err) {
+                    log.error("Error saving message:", err);
+                } else {
+                    log.debug("Message saved successfully:", res);
+                }
+            });
+        });
     });
 }
-
 
 module.exports.getMissedMessages = function(last,user_id,room_id,callback) { 
     log.debug("gmm:",user_id,room_id)
