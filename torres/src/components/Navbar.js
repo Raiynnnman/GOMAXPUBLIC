@@ -467,15 +467,8 @@ class Navbar extends Component {
                             <div className="col-sm-8 col-8 d-block d-lg-none">
                                 <div className="mobile-menu" style={{color:'white'}}>
                                     <div style={{float:"right"}}>
-                                    <nav>
-                                        <ul className="main-menu">
-                                            <li><a>
-                                                <DropdownMenu currentUser={this.props.currentUser} 
-                                                    title={<MenuIcon/>} items={mobileAdminItems} dispatch={this.props.dispatch}/>
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </nav>
+                                        <DropdownMenu currentUser={this.props.currentUser} 
+                                            title={<MenuIcon/>} items={mobileAdminItems} dispatch={this.props.dispatch}/>
                                     </div>
                                 </div>
                             </div>
@@ -500,15 +493,8 @@ class Navbar extends Component {
                             <div className="col-sm-8 col-8 d-block d-lg-none">
                                 <div className="mobile-menu" style={{color:'white'}}>
                                     <div style={{float:"right"}}>
-                                    <nav>
-                                        <ul>                              
-                                            <li><a>
-                                                <DropdownMenu currentUser={this.props.currentUser} 
-                                                    title={<MenuIcon/>} items={anonymousMenuItems} dispatch={this.props.dispatch}/>
-                                                </a>
-                                            </li>
-                                        </ul>                              
-                                    </nav>
+                                            <DropdownMenu currentUser={this.props.currentUser} 
+                                                title={<MenuIcon/>} items={anonymousMenuItems} dispatch={this.props.dispatch}/>
                                     </div>
                                 </div>
                             </div>
