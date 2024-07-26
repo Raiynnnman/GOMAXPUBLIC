@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Typography, Drawer, Grid, Box, Tabs, Tab } from '@mui/material';
+import { Container, Typography, Drawer, Grid, Box, Button } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Cancel';
 import InputIcon from '@mui/icons-material/Input';
@@ -19,7 +19,9 @@ import TemplateTextField from '../utils/TemplateTextField';
 import TemplateButtonIcon from '../utils/TemplateButtonIcon';
 import PainTable from '../utils/PainTable';
 import TemplateBadge from '../utils/TemplateBadge';
-import TemplateButton from '../utils/TemplateButton';
+import Navbar from '../../components/Navbar';
+import Office365SSO from '../utils/Office365SSO';
+import TicketsUpsert from './TicketsUpsert';
 
 class Tickets extends Component {
     constructor(props) {
@@ -57,100 +59,77 @@ class Tickets extends Component {
             })),
             total: 100,
             searchname: '',
+            openModal: false,
+            currentTicket: null,
         };
-    //     this.search = this.search.bind(this);
-    //     this.updateFilter = this.updateFilter.bind(this);
-    //     this.onMassUpdateValue = this.onMassUpdateValue.bind(this);
-    //     this.toggleDrawer = this.toggleDrawer.bind(this);
-    //     this.transition = this.transition.bind(this);
-    //     this.cancelMass = this.cancelMass.bind(this);
-    //     this.saveMass = this.saveMass.bind(this);
-    //     this.close = this.close.bind(this);
-    //     this.onAltStatusFilter = this.onAltStatusFilter.bind(this);
-    //     this.onStatusFilter = this.onStatusFilter.bind(this);
-    //     this.onMassChange = this.onMassChange.bind(this);
-    //     this.onTypeFilter = this.onTypeFilter.bind(this);
-    //     this.onUserFilter = this.onUserFilter.bind(this);
-    //     this.save = this.save.bind(this);
-    //     this.reload = this.reload.bind(this);
-    //     this.providerReport = this.providerReport.bind(this);
-    //     this.dncReport = this.dncReport.bind(this);
-    //     this.edit = this.edit.bind(this);
-    //     this.add = this.add.bind(this);
-    //     this.pageChange = this.pageChange.bind(this);
-    //     this.sortChange = this.sortChange.bind(this);
-    //     this.loadSavedSearch = this.loadSavedSearch.bind(this);
-    //     this.saveSearchValue = this.saveSearchValue.bind(this);
-    //     this.saveSearchName = this.saveSearchName.bind(this);
-    //     this.pageGridsChange = this.pageGridsChange.bind(this);
-    //     this.toggleTab = this.toggleTab.bind(this);
-    // }
- 
-  }
+    }
+
+    handleEdit = (ticket) => {
+        this.setState({ openModal: true, currentTicket: ticket });
+    };
+
+    handleCloseModal = () => {
+        this.setState({ openModal: false, currentTicket: null });
+    };
+
     render() {
-        const { page, pageSize, data, total, transition, massSel } = this.state;
+        const { page, pageSize, data, total, transition, massSel, openModal, currentTicket } = this.state;
         const regheads = [
-        {
-        dataField:'Title',
-        sort:true,
-        hidden:true,
-        text:'Title'
-        },
-        {
-        dataField:'Assigned To',
-        sort:true,
-        text:'Assigned To'
-        },
-        {
-        dataField:'Ticket Priority',
-        sort:true,
-        text:'Ticket Priority'
-        },
-        {
-        dataField:'Ticket Status',
-        sort:true,
-        align:'center',
-        text:'Ticket Status',
-        formatter:(cellContent,row) => (
-        <div>
-        {row.status && (<TemplateBadge label={row.status}/>)}
-        </div>
-        )
-        },
-        {
-        dataField:'Ticket Type',
-        sort:true,
-        align:'center',
-        text:'Ticket Type'
-        },
-        {
-        dataField:'Created Date',
-        sort:true,
-        align:'center',
-        text:'Created Date',
-        formatter:(cellContent,row) => (
-        <div>
-        {row.created}
-        </div>
-        )
-        },
-        {
-        dataField:'Actions',
-        sort:true,
-        text:'Actions',
-        formatter:(cellContent,row) => (
-        <>
-        <div>
-        <TemplateButton 
-        onClick={() => this.edit(row)} style={{marginRight:5,width:30,height:35}} color="primary" label={<EditIcon/>}/>
-        </div>
-        </>
-        )
-        },
+            {
+                dataField: 'id',
+                sort: true,
+                hidden: true,
+                text: 'ID'
+            },
+            {
+                dataField: 'ticketNumber',
+                sort: true,
+                text: 'Ticket Number'
+            },
+            {
+                dataField: 'description',
+                sort: true,
+                text: 'Description'
+            },
+            {
+                dataField: 'status',
+                sort: true,
+                align: 'center',
+                text: 'Status',
+                formatter: (cellContent, row) => (
+                    <div>
+                        {row.status && (<TemplateBadge label={row.status} />)}
+                    </div>
+                )
+            },
+            {
+                dataField: 'assignedTo',
+                sort: true,
+                text: 'Assigned To'
+            },
+            {
+                dataField: 'actions',
+                sort: false,
+                text: 'Actions',
+                formatter: (cellContent, row) => (
+                    <>
+                        <Button 
+                            onClick={() => this.handleEdit(row)} 
+                            style={{ marginRight: 5, width: 30, height: 35 }} 
+                            color="warning" 
+                            variant="contained"
+                        >
+                            <EditIcon />
+                        </Button>
+                    </>
+                )
+            }
         ];
+
         return (
             <>
                 <Box style={{ margin: 20 }}>
+                    <Office365SSO showWelcome={true} />
                     <Drawer anchor="right" open={this.state.drawerOpen} onClose={this.toggleDrawer}>
                         <Box sx={{ width: 400 }} role="presentation">
                             {/* Add filter components here */}
@@ -229,6 +208,13 @@ class Tickets extends Component {
                         </Grid>
                     </Container>
                 </Box>
+                {currentTicket && (
+                    <TicketsUpsert
+                        open={openModal}
+                        onClose={this.handleCloseModal}
+                        ticket={currentTicket}
+                    />
+                )}
             </>
         );
     }
