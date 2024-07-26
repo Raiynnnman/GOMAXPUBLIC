@@ -41,6 +41,7 @@ import Navbar from '../../components/Navbar';
 import RegistrationsEdit from './RegistrationsEdit';
 import Office365SSO from '../utils/Office365SSO';
 import DealTracker from './DealTracker';
+import Tickets from './Tickets';
 
 class Registrations extends Component {
     constructor(props) { 
@@ -758,15 +759,13 @@ class Registrations extends Component {
                                       value={this.state.statusSelected.map((g) => { 
                                         return (
                                             {
-                                            label:
-            this.props.registrationsAdminList.data.config.status.filter((f) => f.id === g.id).length > 0 ? 
-            this.props.registrationsAdminList.data.config.status.filter((f) => f.id === g.id)[0].name : '',
-                                            value:
-            this.props.registrationsAdminList.data.config.status.filter((f) => f.id === g.id).length > 0 ? 
-            this.props.registrationsAdminList.data.config.status.filter((f) => f.id === g.id)[0].name : '',
-                                            id:
-            this.props.registrationsAdminList.data.config.status.filter((f) => f.id === g.id).length > 0 ? 
-            this.props.registrationsAdminList.data.config.status.filter((f) => f.id === g.id)[0].name : '',
+                                                                            label:
+                                            this.props.registrationsAdminList.data.config.status.filter((f) => f.id === g.id).length > 0 ? 
+                                            this.props.registrationsAdminList.data.config.status.filter((f) => f.id === g.id)[0].name : '', value:
+                                            this.props.registrationsAdminList.data.config.status.filter((f) => f.id === g.id).length > 0 ? 
+                                            this.props.registrationsAdminList.data.config.status.filter((f) => f.id === g.id)[0].name : '',id:
+                                            this.props.registrationsAdminList.data.config.status.filter((f) => f.id === g.id).length > 0 ? 
+                                            this.props.registrationsAdminList.data.config.status.filter((f) => f.id === g.id)[0].name : '',
                                             }
                                         )
                                       })}
@@ -976,6 +975,7 @@ class Registrations extends Component {
                             <Tab value='myregistrations' label='Assigned to Me'/>
                             <Tab value='registrations' label='Registrations'/>
                             <Tab value='dealtracker' label='Deal Tracker'/>
+                            <Tab value='Tickets' label='Tickets'/>
                             {/*<Tab value='myactivities' label='My Activities'/>*/}
                         </Tabs>
                         {(this.state.activeTab === 'dealtracker')  && ( 
@@ -992,6 +992,9 @@ class Registrations extends Component {
                                 <RegistrationsEdit selected={this.state.selected} onSave={this.save} onCancel={this.close}/>
                             )}
                             </>
+                        )}
+                        {(this.state.activeTab === 'Tickets')  && ( 
+                            <Tickets/>
                         )}
                         {(this.state.activeTab === 'myactivities')  && ( 
                             <Office365SSO showCalendar={true}/>

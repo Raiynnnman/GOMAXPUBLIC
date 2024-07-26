@@ -17,6 +17,7 @@
     "@mui/joy": "^5.0.0-beta.47",
     "@mui/material": "^5.16.0",
     "@mui/styles": "^5.15.19",
+    "@mui/x-data-grid": "^7.11.1",
     "@mui/x-date-pickers": "^7.11.0",
     "@stripe/react-stripe-js": "^1.13.0",
     "@stripe/stripe-js": "^1.42.0",
