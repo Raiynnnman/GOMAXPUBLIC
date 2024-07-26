@@ -9,7 +9,6 @@ from dateutil import parser
 def getTimestampNow():
     return datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
-
 def getTimestampUTC():
     return datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
