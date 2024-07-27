@@ -42,6 +42,7 @@ import RegistrationsEdit from './RegistrationsEdit';
 import Office365SSO from '../utils/Office365SSO';
 import DealTracker from './DealTracker';
 import Tickets from './Tickets';
+import { Container } from '@mui/material';
 
 class Registrations extends Component {
     constructor(props) { 
@@ -994,7 +995,7 @@ class Registrations extends Component {
                             </>
                         )}
                         {(this.state.activeTab === 'Tickets')  && ( 
-                            <Tickets/>
+                                <Tickets/>
                         )}
                         {(this.state.activeTab === 'myactivities')  && ( 
                             <Office365SSO showCalendar={true}/>

@@ -76,12 +76,6 @@ class Tickets extends Component {
         const { page, pageSize, data, total, transition, massSel, openModal, currentTicket } = this.state;
         const regheads = [
             {
-                dataField: 'id',
-                sort: true,
-                hidden: true,
-                text: 'ID'
-            },
-            {
                 dataField: 'ticketNumber',
                 sort: true,
                 text: 'Ticket Number'
@@ -128,15 +122,15 @@ class Tickets extends Component {
 
         return (
             <>
-                <Box style={{ margin: 20 }}>
+                <Box sx={{marginRight:80}}>
                     <Office365SSO showWelcome={true} />
-                    <Drawer anchor="right" open={this.state.drawerOpen} onClose={this.toggleDrawer}>
+                     <Drawer anchor="right" open={this.state.drawerOpen} onClose={this.toggleDrawer}>
                         <Box sx={{ width: 400 }} role="presentation">
                             {/* Add filter components here */}
                         </Box>
                     </Drawer>
                     <Container>
-                        <Grid container spacing={3}>
+                        <Grid container spacing={5}>
                             <Grid item xs={12}>
                                 {transition && (
                                     <Box>
@@ -186,7 +180,7 @@ class Tickets extends Component {
                                     </Box>
                                 )}
                                 {!transition && (
-                                    <Box>
+                                    <Box sx={{width:1600,mt:10}}> 
                                         <PainTable
                                             keyField='id'
                                             selectAll={true}
@@ -199,7 +193,6 @@ class Tickets extends Component {
                                             onSort={this.sortChange}
                                             onPageGridsPerPageChange={this.pageGridsChange}
                                             columns={regheads}
-                                            headerBackgroundColor="orange"
                                             headerColor="white"
                                         />
                                     </Box>
