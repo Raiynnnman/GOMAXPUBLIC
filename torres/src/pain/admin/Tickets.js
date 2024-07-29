@@ -113,7 +113,7 @@ class Tickets extends Component {
                             color="warning" 
                             variant="contained"
                         >
-                            <EditIcon />
+                          New Ticket
                         </Button>
                     </>
                 )
