@@ -57,6 +57,8 @@ class LocationUpdate(OfficeBase):
                 x['phone'] = ''
             if 'state' not in x:
                 x['state'] = ''
+            if 'zipcode' not in x:
+                x['zipcode'] = None
             if 'id' in x:
                 db.update("""
                     update office_addresses set name = %s,
