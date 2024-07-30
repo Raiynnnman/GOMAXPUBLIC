@@ -4,6 +4,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import formatPhoneNumber from '../utils/formatPhone';
 import { Grid, Typography, Paper, Box, TextField, Divider, Button, FormControlLabel, Checkbox } from '@mui/material';
 import TemplateTextFieldPhone from '../utils/TemplateTextFieldPhone';
+import TemplateTextField from '../utils/TemplateTextField';
 
 const buttonStyle = {
     backgroundColor: '#fa6a0a',
@@ -75,6 +76,12 @@ class ContactCard extends Component {
         this.props.onCancel();
     }
 
+    changeDescription = (e) => {
+        this.setState({
+            selected: { ...this.state.selected, description: e.target.value }
+        });
+    }
+
     changePhone = (e) => {
         this.setState({
             selected: { ...this.state.selected, phone: e.target.value }
@@ -96,7 +103,18 @@ class ContactCard extends Component {
                     <Box sx={{ mt: 3 }}>
                         <Paper elevation={3} sx={cardStyle}>
                             <Box>
-                                <Grid container spacing={1}>
+                                <Grid container xs={12} spacing={1}>
+                                    <Grid item xs={10}>
+                                        {this.state.edit && this.state.selected ? (
+                                            <TemplateTextField
+                                                value={this.state.selected.description}
+                                                onChange={this.changeDescription}
+                                                label="Description"
+                                            />
+                                        ) : (
+                                            <Typography variant="h6">{this.props.provider.description ? this.props.provider.description : ''}</Typography>
+                                        )}
+                                    </Grid>
                                     {!this.state.edit && (
                                         <Grid item xs={1}>
                                             <Button variant="contained" sx={buttonStyle} style={{ marginTop: 0, marginRight: 20 }}
@@ -106,7 +124,7 @@ class ContactCard extends Component {
                                         </Grid>
                                     )}
                                 </Grid>
-                                <Divider sx={{ my: 2 }} />
+                                <Divider sx={{ mt: 0 }} />
                                 <Grid container spacing={2}>
                                     <Grid item xs={12}>
                                         {this.state.edit && this.state.selected ? (
@@ -136,7 +154,7 @@ class ContactCard extends Component {
                                         )}
                                     </Grid>
                                     {this.state.showPhone && (
-                                        <Grid item xs={12}>
+                                        <Grid item xs={10}>
                                             {this.state.edit && this.state.selected ? (
                                                 <TemplateTextFieldPhone
                                                     value={this.state.selected.phone}

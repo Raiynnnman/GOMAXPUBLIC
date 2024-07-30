@@ -383,8 +383,8 @@ class OfficeList extends Component {
     addContact() { 
         this.state.addContactButton = false;
         this.state.selected.phones.push({
-            id:0,
             phone:'',
+            description:'',
             iscell:false,
         })
         this.setState(this.state);
@@ -495,6 +495,7 @@ class OfficeList extends Component {
     } 
 
     render() {
+        console.log("s",this.state);
 
         var phonesheads = [
             {
@@ -627,11 +628,17 @@ class OfficeList extends Component {
             {
                 dataField:'id',
                 sort:true,
+                onClick: (content,row) => (
+                    this.edit(content)
+                ),
                 text:'ID'
             },
             {
                 dataField:'name',
                 sort:true,
+                onClick: (content,row) => (
+                    this.edit(content)
+                ),
                 text:'Name'
             },
             {
@@ -639,6 +646,9 @@ class OfficeList extends Component {
                 sort:true,
                 align:'center',
                 text:'Status',
+                onClick: (content,row) => (
+                    this.edit(content)
+                ),
                 formatter:(cellContent,row) => (
                     <div>
                         {(row.status === 'INVITED') && (<TemplateBadge label='INVITED'/>)}
@@ -653,6 +663,9 @@ class OfficeList extends Component {
                 dataField:'active',
                 align:'center',
                 text:'Active',
+                onClick: (content,row) => (
+                    this.edit(content)
+                ),
                 formatter: (cellContent,row) => (
                     <div>
                         {(row.active === 1) && (<TemplateBadge label='Active'/>)}
@@ -663,18 +676,27 @@ class OfficeList extends Component {
             {
                 dataField:'office_type',
                 align:'center',
+                onClick: (content,row) => (
+                    this.edit(content)
+                ),
                 text:'Office Type'
             },
             {
                 dataField:'last_paid',
                 sort:true,
                 align:'center',
+                onClick: (content,row) => (
+                    this.edit(content)
+                ),
                 text:'Last Payment'
             },
             {
                 dataField:'updated',
                 sort:true,
                 text:'Updated',
+                onClick: (content,row) => (
+                    this.edit(content)
+                ),
                 formatter:(cellContent,row) => (
                     <div>
                         {moment(row['updated']).format('LLL')} 

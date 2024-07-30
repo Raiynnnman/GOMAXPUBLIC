@@ -517,22 +517,34 @@ class Registrations extends Component {
                 dataField:'office_id',
                 sort:true,
                 hidden:true,
+                onClick: (content,row) => (
+                    this.edit(content)
+                ),
                 text:'ID'
             },
             {
                 dataField:'name',
                 sort:true,
+                onClick: (content,row) => (
+                    this.edit(content)
+                ),
                 text:'Name'
             },
             {
                 dataField:'email',
                 sort:true,
+                onClick: (content,row) => (
+                    this.edit(content)
+                ),
                 text:'Email'
             },
             {
                 dataField:'state',
                 sort:true,
                 align:'center',
+                onClick: (content,row) => (
+                    this.edit(content)
+                ),
                 text:'State'
             },
             {
@@ -540,6 +552,9 @@ class Registrations extends Component {
                 sort:true,
                 align:'center',
                 text:'Office Type',
+                onClick: (content,row) => (
+                    this.edit(content)
+                ),
                 formatter:(cellContent,row) => (
                     <div>
                         {row.office_type}
@@ -550,6 +565,9 @@ class Registrations extends Component {
                 dataField:'call_status',
                 sort:true,
                 text:'Call Status',
+                onClick: (content,row) => (
+                    this.edit(content)
+                ),
                 formatter:(cellContent,row) => (
                     <div>
                         {row.call_status && <TemplateBadge label={row.call_status}/>}
@@ -560,6 +578,9 @@ class Registrations extends Component {
                 dataField:'office_alternate_status_name',
                 sort:true,
                 text:'Type',
+                onClick: (content,row) => (
+                    this.edit(content)
+                ),
                 formatter:(cellContent,row) => (
                     <div>
                         {row.office_alternate_status_name && <TemplateBadge label={row.office_alternate_status_name}/>}
@@ -570,6 +591,9 @@ class Registrations extends Component {
                 dataField:'commission_name',
                 sort:true,
                 text:'Assignee',
+                onClick: (content,row) => (
+                    this.edit(content)
+                ),
                 formatter:(cellContent,row) => (
                     <div>
                         {row.commission_name && <TemplateBadge label={row.commission_name}/>}
@@ -581,6 +605,9 @@ class Registrations extends Component {
                 sort:true,
                 align:'center',
                 text:'Status',
+                onClick: (content,row) => (
+                    this.edit(content)
+                ),
                 formatter:(cellContent,row) => (
                     <div>
                         {row.status && (<TemplateBadge label={row.status}/>)}

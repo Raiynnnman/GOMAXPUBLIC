@@ -70,6 +70,9 @@ class OfficeList(AdminBase):
                     left outer join office_type ot on o.office_type_id = ot.id
                     left outer join provider_queue pq on pq.office_id = o.id
                     left outer join office_phones op on op.office_id = o.id 
+                    left outer join office_addresses oa on oa.office_id = o.id 
+                    left outer join office_user ou on ou.office_id = o.id
+                    left outer join users off_u on off_u.id = ou.user_id
                     left outer join provider_queue_status pqs on pq.provider_queue_status_id=pqs.id
                     left outer join users comu on comu.id = o.commission_user_id
                     left outer join users setu on setu.id = o.setter_user_id
@@ -86,15 +89,29 @@ class OfficeList(AdminBase):
         if 'office_id' in params and params['office_id'] is not None and int(params['office_id']) > 0:
             q += " and o.id = %s " % params['office_id']
         elif 'search' in params and params['search'] is not None:
-            q += """ and (o.email like %s  or o.name like %s or op.phone like %s ) 
+            q += """ and (
+                    o.email like %s or o.name like %s or op.phone like %s or
+                    off_u.last_name like %s or off_u.first_name like %s or
+                    off_u.phone like %s or oa.addr1 like %s or pq.website like %s
+                ) 
             """
-            search_par.insert(0,params['search']+'%%')
-            search_par.insert(0,params['search']+'%%')
-            search_par.insert(0,params['search']+'%%')
-            count_par.insert(0,params['search']+'%%')
-            count_par.insert(0,params['search']+'%%')
-            count_par.insert(0,params['search']+'%%')
-        elif 'status' in params and params['status'] is not None and len(params['status']) > 0:
+            search_par.insert(0,'%%' + params['search']+'%%')
+            search_par.insert(0,'%%' + params['search']+'%%')
+            search_par.insert(0,'%%' + params['search']+'%%')
+            search_par.insert(0,'%%' + params['search']+'%%')
+            search_par.insert(0,'%%' + params['search']+'%%')
+            search_par.insert(0,'%%' + params['search']+'%%')
+            search_par.insert(0,'%%' + params['search']+'%%')
+            search_par.insert(0,'%%' + params['search']+'%%')
+            count_par.insert(0,'%%' + params['search']+'%%')
+            count_par.insert(0,'%%' + params['search']+'%%')
+            count_par.insert(0,'%%' + params['search']+'%%')
+            count_par.insert(0,'%%' + params['search']+'%%')
+            count_par.insert(0,'%%' + params['search']+'%%')
+            count_par.insert(0,'%%' + params['search']+'%%')
+            count_par.insert(0,'%%' + params['search']+'%%')
+            count_par.insert(0,'%%' + params['search']+'%%')
+        if 'status' in params and params['status'] is not None and len(params['status']) > 0:
             q += " and pq.provider_queue_status_id in (%s) " % ','.join(map(str,params['status']))
         if 'alt_status' in params and params['alt_status'] is not None and 0 not in params['alt_status']:
             q += " and office_alternate_status_id in ("
@@ -122,7 +139,7 @@ class OfficeList(AdminBase):
                 """,(x['id'],)
             )
             x['phones'] = db.query("""
-                select id,iscell,phone from office_phones 
+                select id,description,iscell,phone from office_phones 
                     where office_id=%s
                 """,(x['id'],)
             )
@@ -495,6 +512,30 @@ class OfficeSave(AdminBase):
                 (select id from office_addresses where office_id=%s)
             """,(insid,)
         )
+        if 'phones' in params:
+            for x in params['phones']:
+                if 'id' in x and x['id'] is not None:
+                    db.update("""
+                        update office_phones set 
+                          description=%s,phone=%s,iscell=%s
+                        where id=%s
+                        """,(
+                            x['description'],x['phone'], x['iscell'], x['id']
+                        )
+                    )
+                    if 'deleted' in x and x['deleted']:
+                        db.update("""
+                            update office_phones set deleted=1 where id=%s
+                        """,(x['id'],)
+                        )
+                else:
+                    db.update(
+                        """
+                            insert into office_phones (
+                                office_id,description,phone,iscell
+                            ) values (%s,%s,%s,%s)
+                        """,(insid,x['description'],x['phone'],x['iscell'])
+                    )
         for x in params['addr']:
             if 'addr2' not in x:
                 x['addr2'] = ''

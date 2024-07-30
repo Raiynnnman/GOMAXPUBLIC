@@ -180,7 +180,7 @@ class MapContainer extends Component {
     var heads = [
         {
             dataField:'uuid',
-            text:'ID',
+            text:'Incident#',
             onClick: (content,row) => (
                 this.viewRow(content,row)
             ),
@@ -194,6 +194,9 @@ class MapContainer extends Component {
             dataField:'city',
             text:'City',
             align:'center',
+            onClick: (content,row) => (
+                this.viewRow(content,row)
+            ),
             formatter: (cellContent,row) => (
                 <div>
                     {row.city + ", " + row.state}
@@ -205,6 +208,9 @@ class MapContainer extends Component {
             text:'Lat/Lng',
             hideOnMobile:true,
             align:'center',
+            onClick: (content,row) => (
+                this.viewRow(content,row)
+            ),
             formatter: (cellContent,row) => (
                 <div>
                     {row.lat+ ", " + row.lng}
@@ -216,6 +222,9 @@ class MapContainer extends Component {
             text:'Intersection',
             hideOnMobile:true,
             align:'center',
+            onClick: (content,row) => (
+                this.viewRow(content,row)
+            ),
             formatter: (cellContent,row) => (
                 <div>
                     {row.traf_from}
@@ -226,6 +235,9 @@ class MapContainer extends Component {
             dataField:'traf_start_time',
             text:'Time',
             align:'center',
+            onClick: (content,row) => (
+                this.viewRow(content,row)
+            ),
             formatter: (cellContent,row) => (
                 <div>
                     {
@@ -261,8 +273,8 @@ class MapContainer extends Component {
                       data: e,
                     };
                     return <Marker key={e.index} {...markerProps} icon={{ 
-                            url:'/maki_road-accident.png',
-                            scaledSize:{width:30,height:30}
+                            url:'/red-car.png',
+                            scaledSize:{width:15,height:15}
                           }} />
                   })}
                 </Map>

@@ -382,10 +382,10 @@ class RegistrationUpdate(AdminBase):
             if 'id' in a and a['id'] is not None:
                 db.update("""
                     update office_phones set 
-                      phone=%s,iscell=%s
+                      description=%s,phone=%s,iscell=%s
                     where id=%s
                     """,(
-                        a['phone'],a['iscell'],a['id']
+                        a['description'],a['phone'],a['iscell'],a['id']
                     )
                 )
                 if 'deleted' in x and x['deleted']:
@@ -397,9 +397,9 @@ class RegistrationUpdate(AdminBase):
                 db.update(
                     """
                         insert into office_phones (
-                            office_id,phone,iscell
+                            office_id,description,phone,iscell
                         ) values (%s,%s,%s)
-                    """,(offid,x['phone'],x['iscell'])
+                    """,(offid,x['description'],x['phone'],x['iscell'])
                 )
         for a in params['addr']:
             if 'id' in a and a['id'] is not None:
@@ -695,7 +695,7 @@ class RegistrationList(AdminBase):
         k = [] 
         for x in o:
             x['phones'] = db.query("""
-                select id,iscell,phone from office_phones 
+                select id,description,iscell,phone from office_phones 
                     where office_id = %s and deleted = 0
                 """,(x['office_id'],)
             )
