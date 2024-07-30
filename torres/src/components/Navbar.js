@@ -163,6 +163,15 @@ class Navbar extends Component {
              }
             },
             {
+             n:'CRM',
+             v:function(c) { 
+                return true;
+             },
+             a:function() { 
+                window.location = '/app/main/admin/registrations';
+             }
+            },
+            {
              n:'Search',
              v:function(c) { 
                 return true;

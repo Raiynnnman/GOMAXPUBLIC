@@ -564,6 +564,9 @@ class RegistrationList(AdminBase):
                 left outer join office_plans op on op.office_id = o.id
                 left outer join coupons coup on coup.id = op.coupons_id
                 left outer join office_type ot on ot.id=o.office_type_id
+                left outer join office_user ou on ou.office_id = o.id
+                left outer join office_phones opp on opp.office_id = o.id
+                left outer join users off_u on off_u.id = ou.user_id
                 left outer join users comu on comu.id = o.commission_user_id
                 left outer join users setu on setu.id = o.setter_user_id
                 left outer join office_alternate_status oas1 on o.office_alternate_status_id=oas1.id
@@ -572,8 +575,7 @@ class RegistrationList(AdminBase):
         """
         prefilter = q
         status_ids = []
-        search_par = [
-        ]
+        search_par = []
         ret['sort'] = [
             {'id':1,'col':'updated','active':False,'direction':'asc'},
             {'id':2,'col':'name','active':False,'direction':'asc'}
@@ -620,10 +622,22 @@ class RegistrationList(AdminBase):
                 search_par.insert(0,t)
                 count_par.insert(0,t)
             else:
-                q += """ and (o.email like %s  or o.name like %s) 
+                q += """ and (
+                    opp.phone like %s or o.email like %s  or o.name like %s
+                    or off_u.last_name like %s or off_u.first_name like %s
+                    or oa.name like %s
+                    ) 
                 """
                 search_par.insert(0,params['search']+'%%')
                 search_par.insert(0,params['search']+'%%')
+                search_par.insert(0,params['search']+'%%')
+                search_par.insert(0,params['search']+'%%')
+                search_par.insert(0,params['search']+'%%')
+                search_par.insert(0,params['search']+'%%')
+                count_par.insert(0,params['search']+'%%')
+                count_par.insert(0,params['search']+'%%')
+                count_par.insert(0,params['search']+'%%')
+                count_par.insert(0,params['search']+'%%')
                 count_par.insert(0,params['search']+'%%')
                 count_par.insert(0,params['search']+'%%')
             q += " and office_alternate_status_id is null "
