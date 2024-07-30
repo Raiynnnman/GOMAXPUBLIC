@@ -3,7 +3,6 @@
 import os
 import json
 import unittest
-from backend.processing import AdminTickets
 from flask import request, jsonify
 
 from rest.RestBase import RestBase
