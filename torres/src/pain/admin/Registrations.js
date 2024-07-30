@@ -40,6 +40,7 @@ import Tab from '@mui/material/Tab';
 import Navbar from '../../components/Navbar';
 import RegistrationsEdit from './RegistrationsEdit';
 import Office365SSO from '../utils/Office365SSO';
+import DealTracker from './DealTracker';
 
 class Registrations extends Component {
     constructor(props) { 
@@ -507,11 +508,14 @@ class Registrations extends Component {
     } 
 
     edit(r) { 
+        console.log("edit",r)
         this.state.selected = JSON.parse(JSON.stringify(r));
         this.setState(this.state);
     } 
 
     render() {
+        console.log("p",this.props);
+        console.log("s",this.state);
         var regheads = [
             {
                 dataField:'office_id',
@@ -971,8 +975,24 @@ class Registrations extends Component {
                         <Tabs style={{marginBottom:20}} value={this.state.activeTab} onChange={this.toggleTab}>
                             <Tab value='myregistrations' label='Assigned to Me'/>
                             <Tab value='registrations' label='Registrations'/>
+                            <Tab value='dealtracker' label='Deal Tracker'/>
                             {/*<Tab value='myactivities' label='My Activities'/>*/}
                         </Tabs>
+                        {(this.state.activeTab === 'dealtracker')  && ( 
+                            <>
+                            {(this.state.selected === null ) && (
+                            <DealTracker 
+                                dashboard={this.props.registrationsAdminList.data.dashboard}
+                                onEdit={this.edit}
+                                data={this.props.registrationsAdminList.data.deal_tracker}
+                                config={this.props.registrationsAdminList.data.config}
+                                />
+                            )}
+                            {(this.state.selected !== null ) && (
+                                <RegistrationsEdit selected={this.state.selected} onSave={this.save} onCancel={this.close}/>
+                            )}
+                            </>
+                        )}
                         {(this.state.activeTab === 'myactivities')  && ( 
                             <Office365SSO showCalendar={true}/>
                         )}

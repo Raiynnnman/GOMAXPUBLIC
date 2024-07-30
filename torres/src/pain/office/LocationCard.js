@@ -104,7 +104,7 @@ class LocationCard extends Component {
 
     changePhone = (e) => {
         var g = e.target.value;
-        if (g.length > 10) { return; } 
+        if (g.length > 10 && !g.includes('(')) { return; } 
         const phone = formatPhoneNumber(g);
         this.setState({
             selected: { ...this.state.selected, phone: phone }

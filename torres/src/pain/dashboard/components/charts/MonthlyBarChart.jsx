@@ -4,11 +4,11 @@ import Box from '@mui/material/Box';
 import ReactApexChart from 'react-apexcharts';
 
 
-export default function MonthlyBarChart({ data }) {
+export default function MonthlyBarChart({ height, data }) {
     const barChartOptions = {
         chart: {
             type: 'bar',
-            height: 365,
+            height: height ? height : 365,
             toolbar: {
                 show: false
             }
@@ -25,19 +25,25 @@ export default function MonthlyBarChart({ data }) {
         xaxis: {
             categories: data.map((e) => {return e.label}),
             axisBorder: {
-                show: false
+                show: true
             },
             axisTicks: {
-                show: false
+                show: true
             },
             labels: {
                 style: {
-                    colors: ['#FF4500', '#FF4500', '#FF4500', '#FF4500', '#FF4500', '#FF4500', '#FF4500']  
+                    colors: data.map((e) => {return '#FF4500'})
                 }
             }
         },
         yaxis: {
-            show: false
+            labels: { 
+                show: true,
+                formatter: function(value) { return value.toFixed ? value.toFixed(2) : value },
+            },
+            style: {
+                colors: data.map((e) => {return '#FF4500'})
+            }
         },
         grid: {
             show: false
@@ -72,7 +78,7 @@ export default function MonthlyBarChart({ data }) {
 
     return (
         <Box id="chart" sx={{ bgcolor: 'transparent' }}>
-            <ReactApexChart options={options} series={series} type="bar" height={315} />
+            <ReactApexChart options={options} series={series} type="bar" height={height ? height : 315} />
         </Box>
     );
 }

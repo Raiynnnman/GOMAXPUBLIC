@@ -440,9 +440,17 @@ class OfficeSave(AdminBase):
         if 'users' in params:
             for x in params['users']:
                 if 'id' in x:
-                    h = HumanName(x['name'])
-                    first = "%s %s" % (h.title,h.first)
-                    last = "%s %s" % (h.last,h.suffix)
+                    first = ''
+                    last = ''
+                    if 'name' in x and x['name'] is not None:
+                        h = HumanName(x['name'])
+                        first = "%s %s" % (h.title,h.first)
+                        last = "%s %s" % (h.last,h.suffix)
+                    else:
+                        if 'first_name' in x:
+                            first = x['first_name']
+                        if 'last_name' in x:
+                            last = x['last_name']
                     db.update("""
                         update users set
                             first_name=%s, last_name=%s, email=%s,phone=%s

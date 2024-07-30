@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import LaunchIcon from '@mui/icons-material/Launch';
 import SaveIcon from '@mui/icons-material/Save';
+import "react-datetime/css/react-datetime.css";
+import Datetime from 'react-datetime';
 import CancelIcon from '@mui/icons-material/Cancel';
 import EditIcon from '@mui/icons-material/Edit';
 import Office365SSO from '../utils/Office365SSO';
@@ -75,11 +77,21 @@ class RegistrationsEdit extends Component {
         this.onSetterChange = this.onSetterChange.bind(this);
         this.updateEmail = this.updateEmail.bind(this);
         this.updateFirst = this.updateFirst.bind(this);
+        this.onPresentedStatusChange = this.onPresentedStatusChange.bind(this);
+        this.onSourceChange = this.onSourceChange.bind(this);
         this.updateLast = this.updateLast.bind(this);
         this.websiteUpdate = this.websiteUpdate.bind(this);
         this.donotCallChange = this.donotCallChange.bind(this);
+        this.dealTrackerChange = this.dealTrackerChange.bind(this);
+        this.refundRequestChange  =this.refundRequestChange.bind(this);
+        this.setDate  =this.setDate.bind(this);
+        this.presentDate  =this.presentDate.bind(this);
+        this.ecdDate  =this.ecdDate.bind(this);
+        this.changeCloseRequirements  =this.changeCloseRequirements.bind(this);
+        this.closeDate = this.closeDate.bind(this);
         this.close = this.close.bind(this);
         this.onStatusChange = this.onStatusChange.bind(this);
+        this.updateDealValue = this.updateDealValue.bind(this);
         this.onActionStatusChange = this.onActionStatusChange.bind(this);
         this.onActionTypeChange = this.onActionTypeChange.bind(this);
         this.onCallStatusChange = this.onCallStatusChange.bind(this);
@@ -210,6 +222,16 @@ class RegistrationsEdit extends Component {
             email:this.state.selected.email,
             name: this.state.selected.name,
             do_not_contact: this.state.selected.do_not_contact,
+            provider_queue_presented_status_id: this.state.selected.provider_queue_presented_status_id,
+            provider_queue_source_id: this.state.selected.provider_queue_source_id,
+            set_date: this.state.selected.set_date,
+            include_on_deal_tracker:this.state.selected.include_on_deal_tracker,
+            deal_value:this.state.selected.deal_value,
+            refund_requested:this.state.selected.refund_requested,
+            present_date:this.state.selected.present_date,
+            estimated_close_date:this.state.selected.estimated_close_date,
+            closed_date:this.state.selected.closed_date,
+            close_requirements:this.state.selected.close_requirements,
             phones:this.state.selected.phones,
             first_name:this.state.selected.first_name,
             office_alternate_status_id:this.state.selected.office_alternate_status_id,
@@ -267,6 +289,42 @@ class RegistrationsEdit extends Component {
         this.setState(this.state);
     }
 
+    dealTrackerChange(e) { 
+        this.state.selected.include_on_deal_tracker = !this.state.selected.include_on_deal_tracker;
+        this.setState(this.state);
+    } 
+    refundRequestChange(e) { 
+        this.state.selected.refund_requested = !this.state.selected.refund_requested;
+        this.setState(this.state);
+    } 
+    updateDealValue(e) { 
+        this.state.selected.deal_value = e.target.value;
+        this.setState(this.state);
+    } 
+    changeCloseRequirements(e) { 
+        this.state.selected.close_requirements = e.target.value;
+        this.setState(this.state);
+    } 
+
+    setDate(e) { 
+        this.state.selected.set_date = e
+        this.setState(this.state);
+    }
+
+    presentDate(e) { 
+        this.state.selected.present_date = e
+        this.setState(this.state);
+    }
+
+    ecdDate(e) { 
+        this.state.selected.estimated_close_date = e
+        this.setState(this.state);
+    }
+    closeDate(e) { 
+        this.state.selected.closed_date = e
+        this.setState(this.state);
+    } 
+
     websiteUpdate(e) { 
         this.state.selected.website = e.target.value;
         this.setState(this.state);
@@ -276,6 +334,30 @@ class RegistrationsEdit extends Component {
         var g = this.props.registrationsAdminList.data.config.action_type.filter((g) => e.target.value === g.name)
         if (g.length > 0) { 
             this.state.selected.actions[this.state.actionIdx].action_type_id = g[0].id;
+            this.setState(this.state);
+        } 
+    } 
+
+    onPresentedStatusChange(e) { 
+        var g = this.props.registrationsAdminList.data.config.presented_status.filter((g) => e.target.value === g.name)
+        if (g.length > 0) { 
+            this.state.selected.provider_queue_presented_status_id = g[0].id;
+            this.setState(this.state);
+        } 
+    } 
+
+    onSourceChange(e) { 
+        var g = this.props.registrationsAdminList.data.config.deal_source.filter((g) => e.target.value === g.name)
+        if (g.length > 0) { 
+            this.state.selected.provider_queue_source_id = g[0].id;
+            this.setState(this.state);
+        } 
+    } 
+
+    onActionStatusChange(e) { 
+        var g = this.props.registrationsAdminList.data.config.action_status.filter((g) => e.target.value === g.name)
+        if (g.length > 0) { 
+            this.state.selected.actions[this.state.actionIdx].action_status_id = g[0].id;
             this.setState(this.state);
         } 
     } 
@@ -426,6 +508,7 @@ class RegistrationsEdit extends Component {
         this.setState(this.state);
     }
     render() {
+        console.log("p1",this.props);
         var offheads = [
             {
                 dataField:'id',
@@ -607,6 +690,12 @@ class RegistrationsEdit extends Component {
                                  <a style={{marginTop:10,color:'black'}} href={this.state.selected.website} target='_blank'><LaunchIcon/></a>
                             </div>
                         </Grid>
+                        <Grid item xs={12}>
+                            <TemplateTextArea label="Close Requirements" rows={3} 
+                                value={this.state.selected.close_requirements} style={{marginRight:10}}
+                                onChange={this.changeCloseRequirements} 
+                            />
+                        </Grid>
                 </Grid>
                 <Grid container style={{borderLeft:"1px solid black"}} xs="6">
                     <Grid item xs="3" style={{margin:10}}>
@@ -777,6 +866,87 @@ class RegistrationsEdit extends Component {
                           })}
                         />
                     </Grid>                
+                    <Grid item xs={3} style={{margin:10}}>
+                      <TemplateSelect
+                          label='Source'
+                          onChange={this.onSourceChange}
+                          value={{
+                            label:
+                                (this.state.selected.provider_queue_source_id) ?  this.props.registrationsAdminList.data.config.deal_source.filter((g) => 
+                                    this.state.selected.provider_queue_source_id === g.id
+                            )[0].name : ''
+                          }}
+                          options={this.props.registrationsAdminList.data.config.deal_source.map((g) => { 
+                            return (
+                                { 
+                                label: g.name,
+                                value: g.name
+                                }
+                            )
+                          })}
+                        />
+                    </Grid>                
+                    <Grid item xs={3} style={{margin:10}}>
+                      <TemplateSelect
+                          label='Presented Status'
+                          onChange={this.onPresentedStatusChange}
+                          value={{
+                            label:
+                                (this.state.selected.provider_queue_presented_status_id) ?  this.props.registrationsAdminList.data.config.presented_status.filter((g) => 
+                                    this.state.selected.provider_queue_presented_status_id === g.id
+                            )[0].name : ''
+                          }}
+                          options={this.props.registrationsAdminList.data.config.presented_status.map((g) => { 
+                            return (
+                                { 
+                                label: g.name,
+                                value: g.name
+                                }
+                            )
+                          })}
+                        />
+                    </Grid>                
+                    <Grid item xs={6} style={{marginLeft:20}}>
+                        <TemplateCheckbox 
+                              onClick={this.dealTrackerChange} label="Deal Tracker?" checked={this.state.selected.include_on_deal_tracker}/>
+                    </Grid>
+                    <Grid item xs={6} style={{marginLeft:20}}>
+                        <TemplateCheckbox 
+                              onClick={this.refundRequestChange} label="Refund Requested?" checked={this.state.selected.refund_requested}/>
+                    </Grid>
+                    <Grid item xs={3} style={{margin:10}}>
+                        <TemplateTextField label='Deal Value'
+                              onChange={this.updateDealValue} value={this.state.selected.deal_value}
+                            />
+                    </Grid>
+                    <Grid item xs={5}>
+                        <div style={{display:"flex",justifyContent:"space-evenly"}}>
+                            <font>Set Date</font>
+                            <Datetime inputProps = {{placeholder:'Set Date'}} timeFormat={false} 
+                                onChange={this.setDate} value={this.state.selected.set_date} />
+                        </div>
+                    </Grid>
+                    <Grid item xs={5}>
+                        <div style={{display:"flex",justifyContent:"space-evenly"}}>
+                            <font>Present Date</font>
+                            <Datetime inputProps = {{placeholder:'Present Date'}} timeFormat={false} 
+                                onChange={this.presentDate} value={this.state.selected.present_date} />
+                        </div>
+                    </Grid>
+                    <Grid item xs={5}>
+                        <div style={{display:"flex",justifyContent:"space-evenly"}}>
+                            <font>ECD</font>
+                            <Datetime inputProps = {{placeholder:'ECD'}} timeFormat={false} 
+                                onChange={this.ecdDate} value={this.state.selected.estimated_close_date} />
+                        </div>
+                    </Grid>
+                    <Grid item xs={5}>
+                        <div style={{display:"flex",justifyContent:"space-evenly"}}>
+                            <font>Close Date</font>
+                            <Datetime inputProps = {{placeholder:'Close Date'}} timeFormat={false} 
+                                onChange={this.closeDate} value={this.state.selected.closed_date} />
+                        </div>
+                    </Grid>
                 </Grid>
             </Grid>
             <Grid container xs="12">

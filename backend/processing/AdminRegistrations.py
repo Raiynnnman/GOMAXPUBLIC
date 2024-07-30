@@ -59,6 +59,7 @@ class RegistrationUpdate(AdminBase):
         invid = 0
         pqid = 0
         planid = 0
+        print(params)
         l = db.query("""
             select 
                 pq.id,pqs.name,o.name,o.id as office_id,pqs.name as status,
@@ -184,17 +185,18 @@ class RegistrationUpdate(AdminBase):
                 update provider_queue set do_not_contact=%s where office_id=%s
             """,(params['do_not_contact'],offid,)
             )
-        db.update("""
-            update users set 
-                email = %s,first_name=%s,last_name=%s,phone=%s
-            where
-            id = %s
-            """,(
-                params['email'],params['first_name'],
-                params['last_name'],params['phone'],
-                userid
-                )
-        )
+        if 'first_name' in params:
+            db.update("""
+                update users set 
+                    email = %s,first_name=%s,last_name=%s,phone=%s
+                where
+                id = %s
+                """,(
+                    params['email'],params['first_name'],
+                    params['last_name'],params['phone'],
+                    userid
+                    )
+            )
         if 'lead_strength_id' not in params:
             params['lead_strength_id'] = STR['Potential Provider']
         if 'initial_payment' not in params:
@@ -230,6 +232,58 @@ class RegistrationUpdate(AdminBase):
             db.update("""
                 update office set commission_user_id=%s where id=%s
                 """,(params['commission_user_id'],offid)
+            )
+        if 'provider_queue_presented_status_id' in params:
+            db.update("""
+                update provider_queue set provider_queue_presented_status_id=%s where office_id=%s
+                """,(params['provider_queue_presented_status_id'],offid)
+            )
+        if 'provider_queue_source_id' in params:
+            print(params['provider_queue_source_id'],offid)
+            db.update("""
+                update provider_queue set provider_queue_source_id=%s where office_id=%s
+                """,(params['provider_queue_source_id'],offid)
+            )
+        if 'set_date' in params:
+            db.update("""
+                update provider_queue set set_date=%s where office_id=%s
+                """,(params['set_date'],offid)
+            )
+        if 'present_date' in params:
+            db.update("""
+                update provider_queue set present_date=%s where office_id=%s
+                """,(params['present_date'],offid)
+            )
+        if 'estimated_close_date' in params:
+            print(params['estimated_close_date'],offid)
+            db.update("""
+                update provider_queue set estimated_close_date=%s where office_id=%s
+                """,(params['estimated_close_date'],offid)
+            )
+        if 'closed_date' in params:
+            db.update("""
+                update provider_queue set closed_date=%s where office_id=%s
+                """,(params['closed_date'],offid)
+            )
+        if 'deal_value' in params:
+            db.update("""
+                update provider_queue set deal_value=%s where office_id=%s
+                """,(params['deal_value'],offid)
+            )
+        if 'include_on_deal_tracker' in params:
+            db.update("""
+                update provider_queue set include_on_deal_tracker=%s where office_id=%s
+                """,(params['include_on_deal_tracker'],offid)
+            )
+        if 'close_requirements' in params:
+            db.update("""
+                update provider_queue set close_requirements=%s where office_id=%s
+                """,(params['close_requirements'],offid)
+            )
+        if 'refund_requested' in params:
+            db.update("""
+                update provider_queue set refund_requested=%s where office_id=%s
+                """,(params['refund_requested'],offid)
             )
         if 'setter_user_id' in params:
             db.update("""
@@ -378,54 +432,56 @@ class RegistrationUpdate(AdminBase):
                 update provider_queue set provider_queue_status_id=%s where office_id=%s
                 """,(PQS['DO_NOT_CONTACT'],offid,)
             )
-        for a in params['phones']:
-            if 'id' in a and a['id'] is not None:
-                db.update("""
-                    update office_phones set 
-                      description=%s,phone=%s,iscell=%s
-                    where id=%s
-                    """,(
-                        a['description'],a['phone'],a['iscell'],a['id']
-                    )
-                )
-                if 'deleted' in x and x['deleted']:
+        if 'phones' in params and params['phones'] is not None:
+            for a in params['phones']:
+                if 'id' in a and a['id'] is not None:
                     db.update("""
-                        update office_phones set deleted=1 where id=%s
-                    """,(a['id'],)
+                        update office_phones set 
+                          description=%s,phone=%s,iscell=%s
+                        where id=%s
+                        """,(
+                            a['description'],a['phone'],a['iscell'],a['id']
+                        )
                     )
-            else:
-                db.update(
-                    """
-                        insert into office_phones (
-                            office_id,description,phone,iscell
-                        ) values (%s,%s,%s)
-                    """,(offid,x['description'],x['phone'],x['iscell'])
-                )
-        for a in params['addr']:
-            if 'id' in a and a['id'] is not None:
-                db.update("""
-                    update office_addresses set 
-                      name=%s,addr1=%s,addr2=%s,phone=%s,city=%s,state=%s,zipcode=%s
-                    where id=%s
-                    """,(
-                        a['name'],a['addr1'],a['addr2'],a['phone'],
-                        a['city'],a['state'],a['zipcode'],
-                        a['id'],
+                    if 'deleted' in x and x['deleted']:
+                        db.update("""
+                            update office_phones set deleted=1 where id=%s
+                        """,(a['id'],)
+                        )
+                else:
+                    db.update(
+                        """
+                            insert into office_phones (
+                                office_id,description,phone,iscell
+                            ) values (%s,%s,%s)
+                        """,(offid,x['description'],x['phone'],x['iscell'])
                     )
-                )
-                if 'deleted' in x and x['deleted']:
+        if 'addr' in params and params['addr'] is not None:
+            for a in params['addr']:
+                if 'id' in a and a['id'] is not None:
                     db.update("""
-                        update office_addresses set deleted=1 where id=%s
-                    """,(a['id'],)
+                        update office_addresses set 
+                          name=%s,addr1=%s,addr2=%s,phone=%s,city=%s,state=%s,zipcode=%s
+                        where id=%s
+                        """,(
+                            a['name'],a['addr1'],a['addr2'],a['phone'],
+                            a['city'],a['state'],a['zipcode'],
+                            a['id'],
+                        )
                     )
-            else:
-                db.update(
-                    """
-                        insert into office_addresses (
-                            office_id,name,addr1,addr2,phone,city,state,zipcode
-                        ) values (%s,%s,%s,%s,%s,%s,%s,%s)
-                    """,(offid,x['name'],x['addr1'],x['addr2'],x['phone'],x['city'],x['state'],x['zipcode'])
-                )
+                    if 'deleted' in x and x['deleted']:
+                        db.update("""
+                            update office_addresses set deleted=1 where id=%s
+                        """,(a['id'],)
+                        )
+                else:
+                    db.update(
+                        """
+                            insert into office_addresses (
+                                office_id,name,addr1,addr2,phone,city,state,zipcode
+                            ) values (%s,%s,%s,%s,%s,%s,%s,%s)
+                        """,(offid,x['name'],x['addr1'],x['addr2'],x['phone'],x['city'],x['state'],x['zipcode'])
+                    )
         if 'call_status_id' in params and params['call_status_id'] is not None:
             db.update(
                 """
@@ -553,11 +609,18 @@ class RegistrationList(AdminBase):
                 concat(setu.first_name, ' ', setu.last_name) as setter_name,
                 comu.email as commission_email,
                 o.office_alternate_status_id, oas1.name as office_alternate_status_name,
-                coup.id as coupon_id,coup.name as coupon_name
+                coup.id as coupon_id,coup.name as coupon_name,pqqs.name as source_name,
+                pqps.name as presented_status_name,
+                pq.set_date,pq.present_date,pq.estimated_close_date,
+                pq.close_requirements, pq.closed_date,pq.refund_requested,
+                pq.include_on_deal_tracker,pq.provider_queue_source_id,
+                pq.provider_queue_presented_status_id,pq.deal_value
             from
                 provider_queue pq
                 left join office o on pq.office_id = o.id
                 left outer join office_addresses oa on oa.office_id = o.id 
+                left outer join provider_queue_presented_status pqps on pq.provider_queue_presented_status_id = pqps.id
+                left outer join provider_queue_source pqqs on pqqs.id = pq.provider_queue_source_id
                 left outer join provider_queue_call_status pqcs on pq.provider_queue_call_status_id=pqcs.id
                 left outer join provider_queue_status pqs on pqs.id=pq.provider_queue_status_id
                 left outer join provider_queue_lead_strength pqls on pq.provider_queue_lead_strength_id=pqls.id
@@ -574,6 +637,7 @@ class RegistrationList(AdminBase):
                 1 = 1 
         """
         prefilter = q
+        deal_tracker = q
         status_ids = []
         search_par = []
         ret['sort'] = [
@@ -707,6 +771,8 @@ class RegistrationList(AdminBase):
         o = []
         o = db.query(q,search_par)
         k = [] 
+        dtrack = db.query(deal_tracker + " and pq.include_on_deal_tracker = 1 group by o.id")
+        ret['deal_tracker'] = dtrack
         for x in o:
             x['phones'] = db.query("""
                 select id,description,iscell,phone from office_phones 
@@ -902,6 +968,8 @@ class RegistrationList(AdminBase):
         ret['config']['action_type'] = db.query("select id,name from provider_queue_actions_type")
         ret['config']['states'] = db.query("select state,count(state) from office_addresses where length(state) > 0 group by state")
         ret['config']['status'] = db.query("select id,name from provider_queue_status")
+        ret['config']['presented_status'] = db.query("select id,name from provider_queue_presented_status")
+        ret['config']['deal_source'] = db.query("select id,name from provider_queue_source")
         ret['config']['coupons'] = db.query("select id,name,total,perc,reduction from coupons")
         ret['config']['commission_users'] = db.query("""
             select 0 as id,'Unassigned' as name
@@ -915,6 +983,63 @@ class RegistrationList(AdminBase):
                 where id in (select user_id from user_entitlements where entitlements_id=14)
         """)
         ret['config']['strength'] = db.query("select id,name from provider_queue_lead_strength")
+        ret['dashboard'] = {}
+        ret['dashboard']['appointments'] = db.query("""
+            select t1.num1 as num1 
+            from 
+            (select count(id) as num1 from provider_queue_actions where date(start_date) = date(now())) as t1
+            """
+        )
+        ret['dashboard']['appointments'] = ret['dashboard']['appointments'][0]
+        ret['dashboard']['potential_sales'] = db.query("""
+            WITH RECURSIVE t as (
+                select date(now()) as dt, 0 as count1
+                UNION 
+                 SELECT DATE_ADD(t.dt, INTERVAL 1 day) as month,
+                 (select sum(deal_value) from provider_queue p
+                    where 
+                    day(t.dt)=day(p.estimated_close_date) and month(t.dt)=month(p.estimated_close_date) and 
+                    year(t.dt)=year(p.estimated_close_date) 
+                 ) as count1
+                 FROM t
+                 WHERE DATE_ADD(t.dt, INTERVAL 1 DAY) <= date_add(now(),interval 7 day)
+            )
+            select date_format(date_add(dt,interval -1 day),'%a, %D') as label,round(ifnull(count1,0),2) as count FROM t ;
+        """)
+        ret['dashboard']['week_sales'] = db.query("""
+            WITH RECURSIVE t as (
+                select date(date_add(now(),INTERVAL -7 day)) as dt,
+                 (select sum(total) from invoices p
+                    where 
+                    day(date(date_add(now(),INTERVAL -7 day)))=day(p.created) 
+                    and p.invoice_status_id=15 
+                    and month(date(date_add(now(),INTERVAL -7 day)))=month(p.created) 
+                    and year(date(date_add(now(),INTERVAL -7 day)))=year(p.created) 
+                 ) as count1,
+                 (select sum(total) from invoices p
+                    where 
+                    day(date(date_add(now(),INTERVAL -7 day)))=day(p.created) 
+                    and p.invoice_status_id=15 
+                    and month(date(date_add(now(),INTERVAL -7 day)))=month(p.created) 
+                    and year(date(date_add(now(),INTERVAL -7 day)))=year(p.created) 
+                 ) as count2
+                UNION 
+                 SELECT DATE_ADD(t.dt, INTERVAL 1 day) as month,
+                 (select sum(total) from invoices p
+                    where 
+                    day(t.dt)=day(p.created) and month(t.dt)=month(p.created) and year(t.dt)=year(p.created) 
+                    and p.invoice_status_id=15 
+                 ) as count1,
+                 (select sum(total) from invoices p
+                    where 
+                    day(t.dt)=day(p.created) and month(t.dt)=month(p.created) and year(t.dt)=year(p.created) 
+                    and p.invoice_status_id=15 
+                 ) as count2
+                 FROM t
+                 WHERE DATE_ADD(t.dt, INTERVAL 1 DAY) <= now()
+            )
+            select date_format(date_add(dt,interval -1 day),'%a, %D') as label,round(ifnull(count1,0),2) as count FROM t ;
+            """)
         ret['registrations'] = k
         if 'report' in params and params['report'] is not None:
             myq = prelimit
@@ -924,7 +1049,9 @@ class RegistrationList(AdminBase):
                 myq += " office_alternate_status_id = %s " % ALT['DNC']
                 myq += " or pq.provider_queue_status_id = %s " % PQS['INVITED']
                 myq += " or office_alternate_status_id = %s " % ALT['Not interested']
-                myq += " or office_alternate_status_id = %s " % ALT['NOT INTERESTED IN PI NOW']
+                myq += " or office_alternate_status_id = %s " % ALT['RAIN_REQUIRED_TO_CLOSE']
+                myq += " or office_alternate_status_id = %s " % ALT['HOT_DEAL_PENDING_CLOSE']
+                myq += " or office_alternate_status_id = %s " % ALT['REQUIRES_REFERENCE']
                 myq += " or office_alternate_status_id = %s " % ALT['Not a Chiropractor']
                 myq += ")\n"
                 i = []
