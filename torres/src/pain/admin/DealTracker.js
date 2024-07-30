@@ -23,6 +23,8 @@ class DealTracker extends Component {
         super(props);
         this.state = { 
         }
+        this.showMore = this.showMore.bind(this);
+        this.showLess = this.showLess.bind(this);
     } 
 
     componentWillReceiveProps(p) { 
@@ -30,6 +32,17 @@ class DealTracker extends Component {
 
     componentDidMount() {
     }
+
+    showMore(r) { 
+        r.showMore = true
+        this.setState(this.state);
+    } 
+
+    showLess(r) { 
+        r.showMore = false
+        this.setState(this.state);
+    } 
+
 
     getColor(e) { 
         console.log("gc",e)
@@ -59,6 +72,13 @@ class DealTracker extends Component {
                 onClick: (content,row) => (
                     this.props.onEdit(content)
                 ),
+            },
+            { dataField: 'close_requirements', text: 'Close Req', 
+                formatter:(cellContent,row) => (
+                    <div>
+                        <div>{row.close_requirements}</div>
+                    </div>
+                )
             },
             { dataField: 'set_date', text: 'Date Set', 
                 onClick: (content,row) => (
