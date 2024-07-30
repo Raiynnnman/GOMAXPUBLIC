@@ -991,6 +991,21 @@ class RegistrationList(AdminBase):
             """
         )
         ret['dashboard']['appointments'] = ret['dashboard']['appointments'][0]
+        ret['dashboard']['future_appointments'] = db.query("""
+            WITH RECURSIVE t as (
+                select date(now()) as dt, 0 as count1
+                UNION 
+                 SELECT DATE_ADD(t.dt, INTERVAL 1 day) as month,
+                 (select count(id) from provider_queue_actions p
+                    where 
+                    day(t.dt)=day(p.start_date) and month(t.dt)=month(p.start_date) and 
+                    year(t.dt)=year(p.start_date) 
+                 ) as count1
+                 FROM t
+                 WHERE DATE_ADD(t.dt, INTERVAL 1 DAY) <= date_add(now(),interval 7 day)
+            )
+            select date_format(date_add(dt,interval -1 day),'%a, %D') as label,round(ifnull(count1,0),2) as count FROM t ;
+        """)
         ret['dashboard']['potential_sales'] = db.query("""
             WITH RECURSIVE t as (
                 select date(now()) as dt, 0 as count1

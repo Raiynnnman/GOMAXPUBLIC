@@ -120,6 +120,11 @@ class DealTracker extends Component {
                     />
                 </Grid>
                 <Grid item xs="3" style={{marginLeft:10}}>
+                    <MainCard sx={{height:220}}  title="Appointments Coming" content={false}>
+                        <MonthlyBarChart height={200} data={this.props.dashboard.future_appointments} />
+                    </MainCard>
+                </Grid>                
+                <Grid item xs="3" style={{marginLeft:10}}>
                     <MainCard sx={{height:220}} title="Paid Value" content={false}>
                         <MonthlyBarChart height={200} data={this.props.dashboard.week_sales} />
                     </MainCard>
