@@ -57,6 +57,7 @@ class TrafficGet(AdminBase):
         if 'location' in params:
             lat = params['lat']
             lng = parans['lng']
+        print("TG: params=%s" % params)
         STR = self.getLeadStrength()
         TZ = tzInfo.getTZ()
         OT = self.getOfficeTypes()
@@ -192,7 +193,7 @@ class TrafficGet(AdminBase):
             sqlp.append(-tz_off) # Make it negative because that dict has it set to positive
             if 'nationwide' not in params:
                 q += """ 
-                    and round(st_distance_sphere(point(%s,%s),point(ti.lon,ti.lat))*.000621371192,2) < 50 and
+                    and round(st_distance_sphere(point(%s,%s),point(ti.lon,ti.lat))*.000621371192,2) < 50
                     """
                 sqlp.append(ret['center']['lng'])
                 sqlp.append(ret['center']['lat'])
@@ -219,6 +220,7 @@ class TrafficGet(AdminBase):
             """
             sqlp.append(limit)
             sqlp.append(offset*limit)
+            print(q,sqlp)
             l = db.query(q,sqlp)
             ret['total'] = limit
             for x in l:
