@@ -113,8 +113,8 @@ class Tickets extends Component {
                             color="warning" 
                             variant="contained"
                         >
-                          New Ticket
-                        </Button>
+                          <Typography variant="caption"></Typography>
+                         </Button>
                     </>
                 )
             }
