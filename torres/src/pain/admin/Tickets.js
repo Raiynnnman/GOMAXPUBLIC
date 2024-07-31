@@ -3,7 +3,7 @@ import { Container, Typography, Drawer, Grid, Box, Button, Chip } from '@mui/mat
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { connect } from 'react-redux';
 import AppSpinner from '../utils/Spinner';
-import { fetchTicketsAction } from '../../actions/ticketsUpsert';
+// import { fetchTicketsAction } from '../../actions/ticketsUpsert';
 import PainTable from '../utils/PainTable';
 import Office365SSO from '../utils/Office365SSO';
 import TicketsUpsert from './TicketsUpsert';
@@ -32,9 +32,9 @@ class Tickets extends Component {
       const { currentUser } = this.props;
       console.log("wtf",currentUser);
       if (currentUser) {
-          this.props.dispatch(fetchTicketsAction(currentUser));
-          this.setState({ loading: false, ticketsData: this.props.tickets.tickets });
-          console.log("ajsdbaljsdnaksndlaksn",this.props);
+          //this.props.dispatch(fetchTicketsAction(currentUser));
+          //this.setState({ loading: false, ticketsData: this.props.tickets.tickets });
+          //console.log("ajsdbaljsdnaksndlaksn",this.props);
       }
   }
  

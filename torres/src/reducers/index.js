@@ -97,7 +97,7 @@ import chatOffice from './chatOffice';
 import mydayGetOfficePatients from './mydayGetOfficePatients';
 import mydayCustomAppt from './mydayCustomAppt'; 
 import registerProvider from './registerProvider';
-import ticketsReducer from './ticketsUpsert';
+// import ticketsReducer from './ticketsUpsert';
 
 export default combineReducers({
     // router: connectRouter(history),
@@ -200,5 +200,5 @@ export default combineReducers({
     onlineDemo,
     onlineDemoTraffic,
     onlineDemoSave,
-    ticketsReducer
+    // ticketsReducer
 });

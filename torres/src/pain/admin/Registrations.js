@@ -70,7 +70,7 @@ class Registrations extends Component {
             sort:null,
             drawerOpen:false,
             direction:0,
-            pq_id:0,
+            pq_id:null,
             page: 0,
             pageSize: 10
         }
