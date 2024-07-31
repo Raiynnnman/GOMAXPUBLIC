@@ -1073,7 +1073,7 @@ class RegisterProvider(RegistrationsBase):
                 return {'success': False, 'message': 'There was an error with the payment method. Please try again.'}
         db.update("""
             update provider_queue set 
-            sf_lead_executed=1,
+            sf_lead_executed=1,closed_date=now(),
             provider_queue_status_id = %s where office_id = %s
             """,(PQ['INVITED'],off_id)
         )

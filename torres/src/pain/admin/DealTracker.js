@@ -76,7 +76,21 @@ class DealTracker extends Component {
             { dataField: 'close_requirements', text: 'Close Req', 
                 formatter:(cellContent,row) => (
                     <div>
-                        <div>{row.close_requirements}</div>
+                        {(row.close_requirements.length > 50 && row.showMore) && (
+                                <div>
+                                    {row.close_requirements}
+                                    <a style={{color:'blue',cursor:"pointer"}} onClick={() => this.showLess(row)}>Less</a> 
+                                </div>
+                        )}
+                        {(row.close_requirements.length > 50 && !row.showMore) && (
+                                <div>
+                                    {row.close_requirements.substr(0,50) + "..."}
+                                    <a style={{color:'blue',cursor:"pointer"}} onClick={() => this.showMore(row)}>More</a> 
+                                </div>
+                        )}
+                        {(row.close_requirements.length < 50) && (
+                                <div>{row.close_requirements}</div>
+                        )}
                     </div>
                 )
             },
@@ -90,7 +104,7 @@ class DealTracker extends Component {
                     this.props.onEdit(content)
                 ),
             },
-            { dataField: 'expected_close_Date', text: 'ECD', 
+            { dataField: 'estimated_close_date', text: 'ECD', 
                 onClick: (content,row) => (
                     this.props.onEdit(content)
                 ),

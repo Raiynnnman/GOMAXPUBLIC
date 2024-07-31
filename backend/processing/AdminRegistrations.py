@@ -272,7 +272,10 @@ class RegistrationUpdate(AdminBase):
             )
         if 'include_on_deal_tracker' in params:
             db.update("""
-                update provider_queue set include_on_deal_tracker=%s where office_id=%s
+                update provider_queue set 
+                include_on_deal_tracker=%s,
+                start_tracker_date=now()
+                 where office_id=%s
                 """,(params['include_on_deal_tracker'],offid)
             )
         if 'close_requirements' in params:
