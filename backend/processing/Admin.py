@@ -246,9 +246,9 @@ class AdminDashboard(AdminBase):
                     and p.traffic_categories_id = 2 
                  ) as count2
                  FROM t
-                 WHERE DATE_ADD(t.dt, INTERVAL 1 DAY) <= now()
+                 WHERE DATE_ADD(t.dt, INTERVAL 1 DAY) <= date_add(now(),interval 1 day)
             )
-            select date_format(dt,'%a, %D') as label,count1,count2 FROM t ;
+            select date_format(date_add(dt,interval -1 day),'%a, %D') as label,count1,count2 FROM t ;
             """,)
         ret['week'] = o
         ret['labels'] = ['Accidents per day','Accidents per day']
@@ -312,9 +312,9 @@ class AdminDashboard(AdminBase):
                     day(t.dt)=day(p.created) and month(t.dt)=month(p.created) and year(t.dt)=year(p.created) 
                  ) as count2
                  FROM t
-                 WHERE DATE_ADD(t.dt, INTERVAL 1 DAY) <= now()
+                 WHERE DATE_ADD(t.dt, INTERVAL 1 DAY) <= date_add(now(),interval 1 day)
             )
-            select date_format(dt,'%a, %D') as label,count1,count2 FROM t ;
+            select date_format(date_add(dt,interval -1 day),'%a, %D') as label,count1,count2 FROM t ;
             """,)
         ret['week'] = o
         ret['labels'] = ['Page views','Max Response (ms)']
@@ -333,9 +333,9 @@ class AdminDashboard(AdminBase):
                     ti.traffic_categories_id = 2
                  ) as count
                  FROM t
-                 WHERE DATE_ADD(t.dt, INTERVAL 1 DAY) <= now()
+                 WHERE DATE_ADD(t.dt, INTERVAL 1 DAY) <= date_add(now(),interval 1 day)
             )
-            select date_format(dt,'%b, %Y') as label,count FROM t ;
+            select date_format(date_add(dt,interval -1 day),'%b, %Y') as label,count FROM t ;
             """,)
         return o
 

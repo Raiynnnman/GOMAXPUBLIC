@@ -1055,7 +1055,7 @@ class RegistrationList(AdminBase):
                     and p.invoice_status_id=15 
                  ) as count2
                  FROM t
-                 WHERE DATE_ADD(t.dt, INTERVAL 1 DAY) <= now()
+                 WHERE DATE_ADD(t.dt, INTERVAL 1 DAY) <= date_add(now(),interval 1 day)
             )
             select date_format(date_add(dt,interval -1 day),'%a, %D') as label,round(ifnull(count1,0),2) as count FROM t ;
             """)
