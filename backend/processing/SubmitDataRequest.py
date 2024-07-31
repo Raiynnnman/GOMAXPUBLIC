@@ -9,6 +9,7 @@ import pickle
 import copy
 import traceback
 from util import encryption, S3Processing
+from util import Performance
 from processing.run import app
 from flask import request, jsonify
 from common.DataException import DataException
@@ -170,14 +171,31 @@ class SubmitDataRequest(ProcessingBase):
             H.close()
             data = json.loads(data)
         jobstate.jobRunning()
+        perf = Performance.performance()
         try:
             if isinstance(data, str):
                 data = json.loads(data)
+            perf.start(self.__class__.__name__)
+            if isinstance(data,dict) and len(data) > 0:
+                t = data
+                if 'id' in t:
+                    perf.setUserID(t['id'])
+            if isinstance(data,list) and len(data) > 1:
+                perf.setData(data[1])
+            if isinstance(data,list) and len(data) > 0:
+                t = data[0]
+                if 'id' in t:
+                    perf.setUserID(t['id'])
             ret = self.execute(task['jobid'],data)
+            perf.status(200)
         except Exception as e:
-            print(str(e))
+            print("ERROR:",str(e),data)
             jobstate.jobError()
+            perf.status(501)
             raise e
+        finally:
+            perf.stop()
+            perf.save()
         jobstate.jobComplete()
         if s3path is not None and not config.getKey("local_storage"):
             try:

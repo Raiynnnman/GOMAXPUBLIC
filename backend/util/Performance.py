@@ -26,9 +26,13 @@ class performance():
     __data__ = {}
     __status__ = 0
     __user_id__ = None
+    __metadata__ = None
 
     def setUserID(self,c):
         self.__user_id__ = c
+
+    def setData(self,c):
+        self.__metadata__ = c
 
     def start(self, subsys):
         global con
@@ -85,20 +89,15 @@ class performance():
         j = self.__data__
         db.update("""
             insert into performance 
-                (classname,lat,lon,country,state,city,ms,ip,continent,user_id) 
-                values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                (classname,lat,lon,country,state,city,ms,ip,continent,user_id,data) 
+                values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
             """,(j['classname'],j['lat'],j['lon'],j['country'],
                  j['stateprov'],j['city'],j['ms'],
-                 j['ip'],j['continent'],self.__user_id__
+                 j['ip'],j['continent'],self.__user_id__,
+                json.dumps(self.__metadata__)
                 )
         )
         db.commit()
-        # print(request.headers)
-        # print(self.__data__)
-
-    def setData(self, d):
-        if d is not None:
-            self.__data__ = base64.b64encode(json.dumps(d).encode('utf-8'))
 
     def stop(self):
         if self.__start is None:

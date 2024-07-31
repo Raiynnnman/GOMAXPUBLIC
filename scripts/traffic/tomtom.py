@@ -13,6 +13,7 @@ from traffic import traffic_util
 import argparse
 import requests
 from util.DBOps import Query
+from threading import Thread
 
 config = settings.config()
 config.read("settings.cfg")
@@ -132,7 +133,15 @@ FILT="{incidents{type,geometry{type,coordinates},properties{id,iconCategory,"\
 TC=getIDs.getTrafficCategories()
 VER=5
 JS=[]
-for x in TOGET:
+THREADS=4
+THREAD_CTRL={}
+WORKER_QUEUE=[]
+C = 0
+while C < THREADS:
+    WORKER_QUEUE.append([])
+    C += 1
+
+def getTraffic(x):
     # print("Checking %s" % x)
     F="%s.json" % x
     F=F.replace(' ','_')
@@ -151,11 +160,11 @@ for x in TOGET:
         r = requests.get(U)
         if r.status_code != 200:
             print("ERROR: %s" % r.text)
-            break
+            return None
         if r.content is None:
             print("No data for %s" % F)
             print(r.body)
-            continue
+            return None
         H=open(F,"w")
         T=json.loads(r.content)
         H.write(json.dumps(T,indent=4,sort_keys=True))
@@ -175,4 +184,53 @@ for x in TOGET:
             TOGET[x]['lat'],
             TOGET[x]['lon']
     )
+
+def workerThread(i):
+    i = int(i)
+    print("%s: starting thread" % i)
+    while True:
+        MYQUEUE = json.loads(json.dumps(WORKER_QUEUE[i]))
+        WORKER_QUEUE[i] = []
+        L = len(MYQUEUE)
+        if L > 0:
+            print("%s: Processing %s items" % (i,L))
+            while len(MYQUEUE) > 0:
+                x = MYQUEUE[0]
+                MYQUEUE.pop(0)
+                getTraffic(x)
+                time.sleep(.5)
+                print("%s: Items in CQ: %s, Items left: %s" % (i,len(MYQUEUE),len(WORKER_QUEUE[i])))
+        if not THREAD_CTRL[i]['enable'] and len(WORKER_QUEUE[i]) > 0:
+            print("%s: stopping thread after completion of %s items" % (i,len(WORKER_QUEUE[i])))
+        elif not THREAD_CTRL[i]['enable']:
+            print("%s: stopping thread" % i)
+            return
+    time.sleep(1)
+
+C = 0
+while C < THREADS:
+    THREAD_CTRL[C] = {'enable': True, 'thread': Thread(target=workerThread, args=(str(C)))}
+    THREAD_CTRL[C]['thread'].start()
+    C += 1
+    
+C = 0
+TOTAL = 0
+for x in TOGET:
+    if C >= THREADS:
+        C = 0
+    if TOTAL % 10 == 0:
+        time.sleep(.5)
+    WORKER_QUEUE[C].append(x)
+    C += 1
+    TOTAL += 1
+
+time.sleep(30)
+
+print("Finished queue, waiting for completion")
+C = 0
+while C < THREADS:
+    THREAD_CTRL[C]['enable'] = False
+    print("%s: Command stop sent, waiting" % C)
+    THREAD_CTRL[C]['thread'].join()
+    C += 1
 
