@@ -839,95 +839,96 @@ class RegistrationList(AdminBase):
             q += " and pq.id = %s "
             search_par.insert(0,int(params['pq_id']))
             count_par.append(int(params['pq_id']))
-        elif 'mine' in params and params['mine'] is not None:
-            q += " and ( o.commission_user_id = %s or o.setter_user_id = %s )"
-            search_par.insert(0,user['id'])
-            count_par.append(user['id'])
-            search_par.insert(0,user['id'])
-            count_par.append(user['id'])
-        if 'status' in params and len(params['status']) > 0:
-            q += " and provider_queue_status_id in ("
-            arr = []
-            for z in params['status']:
-                arr.append(z)
-            q += ",".join(map(str,arr))
-            q += ")"
-        if 'search' in params:
-            if 'state:' in params['search'].lower():
-                q += """ and oa.state = %s """
-                y = params['search'].split(":")
-                y = y[1]
-                t = y.rstrip().lstrip()
-                search_par.insert(0,t)
-                count_par.insert(0,t)
-            elif 'created:' in params['search'].lower():
-                y = params['search'].split(":")
-                y = y[1]
-                t = y.rstrip().lstrip()
-                if len(t) == 10:
-                    q += """ and pq.created = %s """
+        else:
+            if 'mine' in params and params['mine'] is not None:
+                q += " and ( o.commission_user_id = %s or o.setter_user_id = %s )"
+                search_par.insert(0,user['id'])
+                count_par.append(user['id'])
+                search_par.insert(0,user['id'])
+                count_par.append(user['id'])
+            if 'status' in params and len(params['status']) > 0:
+                q += " and provider_queue_status_id in ("
+                arr = []
+                for z in params['status']:
+                    arr.append(z)
+                q += ",".join(map(str,arr))
+                q += ")"
+            if 'search' in params:
+                if 'state:' in params['search'].lower():
+                    q += """ and oa.state = %s """
+                    y = params['search'].split(":")
+                    y = y[1]
+                    t = y.rstrip().lstrip()
                     search_par.insert(0,t)
                     count_par.insert(0,t)
-            elif 'id:' in params['search'].lower():
-                q += """ and pq.id = %s """
-                y = params['search'].split(":")
-                y = y[1]
-                t = y.rstrip().lstrip()
-                search_par.insert(0,t)
-                count_par.insert(0,t)
-            else:
-                q += """ and (
-                    opp.phone like %s or o.email like %s  or o.name like %s
-                    or off_u.last_name like %s or off_u.first_name like %s
-                    or oa.name like %s
-                    ) 
-                """
-                search_par.insert(0,params['search']+'%%')
-                search_par.insert(0,params['search']+'%%')
-                search_par.insert(0,params['search']+'%%')
-                search_par.insert(0,params['search']+'%%')
-                search_par.insert(0,params['search']+'%%')
-                search_par.insert(0,params['search']+'%%')
-                count_par.insert(0,params['search']+'%%')
-                count_par.insert(0,params['search']+'%%')
-                count_par.insert(0,params['search']+'%%')
-                count_par.insert(0,params['search']+'%%')
-                count_par.insert(0,params['search']+'%%')
-                count_par.insert(0,params['search']+'%%')
-            q += " and office_alternate_status_id is null "
-        if 'alt_status' not in params or len(params['alt_status']) == 0:
-            params['alt_status'] = [-1]
-        if 'alt_status' in params and params['alt_status'] is not None and len(params['alt_status']) > 0: 
-            q += " and ("
-            arr = []
-            for z in params['alt_status']:
-                if z == str(0) or z == 0:
-                    arr.append("office_alternate_status_id is null")
+                elif 'created:' in params['search'].lower():
+                    y = params['search'].split(":")
+                    y = y[1]
+                    t = y.rstrip().lstrip()
+                    if len(t) == 10:
+                        q += """ and pq.created = %s """
+                        search_par.insert(0,t)
+                        count_par.insert(0,t)
+                elif 'id:' in params['search'].lower():
+                    q += """ and pq.id = %s """
+                    y = params['search'].split(":")
+                    y = y[1]
+                    t = y.rstrip().lstrip()
+                    search_par.insert(0,t)
+                    count_par.insert(0,t)
                 else:
-                    arr.append("office_alternate_status_id = %s" % z)
-            q += " or ".join(map(str,arr))
-            q += ")"
-        if 'mine' in params and params['mine'] is not None and params['mine']: # Delete users if mine is True
-            params['users'] = [user['id']]
-        if 'users' in params and params['users'] is not None and len(params['users']) > 0: 
-            q += " and ("
-            arr = []
-            for z in params['users']:
-                if z == str(0) or z == 0:
-                    arr.append("o.commission_user_id is null")
-                else:
-                    arr.append("o.commission_user_id = %s" % z)
-            q += " or ".join(map(str,arr))
-            q += ")"
-        if 'type' not in params or len(params['type']) == 0:
-            params['type'] = [-1]
-        if 'type' in params and params['type'] is not None and len(params['type']) > 0:
-            q += " and office_type_id in ("
-            arr = []
-            for z in params['type']:
-                arr.append(z)
-            q += ",".join(map(str,arr))
-            q += ")"
+                    q += """ and (
+                        opp.phone like %s or o.email like %s  or o.name like %s
+                        or off_u.last_name like %s or off_u.first_name like %s
+                        or oa.name like %s
+                        ) 
+                    """
+                    search_par.insert(0,params['search']+'%%')
+                    search_par.insert(0,params['search']+'%%')
+                    search_par.insert(0,params['search']+'%%')
+                    search_par.insert(0,params['search']+'%%')
+                    search_par.insert(0,params['search']+'%%')
+                    search_par.insert(0,params['search']+'%%')
+                    count_par.insert(0,params['search']+'%%')
+                    count_par.insert(0,params['search']+'%%')
+                    count_par.insert(0,params['search']+'%%')
+                    count_par.insert(0,params['search']+'%%')
+                    count_par.insert(0,params['search']+'%%')
+                    count_par.insert(0,params['search']+'%%')
+                q += " and office_alternate_status_id is null "
+            if 'alt_status' not in params or len(params['alt_status']) == 0:
+                params['alt_status'] = [-1]
+            if 'alt_status' in params and params['alt_status'] is not None and len(params['alt_status']) > 0: 
+                q += " and ("
+                arr = []
+                for z in params['alt_status']:
+                    if z == str(0) or z == 0:
+                        arr.append("office_alternate_status_id is null")
+                    else:
+                        arr.append("office_alternate_status_id = %s" % z)
+                q += " or ".join(map(str,arr))
+                q += ")"
+            if 'mine' in params and params['mine'] is not None and params['mine']: # Delete users if mine is True
+                params['users'] = [user['id']]
+            if 'users' in params and params['users'] is not None and len(params['users']) > 0: 
+                q += " and ("
+                arr = []
+                for z in params['users']:
+                    if z == str(0) or z == 0:
+                        arr.append("o.commission_user_id is null")
+                    else:
+                        arr.append("o.commission_user_id = %s" % z)
+                q += " or ".join(map(str,arr))
+                q += ")"
+            if 'type' not in params or len(params['type']) == 0:
+                params['type'] = [-1]
+            if 'type' in params and params['type'] is not None and len(params['type']) > 0:
+                q += " and office_type_id in ("
+                arr = []
+                for z in params['type']:
+                    arr.append(z)
+                q += ",".join(map(str,arr))
+                q += ")"
         prelimit = q
         pre_par = json.loads(json.dumps(search_par))
         q += " group by o.id "

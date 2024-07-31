@@ -99,6 +99,7 @@ class App extends Component {
                         <Route exact path='/app/main/admin/search/:id' component={SearchAdmin}/>
                         <Route exact path='/app/main/admin/map' component={Map}/>
                         <Route exact path='/app/main/admin/registrations' component={Registrations}/>
+                        <Route exact path='/app/main/admin/registrations/:id' component={Registrations}/>
                         <Route exact path='/app/main/admin/customers' component={Referrers}/>
                         <Route exact path='/app/main/admin/providers' component={OfficeAdminList}/>
                         <Route exact path='/app/main/admin/invoices' component={InvoiceAdminList}/>

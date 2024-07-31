@@ -398,16 +398,9 @@ class Registrations extends Component {
     } 
 
     componentDidMount() {
-        var pq = null;
         if (this.props.match.params.id) { 
-            pq = this.props.match.params.id;
+            this.state.pq_id = this.props.match.params.id;
         } 
-        this.props.dispatch(getRegistrations({
-            status:[0],
-            limit:this.state.pageSize,
-            pq_id:pq,
-            offset:this.state.page
-        }));
         this.state.saveSearches = 
             localStorage.getItem("reg_saved_filters") ? JSON.parse(localStorage.getItem("reg_saved_filters"))
          : []
