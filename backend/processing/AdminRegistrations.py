@@ -612,7 +612,8 @@ class RegistrationList(AdminBase):
                 coup.id as coupon_id,coup.name as coupon_name,pqqs.name as source_name,
                 pqps.name as presented_status_name,
                 pq.set_date,pq.present_date,pq.estimated_close_date,
-                ifnull(pq.close_requirements,'') as close_requirements, pq.closed_date,pq.refund_requested,
+                ifnull(pq.close_requirements,'') as close_requirements, pq.closed_date,
+                pq.refund_requested,
                 pq.include_on_deal_tracker,pq.provider_queue_source_id,
                 pq.provider_queue_presented_status_id,pq.deal_value
             from

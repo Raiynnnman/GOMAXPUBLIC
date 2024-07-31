@@ -976,7 +976,7 @@ class Registrations extends Component {
                             <Tab value='myregistrations' label='Assigned to Me'/>
                             <Tab value='registrations' label='Registrations'/>
                             <Tab value='dealtracker' label='Deal Tracker'/>
-                            <Tab value='Tickets' label='Tickets'/>
+                            {/*<Tab value='Tickets' label='Tickets'/>*/}
                             {/*<Tab value='myactivities' label='My Activities'/>*/}
                         </Tabs>
                         {(this.state.activeTab === 'dealtracker')  && ( 
