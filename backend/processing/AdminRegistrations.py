@@ -581,6 +581,192 @@ class RegistrationList(AdminBase):
     def isDeferred(self):
         return False
 
+    def populateValues(self,entry,db):
+        x = entry
+        x['phones'] = db.query("""
+            select id,description,iscell,phone from office_phones 
+                where office_id = %s and deleted = 0
+            """,(x['office_id'],)
+        )
+        x['actions']  = []
+        acts = db.query("""
+            select pqa.id,pqa.user_id,
+            pqat.name as action_type,pqat.id as action_type_id,
+            pqas.name as action_status, pqas.id as action_status_id,
+            concat(u.first_name, ' ', u.last_name) as activity_name,
+            pqa.duration,pqa.due_date,pqa.end_date,pqa.start_date,pqa.attendees,
+            pqa.body,pqa.subject,pqa.server_response
+            from 
+                provider_queue_actions pqa
+                left join provider_queue_actions_status pqas on pqa.provider_queue_actions_status_id=pqas.id
+                left join provider_queue_actions_type pqat on pqa.provider_queue_actions_type_id=pqat.id
+                left outer join users u on user_id=u.id
+            where 
+                provider_queue_id = %s
+            """,(x['id'],)
+        )
+        for cc in acts: 
+            try:
+                cc['server_response'] = json.loads(cc['server_response'])
+                cc['body'] = json.loads(cc['body'])
+                cc['attendees'] = json.loads(cc['attendees'])
+                x['actions'].append(cc)
+            except Exception as e:
+                print("ERROR: ACTS: %s" % str(e))
+                print(cc)
+        x['addr'] = db.query("""
+            select 
+                ou.addr1,ou.addr2,ou.city,ou.state,ou.zipcode,ou.phone
+            from 
+                office_addresses ou
+            where 
+                office_id=%s
+            """,(x['office_id'],)
+        )
+        if len(x['addr']) > 0:
+            x['state'] = x['addr'][0]['state']
+        x['assignee'] = db.query("""
+            select
+                u.id,u.first_name,u.last_name
+            from users u
+            where id in
+            (select user_id
+                from user_entitlements ue,entitlements e
+                where ue.entitlements_id=e.id and e.name='CRM')
+            UNION ALL
+            select
+                u.id,u.first_name,u.last_name
+            from users u
+            where id in
+            (select user_id
+                from user_entitlements ue,entitlements e
+                where ue.entitlements_id=e.id and e.name='Admin')
+            UNION ALL
+            select 1,'System',''
+            """
+        )
+        x['comments'] = []
+        comms = db.query("""
+            select 
+                ic.id,ic.text,ic.user_id,
+                u.first_name,u.last_name,u.title,
+                ic.created
+            from 
+            office_comment ic, users u
+            where ic.user_id = u.id and office_id=%s
+            order by created desc
+            """,(x['office_id'],)
+        )
+        for cc in comms: 
+            # This happens when we switch environments, just skip
+            try:
+                bb2 = encryption.decrypt(
+                    cc['text'],
+                    config.getKey('encryption_key')
+                    )
+                cc['text'] = bb2
+                x['comments'].append(cc)
+                x['last_comment'] = bb2
+            except:
+                pass
+        x['addr'] = db.query("""
+            select
+              oa.id,oa.name,addr1,addr2,phone,
+              city,oa.state,oa.zipcode
+            from office_addresses oa
+              where oa.office_id=%s and oa.deleted = 0
+            """,(x['office_id'],)
+        )
+        x['users'] = db.query("""
+            select u.first_name,u.email,u.last_name,u.phone,u.id
+            from users u
+            left join office_user ou on u.id = ou.user_id
+            where 
+            ou.office_id = %s
+            """,(x['office_id'],)
+        )
+        x['last_name'] = x['users'][0]['last_name'] if len(x['users']) > 0 else ''
+        x['first_name'] = x['users'][0]['first_name'] if len(x['users']) > 0 else ''
+        x['phone'] = x['users'][0]['phone'] if len(x['users']) > 0 else ''
+        x['email'] = x['users'][0]['email'] if len(x['users']) > 0 else ''
+        x['history'] = db.query("""
+            select ph.id,user_id,text,concat(u.first_name, ' ', u.last_name) as user,ph.created
+                from office_history ph,users u
+            where 
+                ph.user_id=u.id and
+                ph.office_id = %s
+            order by created desc
+            """,(x['office_id'],)
+        )
+        x['addr'] = db.query("""
+            select 
+                oa.id,oa.addr1,oa.addr2,oa.phone,
+                oa.city,oa.state,oa.zipcode,oa.name
+            from 
+                office_addresses oa where office_id=%s
+            """,(x['office_id'],)
+        )
+        t = db.query("""
+            select 
+                op.id,start_date,end_date,
+                JSON_ARRAYAGG(
+                    JSON_OBJECT(
+                        'id',opi.id,'price',opi.price,'description',
+                        opi.description,'quantity',opi.quantity
+                    )
+                ) as items
+            from 
+                office_plans op,
+                office_plan_items opi
+            where 
+                opi.office_plans_id = op.id and
+                office_id = %s 
+        """,(x['office_id'],)
+        )
+        x['plans'] = {}
+        for j in t:
+            if j['id'] is None:
+                continue
+            x['plans'] = j
+            x['plans']['items'] = json.loads(x['plans']['items'])
+        t = db.query("""
+            select 
+                i.id,i.invoice_status_id,isi.name,i.total,
+                i.billing_period,
+                JSON_ARRAYAGG(
+                    JSON_OBJECT(
+                        'id',ii.id,'price',ii.price,
+                        'description',ii.description,'quantity',ii.quantity
+                    )
+                ) as items
+            
+            from
+                invoices i,
+                invoice_status isi,
+                office_plans op,
+                invoice_items ii
+            where
+                i.invoice_status_id = isi.id and
+                i.office_id = op.office_id and
+                ii.invoices_id = i.id and
+                month(i.billing_period) = month(op.start_date) and
+                year(i.billing_period) = year(op.start_date) and
+                i.office_id = %s
+            group by
+                i.id
+            order by 
+                i.created
+            limit 1
+            """,(x['office_id'],)
+        )
+        x['invoice'] = {}
+        for j in t:
+            if j['id'] is None:
+                continue
+            x['invoice'] = j
+            x['invoice']['items'] = json.loads(x['invoice']['items'])
+        return x
+
     @check_crm
     def execute(self, *args, **kwargs):
         ret = {}
@@ -775,192 +961,16 @@ class RegistrationList(AdminBase):
         o = []
         o = db.query(q,search_par)
         k = [] 
-        dtrack = db.query(deal_tracker + " and pq.include_on_deal_tracker = 1 group by o.id")
+        dtrack = []
+        dtrack_start = db.query(deal_tracker + " and pq.include_on_deal_tracker = 1 group by o.id")
         ret['deal_tracker'] = dtrack
         for x in o:
-            x['phones'] = db.query("""
-                select id,description,iscell,phone from office_phones 
-                    where office_id = %s and deleted = 0
-                """,(x['office_id'],)
-            )
-            x['actions']  = []
-            acts = db.query("""
-                select pqa.id,pqa.user_id,
-                pqat.name as action_type,pqat.id as action_type_id,
-                pqas.name as action_status, pqas.id as action_status_id,
-                concat(u.first_name, ' ', u.last_name) as activity_name,
-                pqa.duration,pqa.due_date,pqa.end_date,pqa.start_date,pqa.attendees,
-                pqa.body,pqa.subject,pqa.server_response
-                from 
-                    provider_queue_actions pqa
-                    left join provider_queue_actions_status pqas on pqa.provider_queue_actions_status_id=pqas.id
-                    left join provider_queue_actions_type pqat on pqa.provider_queue_actions_type_id=pqat.id
-                    left outer join users u on user_id=u.id
-                where 
-                    provider_queue_id = %s
-                """,(x['id'],)
-            )
-            for cc in acts: 
-                try:
-                    cc['server_response'] = json.loads(cc['server_response'])
-                    cc['body'] = json.loads(cc['body'])
-                    cc['attendees'] = json.loads(cc['attendees'])
-                    x['actions'].append(cc)
-                except Exception as e:
-                    print("ERROR: ACTS: %s" % str(e))
-                    print(cc)
-            x['addr'] = db.query("""
-                select 
-                    ou.addr1,ou.addr2,ou.city,ou.state,ou.zipcode,ou.phone
-                from 
-                    office_addresses ou
-                where 
-                    office_id=%s
-                """,(x['office_id'],)
-            )
-            if len(x['addr']) > 0:
-                x['state'] = x['addr'][0]['state']
-            x['assignee'] = db.query("""
-                select
-                    u.id,u.first_name,u.last_name
-                from users u
-                where id in
-                (select user_id
-                    from user_entitlements ue,entitlements e
-                    where ue.entitlements_id=e.id and e.name='CRM')
-                UNION ALL
-                select
-                    u.id,u.first_name,u.last_name
-                from users u
-                where id in
-                (select user_id
-                    from user_entitlements ue,entitlements e
-                    where ue.entitlements_id=e.id and e.name='Admin')
-                UNION ALL
-                select 1,'System',''
-                """
-            )
-            x['comments'] = []
-            comms = db.query("""
-                select 
-                    ic.id,ic.text,ic.user_id,
-                    u.first_name,u.last_name,u.title,
-                    ic.created
-                from 
-                office_comment ic, users u
-                where ic.user_id = u.id and office_id=%s
-                order by created desc
-                """,(x['office_id'],)
-            )
-            for cc in comms: 
-                # This happens when we switch environments, just skip
-                try:
-                    bb2 = encryption.decrypt(
-                        cc['text'],
-                        config.getKey('encryption_key')
-                        )
-                    cc['text'] = bb2
-                    x['comments'].append(cc)
-                    x['last_comment'] = bb2
-                except:
-                    pass
-            x['addr'] = db.query("""
-                select
-                  oa.id,oa.name,addr1,addr2,phone,
-                  city,oa.state,oa.zipcode
-                from office_addresses oa
-                  where oa.office_id=%s and oa.deleted = 0
-                """,(x['office_id'],)
-            )
-            x['users'] = db.query("""
-                select u.first_name,u.email,u.last_name,u.phone,u.id
-                from users u
-                left join office_user ou on u.id = ou.user_id
-                where 
-                ou.office_id = %s
-                """,(x['office_id'],)
-            )
-            x['last_name'] = x['users'][0]['last_name'] if len(x['users']) > 0 else ''
-            x['first_name'] = x['users'][0]['first_name'] if len(x['users']) > 0 else ''
-            x['phone'] = x['users'][0]['phone'] if len(x['users']) > 0 else ''
-            x['email'] = x['users'][0]['email'] if len(x['users']) > 0 else ''
-            x['history'] = db.query("""
-                select ph.id,user_id,text,concat(u.first_name, ' ', u.last_name) as user,ph.created
-                    from office_history ph,users u
-                where 
-                    ph.user_id=u.id and
-                    ph.office_id = %s
-                order by created desc
-                """,(x['office_id'],)
-            )
-            x['addr'] = db.query("""
-                select 
-                    oa.id,oa.addr1,oa.addr2,oa.phone,
-                    oa.city,oa.state,oa.zipcode,oa.name
-                from 
-                    office_addresses oa where office_id=%s
-                """,(x['office_id'],)
-            )
-            t = db.query("""
-                select 
-                    op.id,start_date,end_date,
-                    JSON_ARRAYAGG(
-                        JSON_OBJECT(
-                            'id',opi.id,'price',opi.price,'description',
-                            opi.description,'quantity',opi.quantity
-                        )
-                    ) as items
-                from 
-                    office_plans op,
-                    office_plan_items opi
-                where 
-                    opi.office_plans_id = op.id and
-                    office_id = %s 
-            """,(x['office_id'],)
-            )
-            x['plans'] = {}
-            for j in t:
-                if j['id'] is None:
-                    continue
-                x['plans'] = j
-                x['plans']['items'] = json.loads(x['plans']['items'])
-            t = db.query("""
-                select 
-                    i.id,i.invoice_status_id,isi.name,i.total,
-                    i.billing_period,
-                    JSON_ARRAYAGG(
-                        JSON_OBJECT(
-                            'id',ii.id,'price',ii.price,
-                            'description',ii.description,'quantity',ii.quantity
-                        )
-                    ) as items
-                
-                from
-                    invoices i,
-                    invoice_status isi,
-                    office_plans op,
-                    invoice_items ii
-                where
-                    i.invoice_status_id = isi.id and
-                    i.office_id = op.office_id and
-                    ii.invoices_id = i.id and
-                    month(i.billing_period) = month(op.start_date) and
-                    year(i.billing_period) = year(op.start_date) and
-                    i.office_id = %s
-                group by
-                    i.id
-                order by 
-                    i.created
-                limit 1
-                """,(x['office_id'],)
-            )
-            x['invoice'] = {}
-            for j in t:
-                if j['id'] is None:
-                    continue
-                x['invoice'] = j
-                x['invoice']['items'] = json.loads(x['invoice']['items'])
+            x = self.populateValues(x,db)
             k.append(x)
+        ret['registrations'] = k
+        for x in dtrack_start:
+            x = self.populateValues(x,db)
+            dtrack.append(x)
         ret['config'] = {}
         ret['config']['type'] = db.query("select id,name from office_type where name <> 'Customer'")
         ret['config']['alternate_status'] = db.query("""
@@ -1059,7 +1069,6 @@ class RegistrationList(AdminBase):
             )
             select date_format(date_add(dt,interval -1 day),'%a, %D') as label,round(ifnull(count1,0),2) as count FROM t ;
             """)
-        ret['registrations'] = k
         if 'report' in params and params['report'] is not None:
             myq = prelimit
             if 'dnc' in params and params['dnc']:
