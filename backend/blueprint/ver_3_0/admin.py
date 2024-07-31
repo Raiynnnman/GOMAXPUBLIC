@@ -142,33 +142,26 @@ def regupdate(*args, **kwargs):
     po = AdminRest.RegistrationUpdateRest()
     return po.postWrapper(*args,**kwargs)
 
-
-@admin.route('/admin/tickets/delete', methods=['POST'])
+@admin.route('/admin/tickets/list', methods=['POST'])
 @token_required
 @swag_from(docs_dir + 'ticketslist.yaml')
 def ticketlist(*args, **kwargs):
-    po = AdminRest.TicketsListDelete()
-    return po.postWrapper(*args,**kwargs)
-
-@admin.route('/admin/tickets/create', methods=['POST'])
-@token_required
-@swag_from(docs_dir + 'ticketslist.yaml')
-def ticketcreate(*args, **kwargs):
-    po = AdminRest.TicketsListCreate()
+    print("hey look!! ",*args, **kwargs)
+    po = AdminRest.TicketListRest()
     return po.postWrapper(*args,**kwargs)
 
 @admin.route('/admin/tickets/update', methods=['POST'])
 @token_required
 @swag_from(docs_dir + 'ticketslist.yaml')
-def ticketupdate(*args, **kwargs):
-    po = AdminRest.TicketsListUpdate()
+def ticketcreate(*args, **kwargs):
+    po = AdminRest.TicketUpdateRest()
     return po.postWrapper(*args,**kwargs)
-
+ 
 @admin.route('/admin/traffic/get', methods=['POST'])
 @token_required
 @swag_from(docs_dir + 'registrationlist.yaml')
 def trafficlist(*args, **kwargs):
-    po = AdminRest.TrafficGetRest()
+    po = AdminRest.TicketListRest()
     return po.postWrapper(*args,**kwargs)
 
 @admin.route('/admin/plans/get', methods=['POST'])

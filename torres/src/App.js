@@ -42,6 +42,7 @@ import ChatUser from './pain/chatUser/ChatUser.js';
 import Pricing from './components/Pricing';
 import Join from './pain/online-demo/Join';
 import OnlineDemoList from './pain/admin/OnlineDemoList';
+import Tickets from "./pain/admin/Tickets";
 const CloseButton = ({closeToast}) => <i onClick={closeToast} className="la la-close notifications-close"/>
 
 class App extends Component {
@@ -98,6 +99,7 @@ class App extends Component {
                         <Route exact path='/app/main/admin/search' component={SearchAdmin}/>
                         <Route exact path='/app/main/admin/search/:id' component={SearchAdmin}/>
                         <Route exact path='/app/main/admin/map' component={Map}/>
+                        <Route exact path='/app/main/admin/tickets' component={Tickets}/>
                         <Route exact path='/app/main/admin/registrations' component={Registrations}/>
                         <Route exact path='/app/main/admin/registrations/:id' component={Registrations}/>
                         <Route exact path='/app/main/admin/customers' component={Referrers}/>

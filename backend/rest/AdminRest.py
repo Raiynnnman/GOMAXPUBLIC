@@ -7,9 +7,9 @@ from flask import request, jsonify
 
 from rest.RestBase import RestBase
 from processing import Admin,Coupons,AdminCustomers
+from processing import AdminTickets
 from processing import AdminInvoices,AdminRegistrations
 from processing import AdminTraffic, AdminCommissions,AdminOffice 
-from processing import AdminTickets
 from processing.Context import GetContext,DelContext
 
 class OfficeListRest(RestBase):
@@ -96,34 +96,19 @@ class RegistrationListRest(RestBase):
         ret = u.process(args[0])
         return ret
     
-    
-class TicketsListUpdate(RestBase):
+class TicketUpdateRest(RestBase):
 
     def post(self, *args, **kwargs):
-        u = AdminTickets.AdminTicketUpdate()
-        ret = u.process(args[0])
-        return ret
-    
-class TicketsListCreate(RestBase):
-
-    def post(self, *args, **kwargs):
-        u = AdminTickets.AdminTicketCreate()
-        ret = u.process(args[0])
-        return ret
-    
-class TicketsListDelete(RestBase):
-
-    def post(self, *args, **kwargs):
-        u = AdminTickets.AdminTicketDelete()
+        u = AdminTickets.TicketUpdate()
         ret = u.process(args[0])
         return ret
 
-
-class RegistrationListRest(RestBase):
+class TicketListRest(RestBase):
 
     def post(self, *args, **kwargs):
-        u = AdminRegistrations.RegistrationList()
+        u = AdminTickets.TicketList()
         ret = u.process(args[0])
+        print(ret)
         return ret
 
 

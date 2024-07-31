@@ -1,27 +1,13 @@
 import React, { Component } from 'react';
-import { Container, Typography, Drawer, Grid, Box, Button } from '@mui/material';
-import SaveIcon from '@mui/icons-material/Save';
-import CancelIcon from '@mui/icons-material/Cancel';
-import InputIcon from '@mui/icons-material/Input';
-import DoNotDisturbIcon from '@mui/icons-material/DoNotDisturb';
-import AddBoxIcon from '@mui/icons-material/AddBox';
-import AssessmentIcon from '@mui/icons-material/Assessment';
-import EditIcon from '@mui/icons-material/Edit';
-import AutorenewIcon from '@mui/icons-material/Autorenew';
-import { toast } from 'react-toastify';
+import { Container, Typography, Drawer, Grid, Box, Button, Chip } from '@mui/material';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import { connect } from 'react-redux';
 import AppSpinner from '../utils/Spinner';
-import { getRegistrations } from '../../actions/registrationsAdminList';
-import { getPlansList } from '../../actions/plansList';
-import { registrationAdminUpdate } from '../../actions/registrationAdminUpdate';
-import TemplateSelectMulti from '../utils/TemplateSelectMulti';
-import TemplateTextField from '../utils/TemplateTextField';
-import TemplateButtonIcon from '../utils/TemplateButtonIcon';
+import { fetchTicketsAction } from '../../actions/ticketsUpsert';
 import PainTable from '../utils/PainTable';
-import TemplateBadge from '../utils/TemplateBadge';
-import Navbar from '../../components/Navbar';
 import Office365SSO from '../utils/Office365SSO';
 import TicketsUpsert from './TicketsUpsert';
+import Navbar from '../../components/Navbar';
 
 class Tickets extends Component {
     constructor(props) {
@@ -29,41 +15,29 @@ class Tickets extends Component {
         this.state = {
             selected: null,
             activeTab: 'tickets',
-            typeSelected: null,
             transition: false,
-            statusSelected: null,
             search: null,
-            altFilter: [],
-            filterName: null,
-            statusAltSelected: null,
             filter: [],
-            saveSearches: [],
-            filterType: [],
-            mine: true,
-            massSel: [],
-            userSelected: null,
-            userFilter: [],
-            massUpdateValue: {},
-            sort: null,
             drawerOpen: false,
-            direction: 0,
-            pq_id: 0,
             page: 0,
             pageSize: 10,
-            data: Array.from({ length: 10 }, (_, id) => ({
-                id,
-                ticketNumber: `Ticket-${id}`,
-                description: `Description for Ticket-${id}`,
-                status: 'Open',
-                assignedTo: `User-${id % 10}`,
-            })),
-            total: 100,
-            searchname: '',
+            ticketsData: [],
+            total: 0,
+            loading: false,
             openModal: false,
             currentTicket: null,
         };
     }
-
+    componentDidMount() {
+      const { currentUser } = this.props;
+      console.log("wtf",currentUser);
+      if (currentUser) {
+          this.props.dispatch(fetchTicketsAction(currentUser));
+          this.setState({ loading: false, ticketsData: this.props.tickets.tickets });
+          console.log("ajsdbaljsdnaksndlaksn",this.props);
+      }
+  }
+ 
     handleEdit = (ticket) => {
         this.setState({ openModal: true, currentTicket: ticket });
     };
@@ -72,14 +46,47 @@ class Tickets extends Component {
         this.setState({ openModal: false, currentTicket: null });
     };
 
+    getStatusColor = (status) => {
+        switch (status) {
+            case 'Open':
+                return 'success';
+            case 'In Progress':
+                return 'info';
+            case 'Closed':
+                return 'success';
+            case 'Overdue':
+                return 'error';
+            default:
+                return 'default';
+        }
+    };
+
+    getUrgencyColor = (urgency) => {
+        switch (urgency) {
+            case 'Low':
+                return 'green';
+            case 'Medium':
+                return 'warning';
+            case 'High':
+                return 'error';
+            default:
+                return 'default';
+        }
+    };
+
     render() {
-        const { page, pageSize, data, total, transition, massSel, openModal, currentTicket } = this.state;
+        const { page, pageSize, ticketsData, total, loading, openModal, currentTicket } = this.state;
         const regheads = [
             {
-                dataField: 'ticketNumber',
+                dataField: 'id',
                 sort: true,
-                text: 'Ticket Number'
+                text: 'Ticket ID'
             },
+            {
+              dataField: 'name',
+              sort: true,
+              text: 'Ticket Name'
+          },
             {
                 dataField: 'description',
                 sort: true,
@@ -91,13 +98,28 @@ class Tickets extends Component {
                 align: 'center',
                 text: 'Status',
                 formatter: (cellContent, row) => (
-                    <div>
-                        {row.status && (<TemplateBadge label={row.status} />)}
-                    </div>
+                    <Chip 
+                        label={row.status} 
+                        color={this.getStatusColor(row.status)}
+                        variant="outlined"
+                    />
                 )
             },
             {
-                dataField: 'assignedTo',
+                dataField: 'urgency',
+                sort: true,
+                align: 'center',
+                text: 'Urgency',
+                formatter: (cellContent, row) => (
+                    <Chip 
+                        label={row.urgency} 
+                        color={this.getUrgencyColor(row.urgency)}
+                        variant="outlined"
+                    />
+                )
+            },
+            {
+                dataField: 'assignee_id',
                 sort: true,
                 text: 'Assigned To'
             },
@@ -106,85 +128,36 @@ class Tickets extends Component {
                 sort: false,
                 text: 'Actions',
                 formatter: (cellContent, row) => (
-                    <>
-                        <Button 
-                            onClick={() => this.handleEdit(row)} 
-                            style={{ marginRight: 5, width: 30, height: 35 }} 
-                            color="warning" 
-                            variant="contained"
-                        >
-                          <Typography variant="caption">View Ticket</Typography>
-                         </Button>
-                    </>
+                    <Button 
+                        onClick={() => this.handleEdit(row)} 
+                        startIcon={<VisibilityIcon />} 
+                        color="primary" 
+                        variant="contained"
+                    >
+                        View Ticket
+                    </Button>
                 )
             }
         ];
-
+        console.log(this.props);
         return (
             <>
-                <Box sx={{marginRight:80}}>
-                    <Office365SSO showWelcome={true} />
-                     <Drawer anchor="right" open={this.state.drawerOpen} onClose={this.toggleDrawer}>
-                        <Box sx={{ width: 400 }} role="presentation">
-                            {/* Add filter components here */}
-                        </Box>
-                    </Drawer>
+            <Navbar/>
+                <Box sx={{ marginRight: 80 }}>
                     <Container>
+                    <Typography sx={{mt:4}}variant="h2">
+                      Tickets
+                    </Typography>
                         <Grid container spacing={5}>
                             <Grid item xs={12}>
-                                {transition && (
-                                    <Box>
-                                        <Typography variant="h6">Transition Items</Typography>
-                                        <Grid container spacing={2} alignItems="center">
-                                            <Grid item xs={2}>
-                                                <Typography variant="subtitle1">Assignee</Typography>
-                                            </Grid>
-                                            <Grid item xs={3}>
-                                                <TemplateSelectMulti
-                                                    label="Assignee"
-                                                    onChange={(e) => this.onMassUpdateValue('commission_user_id', e)}
-                                                    value={this.state.massUpdateValue['commission_user_id']}
-                                                    options={this.props.registrationsAdminList.data.config.commission_users.map((e) => ({
-                                                        label: e.name,
-                                                        value: e.name,
-                                                        id: e.id,
-                                                    }))}
-                                                />
-                                            </Grid>
-                                            <Grid item xs={2}>
-                                                <TemplateButtonIcon
-                                                    onClick={this.saveMass}
-                                                    label={<SaveIcon />}
-                                                />
-                                            </Grid>
-                                            <Grid item xs={2}>
-                                                <TemplateButtonIcon
-                                                    onClick={this.cancelMass}
-                                                    label={<CancelIcon />}
-                                                />
-                                            </Grid>
-                                        </Grid>
-                                        <PainTable
-                                            keyField='id'
-                                            selectAll={false}
-                                            data={massSel}
-                                            total={massSel.length}
-                                            page={0}
-                                            pageSize={massSel.length}
-                                            columns={regheads}
-                                            onPageChange={this.pageChange}
-                                            onMassChange={this.onMassChange}
-                                            onSort={this.sortChange}
-                                            onPageGridsPerPageChange={this.pageGridsChange}
-                                        />
-                                    </Box>
-                                )}
-                                {!transition && (
-                                    <Box sx={{width:1600,mt:10}}> 
+                                {loading ? (
+                                    <AppSpinner />
+                                ) : (
+                                    <Box sx={{ width: 1600, mt: 10 }}> 
                                         <PainTable
                                             keyField='id'
                                             selectAll={true}
-                                            data={data}
+                                            data={ticketsData}
                                             total={total}
                                             page={page}
                                             pageSize={pageSize}
@@ -216,9 +189,7 @@ class Tickets extends Component {
 function mapStateToProps(store) {
     return {
         currentUser: store.auth.currentUser,
-        registrationsAdminList: store.registrationsAdminList,
-        plansList: store.plansList,
-        registrationAdminUpdate: store.registrationAdminUpdate,
+        tickets: store.ticketsReducer.list,
     };
 }
 

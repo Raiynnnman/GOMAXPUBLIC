@@ -40,9 +40,7 @@ import Tab from '@mui/material/Tab';
 import Navbar from '../../components/Navbar';
 import RegistrationsEdit from './RegistrationsEdit';
 import Office365SSO from '../utils/Office365SSO';
-import DealTracker from './DealTracker';
 import Tickets from './Tickets';
-import { Container } from '@mui/material';
 
 class Registrations extends Component {
     constructor(props) { 
@@ -503,47 +501,32 @@ class Registrations extends Component {
     } 
 
     edit(r) { 
-        console.log("edit",r)
         this.state.selected = JSON.parse(JSON.stringify(r));
         this.setState(this.state);
     } 
 
     render() {
-        console.log("p",this.props);
-        console.log("s",this.state);
         var regheads = [
             {
                 dataField:'office_id',
                 sort:true,
                 hidden:true,
-                onClick: (content,row) => (
-                    this.edit(content)
-                ),
                 text:'ID'
             },
             {
                 dataField:'name',
                 sort:true,
-                onClick: (content,row) => (
-                    this.edit(content)
-                ),
                 text:'Name'
             },
             {
                 dataField:'email',
                 sort:true,
-                onClick: (content,row) => (
-                    this.edit(content)
-                ),
                 text:'Email'
             },
             {
                 dataField:'state',
                 sort:true,
                 align:'center',
-                onClick: (content,row) => (
-                    this.edit(content)
-                ),
                 text:'State'
             },
             {
@@ -551,9 +534,6 @@ class Registrations extends Component {
                 sort:true,
                 align:'center',
                 text:'Office Type',
-                onClick: (content,row) => (
-                    this.edit(content)
-                ),
                 formatter:(cellContent,row) => (
                     <div>
                         {row.office_type}
@@ -564,9 +544,6 @@ class Registrations extends Component {
                 dataField:'call_status',
                 sort:true,
                 text:'Call Status',
-                onClick: (content,row) => (
-                    this.edit(content)
-                ),
                 formatter:(cellContent,row) => (
                     <div>
                         {row.call_status && <TemplateBadge label={row.call_status}/>}
@@ -577,9 +554,6 @@ class Registrations extends Component {
                 dataField:'office_alternate_status_name',
                 sort:true,
                 text:'Type',
-                onClick: (content,row) => (
-                    this.edit(content)
-                ),
                 formatter:(cellContent,row) => (
                     <div>
                         {row.office_alternate_status_name && <TemplateBadge label={row.office_alternate_status_name}/>}
@@ -590,9 +564,6 @@ class Registrations extends Component {
                 dataField:'commission_name',
                 sort:true,
                 text:'Assignee',
-                onClick: (content,row) => (
-                    this.edit(content)
-                ),
                 formatter:(cellContent,row) => (
                     <div>
                         {row.commission_name && <TemplateBadge label={row.commission_name}/>}
@@ -604,9 +575,6 @@ class Registrations extends Component {
                 sort:true,
                 align:'center',
                 text:'Status',
-                onClick: (content,row) => (
-                    this.edit(content)
-                ),
                 formatter:(cellContent,row) => (
                     <div>
                         {row.status && (<TemplateBadge label={row.status}/>)}
@@ -968,28 +936,9 @@ class Registrations extends Component {
                         <Tabs style={{marginBottom:20}} value={this.state.activeTab} onChange={this.toggleTab}>
                             <Tab value='myregistrations' label='Assigned to Me'/>
                             <Tab value='registrations' label='Registrations'/>
-                            <Tab value='dealtracker' label='Deal Tracker'/>
-                            {/*<Tab value='Tickets' label='Tickets'/>*/}
+
                             {/*<Tab value='myactivities' label='My Activities'/>*/}
                         </Tabs>
-                        {(this.state.activeTab === 'dealtracker')  && ( 
-                            <>
-                            {(this.state.selected === null ) && (
-                            <DealTracker 
-                                dashboard={this.props.registrationsAdminList.data.dashboard}
-                                onEdit={this.edit}
-                                data={this.props.registrationsAdminList.data.deal_tracker}
-                                config={this.props.registrationsAdminList.data.config}
-                                />
-                            )}
-                            {(this.state.selected !== null ) && (
-                                <RegistrationsEdit selected={this.state.selected} onSave={this.save} onCancel={this.close}/>
-                            )}
-                            </>
-                        )}
-                        {(this.state.activeTab === 'Tickets')  && ( 
-                                <Tickets/>
-                        )}
                         {(this.state.activeTab === 'myactivities')  && ( 
                             <Office365SSO showCalendar={true}/>
                         )}
