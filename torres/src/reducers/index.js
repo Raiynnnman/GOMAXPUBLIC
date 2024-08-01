@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 import auth from './auth';
+import calendarBackendBooking from './calendarBackendBooking';
 import demoStart from './demoStart';
 import onlineDemoTraffic from './onlineDemoTraffic';
 import onlineDemo from './onlineDemo';
@@ -197,6 +198,7 @@ export default combineReducers({
     userDocumentsUpdate,
     chat,
     demoStart,
+    calendarBackendBooking,
     onlineDemo,
     onlineDemoTraffic,
     onlineDemoSave,

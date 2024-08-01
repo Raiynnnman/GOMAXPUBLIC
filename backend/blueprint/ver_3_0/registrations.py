@@ -80,3 +80,9 @@ def onlinedemojoin(*args, **kwargs):
 def trafficdemo(*args, **kwargs):
     po = RegistrationRest.OnlineDemoTrafficRest()
     return po.postWrapper(*args,**kwargs)
+
+@registrations.route('/calendar/booking', methods=['POST'])
+@swag_from(docs_dir + 'registerprovider.yaml')
+def calbooking(*args, **kwargs):
+    po = RegistrationRest.CalendarBookingRest()
+    return po.postWrapper(*args,**kwargs)

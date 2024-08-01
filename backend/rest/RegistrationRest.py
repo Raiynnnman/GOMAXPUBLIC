@@ -92,3 +92,10 @@ class OnlineDemoTrafficRest(RestBase):
         u = Registrations.OnlineDemoTraffic()
         ret = u.process(args[0])
         return ret
+
+class CalendarBookingRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Registrations.CalendarBooking()
+        ret = u.process(args[0])
+        return ret

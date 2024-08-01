@@ -1572,3 +1572,32 @@ class OnlineDemoTraffic(RegistrationsBase):
         t = AdminTraffic.TrafficGet()
         ret = t.getTrafficData(params)
         return ret
+
+class CalendarBooking(RegistrationsBase):
+
+    def __init__(self):
+        super().__init__()
+
+    def isDeferred(self):
+        return False
+
+    def execute(self, *args, **kwargs):
+        ret = {}
+        params = args[1][0]
+        print("params",params)
+        db = Query()
+        db.update("""
+            insert into calendar_bookings 
+                (
+                    email,phone,description,
+                    day, time, timezone, offset
+                ) values (
+                    %s,%s,%s,%s,%s,%s,%s
+                )
+            """,(params['email'],params['phone'],params['description'],
+                 params['date'],params['time'],
+                 params['timezone'],params['tz_offset']
+                )
+        )
+        db.commit()
+        return ret

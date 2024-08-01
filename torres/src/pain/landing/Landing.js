@@ -13,6 +13,7 @@ import { getLandingData } from '../../actions/landingData';
 import './Landing.scss';
 import Grid from '@mui/material/Grid';
 import Container from '@mui/material/Container';
+import Calender from '../calendar/Calender';
 
 const handleDragStart = (e) => e.preventDefault();
 

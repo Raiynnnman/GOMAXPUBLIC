@@ -43,12 +43,12 @@ import Pricing from './components/Pricing';
 import Join from './pain/online-demo/Join';
 import OnlineDemoList from './pain/admin/OnlineDemoList';
 import Tickets from "./pain/admin/Tickets";
+import Calendar from "./pain/calendar/Calender";
 const CloseButton = ({closeToast}) => <i onClick={closeToast} className="la la-close notifications-close"/>
 
 class App extends Component {
 
     render() { 
-        console.log("p",this.props);
         if (window.location.hash.startsWith('#/')) {
             window.location = window.location.hash.replace('#', '')
         }
@@ -82,6 +82,7 @@ class App extends Component {
                         <Route exact path='/demo' component={Landing}/>
                         <Route exact path='/introduction' component={Landing}/>
                         <Route exact path='/meeting' component={Landing}/>
+                        <Route exact path='/newmeeting' component={Calendar}/>
                         <Route exact path='/referral' component={Landing}/>
                         <Route exact path='/forgot' component={Forgot}/>
                         <Route exact path='/verify/:token' component={Verified}/>
