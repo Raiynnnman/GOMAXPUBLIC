@@ -3,9 +3,8 @@ import { Container, Typography, Drawer, Grid, Box, Button, Chip } from '@mui/mat
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { connect } from 'react-redux';
 import AppSpinner from '../utils/Spinner';
-// import { fetchTicketsAction } from '../../actions/ticketsUpsert';
+import { fetchTicketsAction } from '../../actions/ticketsUpsert';
 import PainTable from '../utils/PainTable';
-import Office365SSO from '../utils/Office365SSO';
 import TicketsUpsert from './TicketsUpsert';
 import Navbar from '../../components/Navbar';
 
@@ -14,11 +13,13 @@ class Tickets extends Component {
         super(props);
         this.state = {
             selected: null,
+            currentUser: null,
             activeTab: 'tickets',
             transition: false,
             search: null,
             filter: [],
             drawerOpen: false,
+            comments:[],
             page: 0,
             pageSize: 10,
             ticketsData: [],
@@ -29,15 +30,28 @@ class Tickets extends Component {
         };
     }
     componentDidMount() {
-      const { currentUser } = this.props;
-      console.log("wtf",currentUser);
-      if (currentUser) {
-          //this.props.dispatch(fetchTicketsAction(currentUser));
-          //this.setState({ loading: false, ticketsData: this.props.tickets.tickets });
-          //console.log("ajsdbaljsdnaksndlaksn",this.props);
-      }
-  }
- 
+      console.log("mounting");
+        const { currentUser } = this.props;
+         if (!currentUser) {
+            console.error('currentUser is not defined');
+            return;
+        }
+        this.setState({ currentUser: currentUser });
+        this.props.dispatch(fetchTicketsAction(currentUser) => (response){
+          console.log(response);
+        });
+        this.setState({ loading: false});
+        this.setState({ ticketsData: this.props.tickets });
+        this.setState({ total: this.props.tickets.length})
+        this.setState({ comments: this.props.tickets.comments});
+        this.setState({ currentUser: this.props.currentUser});
+
+    }
+    
+    componentWillUnmount() {
+      console.log("unmounting");
+    }
+    
     handleEdit = (ticket) => {
         this.setState({ openModal: true, currentTicket: ticket });
     };
@@ -63,7 +77,7 @@ class Tickets extends Component {
 
     getUrgencyColor = (urgency) => {
         switch (urgency) {
-            case 'Low':
+            case 1:
                 return 'green';
             case 'Medium':
                 return 'warning';
@@ -75,7 +89,7 @@ class Tickets extends Component {
     };
 
     render() {
-        const { page, pageSize, ticketsData, total, loading, openModal, currentTicket } = this.state;
+        const { page, pageSize, ticketsData, total, loading, openModal, currentTicket, comments,currentUser} = this.state;
         const regheads = [
             {
                 dataField: 'id',
@@ -179,6 +193,7 @@ class Tickets extends Component {
                         open={openModal}
                         onClose={this.handleCloseModal}
                         ticket={currentTicket}
+                        comments={comments}
                     />
                 )}
             </>
@@ -187,10 +202,11 @@ class Tickets extends Component {
 }
 
 function mapStateToProps(store) {
-    return {
-        currentUser: store.auth.currentUser,
-        tickets: store.ticketsReducer.list,
-    };
-}
+  return {
+      currentUser: store.auth.currentUser,
+      tickets: store.ticketsReducer.list,
+  }
+};
 
 export default connect(mapStateToProps)(Tickets);
+ 

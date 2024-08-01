@@ -235,22 +235,27 @@ class TicketList(AdminBase):
         search_params.extend([limit, offset * limit])
         q += " LIMIT %s OFFSET %s"
 
-        results = db.query(q, search_params)
         ret = {
-            'tickets': results,
-            'total': total,
-            'comments': db.query("""
-                SELECT
-                    sqc.support_queue_id, sqc.text, sqc.created, u.first_name, u.last_name
-                FROM
-                    support_queue_comments sqc
-                    LEFT JOIN users u ON sqc.user_id = u.id
-                WHERE
-                    sqc.support_queue_id IN (""" + ",".join(["%s"] * len(results)) + """)
-            """, [r['id'] for r in results
-            ]),
-            
+            'tickets': [],
+            'total': 0,
+            'comments': []
         }
 
-        return ret
+        results = db.query(q, search_params)
 
+        if results:
+            ret['tickets'] = results
+            ret['total'] = len(results)
+            ret['comments'] = db.query(
+                """
+                    SELECT
+                        sqc.support_queue_id, sqc.text, sqc.created, u.first_name, u.last_name
+                    FROM
+                        support_queue_comments sqc
+                        LEFT JOIN users u ON sqc.user_id = u.id
+                    WHERE
+                        sqc.support_queue_id IN (""" + ",".join(["%s"] * len(results)) + """)
+                """, [r['id'] for r in results]
+            )
+
+        return ret

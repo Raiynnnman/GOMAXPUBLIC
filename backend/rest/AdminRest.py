@@ -108,7 +108,7 @@ class TicketListRest(RestBase):
     def post(self, *args, **kwargs):
         u = AdminTickets.TicketList()
         ret = u.process(args[0])
-        print(ret)
+        print("Result",ret)
         return ret
 
 

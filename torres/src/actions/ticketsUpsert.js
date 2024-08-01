@@ -65,10 +65,9 @@ export const fetchTicketsAction = (params = {}, callback) => {
     console.log('fetchTicketsAction', params);
     return async (dispatch) => {
         dispatch({ type: FETCH_TICKETS_REQUEST });
-
         try {
             const response = await axios.post('/admin/tickets/list', params);
-            console.log()
+            console.log("response",response);
             dispatch({ type: FETCH_TICKETS_SUCCESS, payload: response.data });
             if (callback) {
                 callback(null, response.data);
