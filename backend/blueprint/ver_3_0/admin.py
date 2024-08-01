@@ -161,7 +161,7 @@ def ticketcreate(*args, **kwargs):
 @token_required
 @swag_from(docs_dir + 'registrationlist.yaml')
 def trafficlist(*args, **kwargs):
-    po = AdminRest.TicketListRest()
+    po = AdminRest.TrafficGetRest()
     return po.postWrapper(*args,**kwargs)
 
 @admin.route('/admin/plans/get', methods=['POST'])
