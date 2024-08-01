@@ -64,7 +64,7 @@ class Testimonial extends React.Component {
                                 <Slider {...testimonial2} style={{color:'black'}} asNavFor={this.state.nav1} 
                                     ref={slider => (this.testimonial2 = slider)} className="testimonial-text-slider text-center">
                                     <div className="sin-testiText">
-                                        <h2>Dr. Ali Mullanack, Chiropractor</h2>
+                                        <h2>Ali Mullanack, Practice Manager</h2>
                                         <div className="client-rating">
                                             <i className="zmdi zmdi-star color"></i>
                                             <i className="zmdi zmdi-star color"></i>
