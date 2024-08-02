@@ -125,30 +125,27 @@ class DealTracker extends Component {
         <Box style={{margin:20}}>
             {(this.props.data && this.props.data.length > 0) && (
             <>
-            <Grid container xs="12">
-                <Grid item xs="2">
+            <div style={{}}>
+                <div style={{display:"flex",justifyContent:"space-around"}}>
                     <AnalyticEcommerce 
                         title="Appointments Today"
                         count={`${this.props.dashboard.appointments.num1 || 0}`}  
                         percentage={((this.props.dashboard.appointments.num2 || 0) * 100).toFixed(2)}  
                     />
-                </Grid>
-                <Grid item xs="3" style={{marginLeft:10}}>
                     <MainCard sx={{height:220}}  title="Appointments Coming" content={false}>
                         <MonthlyBarChart height={200} data={this.props.dashboard.future_appointments} />
                     </MainCard>
-                </Grid>                
-                <Grid item xs="3" style={{marginLeft:10}}>
+                    <MainCard sx={{height:220}}  title="Appointments Presented" content={false}>
+                        <MonthlyBarChart height={200} data={this.props.dashboard.presented} />
+                    </MainCard>
                     <MainCard sx={{height:220}} title="Paid Value" content={false}>
                         <MonthlyBarChart height={200} data={this.props.dashboard.week_sales} />
                     </MainCard>
-                </Grid>                
-                <Grid item xs="3" style={{marginLeft:10}}>
                     <MainCard sx={{height:220}}  title="Pipeline Value" content={false}>
                         <MonthlyBarChart height={200} data={this.props.dashboard.potential_sales} />
                     </MainCard>
-                </Grid>                
-            </Grid>
+                </div>
+            </div>
             <Grid container xs="12" style={{marginTop:20}}>
                 <Grid item xs="12">
                     <Paper sx={{ width: '100%', overflow: 'hidden' }}>

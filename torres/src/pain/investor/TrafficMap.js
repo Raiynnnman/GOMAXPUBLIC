@@ -273,7 +273,7 @@ class MapContainer extends Component {
                       data: e,
                     };
                     return <Marker key={e.index} {...markerProps} icon={{ 
-                            url:'/red-car.png',
+                            url:'/DGreen-Glow.png',
                             scaledSize:{width:15,height:15}
                           }} />
                   })}

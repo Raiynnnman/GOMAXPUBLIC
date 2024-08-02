@@ -73,6 +73,8 @@ class RegistrationsEdit extends Component {
         this.editContact = this.editContact.bind(this);
         this.save = this.save.bind(this);
         this.updateName = this.updateName.bind(this);
+        this.updateBusinessName = this.updateBusinessName.bind(this);
+        this.updateBASName = this.updateBASName.bind(this);
         this.onCommissionChange = this.onCommissionChange.bind(this);
         this.onSetterChange = this.onSetterChange.bind(this);
         this.updateEmail = this.updateEmail.bind(this);
@@ -87,11 +89,13 @@ class RegistrationsEdit extends Component {
         this.setDate  =this.setDate.bind(this);
         this.presentDate  =this.presentDate.bind(this);
         this.ecdDate  =this.ecdDate.bind(this);
+        this.setToPresentDate = this.setToPresentDate.bind(this);
         this.changeCloseRequirements  =this.changeCloseRequirements.bind(this);
         this.closeDate = this.closeDate.bind(this);
         this.close = this.close.bind(this);
         this.onStatusChange = this.onStatusChange.bind(this);
         this.updateDealValue = this.updateDealValue.bind(this);
+        this.changePresentationResult = this.changePresentationResult.bind(this);
         this.onActionStatusChange = this.onActionStatusChange.bind(this);
         this.onActionTypeChange = this.onActionTypeChange.bind(this);
         this.onCallStatusChange = this.onCallStatusChange.bind(this);
@@ -223,10 +227,15 @@ class RegistrationsEdit extends Component {
             name: this.state.selected.name,
             do_not_contact: this.state.selected.do_not_contact,
             provider_queue_presented_status_id: this.state.selected.provider_queue_presented_status_id,
+            provider_queue_presented_status_id: this.state.selected.provider_queue_presented_status_id,
+            set_to_present_date: this.state.selected.set_to_present_date,
+            business_name: this.state.selected.business_name,
+            doing_business_as_name: this.state.selected.doing_business_as_name,
             provider_queue_source_id: this.state.selected.provider_queue_source_id,
             set_date: this.state.selected.set_date,
             include_on_deal_tracker:this.state.selected.include_on_deal_tracker,
             deal_value:this.state.selected.deal_value,
+            presentation_result:this.state.selected.presentation_result,
             refund_requested:this.state.selected.refund_requested,
             present_date:this.state.selected.present_date,
             estimated_close_date:this.state.selected.estimated_close_date,
@@ -259,6 +268,7 @@ class RegistrationsEdit extends Component {
         if (this.state.selected.card) { 
             tosend.card = this.state.selected.card
         }
+        console.log("ts",tosend);
         this.props.onSave(tosend);
         this.state.selected = null;
         this.setState(this.state);
@@ -301,6 +311,10 @@ class RegistrationsEdit extends Component {
         this.state.selected.deal_value = e.target.value;
         this.setState(this.state);
     } 
+    changePresentationResult(e) { 
+        this.state.selected.presentation_result = e.target.value;
+        this.setState(this.state);
+    } 
     changeCloseRequirements(e) { 
         this.state.selected.close_requirements = e.target.value;
         this.setState(this.state);
@@ -316,6 +330,10 @@ class RegistrationsEdit extends Component {
         this.setState(this.state);
     }
 
+    setToPresentDate(e) { 
+        this.state.selected.set_to_present_date =  e
+        this.setState(this.state);
+    }
     ecdDate(e) { 
         this.state.selected.estimated_close_date = e
         this.setState(this.state);
@@ -495,6 +513,14 @@ class RegistrationsEdit extends Component {
         this.state.selected.last_name = e.target.value;
         this.setState(this.state);
     }
+    updateBusinessName(e) { 
+        this.state.selected.business_name = e.target.value;
+        this.setState(this.state);
+    }
+    updateBASName(e) { 
+        this.state.selected.doing_business_as_name = e.target.value;
+        this.setState(this.state);
+    }
     updateName(e) { 
         this.state.selected.name = e.target.value;
         this.setState(this.state);
@@ -650,13 +676,13 @@ class RegistrationsEdit extends Component {
             <Grid container xs="12" style={{marginTop:10}}>
                 <Grid container xs="6"> 
                       {this.state.selected.id && (
-                        <Grid item xs={1} style={{margin:10}}>
+                        <Grid item xs={3} style={{margin:10}}>
                             <TemplateTextField readOnly 
                             label="ID" value={this.state.selected.id}/>
                         </Grid>
                       )}
                       {this.state.selected.office_id && (
-                        <Grid item xs={1} style={{margin:10}}>
+                        <Grid item xs={3} style={{margin:10}}>
                             <TemplateTextField readOnly 
                             label="Office ID" value={this.state.selected.office_id}/>
                         </Grid>
@@ -664,6 +690,14 @@ class RegistrationsEdit extends Component {
                       <Grid item xs={5} style={{margin:10}}>
                         <TemplateTextField onChange={this.updateName}
                         label="Office Name" value={this.state.selected.name}/>
+                      </Grid>
+                      <Grid item xs={5} style={{margin:10}}>
+                        <TemplateTextField onChange={this.updateBusinessName}
+                        label="Business Name" value={this.state.selected.business_name}/>
+                      </Grid>
+                      <Grid item xs={5} style={{margin:10}}>
+                        <TemplateTextField onChange={this.updateBASName}
+                        label="Doing Business As" value={this.state.selected.doing_business_as_name}/>
                       </Grid>
                       <Grid item xs={4} style={{margin:10}}>
                         <TemplateTextField onChange={this.updateEmail}
@@ -694,6 +728,12 @@ class RegistrationsEdit extends Component {
                             <TemplateTextArea label="Close Requirements" rows={3} 
                                 value={this.state.selected.close_requirements} style={{marginRight:10}}
                                 onChange={this.changeCloseRequirements} 
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TemplateTextArea label="Presentation Result" rows={3} 
+                                value={this.state.selected.presentation_result} style={{marginRight:10}}
+                                onChange={this.changePresentationResult} 
                             />
                         </Grid>
                 </Grid>
@@ -942,9 +982,14 @@ class RegistrationsEdit extends Component {
                     </Grid>
                     <Grid item xs={5}>
                         <div style={{display:"flex",justifyContent:"space-evenly"}}>
-                            <font>Close Date</font>
-                            <Datetime inputProps = {{placeholder:'Close Date'}} timeFormat={false} 
-                                onChange={this.closeDate} value={this.state.selected.closed_date} />
+                            <font>Set to Present</font>
+                            <Datetime inputProps = {{placeholder:'Set to Present'}} timeFormat={false} 
+                                onChange={this.setToPresentDate} value={this.state.selected.set_to_present_date} />
+                        </div>
+                    </Grid>
+                    <Grid item xs={5}>
+                        <div style={{display:"flex",justifyContent:"start",marginLeft:20}}>
+                            <font>Closed Date {this.state.selected.closed_date ? this.state.selected.closed_date : 'N/A'}</font>
                         </div>
                     </Grid>
                 </Grid>

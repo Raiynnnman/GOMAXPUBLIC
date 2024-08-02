@@ -62,6 +62,9 @@ class TrafficGet(AdminBase):
         TZ = tzInfo.getTZ()
         OT = self.getOfficeTypes()
         db = Query()
+        BLUR = False
+        if 'blur' in params:
+            BLUR = True
         ret['config'] = {}
         ret['data'] = []
         ret['config']['avail'] = []
@@ -147,15 +150,13 @@ class TrafficGet(AdminBase):
                 o = db.query("""
                     select lat,lon as lng from 
                     position_zip where zipcode=%s
-                    UNION ALL
-                    select lat,lon as lng from 
-                    position_zip where zipcode=77089
                     """,(params['zipcode'],)
                 )
                 if len(o) > 0:
                     ret['center'] = {'lat':o[0]['lat'],'lng':o[0]['lng']}
                 else:
-                    ret['center'] = {'lat':l[0]['lat'],'lng':l[0]['lng']}
+                    w = int(len(l)/2)
+                    ret['center'] = {'lat':l[w]['lat'],'lng':l[w]['lng']}
             else:
                 w = int(len(l)/2)
                 ret['center'] = {'lat':l[w]['lat'],'lng':l[w]['lng']}
@@ -241,6 +242,35 @@ class TrafficGet(AdminBase):
                         """,(x['traffic_incidents_contact_id'],)
                     )
                     x['contact'] = x['contact'][0]
+                    if 'email' in x['contact'] and BLUR:
+                        if x['contact']['email'] is not None:
+                            g = x['contact']['email'].split('@')
+                            l = len(g[1])
+                            g[1] = ''
+                            for v in range(l):
+                                g[1] += "*" 
+                            x['contact']['email'] = "@".join([g[0],g[1]])
+                        if x['contact']['last_name'] is not None:
+                            l = len(x['contact']['last_name'])
+                            x['contact']['last_name'] = ''
+                            for v in range(l):
+                                x['contact']['last_name'] += "*" 
+                        if x['contact']['twitter'] is not None:
+                            g = x['contact']['twitter'][5:]
+                            g = "****" + g
+                            x['contact']['twitter'] = g
+                        if x['contact']['instagram'] is not None:
+                            g = x['contact']['instagram'][5:]
+                            g = "****" + g
+                            x['contact']['instagram'] = g
+                        if x['contact']['facebook'] is not None:
+                            g = x['contact']['facebook'][5:]
+                            g = "****" + g
+                            x['contact']['facebook'] = g
+                        if x['contact']['phone'] is not None:
+                            g = x['contact']['phone'][:6]
+                            g += "****"
+                            x['contact']['phone'] = g
                 ret['data'].append(x)
         zipcoords = {}
         if 'zipcode' in params:

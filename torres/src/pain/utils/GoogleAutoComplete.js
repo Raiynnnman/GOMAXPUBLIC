@@ -65,7 +65,7 @@ function GoogleAutoComplete({onChange,initVal}) {
     };
 
     useEffect(() => { 
-        if (value.value && value.value.terms) { 
+        if (value && value.value && value.value.terms) { 
             var t = value.value.terms
             var s = t[t.length-2].value ? t[t.length-2].value : ''
             var c = t[t.length-3].value ? t[t.length-3].value : ''

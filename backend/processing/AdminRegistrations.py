@@ -59,7 +59,7 @@ class RegistrationUpdate(AdminBase):
         invid = 0
         pqid = 0
         planid = 0
-        print(params)
+        print(json.dumps(params,indent=4,sort_keys=True))
         l = db.query("""
             select 
                 pq.id,pqs.name,o.name,o.id as office_id,pqs.name as status,
@@ -255,7 +255,6 @@ class RegistrationUpdate(AdminBase):
                 """,(params['present_date'],offid)
             )
         if 'estimated_close_date' in params:
-            print(params['estimated_close_date'],offid)
             db.update("""
                 update provider_queue set estimated_close_date=%s where office_id=%s
                 """,(params['estimated_close_date'],offid)
@@ -264,6 +263,27 @@ class RegistrationUpdate(AdminBase):
             db.update("""
                 update provider_queue set closed_date=%s where office_id=%s
                 """,(params['closed_date'],offid)
+            )
+        if 'set_to_present_date' in params:
+            db.update("""
+                update provider_queue set set_to_present_date=%s where office_id=%s
+                """,(params['set_to_present_date'],offid)
+            )
+        if 'business_name' in params:
+            db.update("""
+                update provider_queue set business_name=%s where office_id=%s
+                """,(params['business_name'],offid)
+            )
+        if 'doing_business_as_name' in params:
+            db.update("""
+                update provider_queue set doing_business_as_name=%s where office_id=%s
+                """,(params['doing_business_as_name'],offid)
+            )
+        if 'presentation_result' in params:
+            print(params['presentation_result'],offid)
+            db.update("""
+                update provider_queue set presentation_result=%s where office_id=%s
+                """,(params['presentation_result'],offid)
             )
         if 'deal_value' in params:
             db.update("""
@@ -799,10 +819,10 @@ class RegistrationList(AdminBase):
                 comu.email as commission_email,
                 o.office_alternate_status_id, oas1.name as office_alternate_status_name,
                 coup.id as coupon_id,coup.name as coupon_name,pqqs.name as source_name,
-                pqps.name as presented_status_name,
+                pqps.name as presented_status_name,pq.presentation_result,
                 pq.set_date,pq.present_date,pq.estimated_close_date,
                 ifnull(pq.close_requirements,'') as close_requirements, pq.closed_date,
-                pq.refund_requested,
+                pq.refund_requested,pq.set_to_present_date, pq.business_name, pq.doing_business_as_name,
                 pq.include_on_deal_tracker,pq.provider_queue_source_id,
                 pq.provider_queue_presented_status_id,pq.deal_value
             from
@@ -879,6 +899,7 @@ class RegistrationList(AdminBase):
                 else:
                     q += """ and (
                         opp.phone like %s or o.email like %s  or o.name like %s
+                        or pq.business_name like %s or pq.doing_business_as_name like %s
                         or off_u.last_name like %s or off_u.first_name like %s
                         or oa.name like %s
                         ) 
@@ -889,6 +910,10 @@ class RegistrationList(AdminBase):
                     search_par.insert(0,params['search']+'%%')
                     search_par.insert(0,params['search']+'%%')
                     search_par.insert(0,params['search']+'%%')
+                    search_par.insert(0,params['search']+'%%')
+                    search_par.insert(0,params['search']+'%%')
+                    count_par.insert(0,params['search']+'%%')
+                    count_par.insert(0,params['search']+'%%')
                     count_par.insert(0,params['search']+'%%')
                     count_par.insert(0,params['search']+'%%')
                     count_par.insert(0,params['search']+'%%')
@@ -1006,6 +1031,21 @@ class RegistrationList(AdminBase):
             """
         )
         ret['dashboard']['appointments'] = ret['dashboard']['appointments'][0]
+        ret['dashboard']['presented'] = db.query("""
+            WITH RECURSIVE t as (
+                select date(now()) as dt, 0 as count1
+                UNION 
+                 SELECT DATE_ADD(t.dt, INTERVAL 1 day) as month,
+                 (select count(id) from provider_queue p
+                    where 
+                    day(t.dt)=day(p.set_to_present_date) and month(t.dt)=month(p.set_to_present_date) and 
+                    year(t.dt)=year(p.set_to_present_date) 
+                 ) as count1
+                 FROM t
+                 WHERE DATE_ADD(t.dt, INTERVAL 1 DAY) <= date_add(now(),interval 7 day)
+            )
+            select date_format(date_add(dt,interval -1 day),'%a, %D') as label,round(ifnull(count1,0),2) as count FROM t ;
+        """)
         ret['dashboard']['future_appointments'] = db.query("""
             WITH RECURSIVE t as (
                 select date(now()) as dt, 0 as count1

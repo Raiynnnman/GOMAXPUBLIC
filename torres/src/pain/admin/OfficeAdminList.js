@@ -93,6 +93,8 @@ class OfficeList extends Component {
         this.addAddress = this.addAddress.bind(this);
         this.addUser = this.addUser.bind(this);
         this.nameChange = this.nameChange.bind(this);
+        this.dbaChange = this.dbaChange.bind(this);
+        this.bnChange = this.bnChange.bind(this);
         this.emailChange = this.emailChange.bind(this);
         this.addContact = this.addContact.bind(this);
         this.editContact = this.editContact.bind(this);
@@ -223,7 +225,7 @@ class OfficeList extends Component {
 
     reload() { 
         this.props.dispatch(getOffices(
-            {sort:this.state.sort,direction:this.state.direction,
+            {office_id:this.state.selProvider,sort:this.state.sort,direction:this.state.direction,
              search:this.state.search,limit:this.state.pageSize,
             offset:this.state.page,status:this.state.filter,alt_status:this.state.altFilter}
         ));
@@ -429,6 +431,14 @@ class OfficeList extends Component {
             r = JSON.parse(JSON.stringify(row));
         } 
         this.state.selected=r
+        this.setState(this.state);
+    } 
+    dbaChange(e) { 
+        this.state.selected.doing_business_as_name = e.target.value;
+        this.setState(this.state);
+    } 
+    bnChange(e) { 
+        this.state.selected.business_name = e.target.value;
         this.setState(this.state);
     } 
     nameChange(e) { 
@@ -994,6 +1004,12 @@ class OfficeList extends Component {
                         </Grid>
                         <Grid item xs={4} style={{margin:20}}>
                           <TemplateTextField onChange={this.nameChange} label="Name" value={this.state.selected.name}/>
+                        </Grid>
+                        <Grid item xs={4} style={{margin:20}}>
+                          <TemplateTextField onChange={this.bnChange} label="Business Name" value={this.state.selected.business_name}/>
+                        </Grid>
+                        <Grid item xs={4} style={{margin:20}}>
+                          <TemplateTextField onChange={this.dbaChange} label="Doing Business As" value={this.state.selected.doing_business_as_name}/>
                         </Grid>
                         <Grid item xs={4} style={{margin:20}}>
                           <TemplateTextField 

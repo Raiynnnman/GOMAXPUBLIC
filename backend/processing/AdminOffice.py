@@ -64,6 +64,7 @@ class OfficeList(AdminBase):
                     pqs.name as provider_queue_status,ot.name as office_type,o.updated,o.commission_user_id,
                     trim(concat(comu.first_name, ' ', comu.last_name)) as commission_name,pq.website,
                     trim(concat(setu.first_name, ' ', setu.last_name)) as setter_name,
+                    pq.business_name,pq.doing_business_as_name,pq.closed_date,
                     o.office_alternate_status_id, oas1.name as office_alternate_status_name
                 from 
                     office o
@@ -91,7 +92,8 @@ class OfficeList(AdminBase):
         elif 'search' in params and params['search'] is not None:
             q += """ and (
                     o.email like %s or o.name like %s or op.phone like %s or
-                    off_u.last_name like %s or off_u.first_name like %s or
+                    pq.business_name like %s or pq.doing_business_as_name like %s
+                    or off_u.last_name like %s or off_u.first_name like %s or
                     off_u.phone like %s or oa.addr1 like %s or pq.website like %s
                 ) 
             """
@@ -103,6 +105,10 @@ class OfficeList(AdminBase):
             search_par.insert(0,'%%' + params['search']+'%%')
             search_par.insert(0,'%%' + params['search']+'%%')
             search_par.insert(0,'%%' + params['search']+'%%')
+            search_par.insert(0,'%%' + params['search']+'%%')
+            search_par.insert(0,'%%' + params['search']+'%%')
+            count_par.insert(0,'%%' + params['search']+'%%')
+            count_par.insert(0,'%%' + params['search']+'%%')
             count_par.insert(0,'%%' + params['search']+'%%')
             count_par.insert(0,'%%' + params['search']+'%%')
             count_par.insert(0,'%%' + params['search']+'%%')
@@ -422,6 +428,16 @@ class OfficeSave(AdminBase):
             db.update("""
                 update office set office_alternate_status_id=%s where id = %s
                 """,(params['office_alternate_status_id'],params['id'])
+            )
+        if 'business_name' in params:
+            db.update("""
+                update provider_queue set business_name=%s where office_id=%s
+                """,(params['closed_date'],params['id'])
+            )
+        if 'doing_business_as_name' in params:
+            db.update("""
+                update provider_queue set doing_business_as_name=%s where office_id=%s
+                """,(params['closed_date'],params['id'])
             )
         if 'setter_user_id' in params:
             db.update("""

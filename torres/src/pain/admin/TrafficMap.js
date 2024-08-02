@@ -218,7 +218,7 @@ class MapContainer extends Component {
             <>
                 <Grid container spacing={2} style={{marginTop:20}}>
                     <Grid item xs={12}>
-                        <GoogleAutoComplete onChange={this.updateAddress}/>
+                        <GoogleAutoComplete value={this.state.origin} onChange={this.updateAddress}/>
                     </Grid>
                     <Grid item xs={12}>
                         <Button
@@ -311,7 +311,7 @@ class MapContainer extends Component {
       case 103:
         return "http://maps.google.com/mapfiles/ms/icons/green-dot.png";
       case 100:
-        return "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
+        return "https://maps.google.com/mapfiles/kml/shapes/arrow.png";
       default:
         return null;
     }
