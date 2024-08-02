@@ -1033,7 +1033,7 @@ class RegistrationList(AdminBase):
         ret['dashboard']['appointments'] = ret['dashboard']['appointments'][0]
         ret['dashboard']['presented'] = db.query("""
             WITH RECURSIVE t as (
-                select date(now()) as dt, 0 as count1
+                select date_add(now(),INTERVAL -7 day) as dt, 0 as count1
                 UNION 
                  SELECT DATE_ADD(t.dt, INTERVAL 1 day) as month,
                  (select count(id) from provider_queue p
@@ -1042,7 +1042,7 @@ class RegistrationList(AdminBase):
                     year(t.dt)=year(p.set_to_present_date) 
                  ) as count1
                  FROM t
-                 WHERE DATE_ADD(t.dt, INTERVAL 1 DAY) <= date_add(now(),interval 7 day)
+                 WHERE DATE_ADD(t.dt, INTERVAL 1 DAY) <= date_add(now(),interval 1 day)
             )
             select date_format(date_add(dt,interval -1 day),'%a, %D') as label,round(ifnull(count1,0),2) as count FROM t ;
         """)
