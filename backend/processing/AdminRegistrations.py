@@ -1005,7 +1005,7 @@ class RegistrationList(AdminBase):
                 select id,name from office_alternate_status""")
         ret['config']['call_status'] = db.query("select id,name from provider_queue_call_status")
         ret['config']['action_status'] = db.query("select id,name from provider_queue_actions_status")
-        ret['config']['action_type'] = db.query("select id,name from provider_queue_actions_type")
+        ret['config']['action_type'] = db.query("select id,name from provider_queue_actions_type where id in (1,3)")
         ret['config']['states'] = db.query("select state,count(state) from office_addresses where length(state) > 0 group by state")
         ret['config']['status'] = db.query("select id,name from provider_queue_status")
         ret['config']['presented_status'] = db.query("select id,name from provider_queue_presented_status")

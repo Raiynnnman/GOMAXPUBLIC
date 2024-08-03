@@ -173,12 +173,13 @@ class RegistrationsEdit extends Component {
     }
 
     addAction() { 
-        this.state.selected.actions.unshift({id:'new', text:'',edit:true})
+        this.state.selected.actions.unshift({new:true,id:'new', text:''})
         this.state.actionIdx = 0;
         this.setState(this.state);
     }
 
     saveAction(e) { 
+        console.log(this.state.actionIdx,this.state.selected.actions)
         this.state.selected.actions[this.state.actionIdx].edit=false;
         this.state.actionIdx = null;
         this.setState(this.state);
@@ -268,7 +269,6 @@ class RegistrationsEdit extends Component {
         if (this.state.selected.card) { 
             tosend.card = this.state.selected.card
         }
-        console.log("ts",tosend);
         this.props.onSave(tosend);
         this.state.selected = null;
         this.setState(this.state);
@@ -368,14 +368,6 @@ class RegistrationsEdit extends Component {
         var g = this.props.registrationsAdminList.data.config.deal_source.filter((g) => e.target.value === g.name)
         if (g.length > 0) { 
             this.state.selected.provider_queue_source_id = g[0].id;
-            this.setState(this.state);
-        } 
-    } 
-
-    onActionStatusChange(e) { 
-        var g = this.props.registrationsAdminList.data.config.action_status.filter((g) => e.target.value === g.name)
-        if (g.length > 0) { 
-            this.state.selected.actions[this.state.actionIdx].action_status_id = g[0].id;
             this.setState(this.state);
         } 
     } 
@@ -534,7 +526,6 @@ class RegistrationsEdit extends Component {
         this.setState(this.state);
     }
     render() {
-        console.log("p1",this.props);
         var offheads = [
             {
                 dataField:'id',
@@ -1062,12 +1053,12 @@ class RegistrationsEdit extends Component {
                                 <Grid container xs="12">
                                     {this.state.selected.actions.sort((a,b) => (a.created > b.created ? -1:1)).map((e) => { 
                                         return (
-                                            <Grid item xs="3" key={e.id} style={{marginLeft:10}}>
-                                                {(e.edit) && (
+                                            <Grid item xs="4" key={e.id} style={{marginLeft:10}}>
+                                                {(e.new) && (
                                                     <Office365SSO editMode={e.edit} client={this.state.selected} currentUser={this.props.currentUser} data={e} onCreateEvent={this.onCreateEvent} 
                                                     onCancelEvent={this.onCancelEvent} showNewEvent={true}/>
                                                 )}
-                                                {(!e.edit) && (
+                                                {(!e.new) && (
                                                     <Box sx={{mt:3}}>
                                                     <Paper elevation={3} sx={cardStyle}>
                                                         <Grid container xs="12">
@@ -1081,14 +1072,16 @@ class RegistrationsEdit extends Component {
                                                                 </font>
                                                             </Grid>
                                                             <Grid item xs="4">
-                                                                <font style={{fontSize:12}}>
+                                                                <font style={{fontSize:14}}>
                                                                     {moment(e.created).format('LLL')}
                                                                 </font>
                                                             </Grid>
-                                                            {/*<Grid item xs="2">
-                                                                <TemplateButtonIcon sx={buttonStyle} style={{marginTop:0,marginRight:20}} 
+                                                            <Grid item xs="2">
+                                                                <div style={{display:"flex",alignSelf:"right"}}>
+                                                                <TemplateButtonIcon sx={buttonStyle} 
                                                                     onClick={() => this.editAction(e)} label={<EditIcon/>}/>
-                                                            </Grid>*/}
+                                                                </div>
+                                                            </Grid>
                                                         </Grid>
                                                         <hr/>
                                                         <Grid container xs="12">
@@ -1153,116 +1146,12 @@ class RegistrationsEdit extends Component {
                                                             </Grid>
                                                         </Grid>
                                                     </Grid>
-                                                </Paper>
-                                                </Box>
-                                            )}
-                                        </Grid>
-                                        )
-                                    })}
-                                </Grid>
-                            </>
-                            )}
-                            {(this.state.selected && this.state.selected.actions && this.state.subTab === 'activity2') && (
-                            <>
-                                <TemplateButtonIcon onClick={() => this.addAction({id:"new"})} label={<AddBoxIcon/>}/>
-                                <Grid container xs="12">
-                                {this.state.selected.actions.sort((a,b) => (a.created > b.created ? -1:1)).map((e) => { 
-                                    return (
-                                        <Grid item xs="4" key={e.id} style={{marginLeft:10}}>
-                                            <Box sx={{mt:3}}>
-                                            <Paper elevation={3} sx={cardStyle}>
-                                                <Grid container xs="12">
-                                                    <Grid item xs="6">
-                                                        <font style={{fontSize:"14pt"}}>
-                                                            {
-                                                            this.state.selected.assignee.filter((g) => g.id === e.user_id).length > 0 ? 
-                                                            this.state.selected.assignee.filter((g) => g.id === e.user_id)[0].first_name + " " +
-                                                            this.state.selected.assignee.filter((g) => g.id === e.user_id)[0].last_name + " " : ""
-                                                            }
-                                                        </font>
-                                                    </Grid>
-                                                    <Grid item xs="4">
-                                                        {moment(e.created).format('LLL')}
-                                                    </Grid>
-                                                    <Grid item xs="2">
-                                                        <TemplateButtonIcon sx={buttonStyle} style={{marginTop:0,marginRight:20}} 
-                                                            onClick={() => this.editAction(e)} label={<EditIcon/>}/>
-                                                    </Grid>
-                                                </Grid>
-                                                <hr/>
-                                                <Grid container xs="12">
-                                                    <Grid container xs="3">
-                                                        <Grid container xs="12">
-                                                            <Grid item xs="12">
-                                                              <TemplateSelect
-                                                                  onChange={this.onActionTypeChange}
-                                                                  style={{marginLeft:0}}
-                                                                  disabled={!e.edit}
-                                                                  label="Action Type"
-                                                                  value={{
-                                                                    label:
-                                                                        this.props.registrationsAdminList.data.config.action_type.filter((g) => 
-                                                                            e.action_type_id === g.id).length > 0 ?
-                                                                            this.props.registrationsAdminList.data.config.action_type.filter((g) => 
-                                                                                e.action_type_id === g.id)[0].name : ''
-                                                                  }}
-                                                                  options={
-                                                                        this.props.registrationsAdminList.data.config.action_type.map((g) => { return ({label:g.name,value:g.name}) }) 
-                                                                    }
-                                                                />
-                                                            </Grid>
-                                                        </Grid>
-                                                        <Grid container xs="12">
-                                                            <Grid item xs="12">
-                                                              <TemplateSelect
-                                                                  onChange={this.onActionStatusChange}
-                                                                  disabled={!e.edit}
-                                                                  style={{marginLeft:0}}
-                                                                  label="Action Status"
-                                                                  value={{
-                                                                    label:
-                                                                        this.props.registrationsAdminList.data.config.action_status.filter((g) => 
-                                                                            e.action_status_id === g.id).length > 0 ?
-                                                                            this.props.registrationsAdminList.data.config.action_status.filter((g) => 
-                                                                                e.action_status_id === g.id)[0].name : ''
-                                                                  }}
-                                                                  options={
-                                                                        this.props.registrationsAdminList.data.config.action_status.map((g) => { return ({label:g.name,value:g.name}) }) 
-                                                                    }
-                                                                />
-                                                            </Grid>
-                                                        </Grid>
-                                                        <Grid container xs="12">
-                                                            <Grid item xs="12">
-                                                            </Grid>
-                                                        </Grid>
-                                                    </Grid>
-                                                    <Grid container xs="8" style={{marginLeft:5,borderLeft:"1px solid black"}}>
-                                                        {(!e.edit) && ( 
-                                                        <Grid item xs="12">
-                                                            <div style={{marginLeft:10,overflow:"auto",height:100,display: 'flex', 
-                                                                alignItems: 'left', justifyContent: 'start'}}>
-                                                            {e.action}
-                                                            </div>
-                                                        </Grid>
-                                                        )}
-                                                        {(e.edit) && ( 
-                                                        <Grid item xs="12">
-                                                          <Grid item xs={12}>
-                                                            <TemplateTextArea rows={5} value={e.action} style={{margin:10}}
-                                                                onChange={this.action} 
-                                                            />
-                                                          </Grid>
-                                                        </Grid>
-                                                        )}
-                                                    </Grid>
-                                                </Grid>
                                                 <Grid container xs="12" style={{marginTop:10}}>
                                                     {(e.edit) && ( 
                                                     <Grid item xs="12">
                                                         <div style={{display:"flex",justifyContent:"center"}}>
                                                             <div style={{display:"flex",justifyContent:"spread-evenly"}}>
-                                                            <TemplateButtonIcon disabled={this.state.actionIdx !== null} 
+                                                            <TemplateButtonIcon 
                                                                 onClick={this.saveAction} label={<SaveIcon/>}/>
                                                             <TemplateButtonIcon outline style={{marginLeft:10}} 
                                                                 onClick={this.cancelAction} label={<CancelIcon/>}/>
@@ -1271,12 +1160,14 @@ class RegistrationsEdit extends Component {
                                                     </Grid>
                                                     )}
                                                 </Grid>
-                                            </Paper>
-                                            </Box>
+                                                </Paper>
+                                                </Box>
+                                            )}
                                         </Grid>
-                                    )})}
-                                    </Grid>
-                                </>
+                                        )
+                                    })}
+                                </Grid>
+                            </>
                             )}
                             {(this.state.subTab === 'comments') && (
                             <>
