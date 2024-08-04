@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect } from 'react';
 import { Container, Typography, Drawer, Grid, Box, Button, Chip } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { connect } from 'react-redux';
@@ -13,7 +13,7 @@ class Tickets extends Component {
         super(props);
         this.state = {
             selected: null,
-            currentUser: null,
+            currentUser: [],
             activeTab: 'tickets',
             transition: false,
             search: null,
@@ -30,26 +30,17 @@ class Tickets extends Component {
         };
     }
     componentDidMount() {
-      console.log("mounting");
-        const { currentUser } = this.props;
-         if (!currentUser) {
-            console.error('currentUser is not defined');
-            return;
-        }
-        this.setState({ currentUser: currentUser });
-        this.props.dispatch(fetchTicketsAction(currentUser) => (response){
-          console.log(response);
-        });
-        this.setState({ loading: false});
-        this.setState({ ticketsData: this.props.tickets });
-        this.setState({ total: this.props.tickets.length})
-        this.setState({ comments: this.props.tickets.comments});
-        this.setState({ currentUser: this.props.currentUser});
-
-    }
+      const { currentUser } = this.props;
+      if (!currentUser) {
+          return;
+      }
+      this.setState({ currentUser: currentUser }, () => {
+          this.props.dispatch(fetchTicketsAction(currentUser));
+      });
+  }
     
     componentWillUnmount() {
-      console.log("unmounting");
+      this.setState({ticketsData: [], comments: [],total: 0});
     }
     
     handleEdit = (ticket) => {
@@ -81,7 +72,7 @@ class Tickets extends Component {
                 return 'green';
             case 'Medium':
                 return 'warning';
-            case 'High':
+            case 'Critical':
                 return 'error';
             default:
                 return 'default';
@@ -153,7 +144,6 @@ class Tickets extends Component {
                 )
             }
         ];
-        console.log(this.props);
         return (
             <>
             <Navbar/>

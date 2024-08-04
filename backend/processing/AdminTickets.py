@@ -169,7 +169,7 @@ class TicketList(AdminBase):
                 sq.support_status_id, sq.created, sq.updated, sq.description,
                 sq.assignee_id, u.first_name, u.last_name, u.email as user_email,
                 oas.name as office_alternate_status_name, op.id as plan_id,
-                sq.urgency  -- Add this line to select urgency
+                sq.urgency   
             FROM
                 support_queue sq
                 LEFT JOIN office o ON sq.office_id = o.id
@@ -249,7 +249,7 @@ class TicketList(AdminBase):
             ret['comments'] = db.query(
                 """
                     SELECT
-                        sqc.support_queue_id, sqc.text, sqc.created, u.first_name, u.last_name
+                        sqc.support_queue_id, sqc.text, sqc.created, u.first_name, u.last_name, sqc.user_id
                     FROM
                         support_queue_comments sqc
                         LEFT JOIN users u ON sqc.user_id = u.id
