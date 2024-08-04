@@ -30,7 +30,7 @@ const MapMetaData = ({ selected }) => {
                     </Typography>
                     <div style={{display:"flex",justifyContent:"flex-end"}}>
                     <Typography variant="h6" fontWeight="500" gutterBottom>
-                        {selected.score && selected.score.toFixed ? selected.score.toFixed(2) : selected.score || "0.00"}
+                        {selected.score && selected.score.toFixed ? (selected.score/10).toFixed(2) : selected.score || "0.00"}
                     </Typography>
                     </div>
                   </div>

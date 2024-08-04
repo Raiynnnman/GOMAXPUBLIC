@@ -65,7 +65,7 @@ class OfficeList(AdminBase):
                     trim(concat(comu.first_name, ' ', comu.last_name)) as commission_name,pq.website,
                     trim(concat(setu.first_name, ' ', setu.last_name)) as setter_name,
                     pq.business_name,pq.doing_business_as_name,pq.closed_date,
-                    o.office_alternate_status_id, oas1.name as office_alternate_status_name
+                    o.office_alternate_status_id, oas1.name as office_alternate_status_name,o.score
                 from 
                     office o
                     left outer join office_type ot on o.office_type_id = ot.id

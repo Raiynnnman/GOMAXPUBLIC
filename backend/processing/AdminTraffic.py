@@ -511,6 +511,10 @@ class TrafficGet(AdminBase):
                         )
                 )
                 t['score'] = t['score'][0]['score']
+                db.update("""
+                    update office set score = %s where id = %s
+                    """,(t['score'],t['office_id'])
+                )
                 t['client_count'] = db.query("""
                     select count(id) as cnt from client_intake_offices where
                     office_addresses_id = %s
@@ -518,7 +522,7 @@ class TrafficGet(AdminBase):
                 )[0]['cnt']
                 t['coords'] = json.loads(t['coords'])
                 ret['data'].append(t) 
-    
+        db.commit() 
         return ret
 
     @check_admin

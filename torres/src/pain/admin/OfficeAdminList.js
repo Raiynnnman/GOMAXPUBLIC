@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import Badge from '@mui/material/Badge';
+import Chip from '@mui/material/Chip';
 import moment from 'moment';
 import Box from '@mui/material/Box';
 import AddBoxIcon from '@mui/icons-material/AddBox';
@@ -649,7 +651,21 @@ class OfficeList extends Component {
                 onClick: (content,row) => (
                     this.edit(content)
                 ),
-                text:'Name'
+                text:'Name',
+                formatter:(cellContent,row) => (
+                    <div>
+                        <div style={{display:"flex",justifyContent:"space-between"}}>
+                            <div>
+                            {row['name']}
+                            </div>
+                            <div></div>
+                            <div style={{display:"flex",justifyContent:"space-around"}}>
+                                <Chip color="primary" label={(row.score/10).toFixed(2) + "s"}/>
+                                <Chip color="secondary" style={{marginLeft:5}} label={row.clients.length + "c"}/>
+                            </div>
+                        </div>
+                    </div>
+                )
             },
             {
                 dataField:'status',
