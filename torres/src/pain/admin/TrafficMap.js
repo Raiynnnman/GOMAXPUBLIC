@@ -4,7 +4,7 @@ import googleKey from '../../googleConfig';
 import MapMetaData from "../../components/MapMetaData";
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import { APIProvider, Map, Marker, useMap, useMapsLibrary } from '@vis.gl/react-google-maps';
+import { APIProvider, Map, Marker,  AdvancedMarker, useMap, useMapsLibrary } from '@vis.gl/react-google-maps';
 import { HeatMap, GoogleApiWrapper } from "google-maps-react";
 import DirectionsComponent from '../utils/DirectionsComponent';
 import GoogleAutoComplete from '../utils/GoogleAutoComplete';
@@ -32,6 +32,8 @@ const darkModeStyle = [
   { "featureType": "water", "elementType": "geometry", "stylers": [{ "color": "#002060" }] },
   { "featureType": "water", "elementType": "labels.text.fill", "stylers": [{ "color": "#000000" }] }
 ];
+const google = window.google;
+console.log("goog",google);
 
 class MapContainer extends Component {
   constructor(props) {
@@ -149,6 +151,7 @@ class MapContainer extends Component {
     };
 
     const position = this.props.data.data.center;
+    const map = this.state.mapRef;
     return (
       <Grid container spacing={2} sx={{ mt: 5, mr: 2 }}>
         <Grid item xs={12} md={8}>
@@ -163,6 +166,7 @@ class MapContainer extends Component {
                 fullscreenControl={false}
                 options={{ styles: darkModeStyle }} // Apply dark mode style here
             >
+            <>
               {this.props.targeted && this.props.targeted.map((e) => {
                 let markerProps = {
                   onClick: (map) => this.handleMarkerClick(e, map),
@@ -180,7 +184,8 @@ class MapContainer extends Component {
                   icon: this.getMarkerIcon(e)
                 };
                 return <Marker key={e.index} {...markerProps} />;
-              })}
+             })}
+            </>
             </Map>
             {this.state.fetchDirections && (
               <DirectionsComponent
@@ -277,7 +282,6 @@ class MapContainer extends Component {
       </Grid>
     );
   }
-
   getMarkerIcon(e) {
     switch (e.category_id) {
       case 2:

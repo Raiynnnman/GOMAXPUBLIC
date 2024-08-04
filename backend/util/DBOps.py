@@ -37,10 +37,14 @@ class Query(DBBase):
     def query(self,query,params=[]):
         if self.__handle__ is None:
             self.__handle__ = DBManager().getConnection()
-        curs = self.__handle__.cursor(buffered=True,dictionary=True)
-        curs.execute(query,params)
-        rows = curs.fetchall()
-        j = json.loads(json.dumps(rows,cls=DateTimeEncoder))
+        try:
+            curs = self.__handle__.cursor(buffered=True,dictionary=True)
+            curs.execute(query,params)
+            rows = curs.fetchall()
+            j = json.loads(json.dumps(rows,cls=DateTimeEncoder))
+        except Exception as e:
+            log.error(query % params)
+            raise e
         curs.close()
         return j
 

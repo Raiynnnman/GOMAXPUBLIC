@@ -457,6 +457,60 @@ class TrafficGet(AdminBase):
                     where ou.user_id=u.id and ou.office_id=%s
                     """,(t['office_id'],)
                 )
+                t['rating'] = db.query("""
+                    select avg(rating) as t from ratings where office_id=%s
+                    """,(t['office_id'],)
+                )
+                t['rating'] = t['rating'][0]['t']
+                t['users'] = db.query("""
+                    select u.first_name,u.last_name,u.phone,u.email
+                    from 
+                        users u
+                        left outer join office_user ou on ou.user_id = u.id
+                    where
+                        ou.office_id = %s
+                    """,(t['office_id'],)
+                )
+                t['plan'] = db.query("""
+                    select pd.description,pd.duration,op.start_date,timestampdiff(day,op.start_date,now()) as age
+                    from 
+                    office_plans op, pricing_data pd
+                    where
+                    pd.id = op.pricing_data_id
+                    and office_id = %s
+                    """,(t['office_id'],)
+                )
+                t['score'] = db.query("""
+                    select
+                        round(timestampdiff(day,op.start_date,now())-
+                        count(cio.id)*5 +
+                        if(
+                            st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192 > 5,
+                            st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192,
+                            -st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192
+                        ) +
+                        (count(i.cnt)*10),2) +
+                        (pd.duration*2) as score 
+                    from
+                        office o
+                        left outer join client_intake_offices cio on cio.office_id = o.id
+                        left outer join office_addresses oa on oa.office_id=o.id
+                        left outer join office_plans op on op.office_id = o.id
+                        left outer join pricing_data pd on op.pricing_data_id = pd.id
+                        left outer join (select office_id,count(id) as cnt from 
+                            invoices where office_id=%s and invoice_status_id=15) i on i.office_id=o.id
+                    where
+                        oa.id = %s
+                    group by 
+                        oa.id
+                    """,(
+                        ret['center']['lng'],ret['center']['lat'],
+                        ret['center']['lng'],ret['center']['lat'],
+                        ret['center']['lng'],ret['center']['lat'],
+                        t['office_id'], t['id'],
+                        )
+                )
+                t['score'] = t['score'][0]['score']
                 t['client_count'] = db.query("""
                     select count(id) as cnt from client_intake_offices where
                     office_addresses_id = %s

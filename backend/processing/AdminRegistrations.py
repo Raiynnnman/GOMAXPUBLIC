@@ -806,6 +806,7 @@ class RegistrationList(AdminBase):
         q = """
             select 
                 pq.id,o.name,o.email,o.id as office_id,pqs.name as status,
+                concat('=hyperlink("https://login.poundpain.com/app/main/admin/registrations/',pq.id,'"),"LINK")'),
                 pq.provider_queue_status_id,pq.sm_id,pqls.name as lead_strength,
                 pqls.id as lead_strength_id, pq.created,pq.updated,pq.places_id,
                 pq.initial_payment,ot.id as office_type_id,pq.tags,
@@ -1137,7 +1138,8 @@ class RegistrationList(AdminBase):
                 myq += ")\n"
             myq += " group by o.id "
             o = db.query(myq,pre_par)
-            ret['filename'] = 'provider_report.csv'
+            d = calcdate.getYearToday()
+            ret['filename'] = 'provider_report-%s.csv' % d
             frame = pd.DataFrame.from_dict(o)
             t = frame.to_csv()
             ret['content'] = base64.b64encode(t.encode('utf-8')).decode('utf-8')
