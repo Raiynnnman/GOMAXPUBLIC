@@ -251,6 +251,17 @@ class CouponAdminList extends Component {
                 )
             },
             {
+                dataField:'full_price',
+                editable: false,
+                align:'right',
+                text:'Full Price',
+                formatter:(cellContent,row) => (
+                    <div>
+                        ${row.full_price.toFixed(2)} 
+                    </div>
+                )
+            },
+            {
                 dataField:'total',
                 editable: false,
                 align:'right',

@@ -54,6 +54,7 @@ class CouponList(AdminBase):
         q = """
             select 
                 c.id,c.name,c.pricing_data_id,c.total,c.perc,
+                p.upfront_cost*p.duration as full_price,
                 c.reduction,c.start_date,c.end_date,c.active
             from 
                 coupons c
