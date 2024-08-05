@@ -240,6 +240,16 @@ class CouponAdminList extends Component {
                 text:'Name',
             },
             {
+                dataField:'description',
+                editable: false,
+                text:'Plan',
+                formatter: (cellContent,row) => (
+                    <div>
+                        {row.description + " (" + row.duration + " months)"}
+                    </div>
+                )
+            },
+            {
                 dataField:'active',
                 align:'center',
                 text:'Active',
