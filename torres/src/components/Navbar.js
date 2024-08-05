@@ -295,7 +295,7 @@ class Navbar extends Component {
                                         <ul className="main-menu">
                                             <li className="active"><a href="/app">Home</a></li>
                                             <li><a href="/app/main/admin/registrations">CRM</a></li>
-                                            <li><a href="/app/main/admin/tickets">Tickets</a></li>
+                                            <li><a href="/app/main/admin/tickets">Support</a></li>
                                             <li><a> 
                                                 <DropdownMenu currentUser={this.props.currentUser} 
                                                     title={
@@ -313,7 +313,7 @@ class Navbar extends Component {
                                         <ul>                              
                                             <li className="active"><a href="/app">Home</a></li>
                                             <li><a href="/app/main/admin/registrations">CRM</a></li>
-                                            <li><a href="/app/main/admin/tickets">Tickets</a></li>
+                                            <li><a href="/app/main/admin/tickets">Support</a></li>
                                             <li><a href="#"> // eslint-disable-next-line jsx-a11y/anchor-is-valid
                                                 <DropdownMenu currentUser={this.props.currentUser} 
                                                     title={
@@ -459,7 +459,7 @@ class Navbar extends Component {
                                             <li><a href="/app/main/admin/investors">Investors</a></li>
                                             <li><a href="/app/main/admin/map">Map</a></li>
                                             <li><a href="/app/main/admin/registrations">CRM</a></li>
-                                            <li><a href="/app/main/admin/tickets">Tickets</a></li>
+                                            <li><a href="/app/main/admin/tickets">Support</a></li>
                                             <li><a>
                                                 <DropdownMenu currentUser={this.props.currentUser} 
                                                     title='System' items={systemItems} dispatch={this.props.dispatch}/>

@@ -482,15 +482,17 @@ class TrafficGet(AdminBase):
                 )
                 t['score'] = db.query("""
                     select
-                        round(timestampdiff(day,op.start_date,now())-
-                        count(cio.id)*5 +
-                        if(
-                            st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192 > 5,
-                            st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192,
-                            -st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192
-                        ) +
-                        (count(i.cnt)*10),2) +
-                        (pd.duration*2) as score 
+                        round(
+                            timestampdiff(day,op.start_date,now()) -
+                            count(cio.id)*5                        +
+                            if(
+                                st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192 > 5,
+                                st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192,
+                                -st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192
+                            )                                      +
+                            count(i.cnt)*10                        +
+                            (pd.duration*2) + (o.priority * 10)
+                            ,2) as score
                     from
                         office o
                         left outer join client_intake_offices cio on cio.office_id = o.id
@@ -498,7 +500,7 @@ class TrafficGet(AdminBase):
                         left outer join office_plans op on op.office_id = o.id
                         left outer join pricing_data pd on op.pricing_data_id = pd.id
                         left outer join (select office_id,count(id) as cnt from 
-                            invoices where office_id=%s and invoice_status_id=15) i on i.office_id=o.id
+                            invoices where office_id=%s and total > 0 and invoice_status_id=15) i on i.office_id=o.id
                     where
                         oa.id = %s
                     group by 
