@@ -45,13 +45,11 @@ class DealTracker extends Component {
 
 
     getColor(e) { 
-        console.log("gc",e)
         return "white";
     } 
 
 
     render() {
-        console.log("p1",this.props);
         const columns = [
             { dataField: 'id', text: '', 
                 onClick: (content,row) => (

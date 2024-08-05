@@ -507,7 +507,6 @@ class OfficeList extends Component {
     } 
 
     render() {
-        console.log("s",this.state);
 
         var phonesheads = [
             {

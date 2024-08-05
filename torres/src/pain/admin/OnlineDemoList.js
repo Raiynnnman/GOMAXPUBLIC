@@ -187,7 +187,6 @@ class OnlineDemoList extends Component {
     } 
     save() { 
         var tosend = this.state.selected
-        console.log("tosend")
         var t = moment(tosend.start_date);
         tosend.start_date = t.format('YYYY-MM-DDTHH:mm')
         t = moment(tosend.end_date);
@@ -211,7 +210,6 @@ class OnlineDemoList extends Component {
     } 
 
     render() {
-        console.log("s",this.state);
         var heads = [
             {
                 dataField:'id',

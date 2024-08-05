@@ -503,14 +503,11 @@ class Registrations extends Component {
     } 
 
     edit(r) { 
-        console.log("edit",r)
         this.state.selected = JSON.parse(JSON.stringify(r));
         this.setState(this.state);
     } 
 
     render() {
-        console.log("p",this.props);
-        console.log("s",this.state);
         var regheads = [
             {
                 dataField:'office_id',

@@ -376,7 +376,9 @@ class TrafficGet(AdminBase):
         if 103 in params['categories']:
             o = db.query("""
                 select 103 as category_id,'No Result' as category,
-                  count(sha) as count, sha as uuid,lat as lat,lon as lng,
+                  count(sha) as count, sha as uuid,
+                  lat as lat,lon as lng,
+                  city, state,
                   json_array(json_object('lat',lat,'lng',lon)) as coords,0 as zipcode
                 from 
                     search_no_results

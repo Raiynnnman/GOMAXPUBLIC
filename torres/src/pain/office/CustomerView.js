@@ -221,7 +221,6 @@ class CustomerView extends Component {
     } 
 
     render() {
-        console.log(this.state)
         var value = '';
         var cntr = 1;
         return (

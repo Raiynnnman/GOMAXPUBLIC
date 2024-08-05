@@ -1,7 +1,7 @@
 import React, { useState, useEffect, Component } from 'react';
 import { TextField, Grid, Paper, Typography, Button } from '@mui/material';
 import googleKey from '../../googleConfig';
-import MapMetaData from "../../components/MapMetaData";
+import MapMetaData from "./MapMetaData";
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import { APIProvider, Map, Marker,  AdvancedMarker, useMap, useMapsLibrary } from '@vis.gl/react-google-maps';
@@ -33,7 +33,6 @@ const darkModeStyle = [
   { "featureType": "water", "elementType": "labels.text.fill", "stylers": [{ "color": "#000000" }] }
 ];
 const google = window.google;
-console.log("goog",google);
 
 class MapContainer extends Component {
   constructor(props) {

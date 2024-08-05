@@ -67,6 +67,7 @@ class Map extends Component {
             this.state.categoriesFilter = [];
             for (c = 0; c < p.trafficData.data.config.categories.length; c++) {
                 if (p.trafficData.data.config.categories[c].name === 'Accident') { continue; }
+                if (p.trafficData.data.config.categories[c].name === 'Customers') { continue; }
                 if (p.trafficData.data.config.categories[c].name === 'No Results') { continue; }
                 if (p.trafficData.data.config.categories[c].name === 'Potential Providers') { continue; }
                 if (p.trafficData.data.config.categories[c].name === 'Pending Provider') { continue; }

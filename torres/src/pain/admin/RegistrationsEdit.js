@@ -179,7 +179,6 @@ class RegistrationsEdit extends Component {
     }
 
     saveAction(e) { 
-        console.log(this.state.actionIdx,this.state.selected.actions)
         this.state.selected.actions[this.state.actionIdx].edit=false;
         this.state.actionIdx = null;
         this.setState(this.state);

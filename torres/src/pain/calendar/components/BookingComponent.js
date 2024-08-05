@@ -24,11 +24,9 @@ export default function BookingComponent() {
 
     const timeZoneIANA = Intl.DateTimeFormat().resolvedOptions().timeZone;
     function fakeFetch(date, { signal }) {
-      console.log("FF",date)
       return new Promise((resolve, reject) => {
         const timeout = setTimeout(() => {
           const daysInMonth = date.daysInMonth();
-          console.log("dim",daysInMonth);
           var c = 0;
           var daysToHighlight = [] 
           var d = new Date().getDate();
@@ -47,9 +45,7 @@ export default function BookingComponent() {
       });
     }
     const initialValue = dayjs(new Date());
-    console.log("BC")
     function ServerDay(props) {
-      console.log("SD")
       const { highlightedDays = [], day, outsideCurrentMonth, ...other } = props;
       const isSelected = !props.outsideCurrentMonth && highlightedDays.indexOf(props.day.date()) >= 0;
 
@@ -78,7 +74,6 @@ export default function BookingComponent() {
     const [showForm, setShowForm] = useState(false);
     const fetchHighlightedDays = (date) => {
         const controller = new AbortController();
-        console.log("FHD")
         fakeFetch(date, { signal: controller.signal })
           .then(({ daysToHighlight }) => {
             setHighlightedDays(daysToHighlight);
@@ -118,7 +113,6 @@ export default function BookingComponent() {
     };
 
   const handleDateChange = (date) => {
-    console.log("HDC")
     setSelectedDate(date);
     // dispatch(findMeetingTimes(date));
     // Fake fetch available times for the selected date
@@ -126,13 +120,11 @@ export default function BookingComponent() {
   };
 
   const handleTimeSelect = (time) => {
-    console.log("HTS")
     setSelectedTime(time);
     setShowForm(true);
   };
 
   const handleFormSubmit = (event) => {
-    console.log("HFS")
     event.preventDefault();
     const formData = new FormData(event.target);
     const data = {
@@ -145,7 +137,6 @@ export default function BookingComponent() {
       time: selectedTime,
     };
     // Process the form data (e.g., send to the server)
-    console.log(data);
     dispatch(calendarBackendBooking(data));
     setThanks(true);
   };
@@ -154,7 +145,6 @@ export default function BookingComponent() {
     setShowForm(false);
   };
 
-    console.log("here")
     return (
     <>
     <Card sx={{ display: 'flex', flexDirection: 'column', height: 'auto', maxWidth: 600, margin: 'auto', mt: 4, borderRadius: 5, p: 2 }}>

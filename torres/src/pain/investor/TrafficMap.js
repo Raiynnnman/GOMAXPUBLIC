@@ -15,7 +15,6 @@ import {
 } from '@mui/material';
 import googleKey from '../../googleConfig';
 import moment from 'moment';
-import MapMetaData from "../../components/MapMetaData";
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import { APIProvider, Map, Marker, useMap, useMapsLibrary } from '@vis.gl/react-google-maps';
