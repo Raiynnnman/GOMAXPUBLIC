@@ -30,7 +30,7 @@ const timeZoneIANA = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 const darkModeStyle = [
   { "elementType": "geometry", "stylers": [{ "color": "#1e1e1e" }] },
-  { "elementType": "labels.icon", "stylers": [{ "visibility": "off" }] },
+  { "elementType": "labels.icon", "stylers": [{ "visibility": "on" }] },
   { "elementType": "labels.text.fill", "stylers": [{ "color": "#808080" }] },
   { "elementType": "labels.text.stroke", "stylers": [{ "color": "#1e1e1e" }] },
   { "featureType": "administrative", "elementType": "geometry", "stylers": [{ "color": "#808080" }] },
