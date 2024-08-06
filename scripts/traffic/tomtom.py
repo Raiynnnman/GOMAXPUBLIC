@@ -159,7 +159,9 @@ def getTraffic(x,db):
     if not os.path.exists(F):
         if args.usecache:
             raise Exception("usecache specified, but call required")
+        print("Request start")
         r = requests.get(U)
+        print("Request end")
         if r.status_code != 200:
             print("ERROR: %s" % r.text)
             return None
