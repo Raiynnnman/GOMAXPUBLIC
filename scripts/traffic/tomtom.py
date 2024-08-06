@@ -48,8 +48,8 @@ def offset(lat,lon,distance):
     lngMin = lon - lngOffset
     return (lngMin,latMin,lngMax,latMax)
 
-db = Query()
-l = db.query("""
+db1 = Query()
+l = db1.query("""
     select 
         id,
         city,
@@ -72,7 +72,7 @@ for x in l:
     CITIES.append({'id':x['id'],'city':x['city'],'state':x['state'],'zipcode':x['zipcode']})
 
 CATS = {}
-l = db.query("""
+l = db1.query("""
     select id,name from traffic_categories
     """)
 for x in l:
@@ -80,12 +80,13 @@ for x in l:
 
 pollu = encryption.getSHA256()
 pollid = 0
-db.update("""
+db1.update("""
     insert into traffic_poll_attempt (uuid) values (%s)
 """,(pollu,))
-l = db.query("""
+l = db1.query("""
     select LAST_INSERT_ID()
     """)
+
 for x in l:
     pollid = x['LAST_INSERT_ID()']
 
@@ -93,13 +94,13 @@ for x in CITIES:
     l = []
     if int(x['zipcode']) != 0:
         # print('zip',x['zipcode'])
-        l = db.query("""
+        l = db1.query("""
             select lat,lon,zipcode from position_zip where zipcode=%s 
         """,(x['zipcode'],)
         )
     else:
         # print('city',x['city'],x['state'])
-        l = db.query("""
+        l = db1.query("""
             select lat,lon,zipcode from position_zip where name=%s and code1=%s 
         """,(x['city'],x['state']))
     if len(l) < 1:
@@ -141,7 +142,7 @@ while C < THREADS:
     WORKER_QUEUE.append([])
     C += 1
 
-def getTraffic(x):
+def getTraffic(x,db):
     # print("Checking %s" % x)
     F="%s.json" % x
     F=F.replace(' ','_')
@@ -188,6 +189,7 @@ def getTraffic(x):
 def workerThread(i):
     i = int(i)
     print("%s: starting thread" % i)
+    db = Query()
     while True:
         MYQUEUE = json.loads(json.dumps(WORKER_QUEUE[i]))
         WORKER_QUEUE[i] = []
@@ -197,7 +199,7 @@ def workerThread(i):
             while len(MYQUEUE) > 0:
                 x = MYQUEUE[0]
                 MYQUEUE.pop(0)
-                getTraffic(x)
+                getTraffic(x,db)
                 time.sleep(.5)
                 print("%s: Items in CQ: %s, Items left: %s" % (i,len(MYQUEUE),len(WORKER_QUEUE[i])))
         if not THREAD_CTRL[i]['enable'] and len(WORKER_QUEUE[i]) > 0:
