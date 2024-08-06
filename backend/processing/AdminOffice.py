@@ -65,6 +65,7 @@ class OfficeList(AdminBase):
                     trim(concat(comu.first_name, ' ', comu.last_name)) as commission_name,pq.website,
                     trim(concat(setu.first_name, ' ', setu.last_name)) as setter_name,
                     pq.business_name,pq.doing_business_as_name,pq.closed_date,
+                    count(cio.id) as client_count,
                     o.office_alternate_status_id, oas1.name as office_alternate_status_name,o.score
                 from 
                     office o
@@ -72,6 +73,7 @@ class OfficeList(AdminBase):
                     left outer join provider_queue pq on pq.office_id = o.id
                     left outer join office_phones op on op.office_id = o.id 
                     left outer join office_addresses oa on oa.office_id = o.id 
+                    left outer join client_intake_offices cio on cio.office_id=o.id
                     left outer join office_user ou on ou.office_id = o.id
                     left outer join users off_u on off_u.id = ou.user_id
                     left outer join provider_queue_status pqs on pq.provider_queue_status_id=pqs.id
@@ -128,7 +130,7 @@ class OfficeList(AdminBase):
                 search_par.append(z)
             q += ",".join(map(str,arr))
             q += ")"
-        q += " group by o.id order by o.updated desc "
+        q += " group by o.id order by o.id asc "
         cnt = db.query("select count(id) as cnt from (" + q + ") as t", count_par)
         repquery = q
         q += " limit %s offset %s " 
