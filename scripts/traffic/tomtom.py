@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import requests
 import random
+import traceback
 import os
 import sys
 import math
@@ -188,26 +189,32 @@ def getTraffic(x,db):
 
 def workerThread(i):
     i = int(i)
+    time.sleep(2)
     print("%s: starting thread" % i)
     db = Query()
-    while True:
-        MYQUEUE = json.loads(json.dumps(WORKER_QUEUE[i]))
-        WORKER_QUEUE[i] = []
-        L = len(MYQUEUE)
-        if L > 0:
-            print("%s: Processing %s items" % (i,L))
-            while len(MYQUEUE) > 0:
-                x = MYQUEUE[0]
-                MYQUEUE.pop(0)
-                getTraffic(x,db)
-                time.sleep(.5)
-                print("%s: Items in CQ: %s, Items left: %s" % (i,len(MYQUEUE),len(WORKER_QUEUE[i])))
-        if not THREAD_CTRL[i]['enable'] and len(WORKER_QUEUE[i]) > 0:
-            print("%s: stopping thread after completion of %s items" % (i,len(WORKER_QUEUE[i])))
-        elif not THREAD_CTRL[i]['enable']:
-            print("%s: stopping thread" % i)
-            return
-    time.sleep(1)
+    try:
+        while True:
+            MYQUEUE = json.loads(json.dumps(WORKER_QUEUE[i]))
+            WORKER_QUEUE[i] = []
+            L = len(MYQUEUE)
+            if L > 0:
+                print("%s: Processing %s items" % (i,L))
+                while len(MYQUEUE) > 0:
+                    x = MYQUEUE[0]
+                    MYQUEUE.pop(0)
+                    getTraffic(x,db)
+                    time.sleep(.5)
+                    print("%s: (%s) Items in MQ: %s, Items left: %s" % (i, THREAD_CTRL[i]['enable'], len(MYQUEUE),len(WORKER_QUEUE[i])))
+            if len(WORKER_QUEUE[i]) > 0 or len(MYQUEUE) > 0:
+                print("%s: stopping thread after completion of %s items" % (i,len(WORKER_QUEUE[i])))
+            else:
+                break
+    except Exception as e:
+        print("ERROR: %s: Exit thread: %s" % (i,str(e)))
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)
+    print("%s: Exit Thread: (wq=%s,mq=%s)" % (i,len(WORKER_QUEUE[i]),len(MYQUEUE)))
+    return
 
 C = 0
 while C < THREADS:
