@@ -189,7 +189,7 @@ class SubmitDataRequest(ProcessingBase):
             ret = self.execute(task['jobid'],data)
             perf.status(200)
         except Exception as e:
-            print("ERROR:",str(e),data)
+            print("ERROR:",str(e),str(data)[:100])
             jobstate.jobError()
             perf.status(501)
             raise e

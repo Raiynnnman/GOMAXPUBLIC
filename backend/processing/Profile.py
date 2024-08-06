@@ -38,6 +38,8 @@ class Profile(SubmitDataRequest):
             user_id = user['user_id']
         else:
             user_id = user['id']
+        # TODO:
+        #   Check to see if its an API token and if its expire, throw
         db = Query()
         u = db.query(
             """

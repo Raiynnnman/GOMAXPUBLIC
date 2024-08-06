@@ -9,15 +9,19 @@ from datetime import timedelta
 import math
 import json
 from common import settings 
+from sparks.SparkBase import SparkBase
 
-SCHEMAVER=1
 # FRAMES=["m", "d", "y"]
 FRAMES=["d"]
 
 config = settings.config()
 config.read("settings.cfg")
 
-class SparkCommon:
+class SparkCommon(SparkBase):
+
+    def __init__(self):
+        super().__init__()
+
     def getHoursCalc(self, hours, start):
         if start is None:
             start = datetime.now()

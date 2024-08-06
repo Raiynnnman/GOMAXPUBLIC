@@ -33,7 +33,7 @@ install: build
 	cp data_import/doall.sh pre/data_import
 	cp -r ../backend/templates pre/
 	mkdir -p pre/tests
-	cp tests/*.xlsx tests/*.json pre/tests
+	cp -r tests/ pre/tests
 	(cd pre && tar cfz ../targets/install.tar.gz  --exclude p \
 		--exclude targets \
         --exclude ui/src --exclude .git --exclude src \

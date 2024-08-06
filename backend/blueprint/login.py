@@ -35,7 +35,7 @@ def token_required(f):
             token = token.replace("Bearer ","")
             data = jwt.decode(token, config.getKey("encryption_key"), algorithms=['HS256'])
             p = Profile()
-            current_user = p.execute(0,{'user_id':data['user_id']})
+            current_user = p.execute(0,{'token':token,'user_id':data['user_id']})
             if not current_user['active']:
                 raise InvalidCredentials('USER_INACTIVE')
             current_user['user_id'] = data['user_id']

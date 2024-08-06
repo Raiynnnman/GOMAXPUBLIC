@@ -15,9 +15,6 @@ from mysql.connector.errors import PoolError
 
 config = settings.config()
 config.read("settings.cfg")
-#tmp = config.getKey("temporary_files")
-#dbname = "%s/sportsbiz.db" % (tmp)
-#con = sqlite3.connect(dbname, check_same_thread=False, timeout=60)
 
 class DBManager(object):
 

@@ -12,6 +12,7 @@ from blueprint.ver_3_0.client import client
 from blueprint.ver_3_0.corporation import corporation
 from blueprint.ver_3_0.users import users
 from blueprint.ver_3_0.legal import legal
+from blueprint.ver_3_0.storage import storage
 from blueprint.ver_3_0.myday import myday
 from blueprint.ver_3_0.admin import admin
 from blueprint.ver_3_0.search import search
@@ -74,6 +75,7 @@ app.register_blueprint(client)
 app.register_blueprint(corporation)
 app.register_blueprint(users)
 app.register_blueprint(legal)
+app.register_blueprint(storage)
 app.register_blueprint(admin)
 app.register_blueprint(myday)
 app.register_blueprint(office_set)

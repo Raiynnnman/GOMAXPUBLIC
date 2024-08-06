@@ -16,15 +16,15 @@ from common import settings
 from sparks.SparkCommon import SparkCommon
 from util import calcdate, encryption
 from random import randint
+from sparks.SparkBase import SparkBase
 
 config = settings.config()
 config.read("settings.cfg")
-SCHEMAVER = 2
 
+class SparkMapping(SparkBase):
 
-
-class SparkMapping:
     def __init__(self):
+        super().__init__()
         self.mydb = DBManager().getConnection()
 
     def logme(self, s):
@@ -68,12 +68,13 @@ class SparkMapping:
                     .config("spark.yarn.submit.waitAppCompletion", "false") \
                     .config("ipc.client.bind.wildcard.addr", "true") \
                     .config("spark.sql.hive.metastore.version", "3.1.2") \
-                    .config("javax.jdo.option.ConnectionURL", "jdbc:mysql://%s:3306/metastore" % config.getKey("mysql_host")) \
+                    .config("javax.jdo.option.ConnectionURL", "jdbc:mysql://%s:3306/pain" % config.getKey("mysql_host")) \
                     .config("javax.jdo.option.ConnectionDriverName", "com.mysql.jdbc.Driver") \
                     .config("javax.jdo.option.ConnectionPassword", config.getKey("mysql_pass")) \
                     .config("javax.jdo.option.ConnectionUserName", config.getKey("mysql_user")) \
                     .config("write.metadata.delete-after-commit.enabled","true") \
                     .config("spark.sql.catalog.userdata", "org.apache.iceberg.spark.SparkCatalog") \
+                    .config("spark.driver.extraJavaOptions", "-Dlog4j.rootCategory='ERROR, console'") \
                     .config("spark.sql.extensions", "org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions") \
                     .config("spark.sql.catalog.userdata.type", "hadoop") \
                     .config("spark.sql.catalog.userdata.spark_catalog", "org.apache.iceberg.spark.SparkSessionCatalog") \
@@ -187,11 +188,10 @@ class SparkMapping:
     def installobj(self, obj,tbl):
         cur = self.mydb.cursor(buffered=True)
         cur.execute("""
-            replace into objhash
+            replace into datastorage_objhash
                 (objid, tstamp, tbl, schema_version) values
-                (%s, CURRENT_TIMESTAMP, %s, %s)""", (obj,tbl,SCHEMAVER)
+                (%s, CURRENT_TIMESTAMP, %s, %s)""", (obj,tbl,self.getSchemaVer())
         )
-        # print("installing obj/tbl=%s/%s" % (obj,tbl))
         self.mydb.commit()
 
     def flush(self, sph, Q, I, count=0):
@@ -211,17 +211,14 @@ class SparkMapping:
             try:
                 if 'line' in str(e):
                     t = str(e).split("line")
-                    # print("spl1: %s" % t)
                     if len(t) > 1:
                         v = t[1].split(",")
-                        # print("spl2: %s" % v)
                         if len(v) > 0:
                             v = v[0].strip()
                             try:
                                 l = int(v)
                             except:
                                 print("Cant parse %s" % v)
-                # print("LINE: %s" % l)
                 if l > 0:
                     if len(I) > l:
                         try:
@@ -232,24 +229,16 @@ class SparkMapping:
                             print("NOLINE: %s" % str(e))
             except Exception as e:
                 print("COULDNT GET LINE: %s" % (str(e)))
-            # logme("---QUERIES")
-            # logme(" ".join(Q))
-            # logme("---INSERTS")
-            # logme("\n".join(I))
             raise e
-        self.logme("SAVED %s values" % (len(I),))
 
     def getDBName(self):
-        global SCHEMAVER
-        e = "db_%s_%s" % (SCHEMAVER, "sportsbiz")
+        e = "db_%s_%s" % (self.getSchemaVer(), "pain")
         return e
 
     def getColumns(self, sph, tbl):
         myt = sph.sql("describe table %s" % tbl).collect()
         ret = {}
         for n in myt:
-            #self.logme("---")
-            #self.logme(len(n))
             v = str(n[0])
             if len(v) < 1:
                 continue
@@ -265,7 +254,6 @@ class SparkMapping:
         return ret
 
     def createTable(self, sph, name):
-        #print("Creating table %s" % name)
         COLS={}
         q = """
             create table %s (
@@ -274,7 +262,7 @@ class SparkMapping:
                 main_updated int, 
                 tframe int
         ) using iceberg""" % name
-        self.logme(q)
+        # self.logme(q)
         sph.sql(q)
         COLS["objid"] = "string"
         COLS["timestamp"] = "int"
@@ -283,17 +271,14 @@ class SparkMapping:
         return COLS
 
     def checkOBJ(self, obj, tbl):
-        # print("CHEK: %s,%s" % (obj,tbl))
         ret = False
-        q = "select * from objhash where objid=%s and tbl=%s and schema_version=%s"
-        # print(q)
+        q = "select * from datastorage_objhash where objid=%s and tbl=%s and schema_version=%s"
         cur = self.mydb.cursor(buffered=True)
-        f = cur.execute(q, (obj,tbl,SCHEMAVER))
+        f = cur.execute(q, (obj,tbl,self.getSchemaVer()))
         row = cur.fetchone()
         if row is not None:
             for x in row:
                 ret = True
-        # print(ret)
         return ret
 
     def getObjids(self, sph, tbl):
@@ -307,7 +292,6 @@ class SparkMapping:
         q = """
             select objid from %s where tframe >= %s and tframe < %s
         """ % (tbl, tftom, tf)
-        # print("q=%s" % q)
         myt = sph.sql(q).collect()
         for n in myt:
             v = str(n[0])
@@ -323,14 +307,11 @@ class SparkMapping:
         getdata=True
         DBNAME=self.getDBName()
         TBLNAME="%s" % (table,)
-        # self.logme("DBNAME=%s" % DBNAME)
-        #self.logme("TBLNAME=%s" % TBLNAME)
         COLS = {}
         TBLS = []
         if r is not None:
             getdata = False
         DBS=self.getDatabases(sph)
-        # self.logme("DBS=%s" % DBS)
         if DBNAME not in DBS:
             print("creating database %s" % DBNAME)
             sph.sql("create database userdata.%s" % DBNAME)
@@ -338,13 +319,11 @@ class SparkMapping:
         TBLS = self.getTables(sph)
         if 'default' not in TBLS:
             self.createTable(sph, 'default')
-        # self.logme("TBLS=%s" % TBLS)
         if TBLNAME in TBLS:
             COLS=self.getColumns(sph, TBLNAME)
         else:
             COLS=self.createTable(sph, TBLNAME)
         sc = SparkCommon()
-        # self.logme("COLS=%s" % COLS)
         self.getObjids(sph, TBLNAME)
         if config.getKey("hdfs_max_records") is not None:
             MAX=int(config.getKey("hdfs_max_records"))
@@ -373,7 +352,6 @@ class SparkMapping:
         H.close()
         try:
             for row in data: 
-                # print(row)
                 lcntr += 1 
                 if lcntr % 5 == 0:
                     self.mydb.commit()
@@ -382,7 +360,6 @@ class SparkMapping:
                     row['objid'] = neo
                 if self.checkOBJ(row['objid'], TBLNAME):
                     SKIP += 1
-                    # self.logme("skip/comp:  %s/%s" % (SKIP, COMPLETE))
                     continue
                 f = row['objid']
                 OBJLIST.append(f)
@@ -413,11 +390,9 @@ class SparkMapping:
                 G=""
                 R=""
                 for g in COLS:
-                    # print("iterating: %s" % g)
                     ts = False
                     if g in EXCLUSION:
                         continue
-                    # self.logme("COLUMN: %s" % g)
                     quote = True
                     if g in schema:
                         if schema[g]['t'] == "string":
@@ -426,7 +401,6 @@ class SparkMapping:
                             quote = False
                         else:
                             quote = False
-                    # self.logme("COL: %s, type:%s" % (g, COLS[g]))
                     v = ''
                     if COLS[g] != "string":
                         v = 0
@@ -440,7 +414,6 @@ class SparkMapping:
                         a = ref[0]
                         b = ref[1]
                         v = row[a][b]
-                        # self.logme("dref: %s" % v)
                     if g == "timestamp" or g == "created" or g == "main_updated":
                         if str(v).startswith("20"):
                             h = calcdate.parseDate(v)
@@ -470,17 +443,13 @@ class SparkMapping:
                         try:
                             v = int(v)
                         except Exception as e:
-                            # self.logme("failed to cast [%s] %s to int (%s), setting to 0" % (v, str(e), g))
                             v = 0
                     if COLS[g] == "double":
                         quote = False
                         try:
                             v = float(v)
                         except Exception as e:
-                            # self.logme("failed to cast [%s] %s to double (%s), setting to 0" % (v, str(e), g))
                             v = 0
-                    # self.logme(v)
-                    # self.logme("val:[%s], quo: %s, type:%s" % (v, quote, COLS[g]))
                     if len(G) < 1 and quote:
                         # use json.dumps to quotify
                         G = "%s" % (json.dumps(str(v)),) 
@@ -508,13 +477,11 @@ class SparkMapping:
         finally:
             if os.path.exists(SL_FNAME):
                 os.unlink(SL_FNAME)
-        self.logme("--- FILEDONE")
         if not FLUSHED:
             COMPLETE += len(INS)
         self.flush(sph, QUERY, INS)
         for gg in OBJLIST:
             self.installobj(gg,TBLNAME)
-        self.logme("--- END")
         self.logme("STATS: skip/comp: %s/%s" % (SKIP, COMPLETE))
         # Close the pooled connection
         if random.randint(1,100) > 98:
