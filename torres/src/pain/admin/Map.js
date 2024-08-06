@@ -15,8 +15,8 @@ import AppSpinner from '../utils/Spinner';
 import { getTraffic } from '../../actions/trafficGet';
 import TrafficMap from './TrafficMap';
 import HeatMap from './HeatMap';
- 
-
+import WeatherMap from './WeatherMap';
+import WeatherCard from './WeatherCard';
 class Map extends Component {
     constructor(props) {
         super(props);
@@ -256,6 +256,8 @@ class Map extends Component {
                                     <Tabs value={this.state.activeTab} onChange={this.toggleTab} >
                                         <Tab value='traffic' label='Traffic' />
                                         <Tab value='heatmap' label='HeatMap' />
+                                        <Tab value='weathermap' label='WeatherMap' />
+
                                     </Tabs>
                                     {(this.state.activeTab === 'traffic') && (
                                         <TrafficMap targeted={this.state.officeTarget} 
@@ -264,6 +266,23 @@ class Map extends Component {
                                     {(this.state.activeTab === 'heatmap') && (
                                         <HeatMap data={this.props.trafficData} centerPoint={this.state.center || this.props.trafficData.data.center} />
                                     )}
+                                    {(this.state.activeTab === 'weathermap') && (
+                                        <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+                                            <div style={{ flex: '0 1 25%', marginBottom: '10px' }}>
+                                                <WeatherCard />
+                                            </div>
+                                            <div style={{ flex: '1 1 70%' }}>
+                                                <WeatherMap 
+                                                    targeted={this.state.officeTarget}
+                                                    data={this.props.trafficData} 
+                                                    centerPoint={this.state.center || this.props.trafficData.data.center} 
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
+
+
+
                                 </>
                             )}
                         </Box>

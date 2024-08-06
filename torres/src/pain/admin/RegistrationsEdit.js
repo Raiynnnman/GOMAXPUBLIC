@@ -711,7 +711,8 @@ class RegistrationsEdit extends Component {
                                 <TemplateTextField label='Website'
                                   onChange={this.websiteUpdate} value={this.state.selected.website}
                                 />
-                                 <a style={{marginTop:10,color:'black'}} href={this.state.selected.website} target='_blank'><LaunchIcon/></a>
+
+                                 <a style={{marginTop:10,color:'green'}} href={this.state.selected.website} target='_blank'><LaunchIcon/></a>
                             </div>
                         </Grid>
                         <Grid item xs={12}>

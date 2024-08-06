@@ -100,6 +100,8 @@
     "socket.io-client": "^4.7.5",
     "stream": "npm:stream-browserify",
     "stream-browserify": "^3.0.0",
+    "style-components": "^0.1.0",
+    "styled-components": "^6.1.12",
     "undici": "^6.19.2",
     "universal-cookie": "^7.1.4",
     "util": "^0.12.5",
