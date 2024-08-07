@@ -1033,6 +1033,9 @@ class OfficeList extends Component {
                         <Grid item xs={4} style={{margin:20}}>
                           <TemplateTextField 
                                   onChange={this.websiteChange} label="Website" value={this.state.selected.website}/>
+                                    
+                                    <a style={{marginTop:10,color:'green'}} href={this.state.selected.website} target='_blank'><LaunchIcon/></a>
+
                         </Grid>
                     </Grid>
                     <Grid container xs="6" style={{borderLeft:"1px solid black"}}>
