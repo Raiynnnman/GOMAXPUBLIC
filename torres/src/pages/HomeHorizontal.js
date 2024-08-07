@@ -56,8 +56,8 @@ class HomeHorizontal extends Component {
                     <div style={{ marginTop: 30 }}></div>
                     <AboutLegal horizontalabout="horizontal-about" />
                     <ServiceLegal horizontal="horizontal" />
-                    <TestimonialLegal/>
-                    <ScreenshotLegal />
+                    {/*<TestimonialLegal/>*/}
+                    {/*<ScreenshotLegal />*/}
                     <FooterHome horizontal="horizontal" />
                 </div>
                 )}
