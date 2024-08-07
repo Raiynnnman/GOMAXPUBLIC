@@ -434,12 +434,12 @@ class OfficeSave(AdminBase):
         if 'business_name' in params:
             db.update("""
                 update provider_queue set business_name=%s where office_id=%s
-                """,(params['closed_date'],params['id'])
+                """,(params['business_name'],params['id'])
             )
         if 'doing_business_as_name' in params:
             db.update("""
                 update provider_queue set doing_business_as_name=%s where office_id=%s
-                """,(params['closed_date'],params['id'])
+                """,(params['doing_business_as_name'],params['id'])
             )
         if 'setter_user_id' in params:
             db.update("""
