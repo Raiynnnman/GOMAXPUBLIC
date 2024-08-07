@@ -20,6 +20,13 @@ import Footer from '../components/Footer';
 import { getLandingData } from '../actions/landingData';
 import theme from '../theme';  
 import siteType from '../siteType';
+import HeroOliveMain from '../components/HeroOliveMain';
+import HeroOliveLegal from '../components/HeroOliveLegal';
+import HeroOliveProvider from '../components/HeroOliveProvider';
+import AboutLegal from '../components/AboutLegal';
+import ServiceLegal from '../components/ServiceLegal';
+import TestimonialLegal from '../components/TestimonialLegal';
+import ScreenshotLegal from '../components/ScreenshotLegal';
 
 class HomeHorizontal extends Component {
     componentDidMount() {
@@ -36,10 +43,28 @@ class HomeHorizontal extends Component {
         return (
         <>
             <ThemeProvider theme={theme}>
+                {(siteType() === 'main') && (
+                <div>
+                    <Navbar />
+                    <HeroOliveMain horizontal="horizontal" bgshape="bg-shape" />
+                </div>
+                )}
+                {(siteType() === 'legal') && (
+                <div>
+                    <Navbar />
+                    <HeroOliveLegal horizontal="horizontal" bgshape="bg-shape" />
+                    <div style={{ marginTop: 30 }}></div>
+                    <AboutLegal horizontalabout="horizontal-about" />
+                    <ServiceLegal horizontal="horizontal" />
+                    <TestimonialLegal/>
+                    <ScreenshotLegal />
+                    <FooterHome horizontal="horizontal" />
+                </div>
+                )}
                 {(siteType() === 'provider') && (
                 <div>
                     <Navbar />
-                    <HeroOlive horizontal="horizontal" bgshape="bg-shape" />
+                    <HeroOliveProvider horizontal="horizontal" bgshape="bg-shape" />
                     <div style={{ marginTop: 30 }}></div>
                     <About horizontalabout="horizontal-about" />
                     <Service horizontal="horizontal" />
