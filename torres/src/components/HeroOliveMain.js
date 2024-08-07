@@ -43,7 +43,7 @@ class HeroOliveMain extends Component {
                                                     </font>
                                                 </div>
                                                 <div style={{marginTop:20,display:"flex",justifyContent:"center"}}>
-                                                    <TemplateButton label="CLICK HERE" onClick={() => this.forwardURL("patient")}/>
+                                                    <TemplateButton label="CLICK HERE" onClick={() => this.forwardURL("provider")}/>
                                                 </div>
                                             </div>
                                         </div>
@@ -57,7 +57,7 @@ class HeroOliveMain extends Component {
                                                     </font>
                                                 </div>
                                                 <div style={{marginTop:20,display:"flex",justifyContent:"center"}}>
-                                                    <TemplateButton label="CLICK HERE" onClick={() => this.forwardURL("patient")}/>
+                                                    <TemplateButton label="CLICK HERE" onClick={() => this.forwardURL("legal")}/>
                                                 </div>
                                             </div>
                                         </div>
