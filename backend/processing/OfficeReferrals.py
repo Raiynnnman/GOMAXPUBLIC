@@ -255,7 +255,7 @@ class ReferrerUpdate(OfficeBase):
         db.update("""
             insert into referrer_users 
                 (referrer_id,referrer_users_status_id,referrer_documents_id,row_meta,sha256) 
-                values (%s,%s,%s,%s,%s)
+                values (%s,%s,%s,%s,%s) ON DUPLICATE KEY update update_cntr=update_cntr+1
             """,(office_id,REF['QUEUED'],docid,json.dumps(row),sha)
         )
         insid = db.query("select LAST_INSERT_ID()");
@@ -274,6 +274,11 @@ class ReferrerUpdate(OfficeBase):
             db.update("""
                 update referrer_users set name=%s where id = %s
                 """,(row['name'],insid)
+            )
+        if 'case_type' in row:
+            db.update("""
+                update referrer_users set case_type=%s where id = %s
+                """,(row['case_type'],insid)
             )
         if 'email' in row:
             db.update("""

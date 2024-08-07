@@ -86,3 +86,9 @@ def trafficdemo(*args, **kwargs):
 def calbooking(*args, **kwargs):
     po = RegistrationRest.CalendarBookingRest()
     return po.postWrapper(*args,**kwargs)
+
+@registrations.route('/register/patient', methods=['POST'])
+@swag_from(docs_dir + 'registerprovider.yaml')
+def registerpatient(*args, **kwargs):
+    po = RegistrationRest.RegisterPatientRest()
+    return po.postWrapper(*args,**kwargs)

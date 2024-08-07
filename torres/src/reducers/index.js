@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 import auth from './auth';
+import patientRegister from './patientRegister';
 import calendarBackendBooking from './calendarBackendBooking';
 import demoStart from './demoStart';
 import onlineDemoTraffic from './onlineDemoTraffic';
@@ -200,6 +201,7 @@ export default combineReducers({
     demoStart,
     calendarBackendBooking,
     onlineDemo,
+    patientRegister,
     onlineDemoTraffic,
     onlineDemoSave,
     // ticketsReducer

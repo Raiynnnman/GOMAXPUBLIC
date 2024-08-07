@@ -82,16 +82,16 @@ class HomeHorizontal extends Component {
                     <FooterHome horizontal="horizontal" />
                 </div>
                 )}
-                {(siteType() === 'customer') && (
+                {(siteType() === 'patient') && (
                 <div>
                     <Navbar />
                     <HeroOliveCustomer horizontal="horizontal" bgshape="bg-shape" />
                     <div style={{ marginTop: 30 }}></div>
                     <AboutCustomer horizontalabout="horizontal-about" />
-                    <ServiceCustomer horizontal="horizontal" />
+                    {/*<ServiceCustomer horizontal="horizontal" />*/}
                     <TestimonialCustomer />
-                    <Screenshot />
-                    <FooterHome horizontal="horizontal" />
+                    {/*<Screenshot />*/}
+                    {/*<FooterHome horizontal="horizontal" />*/}
                 </div>
                 )}
             </ThemeProvider>

@@ -15,6 +15,7 @@ from flask import make_response, request, jsonify
 
 sys.path.append(os.path.realpath(os.curdir))
 
+from processing import OfficeReferrals
 from square.client import Client
 from util import encryption,calcdate
 from util.Logging import Logging
@@ -1601,3 +1602,41 @@ class CalendarBooking(RegistrationsBase):
         )
         db.commit()
         return ret
+
+class RegisterPatient(RegistrationsBase):
+
+    def __init__(self):
+        super().__init__()
+
+    def isDeferred(self):
+        return False
+
+    def execute(self, *args, **kwargs):
+        ret = {}
+        ret['success'] = True
+        params = args[1][0]
+        params['name'] = "%s %s" % (params['first_name'],params['last_name'])
+        sysemail = config.getKey("contact_us_email")
+        url = config.getKey("host_url")
+        db = Query()
+        print(params)
+        ru = OfficeReferrals.ReferrerUpdate()
+        ru.processRow(
+            1,params,None,encryption.getSHA256(json.dumps(params,sort_keys=True)),
+            db)
+        data = { 
+            '__LINK__':"%s/#/login" % (url,),
+            '__BASE__':url
+        } 
+        if self.isUIV2(): 
+            data['__LINK__']:"%s/login" % (url,)
+        m = Mail()
+        data['__NAME__'] = "%s %s" % (params['first_name'],params['last_name'])
+        data['__EMAIL__'] = params['email']
+        data['__MESSAGE__'] = params['description']
+        if config.getKey("use_defer") is not None:
+            m.sendEmailQueued(sysemail,"Information Inquiry","templates/mail/patient-inquiry.html",data)
+        else:
+            m.send_email(sysemail,"Information Inquiry","templates/mail/patient-inquiry.html",data)
+        db.commit()
+        return {'success':True}

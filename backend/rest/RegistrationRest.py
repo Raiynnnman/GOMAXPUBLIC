@@ -99,3 +99,10 @@ class CalendarBookingRest(RestBase):
         u = Registrations.CalendarBooking()
         ret = u.process(args[0])
         return ret
+
+class RegisterPatientRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Registrations.RegisterPatient()
+        ret = u.process(args[0])
+        return ret

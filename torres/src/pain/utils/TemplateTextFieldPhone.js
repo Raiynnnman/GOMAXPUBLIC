@@ -21,7 +21,7 @@ function TemplateTextFieldPhone({label,onChange,helpText,initialValue,style,valu
     return (
     <>
       <FormControl sx={{ m: 1}} style={style}>
-          <TextField variant="outlined" label={label} value={formatPhoneNumber(value)} style={style}
+          <TextField size="small" variant="outlined" label={label} value={formatPhoneNumber(value)} style={style}
                 InputProps={ip} sx={sx}
                 onChange={onUpdate}/>
       </FormControl>

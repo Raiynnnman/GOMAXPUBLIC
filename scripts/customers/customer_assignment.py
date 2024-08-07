@@ -134,14 +134,13 @@ for x in o:
         if len(g) > 0 and not args.force:
             print("Already sent accept email to %s" % j['office_name'])
             continue
-        print(j)
+
         url = config.getKey("host_url")
         val = encryption.encrypt(
             json.dumps({'oa':j['id'],'i':x['id'],'o':j['office_id']}),
             config.getKey("encryption_key")
         )
         val = base64.b64encode(val.encode('utf-8'))
-        
         data = { 
             '__LINK__':"%s/app/main/office/customers/%s" % (url,x['id']),
             '__ACCEPT__':"%s/accept/%s" % (url,val.decode('utf-8')), 
@@ -149,6 +148,8 @@ for x in o:
             '__OFFICE__':j['office_name'],
             '__BASE__':url
         } 
+        
+        # TODO: Send this to the office, atm its turned off
         sysemail = config.getKey("support_email")
         m.send(sysemail,"New client from POUNDPAIN","templates/mail/invitation-email.html",data)
         db.update("""
