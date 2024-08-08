@@ -32,8 +32,10 @@ install: build
 	cp office/doall.sh pre/office
 	cp data_import/doall.sh pre/data_import
 	cp -r ../backend/templates pre/
-	mkdir -p pre/tests
+	mkdir -p pre/tests/storage
 	cp -r tests/ pre/tests
+	cp -r tests/*.sh pre/tests
+	cp -r tests/storage/*.sh pre/tests/storage
 	(cd pre && tar cfz ../targets/install.tar.gz  --exclude p \
 		--exclude targets \
         --exclude ui/src --exclude .git --exclude src \
