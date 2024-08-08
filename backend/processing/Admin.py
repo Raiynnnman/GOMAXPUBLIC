@@ -589,11 +589,13 @@ class PlansList(AdminBase):
         o = db.query(
             """
             select 
-                id,price,locations,duration,slot,description,
-                upfront_cost,
-                start_date,end_date,active,created,updated
+                p.id,p.price,p.locations,p.duration,p.slot,p.description,
+                p.upfront_cost,ot.name as office_type,ot.id as office_type_id,
+                p.start_date,p.end_date,p.active,p.created,p.updated
             from
-                pricing_data 
+                pricing_data p, office_type ot
+            where
+                ot.id = p.office_type_id
             order by
                 description asc
             """

@@ -63,7 +63,6 @@ class Appointments extends Component {
   render() {
     const { appointments } = this.props;
     const { openDrawer, selectedAppointment } = this.state;
-    console.log(selectedAppointment)
     if (appointments.isReceiving) {
       return (
         <div style={spinnerContainerStyle}>

@@ -60,6 +60,8 @@ class CouponList(AdminBase):
             from 
                 coupons c
                 left join pricing_data p on p.id = c.pricing_data_id
+            order by 
+                c.updated desc
         """
         p = []
         cnt = db.query("select count(id) as cnt from (" + q + ") as t",p)

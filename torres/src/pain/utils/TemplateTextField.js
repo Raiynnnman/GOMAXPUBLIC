@@ -2,7 +2,7 @@ import React from 'react';
 import TextField from '@mui/material/TextField';
 import FormControl from '@mui/material/FormControl';
 
-function TemplateTextField({label,onChange,helpText,initialValue,style,value,readOnly,sx}) {
+function TemplateTextField({label,onChange,helpText,initialValue,style,value,readOnly,sx,disabled}) {
 
     var ip = null;
     if (readOnly) { 
@@ -13,7 +13,7 @@ function TemplateTextField({label,onChange,helpText,initialValue,style,value,rea
     <>
       <FormControl sx={{ m: 1}} style={style}>
           <TextField variant="outlined" size="small" label={label} value={value} style={style}
-                InputProps={ip} sx={sx}
+                InputProps={ip} sx={sx} disabled={disabled}
                 onChange={onChange}/>
       </FormControl>
     </>

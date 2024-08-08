@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
+import Datetime from 'react-datetime';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import { connect } from 'react-redux';
 import { getPlansList } from '../../actions/plansList';
@@ -74,6 +75,10 @@ class CouponAdminList extends Component {
         }
     }
 
+    labelSelect(e) { 
+        const g = e.description + " - " + e.office_type + " - " + "($" + e.upfront_cost + ")";
+        return g;
+    } 
     componentDidMount() {
         this.props.dispatch(getCouponAdmin({page:this.state.page,limit:this.state.pageSize}))
         this.props.dispatch(getPlansList({}));
@@ -126,11 +131,11 @@ class CouponAdminList extends Component {
         this.setState(this.state);
     }
     endChange(e) {
-        this.state.selected.end_date = e.target.value;
+        this.state.selected.end_date = e
         this.setState(this.state);
     }
     startChange(e) {
-        this.state.selected.start_date = e.target.value;
+        this.state.selected.start_date = e
         this.setState(this.state);
     }
     reductionChange(e) {
@@ -159,8 +164,9 @@ class CouponAdminList extends Component {
         } 
         this.setState(this.state);
     } 
-    planChange(e) { 
-        this.state.selected.pricing_data_id = e.value;
+    planChange(e,t) { 
+        var v1 = this.props.plansList.data.filter((f) => e.target.value === this.labelSelect(f))
+        this.state.selected.pricing_data_id = v1[0].id;
         this.setState(this.state);
     } 
 
@@ -202,14 +208,20 @@ class CouponAdminList extends Component {
     save() { 
         var tosend = this.state.selected
         if (tosend.total) { 
-            tosend.total = parseFloat(tosend.total.replace("$",""));
+            if (tosend.total.replace) { 
+                tosend.total = parseFloat(tosend.total.replace("$",""));
+            } 
         }
         if (tosend.perc) { 
-            tosend.perc = parseFloat(tosend.perc.replace("%",""));
+            if (tosend.perc.replace) { 
+                tosend.perc = parseFloat(tosend.perc.replace("%",""));
+            }
             if (tosend.perc > 0) { tosend.perc = tosend.perc / 100 }
         }
         if (tosend.reduction) { 
-            tosend.reduction = parseFloat(tosend.reduction.replace("$",""));
+            if (tosend.reduction.replace) { 
+                tosend.reduction = parseFloat(tosend.reduction.replace("$",""));
+            }
         } 
         this.props.dispatch(couponSave(tosend,function(err,args) { 
             args.props.dispatch(
@@ -278,7 +290,7 @@ class CouponAdminList extends Component {
                 text:'Total',
                 formatter:(cellContent,row) => (
                     <div>
-                        {row.total ? row.total.toFixed ? '$' + row.total.toFixed(2) : "$" + row.total : 'N/A'}
+                        {row.total ? row.total.toFixed ? '$' + row.total.toFixed(2) : "$" + row.total : '-'}
                     </div>
                 )
             },
@@ -289,7 +301,7 @@ class CouponAdminList extends Component {
                 text:'Percentage',
                 formatter:(cellContent,row) => (
                     <div>
-                        {row.perc ? row.perc * 100 + "%": "N/A"}
+                        {row.perc ? row.perc * 100 + "%": "-"}
                     </div>
                 )
             },
@@ -300,7 +312,7 @@ class CouponAdminList extends Component {
                 text:'Reduction',
                 formatter:(cellContent,row) => (
                     <div>
-                        {row.reduction ? row.reduction.toFixed ? "$" + row.reduction.toFixed(2) : row.reduction : "N/A"}
+                        {row.reduction ? row.reduction.toFixed ? "$" + row.reduction.toFixed(2) : row.reduction : "-"}
                     </div>
                 )
             },
@@ -331,7 +343,7 @@ class CouponAdminList extends Component {
         return (
         <>
         <Navbar/>
-        <Box style={{margin:20}}>
+        <Box style={{margin:10}}>
             {(this.props.coupons && this.props.coupons.isReceiving) && (
                 <AppSpinner/>
             )}
@@ -369,67 +381,62 @@ class CouponAdminList extends Component {
               <>
                 <Grid container xs="12" style={{marginTop:10}}>
                       {this.state.selected.id && (
-                        <Grid item xs={1}>
+                        <Grid item xs={1} style={{margin:10}}>
                             <TemplateTextField type="text" id="normal-field" readOnly 
                             label="ID" value={this.state.selected.id}/>
                         </Grid>
                       )}
-                          <Grid item xs={8}>
+                          <Grid item xs={8} style={{margin:10}}>
                           <TemplateCheckbox type="checkbox" id="normal-field"
                                   onChange={this.activeChange} label="Active" checked={this.state.selected.active}/>
                           </Grid>
-                        <Grid item xs={5}>
+                        <Grid item xs={5} style={{margin:10}}>
                             <TemplateTextField type="text" id="normal-field" onChange={this.nameChange}
                             label="Name" value={this.state.selected.name}/>
                         </Grid>
-                        <Grid item xs="5" style={{zIndex:9995}}>
+                        <Grid item xs="5" style={{zIndex:9995}} style={{margin:10}}>
                           {(this.props.plansList && this.props.plansList.data && 
                             this.props.plansList.data) && (
                               <TemplateSelect
                                   label='Plan'
                                   onChange={this.planChange}
                                   value={{
-                                    value:
-                                        this.props.plansList.data.filter((e) => this.state.selected.pricing_data_id === e.id).length > 0 ? 
-                                            this.props.plansList.data.filter((e) => this.state.selected.pricing_data_id === e.id)[0].description + 
-                                            " ($" + this.props.plansList.data.filter((e) => this.state.selected.pricing_data_id === e.id)[0].upfront_cost + ")"
-                                            : '',
                                     label:
                                         this.props.plansList.data.filter((e) => this.state.selected.pricing_data_id === e.id).length > 0 ? 
-                                            this.props.plansList.data.filter((e) => this.state.selected.pricing_data_id === e.id)[0].description + 
-                                            " ($" + this.props.plansList.data.filter((e) => this.state.selected.pricing_data_id === e.id)[0].upfront_cost + ")"
+                                            this.labelSelect(this.props.plansList.data.filter((e) => this.state.selected.pricing_data_id === e.id)[0]) 
                                             : ''
                                     }}
                                   options={this.props.plansList.data.map((e) => { 
                                     return (
                                         { 
-                                        label: e.description + " ($" + e.upfront_cost + ")",
-                                        value: e.description + " ($" + e.upfront_cost + ")",
+                                        label: this.labelSelect(e),
+                                        value: this.labelSelect(e)
                                         }
                                     )
                                   })}
                                 />
                             )}
                         </Grid>                
-                        <Grid item xs={5}>
+                        <Grid item xs={5} style={{margin:10}}>
                             <TemplateTextField
-                              label='Total'
+                              label='Total ($)'
+                              disabled={this.state.selected.reduction !== null || this.state.selected.perc !== null}
                               onChange={this.totalChange} value={this.state.selected.total ? "" + this.state.selected.total : ""}
                               size="10"
                             />
                         </Grid>
-                        <Grid item xs={5}>
+                        <Grid item xs={5} style={{margin:10}}>
                             <TemplateTextField
                               disabled={this.state.selected.total !== null || this.state.selected.reduction !== null}
-                              label='Percentage'
+                              label='Percentage (/100)'
                               onChange={this.percChange} value={
-                                this.state.selected.perc ? "" + this.state.selected.perc * 100 : ""}
+                                this.state.selected.perc ? "" + this.state.selected.perc : ""}
                               size="10"
                             />
                         </Grid>
-                        <Grid item xs={5}>
+                        <Grid item xs={5} style={{margin:10}}>
                             <TemplateTextField
-                              label='Reduction'
+                              label='Reduction (-$)'
                               disabled={this.state.selected.perc !== null || this.state.selected.total !== null}
                               onChange={this.reductionChange} value={
                                 this.state.selected.reduction ? "" + this.state.selected.reduction : "" 
@@ -437,19 +444,13 @@ class CouponAdminList extends Component {
                               size="10"
                             />
                         </Grid>
-                        <Grid item xs={5}>
-                            <TemplateTextField
-                              label='Start Date'
-                              onChange={this.startChange} value={this.state.selected.start_date}
-                              size="10"
-                            />
+                        <Grid item xs={5} style={{margin:10}}>
+                            <Datetime inputProps = {{placeholder:'Start Date'}} timeFormat={false} 
+                                onChange={this.startChange} value={this.state.selected.start_date} />
                         </Grid>
-                        <Grid item xs={5}>
-                            <TemplateTextField
-                              label='End Date'
-                              onChange={this.endChange} value={this.state.selected.end_date}
-                              size="10"
-                            />
+                        <Grid item xs={5} style={{margin:10}}>
+                            <Datetime inputProps = {{placeholder:'End Date'}} timeFormat={false} 
+                                onChange={this.endChange} value={this.state.selected.end_date} />
                         </Grid>
                 </Grid>
                 <hr/>
