@@ -250,6 +250,11 @@ class Navbar extends Component {
                 window.location = '/app/main/admin/investors';
              }
             },
+            {n:'Logout',
+             a:this.logout,
+             v:function(c) { return true; },
+             u:'/'  
+            },
         ]
         const profileItems = [
             {n:'Leave Context',

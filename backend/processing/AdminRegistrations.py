@@ -824,7 +824,8 @@ class RegistrationList(AdminBase):
                 ifnull(pq.close_requirements,'') as close_requirements, pq.closed_date,
                 pq.refund_requested,pq.set_to_present_date, pq.business_name, pq.doing_business_as_name,
                 pq.include_on_deal_tracker,pq.provider_queue_source_id,
-                pq.provider_queue_presented_status_id,pq.deal_value
+                pq.provider_queue_presented_status_id,pq.deal_value,
+                timestampdiff(day, now(),pq.closed_date) as closed_days
             from
                 provider_queue pq
                 left join office o on pq.office_id = o.id

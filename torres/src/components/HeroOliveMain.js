@@ -21,7 +21,7 @@ class HeroOliveMain extends Component {
                         <div className="col-lg-12 h-100">
                                 <Grid container xs={12}>
                                     <Grid item xs={12} md={1.5} style={{margin:0}}></Grid>
-                                    <Grid item xs={12} md={3} style={{margin:20}}>
+                                    <Grid item xs={12} md={3} style={{margin:20,zIndex:555}}>
                                         <div style={{height:300,backgroundColor:"rgba(0,0,0,.5)",borderRadius:15}}> 
                                             <div style={{margin:0,position:"relative",top:"30%"}}> 
                                                 <div style={{display:"flex",alignContent:"center",justifyContent:"center"}}>

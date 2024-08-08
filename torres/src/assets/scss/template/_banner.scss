@@ -111,7 +111,7 @@
 }
 
 .header-area-main {
-    padding-top: 222px;
+    padding-top: 552px;
     background-image: url(/assets/main_page/header-main.png);
     background-size: cover;
     background-position: center top;
@@ -144,7 +144,7 @@
     }
 
     @media #{$sm-layout} {
-        margin-top: 120px;
+        margin-top: 0px;
         padding-top: 120px;
         &::before{
             background-image: inherit;
