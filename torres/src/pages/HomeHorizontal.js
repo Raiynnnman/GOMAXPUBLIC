@@ -27,13 +27,20 @@ import AboutLegal from '../components/AboutLegal';
 import ServiceLegal from '../components/ServiceLegal';
 import TestimonialLegal from '../components/TestimonialLegal';
 import ScreenshotLegal from '../components/ScreenshotLegal';
+import FeatureCustomer from '../components/FeatureCustomer';
+import FeatureLegal from '../components/FeatureLegal';
 
 class HomeHorizontal extends Component {
     componentDidMount() {
         this.props.dispatch(getLandingData());
     }
 
-    handleSelectPlan = (planId) => {
+    handleSelectPlanLegal = (planId) => {
+        const { landingData, history } = this.props;
+        history.push('/meeting');
+    };
+
+    handleSelectPlanProvider = (planId) => {
         const { landingData, history } = this.props;
         const selectedPlan = landingData.data.pricing.find(plan => plan.id === planId);
         history.push('/register-provider/' + selectedPlan.id);
@@ -56,8 +63,10 @@ class HomeHorizontal extends Component {
                     <div style={{ marginTop: 30 }}></div>
                     <AboutLegal horizontalabout="horizontal-about" />
                     <ServiceLegal horizontal="horizontal" />
+                    <FeatureLegal horizontalfeature="horizontal-feature" />
+                    <Pricing office_type={2} showButton={true} onSelectPlan={this.handleSelectPlanLegal} horizontalfeature="horizontal-pricing" />
                     {/*<TestimonialLegal/>*/}
-                    {/*<ScreenshotLegal />*/}
+                    <Screenshot />
                     <FooterHome horizontal="horizontal" />
                 </div>
                 )}
@@ -69,9 +78,9 @@ class HomeHorizontal extends Component {
                     <About horizontalabout="horizontal-about" />
                     <Service horizontal="horizontal" />
                     <Feature horizontalfeature="horizontal-feature" />
-                    <Pricing showButton={true} onSelectPlan={this.handleSelectPlan} horizontalfeature="horizontal-pricing" />
+                    <Pricing office_type={1} showButton={true} onSelectPlan={this.handleSelectPlanProvider} horizontalfeature="horizontal-pricing" />
                     <Testimonial />
-                    <div style={{marginTop:20,backgroundColor:"black",display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                    <div style={{margin:20,backgroundColor:"black",display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                         <iframe src="https://player.vimeo.com/video/954405043?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" 
                             frameBorder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write" 
                             style={{height:800,width:"100%"}}
@@ -88,7 +97,8 @@ class HomeHorizontal extends Component {
                     <HeroOliveCustomer horizontal="horizontal" bgshape="bg-shape" />
                     <div style={{ marginTop: 30 }}></div>
                     <AboutCustomer horizontalabout="horizontal-about" />
-                    {/*<ServiceCustomer horizontal="horizontal" />*/}
+                    <ServiceCustomer horizontal="horizontal" />
+                    <FeatureCustomer horizontalfeature="horizontal-feature" />
                     <TestimonialCustomer />
                     {/*<Screenshot />*/}
                     {/*<FooterHome horizontal="horizontal" />*/}

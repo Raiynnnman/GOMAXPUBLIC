@@ -16,6 +16,7 @@ class AboutCustomer extends Component{
                     <div className="row align-items-center">
                         <div className="col-lg-5 offset-lg-1 mt--40">
                             <div className="about-thumbnail mr--35">
+        <h4>Whether you're recovering from a personal injury or seeking specialized support & medical care, our platform connects you with the best care providers in your locale</h4>
                                 <img className="image-1" src={require('../assets/main_page/customer-internal.jpg')} alt="App Landing"/>
                             </div>
                         </div>

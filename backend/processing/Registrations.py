@@ -258,6 +258,7 @@ class RegistrationLandingData(RegistrationsBase):
                 p.id, p.trial, p.price,
                 p.locations, p.duration,p.upfront_cost,
                 p.description,p.toshow,p.plan_summary,
+                p.office_type_id as office_type,
                 p.start_date,p.end_date,p.active,p.slot,
                 p.placeholder
             from
@@ -306,6 +307,7 @@ class RegistrationLandingData(RegistrationsBase):
         q = """
             select 
                 p.id, p.trial, p.price,
+                p.office_type_id as office_type,
                 p.locations, p.duration,p.upfront_cost,
                 p.description,p.toshow,p.plan_summary,
                 p.start_date,p.end_date,p.active,p.slot,

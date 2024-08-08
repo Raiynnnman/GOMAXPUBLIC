@@ -35,7 +35,7 @@ class Service extends Component{
 
             {
                 icon: 'zmdi zmdi-favorite',
-                title: 'Request a Consultation',
+                title: 'Schedule a call',
                 desc: 'Request a personalized consultant to explore how Pound Pain Technology can help you.',
                 click:this.requestDemo
             },

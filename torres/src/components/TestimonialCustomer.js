@@ -28,7 +28,7 @@ class Testimonial extends React.Component {
                         <div className="col-lg-12">
                             <div className="testimonial-activation">
                                 <div className="section-title text-center mb--80">
-                                    <h2>What our clients are <span style={{color:'#fa6a0a'}}>Saying</span></h2>
+                                    <h2>What our patients are <span style={{color:'#fa6a0a'}}>Saying</span></h2>
                                     <p style={{color:'black'}}>Real Stories from Patients Who Have Transformed Their Healthcare Experience with PoundPain Technology</p>
                                 </div>
                                 <div className="row">

@@ -21,7 +21,7 @@ Our innovative platform is designed to bridge the gap between patients in need a
                     <div className="row align-items-center">
                         <div className="col-lg-5 offset-lg-1 mt--40">
                             <div className="about-thumbnail mr--35">
-                                <img className="image-1" src={require('../assets/main_page/mobile-home-second-image.png')} alt="App Landing"/>
+                                <img className="image-1" src={require('../assets/main_page/provider-mobile.png')} alt="App Landing"/>
                             </div>
                         </div>
                         <div className="col-lg-6 mt--40">

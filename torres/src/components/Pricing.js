@@ -84,25 +84,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Pricing = ({ onSelectPlan, showButton }) => {
+const Pricing = ({ onSelectPlan, showButton, office_type }) => {
   const classes = useStyles();
   const landingData = useSelector((store) => store.landingData);
 
   if (!landingData?.data?.pricing?.length) return null;
-
+  console.log("p",office_type,landingData);
   return (
     <Box className='pricing-table-banner' id="pricing">
       <Container>
         <Grid container spacing={4} justifyContent="center">
-          {landingData.data.pricing.map((plan, index) => (
-            <Grid
-              item
-              key={index}
-              xs={12}
-              sm={6}
-              md={4}
-              className={classes.pricingColumn}
-            >
+          {landingData.data.pricing.filter((t) => t.office_type === office_type).map((plan, index) => (
+            <Grid item key={index} xs={12} sm={6} md={4} className={classes.pricingColumn} >
+                {console.log("o",plan)}
               <Paper className={`${classes.pricePackage} ${index === 1 ? classes.centerCard : ''}`} elevation={4}>
                 <div className={classes.pricePackageTop}>
                   <Typography variant="h4" component="h4" className={classes.whiteText}>
@@ -115,9 +109,9 @@ const Pricing = ({ onSelectPlan, showButton }) => {
                 <div className={classes.pricePackageContent}>
                   <div className={classes.upfront_cost}>
                     <h3 style={{display:'flex',justifyContent:'center'}}>
-                    <Typography component="span" className={classes.priceTop} style={{fontSize:24,fontWeight:"bold"}}>$</Typography>
-                    <Typography component="span" className={classes.priceLarge} style={{fontSize:24,fontWeight:"bold"}}>{plan.upfront_cost}</Typography>
-                    <Typography component="span" className={classes.priceBottom} style={{fontSize:24,fontWeight:"bold"}}>/month</Typography>
+                    <Typography component="span" className={classes.priceTop} style={{fontSize:24,fontWeight:"bold"}}>{plan.upfront_cost > 0 ? "$" : ""}</Typography>
+                    <Typography component="span" className={classes.priceLarge} style={{fontSize:24,fontWeight:"bold"}}>{plan.upfront_cost > 0 ? plan.upfront_cost : "Contact Us!"}</Typography>
+                    <Typography component="span" className={classes.priceBottom} style={{fontSize:24,fontWeight:"bold"}}>{plan.upfront_cost > 0 ? "/month" : ""}</Typography>
                     </h3>
                     <h3 style={{display:'flex',justifyContent:'center'}}>
                     <Typography component="span" className={classes.priceBottom} style={{fontSize:18}}>{plan.benefits[0].description}</Typography>
@@ -149,7 +143,7 @@ const Pricing = ({ onSelectPlan, showButton }) => {
                       onClick={() => onSelectPlan(plan.id)}
                       fullWidth
                     >
-                      Sign up
+                      {plan.upfront_cost > 0 ? "Sign up" : "Contact Us"}
                     </Button>
                   )}
                 </div>

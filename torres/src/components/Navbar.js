@@ -576,28 +576,6 @@ class Navbar extends Component {
                                     <nav>
                                         <ul className="main-menu">
                                             <li className="active"><a href="/">Home</a></li>
-                                        </ul>
-                                    </nav>
-                                    <button onClick={this.doLogin} className="button-default button-olive" type="button">Login</button>
-                                </div>
-                            </div>
-                            <div className="col-sm-8 col-8 d-block d-lg-none">
-                                <div className="mobile-menu" style={{color:'white'}}>
-                                    <div style={{float:"right"}}>
-                                            <DropdownMenu currentUser={this.props.currentUser} 
-                                                title={<MenuIcon/>} items={patientMenuItems} dispatch={this.props.dispatch}/>
-                                    </div>
-                                </div>
-                            </div>
-                            </>
-                        )}
-                        {(!this.props.currentUser && siteType() === "legal") && (
-                            <>
-                            <div className="col-lg-8 d-none d-lg-block">
-                                <div className="mainmenu-wrapper">
-                                    <nav>
-                                        <ul className="main-menu">
-                                            <li className="active"><a href="/">Home</a></li>
                                             <li><a href="/#about">About</a></li>
                                             <li><a href="/#pricing">Pricing</a></li>
                                             <li><a href="/#reviews">Reviews</a></li>

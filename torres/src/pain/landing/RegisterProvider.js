@@ -575,7 +575,7 @@ class RegisterProvider extends Component {
             <ThemeProvider theme={theme}>
                 <Navbar />
                 {(!selPlan) && (
-                    <Pricing onSelectPlan={this.handleSelectPlan} showButton={true} />
+                    <Pricing office_type={1} onSelectPlan={this.handleSelectPlan} showButton={true} />
                 )}
                 <CssBaseline />
                 {registerProvider.isReceiving && <AppSpinner />}

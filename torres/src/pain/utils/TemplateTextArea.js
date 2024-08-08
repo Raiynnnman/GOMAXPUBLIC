@@ -7,7 +7,7 @@ function TemplateTextArea({label,onChange,helpText,initialValue,style,value,rows
 
     return (
     <>
-      <FormControl sx={{ m: 1, width: "100%" }}>
+      <FormControl sx={{ m: style, width: "100%" }}>
        <TextField minRows={rows} value={value}
           style={style} multiline onChange={onChange} label={label}
         />

@@ -13,7 +13,8 @@ class HeroOliveMain extends Component {
     }
     render(){
         return(
-            <div className={`header-area-main ${this.props.horizontal} ${this.props.bgshape}`} id="home" >
+            <div 
+                className={`header-area-main ${this.props.horizontal} ${this.props.bgshape}`} id="home" style={{height:"100vh",backgroundColor:'black'}}>
                 <div className="header-bg"/>
                 <div className="h-100 ">
                     <div className="row">
@@ -25,7 +26,7 @@ class HeroOliveMain extends Component {
                                             <div style={{margin:0,position:"relative",top:"30%"}}> 
                                                 <div style={{display:"flex",alignContent:"center",justifyContent:"center"}}>
                                                     <font style={{color:"white",fontSize:24,fontWeight:"bold"}}>
-                                                        Are you a patient?    
+                                                        Are you a Patient?    
                                                     </font>
                                                 </div>
                                                 <div style={{marginTop:20,display:"flex",justifyContent:"center"}}>
