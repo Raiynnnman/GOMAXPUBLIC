@@ -33,7 +33,6 @@ def check_crm(val):
 
 def check_admin(val):
     def check(cls,jobid,inp):
-        print("inp=%s" % inp)
         if len(inp) > 1 or len(inp) == 1:
             u = {}
             if isinstance(inp,list):

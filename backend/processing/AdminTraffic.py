@@ -394,7 +394,7 @@ class TrafficGet(AdminBase):
         TC = self.getTrafficCategories()
         o = db.query("""
             select 104 as category_id,'HeatMap' as category,
-                ti.zipcode,count(ti.zipcode) as weight2,uuid() as uuid,
+                ti.zipcode,count(ti.zipcode) as weight,uuid() as uuid,
                 pz.lat as lat,pz.lon as lng,
                 json_object('lat',pz.lat,'lng',pz.lon) as coords 
             from 
@@ -409,6 +409,47 @@ class TrafficGet(AdminBase):
         for t in o:
             t['coords'] = json.loads(t['coords'])
             ret['heatmap'].append(t) 
+        o = db.query("""
+            select
+                ti.city,ti.state,ti.zipcode,count(ti.id) as accidents,
+                ifnull(net.cnt,0) as innetwork,ifnull(pot.cnt,0) as potential,
+                pz.lat as lat,pz.lon as lng,
+                count(ti.id)+ifnull(net.cnt,0)+ifnull(pot.cnt,0) as weight,
+                json_object('lat',pz.lat,'lng',pz.lon) as coords 
+            from
+                traffic_incidents ti
+                left join (
+                    select 
+                        count(pq.id) as cnt,oa.zipcode 
+                    from 
+                        provider_queue pq, office_addresses oa 
+                    where 
+                        oa.office_id=pq.office_id and pq.provider_queue_status_id = 50
+                    group by zipcode
+                ) net on net.zipcode = ti.zipcode
+                left join (
+                    select 
+                        count(pq.id) as cnt,oa.zipcode 
+                    from 
+                        provider_queue pq, office_addresses oa 
+                    where 
+                        oa.office_id=pq.office_id and pq.provider_queue_status_id <> 50
+                    group by zipcode
+                ) pot on pot.zipcode = ti.zipcode
+                left join (
+                    select lat,lon,zipcode from position_zip
+                ) pz on pz.zipcode = ti.zipcode
+            where
+                ti.traffic_categories_id = 2 
+            group by
+                ti.zipcode
+            order by 
+                count(ti.id)+ifnull(net.cnt,0)+ifnull(pot.cnt,0) desc
+            """)
+        ret['heatmap_potentials'] = []
+        for t in o:
+            t['coords'] = json.loads(t['coords'])
+            ret['heatmap_potentials'].append(t) 
         if 99 in params['categories']:
             p = []
             p.append(STR['Potential Provider'])

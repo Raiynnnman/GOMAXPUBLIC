@@ -15,6 +15,7 @@ import AppSpinner from '../utils/Spinner';
 import { getTraffic } from '../../actions/trafficGet';
 import TrafficMap from './TrafficMap';
 import HeatMap from './HeatMap';
+import PotentialsHeatMap from './PotentialsHeatMap';
 //import WeatherMap from './WeatherMap';
 //import WeatherCard from './WeatherCard';
 class Map extends Component {
@@ -256,9 +257,13 @@ class Map extends Component {
                                     <Tabs value={this.state.activeTab} onChange={this.toggleTab} >
                                         <Tab value='traffic' label='Traffic' />
                                         <Tab value='heatmap' label='HeatMap' />
+                                        <Tab value='potentials' label='Potentials' />
                                         {/*<Tab value='weathermap' label='WeatherMap' />*/}
 
                                     </Tabs>
+                                    {(this.state.activeTab === 'potentials') && (
+                                        <PotentialsHeatMap data={this.props.trafficData} centerPoint={this.state.center || this.props.trafficData.data.center} />
+                                    )}
                                     {(this.state.activeTab === 'traffic') && (
                                         <TrafficMap targeted={this.state.officeTarget} 
                                             data={this.props.trafficData} centerPoint={this.state.center || this.props.trafficData.data.center} />
