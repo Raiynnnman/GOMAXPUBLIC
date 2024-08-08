@@ -117,7 +117,7 @@ class HeroOliveCustomer extends Component {
                                             <Grid container xs={12} style={{zIndex:555}}>
                                                 <Grid item xs={12} style={{margin:10}}>
                                                 <Select 
-                                                    style={{width:480,backgroundColor:"white",zIndex:555}} 
+                                                    style={{width:470,backgroundColor:"white",zIndex:555}} 
                                                     value={this.state.case_type}
                                                     onChange={this.updateType}>
                                                         {this.state.case_type_options.map((e) => { 
