@@ -74,16 +74,19 @@ class DealTracker extends Component {
                 ),
             },
             { dataField: 'set_date', text: 'Date Set', 
+                align:"center",
                 onClick: (content,row) => (
                     this.props.onEdit(content)
                 ),
             },
             { dataField: 'present_date', text: 'Present Date', 
+                align:"center",
                 onClick: (content,row) => (
                     this.props.onEdit(content)
                 ),
             },
             { dataField: 'estimated_close_date', text: 'ECD', 
+                align:"center",
                 onClick: (content,row) => (
                     this.props.onEdit(content)
                 ),
@@ -99,6 +102,7 @@ class DealTracker extends Component {
                 ),
             },
             { dataField: 'presented_status_name', text: 'Presented', 
+                align:"center",
                 onClick: (content,row) => (
                     this.props.onEdit(content)
                 ),
