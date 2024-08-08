@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Grid from '@mui/material/Grid';
+import Checkbox from '@mui/material/Checkbox';
 import AnalyticEcommerce from '../dashboard/components/cards/AnalyticCard';
 import PainTable from '../utils/PainTable';
 import MainCard from '../dashboard/components/cards/MainCard';
@@ -52,11 +53,7 @@ class DealTracker extends Component {
     render() {
         const columns = [
             { dataField: 'id', text: '', 
-                onClick: (content,row) => (
-                    this.props.onEdit(content)
-                ),
-            },
-            { dataField: 'name', text: 'Name', 
+              hidden:true,
                 onClick: (content,row) => (
                     this.props.onEdit(content)
                 ),
@@ -66,7 +63,42 @@ class DealTracker extends Component {
                     this.props.onEdit(content)
                 ),
             },
+            { dataField: 'name', text: 'Name', 
+                onClick: (content,row) => (
+                    this.props.onEdit(content)
+                ),
+            },
             { dataField: 'source_name', text: 'Source', 
+                onClick: (content,row) => (
+                    this.props.onEdit(content)
+                ),
+            },
+            { dataField: 'set_date', text: 'Date Set', 
+                onClick: (content,row) => (
+                    this.props.onEdit(content)
+                ),
+            },
+            { dataField: 'present_date', text: 'Present Date', 
+                onClick: (content,row) => (
+                    this.props.onEdit(content)
+                ),
+            },
+            { dataField: 'estimated_close_date', text: 'ECD', 
+                onClick: (content,row) => (
+                    this.props.onEdit(content)
+                ),
+            },
+            { dataField: 'users', text:'Prospect',
+                formatter: (content,row) => (
+                    <div>
+                        {row.users.length > 0 ? row.users[0].first_name + " " + row.users[0].last_name : "N/A"}
+                    </div>
+                ),
+                onClick: (content,row) => (
+                    this.props.onEdit(content)
+                ),
+            },
+            { dataField: 'presented_status_name', text: 'Presented', 
                 onClick: (content,row) => (
                     this.props.onEdit(content)
                 ),
@@ -92,30 +124,64 @@ class DealTracker extends Component {
                     </div>
                 )
             },
-            { dataField: 'set_date', text: 'Date Set', 
+            { dataField: 'closed', text: 'Closed', 
                 onClick: (content,row) => (
                     this.props.onEdit(content)
                 ),
+                formatter:(cellContent,row) => (
+                    <div>
+                        <Checkbox checked={
+                                row.office_alternate_status_name === "CLOSED-PAID" || 
+                                row.office_alternate_status_name === "CLOSED ONBOARDED"
+                            }/>
+                    </div>
+                )
             },
-            { dataField: 'present_date', text: 'Present Date', 
+            { dataField: 'closed', text: 'Onboarded', 
+                align:"center",
                 onClick: (content,row) => (
                     this.props.onEdit(content)
                 ),
+                formatter:(cellContent,row) => (
+                    <div>
+                        <Checkbox checked={
+                                row.office_alternate_status_name === "CLOSED ONBOARDED"
+                            }/>
+                    </div>
+                )
             },
-            { dataField: 'estimated_close_date', text: 'ECD', 
+            { dataField: 'closed_days', text: 'Close Time (days)', 
+                align:"center",
                 onClick: (content,row) => (
                     this.props.onEdit(content)
                 ),
+                formatter:(cellContent,row) => (
+                    <div>
+                        {row.closed_days}
+                    </div>
+                )
             },
-            { dataField: 'presented_status_name', text: 'Presented', 
+            { dataField: 'deal_value', text: 'Deal Value', 
+                align:"right",
                 onClick: (content,row) => (
                     this.props.onEdit(content)
                 ),
+                formatter:(cellContent,row) => (
+                    <div>
+                        {row.deal_value ? "$" + row.deal_value.toFixed(0) : "$0"}
+                    </div>
+                )
             },
-            { dataField: 'office_alternate_status_name', text: 'Status', 
+            { dataField: 'refund_requested', text: 'Refund Requested', 
+                align:"center",
                 onClick: (content,row) => (
                     this.props.onEdit(content)
                 ),
+                formatter:(cellContent,row) => (
+                    <div>
+                        <Checkbox checked={ row.refund_requested }/>
+                    </div>
+                )
             },
         ]
         return (
@@ -146,15 +212,16 @@ class DealTracker extends Component {
             </div>
             <Grid container xs="12" style={{marginTop:20}}>
                 <Grid item xs="12">
-                    <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+                    <Paper sx={{ width: '100%', overflow: 'auto' }}>
                         <PainTable
-                                keyField='id' 
-                                selectAll={false}
-                                data={this.props.data} 
-                                total={this.props.data.length}
-                                page={0}
-                                pageSize={this.props.data.length}
-                                columns={columns}/>
+                            keyField='id' 
+                            minWidth={2400}
+                            selectAll={false}
+                            data={this.props.data} 
+                            total={this.props.data.length}
+                            page={0}
+                            pageSize={this.props.data.length}
+                            columns={columns}/>
                     </Paper>
                 </Grid>                
             </Grid>
