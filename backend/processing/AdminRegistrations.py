@@ -804,7 +804,7 @@ class RegistrationList(AdminBase):
         ALT = self.getAltStatus()
         q = """
             select 
-                pq.id,o.name,o.email,o.id as office_id,pqs.name as status,
+                pq.id,o.id as office_id,o.name,o.email,pqs.name as status,
                 concat('=hyperlink("https://login.poundpain.com/app/main/admin/registrations/',pq.id,'"),"LINK")') as url,
                 pq.provider_queue_status_id,pq.sm_id,pqls.name as lead_strength,
                 pqls.id as lead_strength_id, pq.created,pq.updated,pq.places_id,
@@ -825,7 +825,7 @@ class RegistrationList(AdminBase):
                 pq.refund_requested,pq.set_to_present_date, pq.business_name, pq.doing_business_as_name,
                 pq.include_on_deal_tracker,pq.provider_queue_source_id,
                 pq.provider_queue_presented_status_id,pq.deal_value,
-                timestampdiff(day, now(),pq.closed_date) as closed_days
+                timestampdiff(day, pq.closed_date, now()) as closed_days
             from
                 provider_queue pq
                 left join office o on pq.office_id = o.id
@@ -1126,6 +1126,8 @@ class RegistrationList(AdminBase):
                 myq += ")\n"
                 i = []
                 for g in params['alt_status']:
+                    if g == None:
+                        continue
                     if g == ALT['DNC']:
                         continue
                     if g == ALT['Not interested']:
@@ -1136,7 +1138,7 @@ class RegistrationList(AdminBase):
                 myq += " /* PQS */ and provider_queue_status_id not in (" 
                 myq += ",".join(map(str,i))
                 myq += ")\n"
-            myq += " group by o.id "
+            myq += " group by o.id order by id desc "
             o = db.query(myq,pre_par)
             d = calcdate.getYearToday()
             ret['filename'] = 'provider_report-%s.csv' % d
