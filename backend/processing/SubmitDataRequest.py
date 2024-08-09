@@ -102,7 +102,7 @@ class SubmitDataRequest(ProcessingBase):
     def process(self, *args, **kwargs):
         jobstate = None
         jobstate = JobStates.JobStates()
-        print("sdr:%s" % self.__class__.__name__)
+        jobstate.setClassName(self.__class__.__name__)
         if 'DataScience' in self.__class__.__name__:
             jobstate.setIsDSJob(1)
         jobstate.jobQueued()
