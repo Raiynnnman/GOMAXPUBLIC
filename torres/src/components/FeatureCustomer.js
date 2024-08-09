@@ -67,7 +67,7 @@ class Feature extends Component{
        })
 
        return(
-           <div className= {`feature-area feature-bg-image pb--50 ${this.props.horizontalfeature}`} id="features">
+           <div className= {`feature-area feature-bg-image-patient pb--50 ${this.props.horizontalfeature}`} id="features">
                <div className="container">
                    <div className="row">
                        <div className="col-lg-12">

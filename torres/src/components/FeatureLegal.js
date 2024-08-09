@@ -10,14 +10,14 @@ class Feature extends Component{
            
         {
             icon: <TrendingUpIcon style={{fontSize:50,height:100,color:"white"}}/>,
-            title: 'Increase Your Patient Base',
-            desc: 'Tap into a broader network of patients actively seeking care.'
+            title: 'Increase Your Client Base',
+            desc: 'Tap into a broader network of clients actively seeking care.'
         },
 
         {
             icon: <MonitorHeartIcon style={{fontSize:50,height:100,color:"white"}}/>,
             title: 'Optimize Your Practice',
-            desc: 'Utilize our platform’s tools to manage referrals, appointments, and patient interactions effortlessly.'
+            desc: 'Utilize our platform’s tools to manage referrals, appointments, and client interactions effortlessly.'
         },
 
         {
@@ -30,16 +30,6 @@ class Feature extends Component{
             title: 'Appointment Reminders',
             desc: 'Reduce no-shows and improve appointment adherence with our automated reminder system.'
         },
-        /*{
-            icon: 'zmdi zmdi-language-html5',
-            title: 'Secure Patient Messaging',
-            desc: 'Enhance communication between you and your patients with our secure messaging feature. Patients can easily reach out with questions or concerns, and you can provide timely responses, ensuring better patient engagement and satisfaction.'
-        },
-        {
-            icon: 'zmdi zmdi-language-html5',
-            title: 'Integrated Telehealth Services',
-            desc: 'Our platform includes built-in telehealth capabilities, allowing providers to offer virtual consultations and follow-ups. This feature ensures patients can access care from the comfort of their homes, expanding the reach of your practice and enhancing patient convenience.'
-        }*/
        ] 
 
        let DataList = data.map((val , i) => {

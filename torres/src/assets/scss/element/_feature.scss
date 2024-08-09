@@ -24,6 +24,28 @@ Feature Area
 
 }
 
+.feature-bg-image-patient {
+    /* background-position: -8.5% 63%; */
+    /* background-size: 62% auto; */
+    background-image: url(/assets/main_page/patient-cellphone.png);
+    margin-top: -112px;
+    padding-top: 35px;
+    background-repeat: no-repeat;
+    background-size: 63% auto;
+    background-position: -11% 67%;
+
+    @media #{$md-layout} {
+        margin-top: 0;
+        background-image: inherit;
+    }
+
+    @media #{$sm-layout} {
+        margin-top: 0;
+        background-image: inherit;
+    }
+
+}
+
 .feature-bg-image {
     /* background-position: -8.5% 63%; */
     /* background-size: 62% auto; */
