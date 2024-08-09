@@ -13,6 +13,7 @@ from util import Performance
 from processing.run import app
 from flask import request, jsonify
 from common.DataException import DataException
+from common.SparkSQLException import SparkSQLException
 from common.InvalidParameterException import InvalidParameterException
 from common import settings
 from processing import JobStates
@@ -49,6 +50,8 @@ def submit_task_wrapper(self, *args):
         raise ipe
     except Py4JJavaError as p4j:
         raise p4j
+    except SparkSQLException as sse:
+        raise sse
     except Exception as e:
         exc_type, exc_value, exc_traceback = sys.exc_info()
         print(str(e)) # EXCEPTION

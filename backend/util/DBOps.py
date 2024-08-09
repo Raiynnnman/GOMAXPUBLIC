@@ -31,8 +31,13 @@ class DateTimeEncoder(JSONEncoder):
 
 class Query(DBBase):
 
+    __LAST_INSERT_ID__ = 0
+
     def __init__(self):
         super().__init__()
+
+    def LAST_INSERT_ID(self):
+        return self.__LAST_INSERT_ID__
 
     def query(self,query,params=[]):
         if self.__handle__ is None:
@@ -56,6 +61,7 @@ class Query(DBBase):
         while C < 6:
             try:
                 curs.execute(query,params)
+                self.__LAST_INSERT_ID__ = curs.lastrowid
                 C = 100
             except Exception as e:
                 log.error("UPDATE Failed: %s. Attempt %s" % (str(e),C))

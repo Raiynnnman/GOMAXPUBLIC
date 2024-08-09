@@ -9,18 +9,18 @@ from flask import request, jsonify
 from common.DataException import DataException
 from processing.SubmitDataRequest import SubmitDataRequest
 from sparks.SparkEntry import SparkEntry
-from util.Permissions import check_admin
+from util.Permissions import check_datascience
+
 
 class StoreData(SubmitDataRequest):
 
     def isDeferred(self):
         return True
     
-    @check_admin
+    @check_datascience
     def execute(self, *args, **kwargs):
         job,user,off_id,params = self.getArgs(*args,**kwargs)
         ret = {}
-        print(job,user,off_id,params)
         if 'table' not in params:
             raise Exception("TABLE_NAME_REQUIRED")
         if 'data' not in params:
@@ -31,7 +31,6 @@ class StoreData(SubmitDataRequest):
             return {'success': True}
         table = params['table']
         category = "pain.%s" % table
-        print(table,category)
         se = SparkEntry()
         ret = se.process(category, table, params['data']) 
         ret['success'] = True

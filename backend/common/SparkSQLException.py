@@ -1,0 +1,4 @@
+
+class SparkSQLException(Exception):
+    pass
+

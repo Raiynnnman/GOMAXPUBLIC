@@ -1442,9 +1442,9 @@ class ContactUs(RegistrationsBase):
         data['__EMAIL__'] = params['email']
         data['__MESSAGE__'] = params['message']
         if config.getKey("use_defer") is not None:
-            m.sendEmailQueued(sysemail,"Information Inquiry","templates/mail/information-inquiry.html",data)
+            m.sendEmailQueued(sysemail,"Provider Information Inquiry - %s" % params['email'],"templates/mail/information-inquiry.html",data)
         else:
-            m.send_email(sysemail,"Information Inquiry","templates/mail/information-inquiry.html",data)
+            m.send_email(sysemail,"Provider Information Inquiry - %s" % params['email'],"templates/mail/information-inquiry.html",data)
         db.commit()
         return {'success':True}
 
@@ -1637,8 +1637,8 @@ class RegisterPatient(RegistrationsBase):
         data['__EMAIL__'] = params['email']
         data['__MESSAGE__'] = params['description']
         if config.getKey("use_defer") is not None:
-            m.sendEmailQueued(sysemail,"Information Inquiry","templates/mail/patient-inquiry.html",data)
+            m.sendEmailQueued(sysemail,"Patient Information Inquiry - %s" % params['email'],"templates/mail/patient-inquiry.html",data)
         else:
-            m.send_email(sysemail,"Information Inquiry","templates/mail/patient-inquiry.html",data)
+            m.send_email(sysemail,"Patient Information Inquiry - %s" % params['email'],"templates/mail/patient-inquiry.html",data)
         db.commit()
         return {'success':True}

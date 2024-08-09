@@ -5,7 +5,6 @@ import TextField from '@mui/material/TextField';
 import { withRouter } from 'react-router-dom';
 import TemplateTextField from '../pain/utils/TemplateTextField';
 import TemplateTextFieldPhone from '../pain/utils/TemplateTextFieldPhone';
-import TemplateTextFieldZipcode from '../pain/utils/TemplateTextFieldZipcode';
 import TemplateTextArea from '../pain/utils/TemplateTextArea';
 import TemplateCheckbox from '../pain/utils/TemplateCheckbox';
 import Grid from '@mui/material/Grid';
@@ -13,6 +12,7 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import {patientRegister} from '../actions/patientRegister';
+import formatPhoneNumber from '../pain/utils/formatPhone';
 
 
 class HeroOliveCustomer extends Component {
@@ -43,17 +43,22 @@ class HeroOliveCustomer extends Component {
         this.setState(this.state);
     } 
     updateType = (e,t) => { 
-        console.log("ut",e,e.target.value);
         this.state.case_type = e.target.value; 
         this.setState(this.state);
     } 
     updateValue = (e,t) => { 
-        console.log("uv",e,t.target.value);
-        this.state[e] = t.target.value; 
+        if (e === 'phone') { 
+            if (t.target.value.length > 14) { return; }
+            this.state[e] = formatPhoneNumber(t.target.value);
+        } else if (e === 'zipcode') { 
+            if (t.target.value.length > 5) { return; }
+            this.state[e] = t.target.value; 
+        } else { 
+            this.state[e] = t.target.value; 
+        }
         this.setState(this.state);
     } 
     render(){
-        console.log("s",this.state);
         return(
             <div className={`header-area-customer ${this.props.horizontal} ${this.props.bgshape}`} id="home" >
                 <div className="header-bg"/>
@@ -73,7 +78,7 @@ class HeroOliveCustomer extends Component {
                                         <>
                                         <div style={{display:"flex",justifyContent:"center"}}>
                                             <div style={{display:"flex",justifyContent:"space-around",marginTop:10}}>
-                                                <font style={{fontSize:20}}>Thank you for contacting us. Someone will be in touch shortly</font>
+                                                <font style={{margin:20,fontSize:20,color:"white",textAlign:"center"}}>Thank you for contacting us. Someone will be in touch shortly</font>
                                             </div>
                                         </div>
                                         </>

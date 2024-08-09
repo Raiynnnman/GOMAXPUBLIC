@@ -280,6 +280,15 @@ class Navbar extends Component {
                 window.location = '/app/main/admin/providers';
              }
             },
+            {n:'Data Science',
+             v:function(c) { 
+                return (c.entitlements.includes('DataScience') ? true : false)
+             },
+             a:function() { 
+                window.location = '/app/main/admin/datascience';
+             },
+             u:'/'
+            },
             {
              n:'Invoices',
              v:function(c) { 

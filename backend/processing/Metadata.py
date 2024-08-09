@@ -10,12 +10,15 @@ from common.DataException import DataException
 from processing.SubmitDataRequest import SubmitDataRequest
 from sparks.SparkQuery import SparkQuery
 from util.DBManager import DBManager 
+from util.Permissions import check_datascience
+from util.DBOps import Query
 
-class Metadata(SubmitDataRequest):
+class MetadataRefresh(SubmitDataRequest):
     
+    @check_datascience
     def execute(self, *args, **kwargs):
-        mydb = DBManager().getConnection()
         seTables = SparkQuery()
+        db = Query()
         table = "default"
         query = "show tables"
         category = "metadata"
@@ -46,20 +49,24 @@ class Metadata(SubmitDataRequest):
                     continue
                 mytype = col['data_type']
                 finalMeta[table].append({"name": mycol,"type":mytype})
-        curs = mydb.cursor(buffered=True)
-        # NOTE: This might require more complicated mechanism considering hosting implications
-        curs.execute("delete from tables")
-        curs.execute("delete from columns")
         for x in finalMeta:
-            query = "insert into datastorage_tables (name) values (%s)"
-            curs.execute(query, (x,))
-            tblid = curs.lastrowid
+            o = db.query("""
+                select id from datastorage_tables 
+                where name = %s
+                """,(x,)
+            )
+            tblid = 0
+            if len(o) > 0:
+                tblid = o[0]['id']
+                db.update("delete from datastorage_columns where id = %s",(tblid,))
+            else:
+                query = "insert into datastorage_tables (name) values (%s)"
+                db.update(query, (x,))
+                tblid = db.LAST_INSERT_ID()
             for n in finalMeta[x]:
-                query = "insert into datastorage_columns (tables_id,name,datatypes) values (%s, %s, %s)"            
-                curs.execute(query, (tblid,n['name'],n['type']))
-        mydb.commit()
-        # Close the pooled connection
-        mydb.close()
+                query = "insert into datastorage_columns (datastorage_tables_id,name,datatypes) values (%s, %s, %s)"            
+                db.update(query, (tblid,n['name'],n['type']))
+        db.commit()
         return {'success': True}
 
 

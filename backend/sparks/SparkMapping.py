@@ -1,6 +1,7 @@
 
 import sys
 import os
+import re
 import json
 import sqlite3
 import math
@@ -10,6 +11,7 @@ import pyspark
 from datetime import datetime
 import time
 from util.DBManager import DBManager 
+from common.SparkSQLException import SparkSQLException
 from pyspark.sql import SparkSession
 from pyspark.sql import Row
 from common import settings
@@ -94,7 +96,7 @@ class SparkMapping(SparkBase):
                     .getOrCreate()
         return spark
         
-    def getType(self, v):
+    def getType(self, f, v):
         if v == "False":
             return "boolean", v
         if v == "True":
@@ -105,9 +107,14 @@ class SparkMapping(SparkBase):
             return "bigint", v
         if isinstance(v, float):
             return "double", v
+        if 'time' in f:
+            return "timestamp", v
+        if 'date' in f:
+            return "timestamp", v
+        if re.match(r'\d{4}-\d\d-\d\d',str(v)):
+            return "timestamp", v
         if isinstance(v, datetime):
-            # return "TIMESTAMP(6)", v
-            return "int", v
+            return "timestamp", v
         if isinstance(v, dict):
             return "string", json.dumps(v) 
         if isinstance(v, list):
@@ -142,33 +149,16 @@ class SparkMapping(SparkBase):
                     for q in k:
                         j = "%s_%s" % (n,q)
                         ret[j] = {}
-                        t, v = self.getType(k[q])
+                        t, v = self.getType(k,k[q])
                         ret[j]['t'] = t
                         ret[j]['v'] = v
-                        if j in s:
-                            if s[j] != ret[j]['t']:
-                                ret[j]['t'] = s[j]
-                                self.logme(
-                                    "field [%s] (%s) changed to [%s] (was [%s])" % (
-                                        j, v, ret[j]['t'], s[j]
-                                    ))
                     if n in ret:
                         del ret[n]
                 else:
-                    t,v = self.getType(k)
-                    if n in s:
-                        if s[n] != t:
-                            ret[n] = {}
-                            ret[n]['t'] = s[n]
-                            ret[n]['v'] = v
-                            self.logme(
-                                "field [%s] (%s) changed to [%s] (was [%s])" % (
-                                    n, v, t, s[n]
-                                ))
-                    else:
-                        ret[n] = {}
-                        ret[n]["v"] = v
-                        ret[n]["t"] = t
+                    t,v = self.getType(n,k)
+                    ret[n] = {}
+                    ret[n]["v"] = v
+                    ret[n]["t"] = t
         return ret
 
     def getDatabases(self, sph):
@@ -202,34 +192,12 @@ class SparkMapping(SparkBase):
             #logme("Nothing to do, skip")
             return
         F = "%s %s" % (" ".join(Q), "\n".join(I))
-        self.logme("f=%s" % F)
+        self.logme("f=%s" % F[:2])
         try:
             sph.sql(F)
         except Exception as e:
             self.logme("EXCEPTION in SQL: %s" % str(e))
-            l = 0
-            try:
-                if 'line' in str(e):
-                    t = str(e).split("line")
-                    if len(t) > 1:
-                        v = t[1].split(",")
-                        if len(v) > 0:
-                            v = v[0].strip()
-                            try:
-                                l = int(v)
-                            except:
-                                print("Cant parse %s" % v)
-                if l > 0:
-                    if len(I) > l:
-                        try:
-                            self.logme("OFFENDINGLINES-1: %s" % I[l-1])
-                            self.logme("OFFENDINGLINES-1: %s" % I[l])
-                            self.logme("OFFENDINGLINES+1: %s" % I[l+1])
-                        except Exception as e:
-                            print("NOLINE: %s" % str(e))
-            except Exception as e:
-                print("COULDNT GET LINE: %s" % (str(e)))
-            raise e
+            raise SparkSQLException(e)
 
     def getDBName(self):
         e = "db_%s_%s" % (self.getSchemaVer(), "pain")
@@ -258,16 +226,16 @@ class SparkMapping(SparkBase):
         q = """
             create table %s (
                 objid string, 
-                timestamp int, 
-                main_updated int, 
+                timestamp timestamp, 
+                main_updated timestamp, 
                 tframe int
         ) using iceberg""" % name
         # self.logme(q)
         sph.sql(q)
         COLS["objid"] = "string"
-        COLS["timestamp"] = "int"
-        COLS["main_updated"] = "int"
-        COLS["tframe"] = "int"
+        COLS["timestamp"] = "timestamp"
+        COLS["main_updated"] = "timestamp"
+        COLS["tframe"] = "timestamp"
         return COLS
 
     def checkOBJ(self, obj, tbl):
@@ -414,14 +382,6 @@ class SparkMapping(SparkBase):
                         a = ref[0]
                         b = ref[1]
                         v = row[a][b]
-                    if g == "timestamp" or g == "created" or g == "main_updated":
-                        if str(v).startswith("20"):
-                            h = calcdate.parseDate(v)
-                            # h = h.strftime("%S")
-                            h = time.mktime(h.timetuple())
-                            v = h
-                        elif g == "main_updated":
-                            v = int(time.time())
                     if g == "tframe":
                         if 'timestamp' in row:
                             t = row['timestamp']
@@ -438,6 +398,12 @@ class SparkMapping(SparkBase):
                             v = "true"
                         if not v:
                             v = "false"
+                    if COLS[g] == "timestamp":
+                        quote = False
+                        # v = calcdate.parseDate(v).strftime("%s")
+                        if 'T' in str(v):
+                            v = v.replace("T"," ")
+                        v = "cast(date_format('%s', 'yyyy-MM-dd HH:mm:ss.SSS') as timestamp)" % v
                     if COLS[g] == "int" or COLS[g] == "bigint":
                         quote = False
                         try:
@@ -473,7 +439,7 @@ class SparkMapping(SparkBase):
                     commasep = True
                 INS.append("(%s)" % G)
         except Exception as e:
-            raise e
+            raise SparkSQLException(str(e))
         finally:
             if os.path.exists(SL_FNAME):
                 os.unlink(SL_FNAME)

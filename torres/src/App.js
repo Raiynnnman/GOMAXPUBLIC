@@ -44,6 +44,7 @@ import Join from './pain/online-demo/Join';
 import OnlineDemoList from './pain/admin/OnlineDemoList';
 import Tickets from "./pain/admin/Tickets";
 import Calendar from "./pain/calendar/Calender";
+import DataScience from './pain/datascience/DataScience';
 const CloseButton = ({closeToast}) => <i onClick={closeToast} className="la la-close notifications-close"/>
 
 class App extends Component {
@@ -96,6 +97,7 @@ class App extends Component {
                         <Route exact path='/online-demo/:token' component={Join}/>
                         <Route exact path='/app/main/dashboard' component={Dashboard}/>
                         <Route exact path='/app/main/admin/investors' component={InvestorMap}/>
+                        <Route exact path='/app/main/admin/datascience' component={DataScience}/>
                         <Route exact path='/app/main/view/incidentmap' component={InvestorMap}/>
                         <Route exact path='/app/main/admin/search' component={SearchAdmin}/>
                         <Route exact path='/app/main/admin/search/:id' component={SearchAdmin}/>
