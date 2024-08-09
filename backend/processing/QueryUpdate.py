@@ -12,6 +12,8 @@ from processing.SubmitDataRequest import SubmitDataRequest
 from sparks.SparkQuery import SparkQuery
 from processing.QueryInterface import QueryInterface
 from util.DBManager import DBManager 
+from util.Permissions import check_datascience
+from util.DBOps import Query
 
 
 class QueryUpdate(SubmitDataRequest):
@@ -19,21 +21,31 @@ class QueryUpdate(SubmitDataRequest):
     def isDeferred(self):
         return False
 
+    @check_datascience
     def execute(self, *args, **kwargs):
-        data = args[0]
-        if 'id' not in data:
-            raise InvalidParameterException("ID EXPECTED")
-        mydb = DBManager().getConnection()
-        db = mydb.cursor(buffered=True)
-        query = "update datastorage_queries set name = %s, columns = %s, tables = %s, " \
-            " updated = NOW(), groupby = %s, orderby=%s, whereclause=%s where id = %s" 
-        db.execute(
-            query, (data['name'], json.dumps(data['columns']), json.dumps(data['tables']),
-                json.dumps(data['groupby']), json.dumps(data['orderby']), json.dumps(data['where']),
-                data['id']
-                )
-        )
-        mydb.commit()
+        job,user,off_id,params = self.getArgs(*args,**kwargs)
+        myid = None
+        if 'id' in params:
+            myid = params['myid']
+        db = Query()
+        if myid is not None:
+            query = "update datastorage_queries set name = %s, columns = %s, tables = %s, " \
+                " updated = NOW(), groupby = %s, orderby=%s, whereclause=%s where id = %s" 
+            db.execute(
+                query, (params['name'], json.dumps(params['columns']), json.dumps(params['tables']),
+                    json.dumps(params['groupby']), json.dumps(params['orderby']), json.dumps(params['where']),
+                    params['id']
+                    )
+            )
+        else:
+            query = "insert into datastorage_queries (name, columns, tables, groupby, orderby, whereclause) " \
+                " values (%s,%s,%s,%s,%s,%s)"
+            db.execute(
+                query, (params['name'], json.dumps(params['columns']), json.dumps(params['tables']),
+                    json.dumps(params['groupby']), json.dumps(params['orderby']), json.dumps(params['where'])
+                    )
+            )
+        db.commit()
         return {'success': True}
 
 

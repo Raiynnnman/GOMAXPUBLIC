@@ -12,7 +12,7 @@ from sparks.SparkEntry import SparkEntry
 from util.Permissions import check_datascience
 
 
-class StoreData(SubmitDataRequest):
+class DataScienceStoreData(SubmitDataRequest):
 
     def isDeferred(self):
         return True

@@ -6,18 +6,40 @@ import unittest
 from flask import request, jsonify
 
 from rest.RestBase import RestBase
-from processing import StoreData, Metadata
+from processing import DataScienceStoreData, DataScienceMetaData, QueryList
+from processing import QueryUpdate, JobsList
 
 class StoreDataRest(RestBase):
 
     def post(self, *args, **kwargs):
-        fdr = StoreData.StoreData()
+        fdr = DataScienceStoreData.DataScienceStoreData()
         ret = fdr.process(args[0])
         return ret
 
 class MetaDataRefreshRest(RestBase):
 
     def post(self, *args, **kwargs):
-        fdr = Metadata.MetadataRefresh()
+        fdr = DataScienceMetadata.DataScienceMetadataRefresh()
+        ret = fdr.process(args[0])
+        return ret
+
+class QueryListRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        fdr = QueryList.QueryList()
+        ret = fdr.process(args[0])
+        return ret
+
+class QueryUpdateRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        fdr = QueryUpdate.QueryUpdate()
+        ret = fdr.process(args[0])
+        return ret
+
+class JobsListRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        fdr = JobsList.JobsList()
         ret = fdr.process(args[0])
         return ret

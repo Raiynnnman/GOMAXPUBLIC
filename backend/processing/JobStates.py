@@ -13,6 +13,7 @@ from processing.ProcessingBase import ProcessingBase
 class JobStates(ProcessingBase):
     jobid = None    
     isactive = 1
+    isdsjob = 0
 
     def __init__(self):
         super().__init__()
@@ -39,6 +40,9 @@ class JobStates(ProcessingBase):
     def setIsActive(self, j):
         self.isactive = j
 
+    def setIsDSJob(self, j):
+        self.isdsjob = j
+
     def getIsActive(self):
         return self.isactive 
 
@@ -50,8 +54,8 @@ class JobStates(ProcessingBase):
         # print("generating job: %s" % jobname)
         mydb = DBManager().getConnection()
         curs = mydb.cursor()
-        query = "insert into jobs (job_id, curr_status) values (%s, %s)"
-        curs.execute(query, (jobname, 0))
+        query = "insert into jobs (job_id, curr_status, is_storage_job) values (%s, %s, %s)"
+        curs.execute(query, (jobname, 0,self.isdsjob))
         self.jobid = curs.lastrowid
         mydb.commit()
         # Close the pooled connection
@@ -91,7 +95,7 @@ class JobStates(ProcessingBase):
         mydb = DBManager().getConnection()
         curs = mydb.cursor()
         if random.randint(0,100) < 75:
-            query = "delete from jobs where updated < date_add(NOW(), INTERVAL -7 DAY);"
+            query = "delete from jobs where updated < date_add(NOW(), INTERVAL -30 DAY);"
             curs.execute(query)
             mydb.commit()
         if random.randint(0,100) > 75:

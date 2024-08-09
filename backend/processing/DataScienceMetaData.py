@@ -13,7 +13,7 @@ from util.DBManager import DBManager
 from util.Permissions import check_datascience
 from util.DBOps import Query
 
-class MetadataRefresh(SubmitDataRequest):
+class DataScienceMetadataRefresh(SubmitDataRequest):
     
     @check_datascience
     def execute(self, *args, **kwargs):
