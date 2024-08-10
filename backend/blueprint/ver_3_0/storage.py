@@ -103,9 +103,9 @@ def jobslist(*args,**kwargs):
     po = StorageDataRest.JobsListRest()
     return po.postWrapper(*args,**kwargs)
 
-@storage.route('/storage/metadata/get', methods=['POST'])
+@storage.route('/storage/metadata/list', methods=['POST'])
 @token_required
 @swag_from(docs_dir + 'test-service.yaml')
 def mdget(*args,**kwargs):
-    po = StorageDataRest.MetaDataGetRest()
+    po = StorageDataRest.MetadataGetRest()
     return po.postWrapper(*args,**kwargs)

@@ -204,7 +204,7 @@ class PainTable extends Component {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {this.props.data.map((row) => (
+                  {this.props.data && this.props.data.map((row) => (
                     <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                         {this.props.selectAll && (
                         <TableCell style={{backgroundColor:'#fa6a0a'}} padding="checkbox">

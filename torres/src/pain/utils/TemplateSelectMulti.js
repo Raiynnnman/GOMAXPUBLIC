@@ -10,7 +10,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 
-function TemplateSelectMulti({label,onChange,style,value,options}) {
+function TemplateSelectMulti({label,onChange,style,value,options,selectAllOption}) {
   var sel = []
   var c = 0;
   for (c = 0; c < value.length; c++) { 
@@ -18,6 +18,7 @@ function TemplateSelectMulti({label,onChange,style,value,options}) {
   } 
   sel = [...new Set(sel)];
 
+  if (selectAllOption === undefined) { selectAllOption = true; }
 
   const [selectAll, setSelectAll] = React.useState(value.length === options.length);
   const [selected, setSelected] = React.useState(sel);
@@ -61,7 +62,7 @@ function TemplateSelectMulti({label,onChange,style,value,options}) {
   return (
     <div>
         <Paper>
-          <FormControl sx={{ m: 1, width: "100%" }} size="small">
+          <FormControl sx={{ m: 1, width: "96%" }} size="small">
             <InputLabel key={label}>{label}</InputLabel>
             <Select
               multiple
@@ -80,10 +81,12 @@ function TemplateSelectMulti({label,onChange,style,value,options}) {
 
               }}
             >
+            {(selectAllOption) && (
               <MenuItem key={0} value='SelectAll' style={{borderBottom:"1px solid black"}}>
                   <Checkbox checked={selectAll}/> 
                   <ListItemText primary="Select All"/>
               </MenuItem>
+            )}
               {options.map((n) => {
                 return (
                     <MenuItem key={n.label} value={n.label} >

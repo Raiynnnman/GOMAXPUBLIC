@@ -11,6 +11,8 @@ from processing.SubmitDataRequest import SubmitDataRequest
 from common.InvalidParameterException import InvalidParameterException
 from sparks.SparkQuery import SparkQuery
 from util.DBManager import DBManager 
+from util.Permissions import check_datascience
+from util.DBOps import Query
 
 
 class MetadataGet(SubmitDataRequest):
@@ -18,12 +20,11 @@ class MetadataGet(SubmitDataRequest):
     def isDeferred(self):
         return False
 
+    @check_datascience
     def execute(self, *args, **kwargs):
-        data = []
-        data.append(
-            {
-            "name": "operations", 
-            "columns":[
+        data = {}
+        db = Query()
+        data['operations'] = [
                 {
                 "id": "o-1",
                 "name": "VALUE",
@@ -53,74 +54,33 @@ class MetadataGet(SubmitDataRequest):
                 "name": "VARIANCE",
                 }
             ]
-            }
-        )
-        data.append(
-            {
-            "name": "filters", 
-            "columns":[
-                {
-                "id": "f-1",
-                "name": "facebook",
-                },
-                {
-                "id": "f-2",
-                "name": "instagram",
-                },
-                {
-                "id": "f-3",
-                "name": "twitter",
-                },
-                {
-                "id": "f-4",
-                "name": "tiktok",
-                },
-                {
-                "id": "f-5",
-                "name": "athlete",
-                },
-                {
-                "id": "f-6",
-                "name": "tournament",
-                },
-                {
-                "id": "f-7",
-                "name": "semrush",
-                }
-            ]
-            }
-        )
-        mydb = DBManager().getConnection()
-        db = mydb.cursor(buffered=True)
-        query = "select t.id, t.name, c.name, c.id, c.datatypes " \
-                " from tables t,columns c where c.tables_id=t.id " \
+        data['filters'] = []
+        query = "select t.id, t.name, c.name as column_name, c.id, c.datatypes " \
+                " from datastorage_tables t,datastorage_columns c where c.datastorage_tables_id=t.id " \
                 " and t.name not in ('default') order by t.name,c.name" 
-        db.execute(query)
-        rows = db.fetchall()
+        rows = db.query(query)
         thistable = {}
+        data['tables'] = []
+        data['table_data'] = {}
         for row in rows:
-            i = row[0]
-            n = row[1]
-            if n not in thistable:
-                thistable[n] = { 
+            i = row['id']
+            n = row['name']
+            if n not in data['tables']:
+                data['tables'].append(n)
+            if n not in data['table_data']:
+                data['table_data'][n] = { 
                     "id": "%s-%s" % (n,i),
-                    "name": row[1],
-                    "alias": self.getAlias(row[1]),
+                    "name": n,
+                    "alias": self.getAlias(row['name']),
                     "columns": []
                 } 
-            thistable[n]["columns"].append({
-                "id":"id-%s-%s" % (self.getAlias(row[1]),row[2]),
-                "alias": self.getAlias(row[1]),
-                "name":row[2],
-                "table":row[1],
-                "type":row[4]
+            data['table_data'][n]["columns"].append({
+                "id":"id-%s-%s" % (self.getAlias(row['name']),row['column_name']),
+                "alias": self.getAlias(row['name']),
+                "name":row['column_name'],
+                "table":n,
+                "type":row['datatypes']
             })
-
-        for n in thistable:
-            data.append(thistable[n])
-        
-        # Close the pooled connection
-        mydb.close()
         return data
 
     def getAlias(self, tbl):

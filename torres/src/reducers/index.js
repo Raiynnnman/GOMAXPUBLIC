@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 import dataScienceQueries from './dataScienceQueries';
 import dataScienceJobs from './dataScienceJobs';
+import dataScienceMetadata from './dataScienceMetadata';
 import dataScienceQueriesUpdate from './dataScienceQueriesUpdate';
 import auth from './auth';
 import patientRegister from './patientRegister';
@@ -209,6 +210,7 @@ export default combineReducers({
     dataScienceQueries,
     dataScienceQueriesUpdate,
     dataScienceJobs,
+    dataScienceMetadata,
     onlineDemoSave,
     // ticketsReducer
 });

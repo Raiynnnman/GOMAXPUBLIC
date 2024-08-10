@@ -3,8 +3,8 @@ import apiBaseUrl from '../globalConfig.js';
 import 'react-toastify/dist/ReactToastify.css';
 import handleError from './handleError';
 
-export const RECEIVED_DSQ_DATA_SUCCESS = 'RECEIVED_DSQ_DATA_SUCCESS';
-export const RECEIVING_DSQ_DATA = 'RECEIVING_DSQ_DATA';
+export const RECEIVED_DMD_DATA_SUCCESS = 'RECEIVED_DMD_DATA_SUCCESS';
+export const RECEIVING_DMD_DATA = 'RECEIVING_DMD_DATA';
 
 export function receiveDataRequest(params) {
     return (dispatch) => {
@@ -16,12 +16,12 @@ export function receiveDataRequest(params) {
 
 export function receiveDataSuccess(payload) {
     return {
-        type: RECEIVED_DSQ_DATA_SUCCESS,
+        type: RECEIVED_DMD_DATA_SUCCESS,
         payload
     }
 }
 
-export function getDataScienceQueries(params,callback,args) { 
+export function getDataScienceMetadata(params,callback,args) { 
   return async (dispatch) => {
     dispatch(receivingData(params,callback,args));
   };
@@ -30,7 +30,7 @@ export function getDataScienceQueries(params,callback,args) {
 export function receivingData(params,callback,args) {
   return async (dispatch) => {
     dispatch({
-        type: RECEIVING_DSQ_DATA
+        type: RECEIVING_DMD_DATA
     });
     const response = await axios.create({ //eslint-disable-line no-unused-vars
             baseURL: apiBaseUrl(),
@@ -39,10 +39,10 @@ export function receivingData(params,callback,args) {
               Accept: "application/json",
               "Content-Type": "application/json",
             },
-        }).post('/storage/query/list',params)
+        }).post('/storage/metadata/list',params)
       .then((e) => { 
           dispatch({
-                type: RECEIVED_DSQ_DATA_SUCCESS,
+                type: RECEIVED_DMD_DATA_SUCCESS,
                 payload: e.data.data
           });
           if (callback) {

@@ -35,17 +35,19 @@ class QueryList(SubmitDataRequest):
             offset = params['offset']
         query = "select count(j.id) as cnt from datastorage_queries j"
         total = 0
-        rows = db.execute(query)
+        rows = db.query(query)
         total=rows[0]['cnt']
         query = "select q.id, q.name, q.columns,q.tables,q.whereclause," \
             " q.groupby, q.orderby, q.updated, q.rawquery from " \
-            " queries q order by updated desc limit %s offset %s" 
+            " datastorage_queries q order by updated desc limit %s offset %s" 
         rows = db.query(query, (limit, limit*offset))
         for n in rows:
+            print(n)
             data.append({ 
-                "id": n[0], "name": n[1], "columns":json.loads(n[2]), 
-                "tables": json.loads(n[3]), "where":json.loads(n[4]), "groupby": json.loads(n[5]),
-                "orderby": json.loads(n[6]), "updated":n[7], "rawquery": n[8] 
+                "id": n['id'], "name": n['name'], "columns":json.loads(n['columns']), 
+                "tables": json.loads(n['tables']), "where":json.loads(n['whereclause']), 
+                "groupby": json.loads(n['groupby']), "orderby": json.loads(n['orderby']), 
+                "updated":n['updated'], "rawquery": n['rawquery'] 
             })
         return {'queries': data, 'total': total}
 

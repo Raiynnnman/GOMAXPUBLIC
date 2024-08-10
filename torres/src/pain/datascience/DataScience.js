@@ -9,6 +9,11 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Navbar from '../../components/Navbar';
 import { getDataScienceJobs } from '../../actions/dataScienceJobs';
+import { getDataScienceMetadata } from '../../actions/dataScienceMetadata';
+import JobsList from './JobsList';
+import QueryList from './QueryList';
+import ResultsList from './ResultsList';
+import DatasetList from './DatasetList';
 
 class Template extends Component {
     constructor(props) { 
@@ -24,6 +29,7 @@ class Template extends Component {
 
     componentDidMount() {
         this.props.dispatch(getDataScienceJobs({}));
+        this.props.dispatch(getDataScienceMetadata({}));
     }
 
     toggleTab(e, t) {
@@ -40,14 +46,25 @@ class Template extends Component {
         <Box style={{margin:20}}>
             <Tabs value={this.state.activeTab} onChange={this.toggleTab} >
                 <Tab value='jobs' label='Jobs' />
-                <Tab value='queries' label='Query' />
-                <Tab value='dataset' label='Dataset' />
+                <Tab value='queries' label='Queries' />
+                <Tab value='dataset' label='Datasets' />
                 <Tab value='results' label='Results' />
             </Tabs>
             <Grid container xs="12">
                 <Grid item xs="12">
                 <>
-                    <h1>Datascience!</h1>
+                {(this.state.activeTab === 'jobs') && (
+                    <JobsList />
+                )}
+                {(this.state.activeTab === 'queries') && (
+                    <QueryList />
+                )}
+                {(this.state.activeTab === 'dataset') && (
+                    <DatasetList />
+                )}
+                {(this.state.activeTab === 'results') && (
+                    <ResultsList />
+                )}
                 </>
                 </Grid>                
             </Grid>

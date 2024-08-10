@@ -33,7 +33,7 @@ class JobsList(SubmitDataRequest):
         total = 0
         rows = db.query(query)
         total=rows[0]['cnt']
-        query = "select jobs.id, jobs.job_id, status.value, jobs.updated " \
+        query = "select jobs.id, jobs.job_id, status.value as status, jobs.updated, jobs.class_name " \
             " from jobs,status " \
             " where " \
             " status.id=jobs.curr_status " \
