@@ -10,7 +10,8 @@ from common.DataException import DataException
 from processing.SubmitDataRequest import SubmitDataRequest
 from sparks.SparkQuery import SparkQuery
 from util.DBManager import DBManager 
-
+from util.Permissions import check_datascience
+from util.DBOps import Query
 
 
 class DatasetList(SubmitDataRequest):
@@ -20,49 +21,46 @@ class DatasetList(SubmitDataRequest):
 
     def execute(self, *args, **kwargs):
         data = {}
-        mydb = DBManager().getConnection()
-        db = mydb.cursor(buffered=True)
-        limit = self.getLimits(args) 
-        query = "select count(j.id) from dataset j"
+        job,user,off_id,params = self.getArgs(*args,**kwargs)
+        db = Query()
+        limit = 10
+        offset = 0
+        if 'limit' in params:
+            limit = params['limit']
+        if 'offset' in params:
+            offset = params['offset']
+        query = "select count(j.id) as cnt from datastorage_dataset j"
         total = 0
-        db.execute(query)
-        rows = db.fetchall()
-        for n in rows:
-            total=n[0]
+        rows = db.query(query)
+        total=rows[0]['cnt']
         query = """
          select 
-            dataset.id, dataset.name, dataset_list.id, dataset_list.name, 
-            dataset_list.script, dataset.query_id,  dataset.updated, dataset.is_active,
-            queries.name 
+            dd.id, dd.name, 
+            json_array(
+                json_object(
+                    'id',ddl.id, 'name',ddl.name, 'script',ddl.script
+                )
+            ) as scripts,
+            dd.query_id,  
+            dd.updated, 
+            dd.is_active,
+            dq.name 
             from 
-                dataset
+                datastorage_dataset dd
             left outer join 
-                dataset_list on dataset.id = dataset_list.dataset_id
+                datastorage_dataset_list ddl on dd.id = ddl.dataset_id
             left outer join 
-                queries on dataset.query_id = queries.id
+                datastorage_queries dq on dd.query_id = dq.id
+            group by 
+                dd.id
             order by updated desc limit %s offset %s
         """
-
-        db.execute(query, (limit['limit'], limit['offset']))
-        rows = db.fetchall()
-        for n in rows:
-            if n[1] not in data:
-                data[n[1]] = { 
-                    'id': n[0],
-                    'name': n[1],
-                    'isActive': n[7],
-                    'updated': n[6],
-                    'queryname': n[8],
-                    'query_id': n[5],
-                    'dataset': []
-                }
-            data[n[1]]['dataset'].append({'id': n[2], 'name': n[3], 'script': n[4]})
         ret = []
-        for n in data:
-            ret.append(data[n])
-        # Close the pooled connection
-        mydb.close()
-        return {'dataset': ret, 'total':[{'total': total}]}
+        rows = db.query(query, (limit, limit*offset))
+        for x in rows:
+            x['scripts'] = json.loads(x['scripts'])
+            ret.append(x)
+        return {'dataset': ret, 'total':total}
 
 
 

@@ -8,6 +8,7 @@ from flask import request, jsonify
 from rest.RestBase import RestBase
 from processing import DataScienceStoreData, DataScienceMetaData, QueryList
 from processing import QueryUpdate, JobsList, MetadataGet
+from processing import DatasetList, DatasetUpdate, DataScienceDatasetRun
 
 class StoreDataRest(RestBase):
 
@@ -50,3 +51,25 @@ class MetadataGetRest(RestBase):
         fdr = MetadataGet.MetadataGet()
         ret = fdr.process(args[0])
         return ret
+
+class DatasetListRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        fdr = DatasetList.DatasetList()
+        ret = fdr.process(args[0])
+        return ret
+
+class DatasetUpdateRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        fdr = DatasetUpdate.DatasetUpdate()
+        ret = fdr.process(args[0])
+        return ret
+
+class DatasetRunRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        fdr = DataScienceDatasetRun.DatasetRun()
+        ret = fdr.process(args[0])
+        return ret
+

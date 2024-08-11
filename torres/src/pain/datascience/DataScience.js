@@ -39,7 +39,6 @@ class Template extends Component {
 
 
     render() {
-        console.log("p",this.props);
         return (
         <>
         <Navbar/>

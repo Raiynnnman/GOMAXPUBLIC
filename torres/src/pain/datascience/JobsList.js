@@ -64,7 +64,6 @@ class Template extends Component {
     } 
 
     render() {
-        console.log("p",this.props);
         var heads = [
             {
                 dataField:'job_id',

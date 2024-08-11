@@ -1,5 +1,8 @@
 import { combineReducers } from 'redux';
 import dataScienceQueries from './dataScienceQueries';
+import dataScienceDataset from './dataScienceDataset';
+import dataScienceResults from './dataScienceResults';
+import dataScienceDatasetRun from './dataScienceDatasetRun';
 import dataScienceJobs from './dataScienceJobs';
 import dataScienceMetadata from './dataScienceMetadata';
 import dataScienceQueriesUpdate from './dataScienceQueriesUpdate';
@@ -211,6 +214,9 @@ export default combineReducers({
     dataScienceQueriesUpdate,
     dataScienceJobs,
     dataScienceMetadata,
+    dataScienceDataset,
+    dataScienceResults,
+    dataScienceDatasetRun,
     onlineDemoSave,
     // ticketsReducer
 });

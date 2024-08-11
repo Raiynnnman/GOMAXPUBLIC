@@ -40,11 +40,18 @@ def queryupdate(*args,**kwargs):
     po = StorageDataRest.QueryUpdateRest()
     return po.postWrapper(*args,**kwargs)
 
-@storage.route('/storage/query/run', methods=['POST'])
+@storage.route('/storage/dataset/update', methods=['POST'])
 @token_required
 @swag_from(docs_dir + 'test-service.yaml')
-def queryrun(*args,**kwargs):
-    po = StorageDataRest.QueryRunRest()
+def datasetupdate(*args,**kwargs):
+    po = StorageDataRest.DatasetUpdateRest()
+    return po.postWrapper(*args,**kwargs)
+
+@storage.route('/storage/dataset/list', methods=['POST'])
+@token_required
+@swag_from(docs_dir + 'test-service.yaml')
+def datasetlist(*args,**kwargs):
+    po = StorageDataRest.DatasetListRest()
     return po.postWrapper(*args,**kwargs)
 
 @storage.route('/storage/dataset/run', methods=['POST'])
@@ -80,20 +87,6 @@ def filterupdate(*args,**kwargs):
 @swag_from(docs_dir + 'test-service.yaml')
 def filterlist(*args,**kwargs):
     po = StorageDataRest.FilterListRest()
-    return po.postWrapper(*args,**kwargs)
-
-@storage.route('/storage/dataset/update', methods=['POST'])
-@token_required
-@swag_from(docs_dir + 'test-service.yaml')
-def datasetupdate(*args,**kwargs):
-    po = StorageDataRest.DatasetUpdateRest()
-    return po.postWrapper(*args,**kwargs)
-
-@storage.route('/storage/dataset/list', methods=['POST'])
-@token_required
-@swag_from(docs_dir + 'test-service.yaml')
-def datasetlist(*args,**kwargs):
-    po = StorageDataRest.DatasetUpdateRest()
     return po.postWrapper(*args,**kwargs)
 
 @storage.route('/storage/jobs/list', methods=['POST'])

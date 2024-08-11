@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import TemplateBadge from '../utils/TemplateBadge';
+import AddBoxIcon from '@mui/icons-material/AddBox';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import TemplateButton from '../utils/TemplateButton';
 import moment from 'moment';
 import TemplateButtonIcon from '../utils/TemplateButtonIcon';
 import Container from '@mui/material/Container';
@@ -11,7 +14,7 @@ import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import { getDataScienceJobs } from '../../actions/dataScienceJobs';
+import { getDataScienceResults } from '../../actions/dataScienceResults';
 import PainTable from '../utils/PainTable';
 
 class Template extends Component {
@@ -19,12 +22,17 @@ class Template extends Component {
         super(props);
         this.state = { 
             activeTab: "jobs",
+            selected: null,
             page: 0,
             pageSize: 10,
         }
         this.toggleTab = this.toggleTab.bind(this);
+        this.add = this.add.bind(this);
+        this.save = this.save.bind(this);
+        this.cancel = this.cancel.bind(this);
         this.pageGridsChange = this.pageGridsChange.bind(this);
         this.pageChange = this.pageChange.bind(this);
+        this.run = this.run.bind(this);
         this.reload = this.reload.bind(this);
     } 
 
@@ -32,6 +40,7 @@ class Template extends Component {
     }
 
     componentDidMount() {
+        this.reload();
     }
 
     toggleTab(e, t) {
@@ -53,70 +62,48 @@ class Template extends Component {
     } 
 
     reload() { 
-        this.props.dispatch(getDataScienceJobs(
+        this.props.dispatch(getDataScienceResults(
             {sort:this.state.sort,direction:this.state.direction,
              limit:this.state.pageSize, offset:this.state.page}
         ));
-        setTimeout((e) => { e.reload() }, 300000, this)
+        setTimeout((e) => { e.reload() }, 600000, this)
     }
 
+    save() { 
+    } 
+    cancel() { 
+        this.state.selected = null;
+        this.setState(this.state);
+    } 
+    add(e) { 
+        this.state.selected = {tables:[]}
+        this.setState(this.state);
+    } 
+    run(e) { 
+        console.log("run",e);
+    } 
     edit(e) { 
+        this.state.selected = e;
+        this.setState(this.state);
     } 
 
     render() {
         console.log("p",this.props);
         var heads = [
             {
-                dataField:'job_id',
-                onClick: (content,row) => (
-                    this.edit(content)
-                ),
-                text:'ID',
-                formatter:(cellContent,row) => (
-                    <div>
-                        {row.job_id.substring(0,10)}
-                    </div>
-                )
+                dataField:'id',
+                text:'ID'
             },
             {
-                dataField:'value',
+                dataField:'name',
                 sort:true,
                 align:'center',
-                text:'Status',
-                onClick: (content,row) => (
-                    this.edit(content)
-                ),
-                formatter:(cellContent,row) => (
-                    <div>
-                        {(row.status === 'INVITED') && (<TemplateBadge label='INVITED'/>)}
-                        {(row.status === 'APPROVED') && (<TemplateBadge label='APPROVED'/>)}
-                        {(row.status === 'QUEUED') && (<TemplateBadge label='QUEUED'/>)}
-                        {(row.status === 'WAITING') && (<TemplateBadge label='WAITING'/>)}
-                        {(row.status === 'DENIED') && (<TemplateBadge label='DENIED'/>)}
-                    </div>
-                )
-            },
-            {
-                dataField:'errors',
-                align:'center',
-                text:'Status',
-                onClick: (content,row) => (
-                    this.edit(content)
-                ),
-                formatter:(cellContent,row) => (
-                    <div>
-                        {(row.errors.length > 0) && (<TemplateBadge label='ERROR'/>)}
-                        {(row.errors.length === 0) && (<TemplateBadge label='Success'/>)}
-                    </div>
-                )
+                text:'Name',
             },
             {
                 dataField:'updated',
                 sort:true,
                 text:'Updated',
-                onClick: (content,row) => (
-                    this.edit(content)
-                ),
                 formatter:(cellContent,row) => (
                     <div>
                         {moment(row['updated']).format('LLL')} 
@@ -124,15 +111,16 @@ class Template extends Component {
                 )
             },
             {
-                dataField:'id',
+                dataField:'actions',
                 text:'Actions',
                 formatter:(cellContent,row) => ( 
                     <div>
-                        {/*<TemplateButtonIcon onClick={() => this.edit(row)} style={{marginRight:5,width:30,height:35}} label={<EditIcon/>}/>*/}
+                        {/*<TemplateButtonIcon onClick={() => this.run(row)} style={{marginRight:5,width:30,height:35}} label={<PlayArrow/>}/>*/}
                     </div>
                 )
             },
         ];
+        console.log("p",this.props);
         return (
         <>
         <Box style={{margin:20}}>
@@ -140,21 +128,26 @@ class Template extends Component {
                 <Grid item xs={10}></Grid>
                 <Grid item xs={2}>
                     <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
-                        <div style={{justifyContent:'spread-evenly'}}>
+                        {(!this.state.selected) && (
+                        <div style={{justifyContent:'space-around'}}>
+                            <TemplateButtonIcon onClick={this.add} style={{width:50}}
+                                label={<AddBoxIcon/>}/>
                             <TemplateButtonIcon onClick={() => this.reload()} style={{width:35}}
                                 label={<AutorenewIcon/>}/>
                         </div>
+                        )}
                     </div>
                 </Grid>
             </Grid>
             <Grid container xs="12" style={{marginTop:20}}>
                 <Grid item xs="12">
                 <>
-                {(this.props.dataScienceJobs && this.props.dataScienceJobs.data) && (
+                {(this.props.dataScienceResults && this.props.dataScienceResults.data  &&
+                  this.props.dataScienceResults.data.results && this.state.selected === null) && (
                   <PainTable
                         keyField='id' 
-                        data={this.props.dataScienceJobs.data.jobs} 
-                        total={this.props.dataScienceJobs.data.total}
+                        data={this.props.dataScienceResults.data.results} 
+                        total={this.props.dataScienceResults.data.total}
                         page={this.state.page}
                         pageSize={this.state.pageSize}
                         onPageChange={this.pageChange}
@@ -175,7 +168,7 @@ class Template extends Component {
 function mapStateToProps(store) {
     return {
         currentUser: store.auth.currentUser,
-        dataScienceJobs: store.dataScienceJobs
+        dataScienceResults: store.dataScienceResults,
     }
 }
 

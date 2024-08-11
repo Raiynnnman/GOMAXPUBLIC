@@ -53,6 +53,7 @@ def submit_task_wrapper(self, *args):
     except SparkSQLException as sse:
         raise sse
     except Exception as e:
+        print("EXCEPTION_RAISED: RETRYING")
         exc_type, exc_value, exc_traceback = sys.exc_info()
         print(str(e)) # EXCEPTION
         traceback.print_tb(exc_traceback, limit=100, file=sys.stdout)

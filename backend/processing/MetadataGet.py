@@ -55,9 +55,11 @@ class MetadataGet(SubmitDataRequest):
                 }
             ]
         data['filters'] = []
-        query = "select t.id, t.name, c.name as column_name, c.id, c.datatypes " \
-                " from datastorage_tables t,datastorage_columns c where c.datastorage_tables_id=t.id " \
-                " and t.name not in ('default') order by t.name,c.name" 
+        query = """
+            select t.id, t.name, c.name as column_name, c.id, c.datatypes 
+            from datastorage_tables t,datastorage_columns c where c.datastorage_tables_id=t.id 
+            and t.name not in ('default') order by t.name,c.name
+            """
         rows = db.query(query)
         thistable = {}
         data['tables'] = []
@@ -77,7 +79,7 @@ class MetadataGet(SubmitDataRequest):
             data['table_data'][n]["columns"].append({
                 "id":"id-%s-%s" % (self.getAlias(row['name']),row['column_name']),
                 "alias": self.getAlias(row['name']),
-                "name":row['column_name'],
+                "name":"%s.%s" % (n,row['column_name']),
                 "table":n,
                 "type":row['datatypes']
             })

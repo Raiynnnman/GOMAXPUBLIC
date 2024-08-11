@@ -13,13 +13,14 @@ class AssembleQuery:
         groupby = []
         orderby = []
         where = []
+        print(json.dumps(data,indent=4,sort_keys=True))
         for n in data['columns']:
-            if (n['opname'] != "VALUE"):
-                cols.append("%s(%s.%s)" % (n['opname'], n['table'], n['column']))
+            if n['function'] is not None:
+                cols.append("%s(%s.%s)" % (n['function'], n['table'], n['field']))
             else:
-                cols.append("%s.%s" % (n['table'], n['column']))
+                cols.append("%s.%s" % (n['table'], n['field']))
         for n in data['tables']:
-            tabl.append(n["name"])
+            tabl.append(n)
         for n in data['groupby']:
             groupby.append("%s.%s" % (n['table'], n['name']))
         orderby = data['orderby'] 

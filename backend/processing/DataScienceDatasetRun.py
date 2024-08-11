@@ -16,6 +16,8 @@ from util import calcdate
 from util.DBManager import DBManager 
 from processing import AssembleQuery
 from common.InvalidParameterException import InvalidParameterException
+from util.Permissions import check_datascience
+from util.DBOps import Query
 
 
 
@@ -37,8 +39,7 @@ class DatasetRun(SubmitDataRequest):
         if isinstance(v, float):
             return "double", v
         if isinstance(v, datetime):
-            # return "TIMESTAMP(6)", v
-            return "int", v
+            return "timestamp", v
         if isinstance(v, int):
             return "int", v
         if isinstance(v, dict):
@@ -47,11 +48,16 @@ class DatasetRun(SubmitDataRequest):
             raise Exception("list types not allowed")
         return "varchar(255)", '"%s"' % v
 
-    def etlToDatabase(self, name, data, mydb):
+    def handleFilters(self,type,filters,data):
+        print("filters=%s" % filters)
+        return data
+
+    def etlToDatabase(self, name, data, db):
         if len(data) < 1:
             print("%s has no data to etl" % name)
             return
         cols = []
+        print("data: %s" % data)
         ncols = data[0]
         # print("cols=%s" % ncols)
         if isinstance(ncols, dict):
@@ -71,21 +77,18 @@ class DatasetRun(SubmitDataRequest):
         if isinstance(types,str):
             types = json.loads(types)
 
-        db = mydb.cursor(buffered=True)
-
         query = "select tblname,cols from datastorage_dataset_registry where name=%s " 
-        db.execute(query,(name,))
+        rows = db.query(query,(name,))
         old_tblname = None
-        rows = db.fetchall()
         for n in rows:
-            old_tblname=n[0]
+            old_tblname=n['tblname']
 
         query = """create table %s 
             (objid varchar(255), 
             main_updated TIMESTAMP not null default CURRENT_TIMESTAMP,
             dataset_name varchar(255))""" % tblname
         HAVECOLS = ["objid","main_updated","dataset_name"]
-        db.execute(query)
+        db.update(query)
         c = 0
         if isinstance(types, list):
             while c < len(cols):
@@ -94,7 +97,7 @@ class DatasetRun(SubmitDataRequest):
                 # print("c=%s,j=%s,v=%s,type=%s" % (c,j,v,typ))
                 if j not in HAVECOLS:
                     query = "alter table %s add column (%s %s)" % (tblname,j,typ)
-                    db.execute(query)
+                    db.update(query)
                 HAVECOLS.append(j)
                 c += 1
         if isinstance(types, dict):
@@ -103,7 +106,7 @@ class DatasetRun(SubmitDataRequest):
                 # print("j=%s,v=%s,type=%s" % (j,v,typ))
                 if j not in HAVECOLS:
                     query = "alter table %s add column (`%s` %s)" % (tblname,j,typ)
-                    db.execute(query)
+                    db.update(query)
                 HAVECOLS.append(j)
 
         res_cols = []
@@ -133,81 +136,74 @@ class DatasetRun(SubmitDataRequest):
                     
             mainvalues.append("(%s)" % ",".join(row))
         # print("\n".join(mainvalues))
-        db.execute("%s %s" % (mainquery,",".join(mainvalues)))
-        mydb.commit()
+        db.update("%s %s" % (mainquery,",".join(mainvalues)))
 
         cols.insert(0, "main_updated")
         cols.insert(0, "objid")
-                
 
         query = "replace into datastorage_dataset_registry (name,tblname,cols) values (%s,%s,%s)" 
-        db.execute(query,(name,tblname,json.dumps(res_cols)))
-        mydb.commit()
+        db.update(query,(name,tblname,json.dumps(res_cols)))
         # Keep this table live so that its servicable until its ready to be replaced
         if old_tblname is not None:
             old_tblname.lower().replace(" ", "_").strip()
             query = "drop table if exists %s" % old_tblname
-            db.execute(query)
-            mydb.commit()
+            db.update(query)
+        db.commit()
     
     def execute(self, *args, **kwargs):
-        data= args[0] # [{"pagesize": 10, "page":1}] 
-        jobid=args[1]
-        if 'name' not in data:
-            raise InvalidParameterException("name expected")
-        mydb = DBManager().getConnection()
-        db = mydb.cursor(buffered=True)
-        query = """select d.name,columns, tables, groupby, orderby,
-             whereclause,d.id from datastorage_dataset d, 
-             datastorage_queries q where 
-             d.query_id=q.id and q.name=%s 
-            """
-        db.execute(query, (data['name'],))
-        rows = db.fetchall()
-        mydsid = 0
-        query = ""
-        name = ""
-        myQueryData = {}
-        for n in rows:
-            myQueryData['columns'] = json.loads(n[1])
-            myQueryData['tables'] = json.loads(n[2])
-            myQueryData['groupby'] = json.loads(n[3])
-            myQueryData['orderby'] = json.loads(n[4])
-            myQueryData['where'] = json.loads(n[5])
-            name = n[0]
-            mydsid = n[6]
-        if mydsid == 0:
-            raise InvalidParameterException("DATASET_NOT_FOUND: %s" % data)
-        query = "select name, script from datastorage_dataset_list where dataset_id=%s"
-        db.execute(query, (mydsid,))
-        rows = db.fetchall()
-        filts = []
-        for n in rows:
-            filts.append({"name":n[0],"isActive":1,
-                "database":"dataset", "filters":[{"name":"", "script":n[1]}]
-            })
+        job,user,off_id,params = self.getArgs(*args,**kwargs)
+        db = Query()
+        print(params)
+        resultid = None
+        try:
+            if 'id' not in params:
+                raise InvalidParameterException("name expected")
+            query = """select d.name,columns, tables, groupby, orderby,
+                 whereclause,d.id from datastorage_dataset d, 
+                 datastorage_queries q where 
+                 d.query_id=q.id and d.id=%s 
+                """
+            rows = db.query(query, (params['id'],))
+            mydsid = 0
+            query = ""
+            ds_name = ""
+            myQueryData = {}
+            if len(rows) < 1:
+                raise InvalidParameterException("DATASET_NOT_FOUND: %s" % params['id'])
+            for n in rows:
+                myQueryData['columns'] = json.loads(n['columns'])
+                myQueryData['tables'] = json.loads(n['tables'])
+                myQueryData['groupby'] = json.loads(n['groupby'])
+                myQueryData['orderby'] = json.loads(n['orderby'])
+                myQueryData['where'] = json.loads(n['whereclause'])
+                ds_name = n['name']
+                mydsid = n['id']
+            query = "select name, script from datastorage_dataset_list where dataset_id=%s"
+            rows = db.query(query, (mydsid,))
+            filts = []
+            for n in rows:
+                filts.append({"name":n['name'],"isActive":1,
+                    "database":"dataset", "filters":[{"name":"", "script":n['script']}]
+                })
 
-        aq = AssembleQuery.AssembleQuery()
-        newQuery = aq.assemble(myQueryData)
-        name = name.replace(" ","-")
-        resultid = "dataset-%s-%s" % (name,calcdate.getTimestampUTC())
-        toquery = { 
-            "table": "default",
-            "query": newQuery,
-            "resultid": resultid,
-            "category": name
-        } 
-        qi = QueryInterface()
-        #print("toquery=")
-        #print(toquery)
-        calcdata = qi.processQuery(toquery)
-        myfinaldata = self.handleFilters("dataset",{"filters": filts},calcdata)
-        resultdata = []
-        if len(myfinaldata) > 0:
-            resultdata = myfinaldata[0]
-        self.etlToDatabase(data["name"],resultdata,mydb)
-        # Close the pooled connection
-        mydb.close()
+            aq = AssembleQuery.AssembleQuery()
+            newQuery = aq.assemble(myQueryData)
+            ds_name = ds_name.replace(" ","-")
+            resultid = "dataset-%s-%s" % (ds_name,calcdate.getTimestampUTC())
+            toquery = { 
+                "table": "default",
+                "query": newQuery,
+                "resultid": resultid,
+                "category": ds_name
+            } 
+            qi = QueryInterface()
+            #print("toquery=")
+            #print(toquery)
+            calcdata = qi.processQuery(toquery)
+            myfinaldata = self.handleFilters("dataset",filts,calcdata)
+            self.etlToDatabase(ds_name,myfinaldata,db)
+        except Exception as e:
+            raise InvalidParameterException(str(e))
         return {"resultid": resultid}
 
 
