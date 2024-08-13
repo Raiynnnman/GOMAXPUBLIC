@@ -1,9 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import {
   Dialog, DialogTitle, DialogContent, Typography, Chip, Avatar, Paper
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import Box from '@mui/joy/Box';
 import Button from '@mui/joy/Button';
 import FormControl from '@mui/joy/FormControl';
@@ -14,15 +14,23 @@ import FormatItalicRoundedIcon from '@mui/icons-material/FormatItalicRounded';
 import StrikethroughSRoundedIcon from '@mui/icons-material/StrikethroughSRounded';
 import FormatListBulletedRoundedIcon from '@mui/icons-material/FormatListBulletedRounded';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
+import { updateTicketAction } from '../../actions/ticketsUpsert';
 
-const TicketsUpsert = ({ open, onClose, ticket, comments, onSubmitComment }) => {
+const TicketsUpsert = ({ open, onClose, ticket, comments }) => {
   const [newComment, setNewComment] = useState('');
   const currentUser = useSelector((state) => state.auth.currentUser);
+  const dispatch = useDispatch();
 
   const handleCommentSubmit = () => {
     if (newComment.trim() !== '') {
-      onSubmitComment(newComment);
-      setNewComment('');
+      const updatedData = {
+        comments: [...comments, { text: newComment, user_id: currentUser.id, office_id: currentUser.offices[0] }],
+      };
+      dispatch(updateTicketAction(ticket.id, updatedData, (error, data) => {
+        if (!error) {
+          setNewComment('');
+        }
+      }));
     }
   };
 
@@ -77,27 +85,24 @@ const TicketsUpsert = ({ open, onClose, ticket, comments, onSubmitComment }) => 
           <CloseIcon />
         </IconButton>
         <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-          {/* <Chip label={`Office Name: ${ticket.name}`}/> */}
           <Chip label={`Status: ${ticket.status}`} color={getStatusColor(ticket.status)} />
-          <Chip label={`Urgency: ${ticket.urgency}`} color={getUrgencyColor(ticket.urgency)} />
+          <Chip label={`Urgency: ${ticket.urgency_level}`} color={getUrgencyColor(ticket.urgency_level)} />
           <Chip label={`Created: ${new Date(ticket.created).toLocaleString().split(':')}`} />
         </Box>
       </DialogTitle>
       <DialogContent dividers>
-      <Box>
-              
-      Description: 
-       <Paper sx={{
-                    marginTop: 2,
-                    boxShadow: 3,
-                    padding: 1,
-                    borderRadius: 2,
-                    maxWidth: '60%',
-                    maxHeight: '50%', 
-                    }}
-                    >
-                {ticket.description}
-              </Paper>
+        <Box>
+          Description:
+          <Paper sx={{
+            marginTop: 2,
+            boxShadow: 3,
+            padding: 1,
+            borderRadius: 2,
+            maxWidth: '60%',
+            maxHeight: '50%', 
+          }}>
+            {ticket.description}
+          </Paper>
         </Box>
         <Box sx={{ margin: 2, padding: 2, borderRadius: 1 }}>
           <Typography>

@@ -96,19 +96,24 @@ class RegistrationListRest(RestBase):
         ret = u.process(args[0])
         return ret
     
+class TicketCreateRest(RestBase):
+    def post(self, *args, **kwargs):
+        u = AdminTickets.TicketCreate()
+        ret = u.process(args[0])
+        return ret
+    
 class TicketUpdateRest(RestBase):
-
     def post(self, *args, **kwargs):
         u = AdminTickets.TicketUpdate()
         ret = u.process(args[0])
         return ret
 
-class TicketListRest(RestBase):
 
+class TicketListRest(RestBase):
     def post(self, *args, **kwargs):
         u = AdminTickets.TicketList()
         ret = u.process(args[0])
-        print("Result",ret)
+        print(ret)
         return ret
 
 

@@ -146,14 +146,20 @@ def regupdate(*args, **kwargs):
 @token_required
 @swag_from(docs_dir + 'ticketslist.yaml')
 def ticketlist(*args, **kwargs):
-    print("hey look!! ",*args, **kwargs)
     po = AdminRest.TicketListRest()
+    return po.postWrapper(*args,**kwargs)
+
+@admin.route('/admin/tickets/create', methods=['POST'])
+@token_required
+@swag_from(docs_dir + 'ticketslist.yaml')
+def ticketcreate(*args, **kwargs):
+    po = AdminRest.TicketCreateRest()
     return po.postWrapper(*args,**kwargs)
 
 @admin.route('/admin/tickets/update', methods=['POST'])
 @token_required
 @swag_from(docs_dir + 'ticketslist.yaml')
-def ticketcreate(*args, **kwargs):
+def ticketupdate(*args, **kwargs):
     po = AdminRest.TicketUpdateRest()
     return po.postWrapper(*args,**kwargs)
  

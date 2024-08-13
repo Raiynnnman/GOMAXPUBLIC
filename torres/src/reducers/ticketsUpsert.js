@@ -1,4 +1,13 @@
-import { FETCH_TICKETS_SUCCESS, CREATE_TICKET_REQUEST, CREATE_TICKET_SUCCESS, CREATE_TICKET_FAILURE, UPDATE_TICKET_REQUEST, UPDATE_TICKET_SUCCESS, UPDATE_TICKET_FAILURE, FETCH_TICKETS_FAILURE } from "../actions/ticketsUpsert";
+import { 
+    FETCH_TICKETS_SUCCESS, 
+    CREATE_TICKET_REQUEST, 
+    CREATE_TICKET_SUCCESS, 
+    CREATE_TICKET_FAILURE, 
+    UPDATE_TICKET_REQUEST, 
+    UPDATE_TICKET_SUCCESS, 
+    UPDATE_TICKET_FAILURE, 
+    FETCH_TICKETS_FAILURE 
+} from "../actions/ticketsUpsert";
 
 const initialState = {
     list: [],
@@ -22,13 +31,12 @@ const ticketsReducer = (state = initialState, { type, payload }) => {
                 list: payload.data,
             };
         case CREATE_TICKET_SUCCESS:
+            console.log('Payload on CREATE_TICKET_SUCCESS:', payload);
             return {
                 ...state,
                 loading: false,
-                list: [...state.list, payload],
+                list: [state.list, payload],  // Ensure payload is an object representing a ticket
             };
-
-            
         case UPDATE_TICKET_SUCCESS:
             return {
                 ...state,
