@@ -454,6 +454,30 @@ class RegistrationUpdate(AdminBase):
                 update provider_queue set provider_queue_status_id=%s where office_id=%s
                 """,(PQS['DO_NOT_CONTACT'],offid,)
             )
+        if 'emails' in params and params['emails'] is not None:
+            for a in params['emails']:
+                if 'id' in a and a['id'] is not None:
+                    db.update("""
+                        update office_email set 
+                          description=%s,email=%s
+                        where id=%s
+                        """,(
+                            a['description'],a['email'],a['id']
+                        )
+                    )
+                    if 'deleted' in x and x['deleted']:
+                        db.update("""
+                            update office_email set deleted=1 where id=%s
+                        """,(a['id'],)
+                        )
+                else:
+                    db.update(
+                        """
+                            insert into office_email (
+                                office_id,description,email
+                            ) values (%s,%s,%s)
+                        """,(offid,x['description'],x['email'],)
+                    )
         if 'phones' in params and params['phones'] is not None:
             for a in params['phones']:
                 if 'id' in a and a['id'] is not None:
@@ -602,6 +626,11 @@ class RegistrationList(AdminBase):
 
     def populateValues(self,entry,db):
         x = entry
+        x['additional_emails'] = db.query("""
+            select id,description,email from office_emails
+                where office_id = %s and deleted = 0
+            """,(x['office_id'],)
+        )
         x['phones'] = db.query("""
             select id,description,iscell,phone from office_phones 
                 where office_id = %s and deleted = 0
@@ -800,6 +829,7 @@ class RegistrationList(AdminBase):
             if params['search'] == None or len(params['search']) == 0:
                 del params['search']
         PQS = self.getProviderQueueStatus()
+        print(params)
         db = Query()
         ALT = self.getAltStatus()
         q = """
@@ -958,7 +988,9 @@ class RegistrationList(AdminBase):
         prelimit = q
         pre_par = json.loads(json.dumps(search_par))
         q += " group by o.id "
+        print("count start")
         cnt = db.query("select count(id) as cnt from (" + q + ") as t", count_par)
+        print("count complete")
         ret['total'] = cnt[0]['cnt']
         if 'sort' not in params or params['sort'] == None:
             q += """
@@ -986,8 +1018,10 @@ class RegistrationList(AdminBase):
         search_par.append(int(offset)*int(limit))
         q += " limit %s offset %s " 
         o = []
+        print("query start")
         o = db.query(q,search_par)
         k = [] 
+        print("query complete")
         dtrack = []
         dtrack_start = db.query(deal_tracker + " and pq.include_on_deal_tracker = 1 group by o.id")
         ret['deal_tracker'] = dtrack
@@ -1111,6 +1145,7 @@ class RegistrationList(AdminBase):
             )
             select date_format(date_add(dt,interval -1 day),'%a, %D') as label,round(ifnull(count1,0),2) as count FROM t ;
             """)
+        print("dashboard complete")
         if 'report' in params and params['report'] is not None:
             myq = prelimit
             if 'dnc' in params and params['dnc']:
@@ -1140,9 +1175,25 @@ class RegistrationList(AdminBase):
                 myq += ")\n"
             myq += " group by o.id order by id desc "
             o = db.query(myq,pre_par)
+            rep = []
+            for x in o:
+                x['additional_emails'] = []
+                ae = db.query("""
+                    select group_concat(oe.email) as ad 
+                    from office_emails oe,office o,users u,office_user ou
+                    where 
+                        o.id = %s
+                        and oe.office_id = o.id
+                        and ou.office_id = o.id
+                        and ou.user_id = u.id
+                        and oe.email <> o.email and oe.email <> u.email
+                    """,(x['office_id'],)
+                )
+                x['additional_emails'] = ae[0]['ad']
+                rep.append(x)
             d = calcdate.getYearToday()
             ret['filename'] = 'provider_report-%s.csv' % d
-            frame = pd.DataFrame.from_dict(o)
+            frame = pd.DataFrame.from_dict(rep)
             t = frame.to_csv()
             ret['content'] = base64.b64encode(t.encode('utf-8')).decode('utf-8')
         return ret
