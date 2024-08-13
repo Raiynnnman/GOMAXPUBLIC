@@ -106,12 +106,13 @@ class TicketUpdate(AdminBase):
             WHERE
                 o.id = %s
         """, (email, office_id))
-
+    
         ticket_id = None
         for row in result:
             office_id = row['office_id']
             ticket_id = row['ticket_id']
             user_id = row['user_id']
+          
         
         if ticket_id:
             if 'comments' in params:
@@ -125,10 +126,10 @@ class TicketUpdate(AdminBase):
                             VALUES (%s, %s, %s, UUID())
                         """, (ticket_id, user_id, encrypted_text))
                         
-                        db.update("""
-                            INSERT INTO support_queue_history (support_queue_id, user_id, text)
-                            VALUES (%s, %s, 'Added Comment')
-                        """, (ticket_id, user_id))
+                        # db.update("""
+                        #     INSERT INTO support_queue_history (support_queue_id, user_id, text)
+                        #     VALUES (%s, %s, 'Added Comment')
+                        # """, (ticket_id, user_id))
                     except Exception as e:
                         print(f"Error inserting comment: {e}")
             else:

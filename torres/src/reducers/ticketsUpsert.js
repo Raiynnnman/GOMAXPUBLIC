@@ -35,7 +35,7 @@ const ticketsReducer = (state = initialState, { type, payload }) => {
             return {
                 ...state,
                 loading: false,
-                list: [state.list, payload],  // Ensure payload is an object representing a ticket
+                list: [state.list, payload],  
             };
         case UPDATE_TICKET_SUCCESS:
             return {

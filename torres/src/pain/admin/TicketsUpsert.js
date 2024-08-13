@@ -24,7 +24,7 @@ const TicketsUpsert = ({ open, onClose, ticket, comments }) => {
   const handleCommentSubmit = () => {
     if (newComment.trim() !== '') {
       const updatedData = {
-        comments: [...comments, { text: newComment, user_id: currentUser.id, office_id: currentUser.offices[0] }],
+        comments: [...comments, { text: newComment, user_id: currentUser.id, office_id: currentUser.offices[0], support_queue_id: ticket.id }],
       };
       dispatch(updateTicketAction(ticket.id, updatedData, (error, data) => {
         if (!error) {
@@ -68,6 +68,8 @@ const TicketsUpsert = ({ open, onClose, ticket, comments }) => {
     }
   };
 
+  const filteredComments = comments.filter(comment => comment.support_queue_id === ticket.id);
+
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle fontSize='30px' variant='Header'>
@@ -109,41 +111,38 @@ const TicketsUpsert = ({ open, onClose, ticket, comments }) => {
             Comments
           </Typography>
           <Box sx={{ marginTop: 2, backgroundColor: '#FEFDFD', padding: 2, borderRadius: 2 }}>
-            {comments.map((comment, index) => {
-              const isCurrentUser = comment.user_id === currentUser.id;
-              return (
-                <Box key={index} sx={{ marginBottom: 2, display: 'flex', flexDirection: 'column', alignItems: isCurrentUser ? 'flex-end' : 'flex-start' }}>
-                  <Paper
-                    sx={{
-                      marginTop: 1,
-                      boxShadow: 5,
-                      padding: 1,
-                      borderRadius: 2,
-                      backgroundColor: isCurrentUser ? '#FFAB69' : '#ffffff',
-                      maxWidth: '60%',
-                      wordBreak: 'break-word',
-                    }}
-                  >
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <Avatar sx={{ marginRight: 1, backgroundColor: isCurrentUser ? '#ff9800' : '#9e9e9e', color: '#fff' }}>
-                        {comment.first_name.charAt(0)}{comment.last_name.charAt(0)}
-                      </Avatar>
-                      <Box>
-                        <Typography variant="body2" color="text.primary">
-                          {comment.text}
-                        </Typography>
-                      </Box>
+            {filteredComments.map((comment, index) => (
+              <Box key={index} sx={{ marginBottom: 2, display: 'flex', flexDirection: 'column', alignItems: comment.user_id === currentUser.id ? 'flex-end' : 'flex-start' }}>
+                <Paper
+                  sx={{
+                    marginTop: 1,
+                    boxShadow: 5,
+                    padding: 1,
+                    borderRadius: 2,
+                    backgroundColor: comment.user_id === currentUser.id ? '#FFAB69' : '#ffffff',
+                    maxWidth: '60%',
+                    wordBreak: 'break-word',
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Avatar sx={{ marginRight: 1, backgroundColor: comment.user_id === currentUser.id ? '#ff9800' : '#9e9e9e', color: '#fff' }}>
+                      {comment.first_name.charAt(0)}{comment.last_name.charAt(0)}
+                    </Avatar>
+                    <Box>
+                      <Typography variant="body2" color="text.primary">
+                        {comment.text}
+                      </Typography>
                     </Box>
-                  </Paper>
-                  <Typography variant="subtitle4" component="div" sx={{ textAlign: isCurrentUser ? 'right' : 'left' }}>
-                    {comment.first_name} {comment.last_name}
-                    <Typography variant="body2" color="text.secondary">
-                      {new Date(comment.created).toLocaleString()}
-                    </Typography>
+                  </Box>
+                </Paper>
+                <Typography variant="subtitle4" component="div" sx={{ textAlign: comment.user_id === currentUser.id ? 'right' : 'left' }}>
+                  {comment.first_name} {comment.last_name}
+                  <Typography variant="body2" color="text.secondary">
+                    {new Date(comment.created).toLocaleString()}
                   </Typography>
-                </Box>
-              );
-            })}
+                </Typography>
+              </Box>
+            ))}
           </Box>
         </Box>
         <Box sx={{ marginTop: 3 }}>

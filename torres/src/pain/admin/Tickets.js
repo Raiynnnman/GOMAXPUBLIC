@@ -83,19 +83,20 @@ const Tickets = (props) => {
     const getUrgencyColor = (urgency) => {
         switch (urgency) {
             case 'Low':
-                return 'success';  // green
+                return 'success'; 
             case 'Medium':
-                return 'warning';  // yellow
+                return 'warning';  
             case 'High':
-                return 'error';    // red
+                return 'error';   
             case 'Critical':
-                return 'error';    // red
+                return 'error';   
             default:
                 return 'default';
         }
     };
 
     const { page, pageSize, ticketsData, total, loading, openModal, currentTicket, comments } = state;
+    console.log("this is the currentTicket", currentTicket,comments)
 
     const columns = [
         { field: 'id', headerName: 'Ticket ID', flex: 1 },
