@@ -14,12 +14,6 @@ from util import calcdate, encryption
 from flask import request
 from util.DBOps import Query
 
-
-con = None
-if os.path.exists("./bin/data/ipmapping.db"):
-    F="./bin/data/ipmapping.db"
-    con = sqlite3.connect(F, check_same_thread=False)
-
 class performance():
     __start = None
     __subsys = None
@@ -35,7 +29,6 @@ class performance():
         self.__metadata__ = c
 
     def start(self, subsys):
-        global con
         self.__subsys = subsys
         self.__start = datetime.datetime.now()
         j = {
@@ -56,17 +49,18 @@ class performance():
             if "X-Forwarded-For" in request.headers:
                 ip = request.headers['X-Forwarded-For']
                 j['ip'] = ip
-            if con is not None and ip is not None:
-                curs = con.cursor()
+            if ip is not None:
                 g = int(ipaddress.ip_address(ip))
                 q = """select 
                         latitude, longitude, continent, 
                         country, stateprov, city 
-                       from dbip_lookup where ? between ip_st_int and ip_en_int
+                       from ip_lookup where %s between ip_st_int and ip_en_int
                     """
-                # print(q,g)
-                curs.execute(q, (g,))
-                for n in curs:
+                o = db.query("""
+                    """,(g,)
+                )
+                print("iplat: %s (%s)" % (o,g))
+                for n in o:
                     j['lat'] = n[0] 
                     j['lon'] = n[1]
                     j['continent'] = n[2]
@@ -74,9 +68,7 @@ class performance():
                     j['stateprov'] = n[4]
                     j['city'] = n[5]
                     break
-            else:
-                print("no db or ip is missing")
-            self.__data__ = j
+                self.__data__ = j
             return j
         except Exception as e:
             print(str(e))
