@@ -100,7 +100,7 @@ const Tickets = (props) => {
 
     const columns = [
         { field: 'id', headerName: 'Ticket ID', flex: 1 },
-        { field: 'name', headerName: 'Ticket Name', flex: 2 },
+        { field: 'ticket_name', headerName: 'Ticket Name', flex: 2 },
         { field: 'description', headerName: 'Description', flex: 3 },
         {
             field: 'status',

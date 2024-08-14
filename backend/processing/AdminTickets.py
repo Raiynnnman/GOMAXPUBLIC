@@ -31,16 +31,15 @@ class TicketCreate(AdminBase):
             raise ValueError("User is required")
 
         print("Creating ticket with params:", params)
-        print("email", email, "office", office_id, "user", user_id)
 
         if not email:
             raise ValueError("Email is required")
 
-        # Insert into support_queue table
+        # Insert into support_queue table with ticket_name
         db.update("""
-            INSERT INTO support_queue (office_id, assignee_id, support_status_id, urgency_id, description)
-            VALUES (%s, %s, %s, %s, %s)
-        """, (office_id, user_id, params['status'], params['urgency'], params['description']))
+            INSERT INTO support_queue (office_id, assignee_id, support_status_id, urgency_id, description, ticket_name)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """, (office_id, user_id, params['status'], params['urgency'], params['description'], params['ticketName']))
         
         ticket_id = db.query("SELECT LAST_INSERT_ID()")[0]['LAST_INSERT_ID()']
 
@@ -49,7 +48,7 @@ class TicketCreate(AdminBase):
         # Return the created entry
         return db.query("""
             SELECT 
-                sq.id AS ticket_id, sq.office_id, sq.assignee_id, sq.support_status_id, sq.urgency_id, sq.description, sq.created, sq.updated
+                sq.id AS ticket_id, sq.office_id, sq.assignee_id, sq.support_status_id, sq.urgency_id, sq.description, sq.created, sq.updated, sq.ticket_name
             FROM
                 support_queue sq
             WHERE
@@ -71,6 +70,7 @@ class TicketCreate(AdminBase):
             result = self.processRow(params, user, db)
             results.append(result)
         return {'success': True, 'results': results}
+
     
 class TicketUpdate(AdminBase):
     def __init__(self):
@@ -202,7 +202,7 @@ class TicketList(AdminBase):
         db = Query()
         base_query = """
             SELECT 
-                sq.id, o.name, u.email, o.id as office_id, ss.status_name as status,
+                sq.id, sq.ticket_name, u.email, o.id as office_id, ss.status_name as status,
                 sq.support_status_id, sq.created, sq.updated, sq.description,
                 sq.assignee_id, u.first_name, u.last_name, u.email as user_email, urg.level_name as urgency_level
             FROM
