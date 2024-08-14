@@ -1,11 +1,14 @@
+use pain;
 
-delete from office_emails;
-insert into office_emails (office_id,email) 
-    select id,email from office where email is not null; 
+INSERT INTO support_status (status_name)
+VALUES 
+    ('Open'),
+    ('In Progress'),
+    ('Review'),
+    ('Closed');
 
-insert into office_emails (office_id,email) 
-    select ou.office_id,u.email from users u, office_user ou, office o
-    where u.id=ou.user_id and ou.office_id = o.id and o.email is not null;  
+ALTER TABLE support_queue
+ADD COLUMN urgency_id INT;
 
-insert into office_emails (office_id,email) values (19967,'doc1jrg@comcast.net');
-insert into office_emails (office_id,email) values (19967,'dcopslbiz@att.net');
+ALTER TABLE support_queue
+ADD COLUMN ticket_name VARCHAR(255);
