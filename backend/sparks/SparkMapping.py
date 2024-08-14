@@ -25,6 +25,7 @@ config.read("settings.cfg")
 
 class SparkMapping(SparkBase):
 
+    __spark__ = None
     def __init__(self):
         super().__init__()
         self.mydb = DBManager().getConnection()
@@ -70,7 +71,7 @@ class SparkMapping(SparkBase):
                     .config("spark.yarn.submit.waitAppCompletion", "false") \
                     .config("ipc.client.bind.wildcard.addr", "true") \
                     .config("spark.sql.hive.metastore.version", "3.1.2") \
-                    .config("javax.jdo.option.ConnectionURL", "jdbc:mysql://%s:3306/pain" % config.getKey("mysql_host")) \
+                    .config("javax.jdo.option.ConnectionURL", "jdbc:mysql://%s:3306/alben" % config.getKey("mysql_host")) \
                     .config("javax.jdo.option.ConnectionDriverName", "com.mysql.jdbc.Driver") \
                     .config("javax.jdo.option.ConnectionPassword", config.getKey("mysql_pass")) \
                     .config("javax.jdo.option.ConnectionUserName", config.getKey("mysql_user")) \
@@ -94,6 +95,7 @@ class SparkMapping(SparkBase):
                     .config("yarn.resourcemanager.app.timeout.minutes", timeout) \
                     .enableHiveSupport() \
                     .getOrCreate()
+        self.__spark__ = spark
         return spark
         
     def getType(self, f, v):
@@ -192,7 +194,8 @@ class SparkMapping(SparkBase):
             #logme("Nothing to do, skip")
             return
         F = "%s %s" % (" ".join(Q), "\n".join(I))
-        self.logme("f=%s" % F[:2])
+        F = F.replace(",,",",'',")
+        # self.logme("f=%s" % F[:2])
         try:
             sph.sql(F)
         except Exception as e:
@@ -200,7 +203,7 @@ class SparkMapping(SparkBase):
             raise SparkSQLException(e)
 
     def getDBName(self):
-        e = "db_%s_%s" % (self.getSchemaVer(), "pain")
+        e = "db_%s_%s" % (self.getSchemaVer(), "alben")
         return e
 
     def getColumns(self, sph, tbl):
@@ -235,7 +238,7 @@ class SparkMapping(SparkBase):
         COLS["objid"] = "string"
         COLS["timestamp"] = "timestamp"
         COLS["main_updated"] = "timestamp"
-        COLS["tframe"] = "timestamp"
+        COLS["tframe"] = "int"
         return COLS
 
     def checkOBJ(self, obj, tbl):
@@ -350,11 +353,11 @@ class SparkMapping(SparkBase):
                         COLS[g] = schema[g]['t']
                 if len(QUERY) < 1:
                     commasep = False
-                    QUERY.append("insert into table %s" % TBLNAME)
+                    QUERY.append("insert into table %s \n" % TBLNAME)
                     QUERY.append("(")
                     QUERY.append(",".join(COLS))
-                    QUERY.append(")")
-                    QUERY.append("VALUES")
+                    QUERY.append(")\n")
+                    QUERY.append("VALUES\n")
                 G=""
                 R=""
                 for g in COLS:
@@ -383,13 +386,8 @@ class SparkMapping(SparkBase):
                         b = ref[1]
                         v = row[a][b]
                     if g == "tframe":
-                        if 'timestamp' in row:
-                            t = row['timestamp']
-                            t = calcdate.parseDate(t)
-                            v = t
-                            if not isinstance(t, int):
-                                v = t.strftime("%Y%m%d")
-                            quote = False
+                        v = int(datetime.utcnow().strftime("%Y%m%d"))
+                        quote = False
                     if isinstance(v, list):
                         v = json.dumps(v)
                     if COLS[g] == "boolean":
@@ -450,8 +448,8 @@ class SparkMapping(SparkBase):
             self.installobj(gg,TBLNAME)
         self.logme("STATS: skip/comp: %s/%s" % (SKIP, COMPLETE))
         # Close the pooled connection
-        if random.randint(1,100) > 98:
-            self.maintenance(spark,TBLNAME)
+        if random.randint(1,100) > 50:
+            self.maintenance(self.__spark__,TBLNAME)
         self.mydb.close()
         return {"skip": SKIP, "complete": COMPLETE}
 

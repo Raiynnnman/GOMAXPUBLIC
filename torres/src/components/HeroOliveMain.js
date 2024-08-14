@@ -14,9 +14,9 @@ class HeroOliveMain extends Component {
     render(){
         return(
             <div 
-                className={`header-area-main ${this.props.horizontal} ${this.props.bgshape}`} id="home" style={{height:"100vh",backgroundColor:'black'}}>
+                className={`header-area-main ${this.props.horizontal} ${this.props.bgshape}`} id="home" style={{backgroundColor:'black'}}>
                 <div className="header-bg"/>
-                <div className="h-100 ">
+                <div className="h-100">
                     <div className="row">
                         <div className="col-lg-12 h-100">
                                 <Grid container xs={12}>
