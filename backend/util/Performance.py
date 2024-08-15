@@ -31,6 +31,7 @@ class performance():
     def start(self, subsys):
         self.__subsys = subsys
         self.__start = datetime.datetime.now()
+        db = Query()
         j = {
             'lat':0,
             'lon':0,
