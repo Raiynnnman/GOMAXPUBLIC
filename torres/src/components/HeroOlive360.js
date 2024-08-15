@@ -11,7 +11,7 @@ class HeroOlive extends Component {
                         <div className="col-lg-6 h-100">
                             <div className="banner-text" style={{fontFamily:'roboto'}}>
                                 <div className="banner-table-cell" style={{fontFamily:'roboto'}}>
-                                    <h1 style={{color:"white",fontFamily:'roboto'}}><font style={{color:'#153cb5'}}>360BluConsulting</font></h1>
+                                    <h1 style={{fontSize:window.innerWidth < 600 ? 40:64,color:"white",fontFamily:'roboto'}}><font style={{color:'#153cb5'}}>360BluConsulting</font></h1>
                                     <h3 style={{color:"white",fontFamily:'roboto'}}>
                                         <div style={{margin:10}}>
 360BluConsulting is globally focused on helping organizations operate effectively.
