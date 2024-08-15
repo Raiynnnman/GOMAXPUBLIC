@@ -122,16 +122,6 @@ class FooterHome extends Component {
                                         </div>
                                         <div className="single-contact-info">
                                             <div className="contact-icon">
-                                                <i className="zmdi zmdi-globe-alt"></i>
-                                            </div>
-                                            <div className="contact-text">
-                                                <span>mailto:info@360bluconsulting.com<br />
-                                                    https://360bluconsulting.com/
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <div className="single-contact-info">
-                                            <div className="contact-icon">
                                                 <i className="zmdi zmdi-pin"></i>
                                             </div>
                                             <div className="contact-text">
