@@ -116,8 +116,7 @@ class FooterHome extends Component {
                                                 <i className="zmdi zmdi-phone"></i>
                                             </div>
                                             <div className="contact-text">
-                                                <span>(407) 305-7241<br />(407) 305-7241
-                                                </span>
+                                                <span>(321) 378-5662</span>
                                             </div>
                                         </div>
                                         <div className="single-contact-info">
