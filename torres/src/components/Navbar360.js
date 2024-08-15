@@ -354,7 +354,14 @@ class Navbar extends Component {
                         <div className="col-lg-3 col-sm-4 col-4">
                             <div className="logo">
                                 <a href='/'>
-                                    <h1 style={{color:"white",fontSize:40,fontWeight:"bold"}}>360BluConsulting</h1>
+                                    <div style={{position:"relative"}}>
+                                        <div style={{display:"flex"}}> 
+                                            <h1 style={{color:"white",fontSize:40,fontWeight:"bold"}}>
+                                            360BluConsulting
+                                            </h1>
+                                            <img style={{alignSelf:'flex-end',marginBottom:25}} height={10} width={10} src='/green-dot.png'/>
+                                        </div>
+                                    </div>
                                 </a>
                             </div>
                         </div>
