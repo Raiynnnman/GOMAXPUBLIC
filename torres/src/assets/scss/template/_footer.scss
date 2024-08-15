@@ -58,6 +58,62 @@
     }
 }
 
+.footer-area-360 {
+    padding-top: 122px;
+    background-color: black;
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+    padding-bottom: 118px;
+    position: relative;
+    z-index: 1;
+    @media #{$lg-layout} {
+        padding-top: 455px;
+    }
+    &::before {
+        //background-image: url(/assets/main_page/PoundPain-PATIENT-Footer.jpg);
+        // background-image: url(/assets/images/app/shape-2.png);
+        background-repeat: no-repeat;
+        background-position: left top;
+        background-size: cover;
+        content: "";
+        height: 460px;
+        left: 0;
+        position: absolute;
+        top: 0;
+        width: 100%;
+        z-index: 2;
+    }
+    @media #{$md-layout} {
+        margin-top: 120px;
+        padding-top: 120px;
+        &::before{
+            background-image: inherit;
+            height: auto;
+        }
+    }
+
+    @media #{$sm-layout} {
+        margin-top: 0px;
+        padding-top: 120px;
+        &::before{
+            background-image: inherit;
+            height: auto;
+        }
+    }
+    .footer-bg {
+        //background: rgba(45, 62, 80, 0.85) none repeat scroll 0 0;
+        background: rgba(0, 0, 0, 0.60) none repeat scroll 0 0;
+        content: "";
+        height: 100%;
+        left: 0;
+        position: absolute;
+        top: 0;
+        width: 100%;
+        z-index: -1;
+    }
+}
+
 .contact-inner {
     .title {
         color: #ffffff;

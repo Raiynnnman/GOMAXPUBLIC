@@ -29,6 +29,9 @@ import TestimonialLegal from '../components/TestimonialLegal';
 import ScreenshotLegal from '../components/ScreenshotLegal';
 import FeatureCustomer from '../components/FeatureCustomer';
 import FeatureLegal from '../components/FeatureLegal';
+import HeroOlive360 from '../components/HeroOlive360';
+import FooterHome360 from '../components/FooterHome360';
+import Navbar360 from '../components/Navbar360';
 
 class HomeHorizontal extends Component {
     componentDidMount() {
@@ -96,6 +99,13 @@ class HomeHorizontal extends Component {
                     </div>
                     <Screenshot />
                     <FooterHome horizontal="horizontal" />
+                </div>
+                )}
+                {(siteType() === '360bluconsulting') && (
+                <div>
+                    <Navbar360 />
+                    <HeroOlive360 horizontal="horizontal" bgshape="bg-shape" />
+                    <FooterHome360 horizontal="horizontal" />
                 </div>
                 )}
                 {(siteType() === 'patient') && (
