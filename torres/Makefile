@@ -20,7 +20,7 @@ install: build
 	echo '#!/bin/bash' > targets/package/install.sh
 	cat ../version >> targets/package/install.sh
 	cat ../backend/scripts/install.sh >> targets/package/install.sh
-	cp ../meta.cfg targets/package
+	cp ./meta.cfg targets/package
 	cp ../version targets/package
 	(cd targets && tar cfz fullinstall.tar.gz package)
 
