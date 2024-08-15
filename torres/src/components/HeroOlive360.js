@@ -13,7 +13,7 @@ class HeroOlive extends Component {
                                 <div className="banner-table-cell">
                                     <h1 style={{color:"white"}}>360BluConsulting</h1>
                                     <h3 style={{color:"white"}}>Management consulting is a global industry focused on helping organizations operate effectively
-. A management consultant, or management analyst, provides an outside perspective on problem-solving, best practices, and strategy to help companies improve their performance.></h3>
+. A management consultant, or management analyst, provides an outside perspective on problem-solving, best practices, and strategy to help companies improve their performance.</h3>
                                 </div>
                             </div>
 
