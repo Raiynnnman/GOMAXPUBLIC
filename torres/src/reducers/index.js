@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 import dataScienceQueries from './dataScienceQueries';
 import dataScienceDataset from './dataScienceDataset';
+import referralAdminUpdate from './referralAdminUpdate';
 import dataScienceResults from './dataScienceResults';
 import dataScienceDatasetRun from './dataScienceDatasetRun';
 import dataScienceJobs from './dataScienceJobs';
@@ -214,6 +215,7 @@ export default combineReducers({
     dataScienceQueriesUpdate,
     dataScienceJobs,
     dataScienceMetadata,
+    referralAdminUpdate,
     dataScienceDataset,
     dataScienceResults,
     dataScienceDatasetRun,

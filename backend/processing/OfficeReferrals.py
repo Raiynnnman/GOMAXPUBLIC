@@ -260,6 +260,11 @@ class ReferrerUpdate(OfficeBase):
         )
         insid = db.query("select LAST_INSERT_ID()");
         insid = insid[0]['LAST_INSERT_ID()']
+        db.update("""
+            insert into referrer_users_history(referrer_users_id,user_id,text)
+                values (%s,1,'Created Referrer User')
+            """,(insid,)
+        )
         if status is not None:
             db.update("""
                 update referrer_users set referrer_users_status_id=%s where id=%s

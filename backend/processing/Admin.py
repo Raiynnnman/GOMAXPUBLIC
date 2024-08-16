@@ -824,140 +824,6 @@ class AdminReportGet(AdminBase):
         ret['content'] = base64.b64encode(t.encode('utf-8')).decode('utf-8')
         return ret
 
-class ReferrerList(AdminBase):
-
-    def __init__(self):
-        super().__init__()
-
-    def isDeferred(self):
-        return False
-
-    @check_admin
-    def execute(self, *args, **kwargs):
-        ret = {}
-        job,user,off_id,params = self.getArgs(*args,**kwargs)
-        limit = 10000
-        if 'limit' in params:
-            limit = params['limit']
-        offset = 0
-        if 'offset' in params:
-            offset = params['offset']
-        if 'search' in params:
-            if params['search'] == None or len(params['search']) == 0:
-                del params['search']
-        db = Query()
-        ret['config'] = {}
-        ret['config']['status'] = db.query("select id,name from referrer_users_status")
-        q = """
-            select 
-                ru.id,ru.email,ru.name,ru.phone,o.name as office_name,ru.referred,
-                ru.referrer_users_status_id, rs.name as status,ru.zipcode,
-                ru.updated,o.id as office_id, ro.name as referrer_name,
-                timestampdiff(minute,ru.created,now()) as time
-            from 
-                referrer_users ru
-                left join referrer_users_status rs on ru.referrer_users_status_id=rs.id
-                left outer join office ro on ru.referrer_id=ro.id
-                left outer join office o on o.id = ru.office_id
-            where 
-                1 = 1
-            """
-        p = []
-        if 'status' in params:
-            q += " and ("
-            arr = []
-            for z in params['status']:
-                arr.append("referrer_users_status_id = %s " % z)
-            q += " or ".join(arr)
-            q += ")"
-        p.append(limit)
-        p.append(offset*limit)
-        cnt = db.query("select count(id) as cnt from (%s) as t" % (q,))
-        ret['total'] = cnt[0]['cnt']
-        q += " order by updated desc " 
-        q += " limit %s offset %s " 
-        o = db.query(q,p)
-        ret['data'] = o
-        return ret
-
-class BDRDashboard(AdminBase):
-    def __init__(self):
-        super().__init__()
-
-    def isDeferred(self):
-        return False
-
-    def getCommissionsThisMonth(self,u):
-        db = Query()
-        PQS = self.getProviderQueueStatus()
-        OT = self.getOfficeTypes()
-        o = []
-        if 'CommissionAdmin' in u['entitlements']:
-            o = db.query("""
-                select 
-                    ifnull(t1.num1,0) as num1, /* commissions */
-                    ifnull(t2.num2,0) as num2, /* Total paid */
-                    ifnull(t3.num3,0) as num3, /* sent */
-                    ifnull(t4.num4,0) as num4 /* Voided */
-                from 
-                    (select round(sum(amount),2) as num1 from commission_users a
-                        where 
-                        a.created > 
-                        date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t1,
-                    (select round(sum(total),2) as num2 from invoices a
-                        where 
-                        a.invoice_status_id = 15 
-                        and a.billing_period > 
-                        date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t2,
-                    (select round(sum(total),2) as num3 from invoices a
-                        where 
-                        a.invoice_status_id = 10 
-                        and a.billing_period > 
-                        date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t3,
-                    (select round(sum(total),2) as num4 from invoices a
-                        where 
-                        a.invoice_status_id = 25 
-                        and a.billing_period > 
-                        date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t4
-                """
-            )
-        else:
-            o = db.query("""
-                select 
-                    ifnull(t1.num1,0) as num1, /* commissions */
-                    ifnull(t2.num2,0) as num2, /* Total paid */
-                    ifnull(t3.num3,0) as num3, /* sent */
-                    ifnull(t4.num4,0) as num4 /* Voided */
-                from 
-                    (select round(sum(amount),2) as num1 from commission_users a
-                        where 
-                        a.user_id = %s and a.created > 
-                        date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t1,
-                    (select round(sum(total),2) as num2 from invoices a,commission_users com
-                        where 
-                        a.id = com.invoices_id and com.user_id = %s and a.invoice_status_id = 15 
-                        and a.billing_period > 
-                        date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t2,
-                    (select round(sum(total),2) as num3 from invoices a,commission_users com
-                        where 
-                        a.id = com.invoices_id and com.user_id = %s and a.invoice_status_id = 10 
-                        and a.billing_period > 
-                        date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t3,
-                    (select round(sum(total),2) as num4 from invoices a,commission_users com
-                        where 
-                        a.id = com.invoices_id and com.user_id = %s and a.invoice_status_id = 25 
-                        and a.billing_period > 
-                        date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t4
-                """,(u['id'],u['id'],u['id'],u['id'])
-            )
-        return o[0]
-
-    @check_bdr
-    def execute(self, *args, **kwargs):
-        ret = {}
-        u = args[1][0]
-        ret['commissions'] = self.getCommissionsThisMonth(u)
-        return ret
 
 class OnlineDemoList(AdminBase):
 
@@ -1045,3 +911,83 @@ class OnlineDemoSave(AdminBase):
             )
         db.commit()
         return {'success':True}
+
+class BDRDashboard(AdminBase):
+    def __init__(self):
+        super().__init__()
+
+    def isDeferred(self):
+        return False
+
+    def getCommissionsThisMonth(self,u):
+        db = Query()
+        PQS = self.getProviderQueueStatus()
+        OT = self.getOfficeTypes()
+        o = []
+        if 'CommissionAdmin' in u['entitlements']:
+            o = db.query("""
+                select 
+                    ifnull(t1.num1,0) as num1, /* commissions */
+                    ifnull(t2.num2,0) as num2, /* Total paid */
+                    ifnull(t3.num3,0) as num3, /* sent */
+                    ifnull(t4.num4,0) as num4 /* Voided */
+                from 
+                    (select round(sum(amount),2) as num1 from commission_users a
+                        where 
+                        a.created > 
+                        date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t1,
+                    (select round(sum(total),2) as num2 from invoices a
+                        where 
+                        a.invoice_status_id = 15 
+                        and a.billing_period > 
+                        date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t2,
+                    (select round(sum(total),2) as num3 from invoices a
+                        where 
+                        a.invoice_status_id = 10 
+                        and a.billing_period > 
+                        date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t3,
+                    (select round(sum(total),2) as num4 from invoices a
+                        where 
+                        a.invoice_status_id = 25 
+                        and a.billing_period > 
+                        date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t4
+                """
+            )
+        else:
+            o = db.query("""
+                select 
+                    ifnull(t1.num1,0) as num1, /* commissions */
+                    ifnull(t2.num2,0) as num2, /* Total paid */
+                    ifnull(t3.num3,0) as num3, /* sent */
+                    ifnull(t4.num4,0) as num4 /* Voided */
+                from 
+                    (select round(sum(amount),2) as num1 from commission_users a
+                        where 
+                        a.user_id = %s and a.created > 
+                        date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t1,
+                    (select round(sum(total),2) as num2 from invoices a,commission_users com
+                        where 
+                        a.id = com.invoices_id and com.user_id = %s and a.invoice_status_id = 15 
+                        and a.billing_period > 
+                        date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t2,
+                    (select round(sum(total),2) as num3 from invoices a,commission_users com
+                        where 
+                        a.id = com.invoices_id and com.user_id = %s and a.invoice_status_id = 10 
+                        and a.billing_period > 
+                        date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t3,
+                    (select round(sum(total),2) as num4 from invoices a,commission_users com
+                        where 
+                        a.id = com.invoices_id and com.user_id = %s and a.invoice_status_id = 25 
+                        and a.billing_period > 
+                        date_add(date_add(LAST_DAY(now()),interval 1 DAY),interval -1 MONTH)) as t4
+                """,(u['id'],u['id'],u['id'],u['id'])
+            )
+        return o[0]
+
+    @check_bdr
+    def execute(self, *args, **kwargs):
+        ret = {}
+        u = args[1][0]
+        ret['commissions'] = self.getCommissionsThisMonth(u)
+        return ret
+

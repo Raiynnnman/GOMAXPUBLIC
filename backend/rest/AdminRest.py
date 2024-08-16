@@ -10,6 +10,7 @@ from processing import Admin,Coupons,AdminCustomers
 from processing import AdminTickets
 from processing import AdminInvoices,AdminRegistrations
 from processing import AdminTraffic, AdminCommissions,AdminOffice 
+from processing import AdminReferrals
 from processing.Context import GetContext,DelContext
 
 class OfficeListRest(RestBase):
@@ -142,14 +143,14 @@ class AdminReportGetRest(RestBase):
 class AdminBookingRegisterRest(RestBase):
 
     def post(self, *args, **kwargs):
-        u = AdminRegistrations.AdminBookingRegister()
+        u = AdminReferrals.AdminBookingRegister()
         ret = u.process(args[0])
         return ret
 
 class ReferrerListRest(RestBase):
 
     def post(self, *args, **kwargs):
-        u = Admin.ReferrerList()
+        u = AdminReferrals.ReferrerList()
         ret = u.process(args[0])
         return ret
 

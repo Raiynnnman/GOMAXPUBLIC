@@ -12,7 +12,7 @@ import { connect } from 'react-redux';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 import { getReferrers } from '../../actions/referrerAdminList';
-//import { referralAdminUpdate } from '../../actions/referralAdminUpdate';
+import { referralAdminUpdate } from '../../actions/referralAdminUpdate';
 import formatPhoneNumber from '../utils/formatPhone';
 import PainTable from '../utils/PainTable';
 import TemplateSelect from '../utils/TemplateSelect';
@@ -23,6 +23,9 @@ import TemplateTextField from '../utils/TemplateTextField';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Navbar from '../../components/Navbar';
+import ReferrersEdit from './ReferrersEdit';
+
+const timeZoneIANA = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 class Referrers extends Component {
     constructor(props) { 
@@ -77,18 +80,14 @@ class Referrers extends Component {
             this.state.statusSelected = t;
             this.state.filter = t1;
             this.setState(this.state);
-            this.props.dispatch(getReferrers(
-                {limit:this.state.pageSize,offset:this.state.page,status:t1}
-            ));
+            this.reload();
         } 
     }
 
     pageChange(e) { 
         this.state.page = e
-        this.props.dispatch(getReferrers(
-            {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
-        ));
         this.setState(this.state);
+        this.reload()
     } 
 
 
@@ -107,19 +106,15 @@ class Referrers extends Component {
         if (this.state.search.length === 0) { 
             this.state.search = null;
         } 
-        this.props.dispatch(getReferrers(
-            {search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
-        ));
         this.setState(this.state);
+        this.reload()
     } 
 
     pageGridsChange(t) { 
         this.state.pageSize = t
         this.state.page = 0
-        this.props.dispatch(getReferrers(
-            {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
-        ));
         this.setState(this.state);
+        this.reload()
     } 
 
     sortChange(t) { 
@@ -128,10 +123,8 @@ class Referrers extends Component {
             g = g[0]
             this.state.sort = g.id
             this.state.direction = g.direction === 'asc' ? 'desc' : 'asc'
-            this.props.dispatch(getReferrers(
-                {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
-            ));
             this.setState(this.state);
+            this.reload()
         } 
     } 
     onStatusFilter(e,t) { 
@@ -146,10 +139,8 @@ class Referrers extends Component {
         } 
         this.state.statusSelected = t;
         this.state.filter = t1;
-        this.props.dispatch(getReferrers(
-            {search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
-        ));
         this.setState(this.state)
+        this.reload()
     } 
     updateInitial(e) { 
         this.state.selected.initial_payment = e.target.value;
@@ -173,10 +164,7 @@ class Referrers extends Component {
     }
 
     componentDidMount() {
-        this.props.dispatch(getReferrers({
-            limit:this.state.pageSize,
-            offset:this.state.page
-        }));
+        this.reload();
     }
     add() { 
         this.state.selected = {
@@ -201,7 +189,7 @@ class Referrers extends Component {
     } 
     reload() { 
         this.props.dispatch(getReferrers(
-            {search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
+            {timezone:timeZoneIANA,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
         ));
     }
     save() { 
@@ -209,35 +197,22 @@ class Referrers extends Component {
             email:this.state.selected.email,
             name: this.state.selected.name,
             first_name:this.state.selected.first_name,
-            initial_payment:this.state.selected.initial_payment,
+            comments:this.state.selected.comments,
             last_name:this.state.selected.last_name,
-            lead_strength_id:this.state.selected.lead_strength_id,
             addr:this.state.selected.addr,
-            phone: this.state.selected.phone,
-            office_id: this.state.selected.office_id,
-            pricing_id: this.state.selected.pricing_id,
-            status: this.state.selected.provider_queue_status_id,
+            phone: this.state.selected.phone
         } 
-        if (this.state.selected.invoice && this.state.selected.invoice.id) { 
-            tosend.invoice_id = this.state.selected.invoice.id
-            tosend.invoice_items = this.state.selected.invoice.items
-        }
-        if (this.state.selected.card) { 
-            tosend.card = this.state.selected.card
-        }
-        /*this.props.dispatch(referralAdminUpdate(tosend,function(err,args) { 
-            args.props.dispatch(getReferrers(
-                {search:args.state.search,limit:args.state.pageSize,offset:args.state.page,status:args.state.filter},function(err,args) { 
-              toast.success('Successfully saved referral.',
-                {
+        this.props.dispatch(referralAdminUpdate(tosend,function(err,args) { 
+              args.reload()
+              toast.success('Successfully saved referral.', {
                     position:"top-right",
                     autoClose:3000,
                     hideProgressBar:true
                 }
               );
               args.close()
-            },args))
-        },this));*/
+            },this)
+        )
     } 
     onPlansChange(e) { 
         this.state.selected.pricing_id = e.value;
@@ -275,26 +250,39 @@ class Referrers extends Component {
     } 
 
     render() {
+        console.log("p",this.props);
         var regheads = [
             {
                 dataField:'id',
                 sort:true,
+                onClick: (content,row) => (
+                    this.edit(content)
+                ),
                 hidden:true,
                 text:'ID'
             },
             {
                 dataField:'name',
                 sort:true,
+                onClick: (content,row) => (
+                    this.edit(content)
+                ),
                 text:'Name'
             },
             {
                 dataField:'email',
                 sort:true,
+                onClick: (content,row) => (
+                    this.edit(content)
+                ),
                 text:'Email'
             },
             {
                 dataField:'phone',
                 sort:true,
+                onClick: (content,row) => (
+                    this.edit(content)
+                ),
                 text:'Phone',
                 formatter: (cellContent,row) => (
                     <div>
@@ -305,21 +293,30 @@ class Referrers extends Component {
             {
                 dataField:'referrer_name',
                 sort:true,
+                onClick: (content,row) => (
+                    this.edit(content)
+                ),
                 text:'Ref Name'
             },
             {
                 dataField:'office_name',
                 sort:true,
+                onClick: (content,row) => (
+                    this.edit(content)
+                ),
                 text:'Off Name'
             },
             {
                 dataField:'time',
                 sort:true,
                 align:'center',
-                text:'Minutes',
+                onClick: (content,row) => (
+                    this.edit(content)
+                ),
+                text:'Elapsed',
                 formatter: (cellContent,row) => (
                     <div>
-                        {row.time + " min"}
+                        {moment(row.created).fromNow()}
                     </div>
                 )
             },
@@ -328,6 +325,9 @@ class Referrers extends Component {
                 sort:true,
                 align:'center',
                 text:'Status',
+                onClick: (content,row) => (
+                    this.edit(content)
+                ),
                 formatter:(cellContent,row) => (
                     <div>
                         {(row.status === 'QUEUED') && (<TemplateBadge label='QUEUED'/>)}
@@ -344,6 +344,9 @@ class Referrers extends Component {
                 dataField:'updated',
                 sort:true,
                 text:'Updated',
+                onClick: (content,row) => (
+                    this.edit(content)
+                ),
                 formatter:(cellContent,row) => (
                     <div>
                         {moment(row['updated']).format('LLL')} 
@@ -368,6 +371,9 @@ class Referrers extends Component {
                     </Tabs>
                     {(this.state.activeTab === 'referrer') && (
                     <>
+                            {(this.state.selected !== null) && (
+                                <ReferrersEdit selected={this.state.selected} onSave={this.save} onCancel={this.close}/>
+                            )}
                             {(this.state.selected === null) && (
                             <>
                             <div style={{marginTop:20}}>
@@ -443,7 +449,7 @@ class Referrers extends Component {
                                     {(this.props.referrerAdminList && this.props.referrerAdminList.data && 
                                       this.props.referrerAdminList.data.data && 
                                       this.props.referrerAdminList.data.data.length < 1)&& ( 
-                                      <h3>No referrer yet!</h3>
+                                      <h3>No referrals yet!</h3>
                                     )}
                                     </>
                                 </Grid>
