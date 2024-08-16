@@ -48,7 +48,7 @@ class Query(DBBase):
             rows = curs.fetchall()
             j = json.loads(json.dumps(rows,cls=DateTimeEncoder))
         except Exception as e:
-            log.error(query % params)
+            # log.error(query % params)
             raise e
         curs.close()
         return j

@@ -60,7 +60,7 @@ class InvestorMap extends Component {
         if (this.props.anonymous) { 
             this.props.dispatch(
                 getTrafficData(
-                    {blur:true,timezone:timeZoneIANA,nationwide:true,categories:[2],limit:50,offset:0},
+                    {all_today:true,blur:true,timezone:timeZoneIANA,nationwide:true,categories:[2],limit:50,offset:0},
                     function(e,t) { 
                         var c = new moment().add("ms",t.state.delay);
                         t.state.nextReload = moment(c)
@@ -71,7 +71,7 @@ class InvestorMap extends Component {
         } else { 
             this.props.dispatch(
                 getTraffic(
-                    {timezone:timeZoneIANA,nationwide:true,categories:[2],limit:50,offset:0},
+                    {all_today:true,timezone:timeZoneIANA,nationwide:true,categories:[2],limit:50,offset:0},
                     function(e,t) { 
                         var c = new moment().add("ms",t.state.delay);
                         t.state.nextReload = moment(c)

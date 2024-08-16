@@ -201,9 +201,14 @@ class TrafficGet(AdminBase):
             if 'date' in params:
                 q += " and date(ti.created) = %s "
                 sqlp.append(params['date'])
+            TTT = db.query("""
+                select count(id) as cnt from traffic_incidents where created > date(now())
+                """)
+            TTT = TTT[0]['cnt']
             #if 'zipcode' in params:
             #    q += " ti.zipcode = %s and "
             #    sqlp.append(params['zipcode'])
+            print(params)
             if 'categories' in params:
                 q += " and ("
                 A = []
@@ -212,15 +217,24 @@ class TrafficGet(AdminBase):
                     sqlp.append(g)
                 q += " OR ".join(A)
                 q += " ) "
-            q += """
-                group by
-                    ti.id
-                order by
-                    ti.created desc
-                limit %s offset %s
-            """
-            sqlp.append(limit)
-            sqlp.append(offset*limit)
+            if 'all_today' in params or TTT < 1:
+                q += """
+                    group by
+                        ti.id
+                    order by
+                        ti.created desc
+                    limit %s offset %s
+                """
+                sqlp.append(limit)
+                sqlp.append(offset*limit)
+            else:
+                q += """
+                    and ti.created > date(now())
+                    group by
+                        ti.id
+                    order by
+                        ti.created desc
+                """
             print(q,sqlp)
             l = db.query(q,sqlp)
             ret['total'] = limit
