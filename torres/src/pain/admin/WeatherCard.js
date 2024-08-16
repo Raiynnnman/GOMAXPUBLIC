@@ -95,7 +95,7 @@ const WeatherCard = () => {
     const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${"1491946ec285381d5ec4ce34930cafbd"}`;
     const response = await fetch(apiUrl);
     if (!response.ok) {
-      throw new Error('Could not fetch weather data');
+      throw new Error('Could not fetch weather data.');
     }
     return await response.json();
   };

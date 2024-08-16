@@ -16,8 +16,9 @@ import { getTraffic } from '../../actions/trafficGet';
 import TrafficMap from './TrafficMap';
 import HeatMap from './HeatMap';
 import PotentialsHeatMap from './PotentialsHeatMap';
-//import WeatherMap from './WeatherMap';
-//import WeatherCard from './WeatherCard';
+import WeatherMap from './WeatherMap';
+import WeatherCard from './WeatherCard';
+
 class Map extends Component {
     constructor(props) {
         super(props);
@@ -31,8 +32,8 @@ class Map extends Component {
             officeTypeFilter:[],
             office_types: null,
             zipSelected: null,
-            address: '', // New state for address
-            center: null, // New state for map center
+            address: '', 
+            center: null, 
             recentlyViewed: [] 
         }
         this.toggleTab = this.toggleTab.bind(this);
@@ -41,8 +42,8 @@ class Map extends Component {
         this.onCategoryChange = this.onCategoryChange.bind(this);
         this.onOfficeTypeChange = this.onOfficeTypeChange.bind(this);
         this.onOfficeFilterChange = this.onOfficeFilterChange.bind(this);
-        this.onAddressChange = this.onAddressChange.bind(this); // New handler
-        this.onRouteButtonClick = this.onRouteButtonClick.bind(this); // New handler
+        this.onAddressChange = this.onAddressChange.bind(this); 
+        this.onRouteButtonClick = this.onRouteButtonClick.bind(this); 
     }
 
     componentWillReceiveProps(p) {
@@ -258,8 +259,7 @@ class Map extends Component {
                                         <Tab value='traffic' label='Traffic' />
                                         <Tab value='heatmap' label='HeatMap' />
                                         <Tab value='potentials' label='Potentials' />
-                                        {/*<Tab value='weathermap' label='WeatherMap' />*/}
-
+                                        <Tab value='weathermap' label='WeatherMap' />
                                     </Tabs>
                                     {(this.state.activeTab === 'potentials') && (
                                         <PotentialsHeatMap data={this.props.trafficData} centerPoint={this.state.center || this.props.trafficData.data.center} />
@@ -271,7 +271,7 @@ class Map extends Component {
                                     {(this.state.activeTab === 'heatmap') && (
                                         <HeatMap data={this.props.trafficData} centerPoint={this.state.center || this.props.trafficData.data.center} />
                                     )}
-                                    {/*(this.state.activeTab === 'weathermap') && (
+                                    {(this.state.activeTab === 'weathermap') && (
                                         <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
                                             <div style={{ flex: '0 1 25%', marginBottom: '10px' }}>
                                                 <WeatherCard />
@@ -284,7 +284,7 @@ class Map extends Component {
                                                 />
                                             </div>
                                         </div>
-                                    )*/}
+                                    )}
                                 </>
                             )}
                         </Box>
