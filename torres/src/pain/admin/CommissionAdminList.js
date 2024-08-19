@@ -315,7 +315,7 @@ class CommissionAdminList extends Component {
                 formatter:(cellContent,row) => (
                     <div>
                         {moment(row['created']).isValid() ?  
-                         moment(row['created']).format('LLL') : moment(row['created2']).format('LLL')}
+                         moment(row['created']).format('lll') : moment(row['created2']).format('lll')}
                     </div>
                 )
             },

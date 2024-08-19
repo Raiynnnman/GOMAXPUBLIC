@@ -116,6 +116,8 @@ class RegistrationsEdit extends Component {
         this.saveAction = this.saveAction.bind(this);
         this.cancelAction = this.cancelAction.bind(this);
         this.onCouponChange = this.onCouponChange.bind(this);
+        this.onSourceChange = this.onSourceChange.bind(this);
+        this.onVendorStatusChange = this.onVendorStatusChange.bind(this);
         this.toggleSubTab = this.toggleSubTab.bind(this);
         this.state = { 
             selected: null,
@@ -222,53 +224,8 @@ class RegistrationsEdit extends Component {
         this.setState(this.state);
     }
     save() { 
-        var tosend = { 
-            email:this.state.selected.email,
-            name: this.state.selected.name,
-            do_not_contact: this.state.selected.do_not_contact,
-            provider_queue_presented_status_id: this.state.selected.provider_queue_presented_status_id,
-            provider_queue_presented_status_id: this.state.selected.provider_queue_presented_status_id,
-            set_to_present_date: this.state.selected.set_to_present_date,
-            business_name: this.state.selected.business_name,
-            doing_business_as_name: this.state.selected.doing_business_as_name,
-            provider_queue_source_id: this.state.selected.provider_queue_source_id,
-            set_date: this.state.selected.set_date,
-            include_on_deal_tracker:this.state.selected.include_on_deal_tracker,
-            deal_value:this.state.selected.deal_value,
-            presentation_result:this.state.selected.presentation_result,
-            refund_requested:this.state.selected.refund_requested,
-            present_date:this.state.selected.present_date,
-            estimated_close_date:this.state.selected.estimated_close_date,
-            closed_date:this.state.selected.closed_date,
-            close_requirements:this.state.selected.close_requirements,
-            phones:this.state.selected.phones,
-            first_name:this.state.selected.first_name,
-            office_alternate_status_id:this.state.selected.office_alternate_status_id,
-            initial_payment:this.state.selected.initial_payment,
-            website:this.state.selected.website,
-            last_name:this.state.selected.last_name,
-            lead_strength_id:this.state.selected.lead_strength_id,
-            coupon_id:this.state.selected.coupon_id,
-            call_status_id:this.state.selected.call_status_id,
-            actions:this.state.selected.actions,
-            commission_user_id:this.state.selected.commission_user_id,
-            setter_user_id:this.state.selected.setter_user_id,
-            comments:this.state.selected.comments,
-            addr:this.state.selected.addr,
-            phone: this.state.selected.phone,
-            office_id: this.state.selected.office_id,
-            office_type_id: this.state.selected.office_type_id,
-            pricing_id: this.state.selected.pricing_id,
-            referrer_users_status_id: this.state.selected.referrer_users_status_id,
-        } 
-        if (this.state.selected.invoice && this.state.selected.invoice.id) { 
-            tosend.invoice_id = this.state.selected.invoice.id;
-            tosend.invoice_items = this.state.selected.invoice.items;
-        }
-        if (this.state.selected.card) { 
-            tosend.card = this.state.selected.card
-        }
-        this.props.onSave(tosend);
+        delete this.state.selected.assignee;
+        this.props.onSave(this.state.selected);
         this.state.selected = null;
         this.setState(this.state);
     } 
@@ -444,7 +401,23 @@ class RegistrationsEdit extends Component {
         var o = e.target.value;
         var t = this.props.referrerAdminList.data.config.call_status.filter((g) => o === g.name);
         if (t.length > 0) { 
-            this.state.selected.call_status_id = t[0].id;
+            this.state.selected.referrer_users_call_status_id = t[0].id;
+        } 
+        this.setState(this.state);
+    } 
+    onSourceChange(e) { 
+        var o = e.target.value;
+        var t = this.props.referrerAdminList.data.config.source.filter((g) => o === g.name);
+        if (t.length > 0) { 
+            this.state.selected.referrer_users_source_id = t[0].id;
+        } 
+        this.setState(this.state);
+    } 
+    onVendorStatusChange(e) { 
+        var o = e.target.value;
+        var t = this.props.referrerAdminList.data.config.vendor_status.filter((g) => o === g.name);
+        if (t.length > 0) { 
+            this.state.selected.referrer_users_vendor_status_id = t[0].id;
         } 
         this.setState(this.state);
     } 
@@ -525,43 +498,7 @@ class RegistrationsEdit extends Component {
         this.setState(this.state);
     }
     render() {
-        var offheads = [
-            {
-                dataField:'id',
-                sort:true,
-                hidden:true,
-                text:'ID'
-            },
-            {
-                dataField:'name',
-                text:'Name'
-            },
-            {
-                dataField:'phone',
-                text:'Phone',
-                formatter: (cellContent,row) => (
-                    <div>
-                       {formatPhoneNumber(row.phone) ? formatPhoneNumber(row.phone) : row.phone} 
-                    </div>
-                )
-            },
-            {
-                dataField:'addr1',
-                text:'Address'
-            },
-            {
-                dataField:'city',
-                text:'City'
-            },
-            {
-                dataField:'state',
-                text:'state'
-            },
-            {
-                dataField:'zipcode',
-                text:'Zipcode'
-            },
-        ]
+        console.log("p",this.props);
         var historyheads = [
             {
                 dataField:'id',
@@ -583,81 +520,11 @@ class RegistrationsEdit extends Component {
                 text:'Created',
                 formatter:(cellContent,row) => (
                     <div>
-                        {moment(row['created']).format('LLL')} 
+                        {moment(row['created']).format('lll')} 
                     </div>
                 )
             },
             
-        ]
-        var planheads = [
-            {
-                dataField:'id',
-                sort:true,
-                hidden:true,
-                text:'ID'
-            },
-            {
-                dataField:'description',
-                editable:true,
-                text:'Description'
-            },
-            {
-                dataField:'quantity',
-                align:'center',
-                editable:false,
-                width:50,
-                text:'quantity'
-            },
-            {
-                dataField:'price',
-                text:'Price',
-                editable:false,
-                align:'right',
-                formatter: (cellContent,row) => (
-                    <div>
-                        ${row.price && row.price.toFixed ?  row.price.toFixed(2) : row.price}
-                    </div>
-                )
-            }
-            
-        ]
-        var invheads = [
-            {
-                dataField:'id',
-                sort:true,
-                hidden:true,
-                text:'ID'
-            },
-            {
-                dataField:'description',
-                text:'Description'
-            },
-            {
-                dataField:'price',
-                text:'Price',
-                align:'right',
-                formatter: (cellContent,row) => (
-                    <div>
-                        {row.price.toFixed ? '$' + row.price.toFixed(2) : row.price}
-                    </div>
-                )
-            },
-            {
-                dataField:'quantity',
-                align:'center',
-                text:'quantity'
-            },
-            {
-                dataField:'total',
-                text:'Total',
-                editable:false,
-                align:'right',
-                formatter: (cellContent,row) => (
-                    <div>
-                        ${(row.price*row.quantity).toFixed(2)}
-                    </div>
-                )
-            },
         ]
         return(
         <>
@@ -683,15 +550,26 @@ class RegistrationsEdit extends Component {
                       </Grid>
                       <Grid item xs={3} style={{margin:10}}>
                         <TemplateTextField onChange={this.updateFirst}
-                        label="First" value={this.state.selected.first_name}/>
-                      </Grid>
-                      <Grid item xs={3} style={{margin:10}}>
-                        <TemplateTextField onChange={this.updateLast}
-                            label="Last" value={this.state.selected.last_name}/>
+                        label="Name" value={this.state.selected.name}/>
                       </Grid>
                       <Grid item xs={3} style={{margin:10}}>
                          <TemplateTextFieldPhone label='Phone'
                               onChange={this.updatePhone} value={this.state.selected.phone}
+                            />
+                      </Grid>
+                      <Grid item xs={3} style={{margin:10}}>
+                         <TemplateTextField label='Vendor ID'
+                              readOnly={true} value={this.state.selected.vendor_id}
+                            />
+                      </Grid>
+                      <Grid item xs={3} style={{margin:10}}>
+                         <TemplateTextField label='Location'
+                              readOnly={true} value={this.state.selected.import_location}
+                            />
+                      </Grid>
+                      <Grid item xs={3} style={{margin:10}}>
+                         <TemplateTextField label='Price Per Lead'
+                              readOnly={true} value={"$" + this.state.selected.price_per_lead}
                             />
                       </Grid>
                 </Grid>
@@ -712,6 +590,84 @@ class RegistrationsEdit extends Component {
                             )[0].name : '',
                           }}
                           options={this.props.referrerAdminList.data.config.status.map((g) => { 
+                            return (
+                                { 
+                                label: g.name,
+                                value: g.name
+                                }
+                            )
+                          })}
+                        />
+                        )}
+                    </Grid>
+                    <Grid item xs={3} style={{margin:10}}>
+                      {(this.props.referrerAdminList && this.props.referrerAdminList.data &&
+                        this.props.referrerAdminList.data.config && 
+                        this.props.referrerAdminList.data.config.status) && (
+                      <TemplateSelect
+                          label='Call Status'
+                          onChange={this.onCallStatusChange}
+                          value={{
+                            label:
+                                this.props.referrerAdminList.data.config.call_status.filter((g) => 
+                                    this.state.selected.referrer_users_call_status_id === g.id).length > 0 ? 
+                                this.props.referrerAdminList.data.config.call_status.filter((g) => 
+                                    this.state.selected.referrer_users_call_status_id === g.id
+                            )[0].name : '',
+                          }}
+                          options={this.props.referrerAdminList.data.config.call_status.map((g) => { 
+                            return (
+                                { 
+                                label: g.name,
+                                value: g.name
+                                }
+                            )
+                          })}
+                        />
+                        )}
+                    </Grid>
+                    <Grid item xs={3} style={{margin:10}}>
+                      {(this.props.referrerAdminList && this.props.referrerAdminList.data &&
+                        this.props.referrerAdminList.data.config && 
+                        this.props.referrerAdminList.data.config.status) && (
+                      <TemplateSelect
+                          label='Source'
+                          onChange={this.onSourceChange}
+                          value={{
+                            label:
+                                this.props.referrerAdminList.data.config.source.filter((g) => 
+                                    this.state.selected.referrer_users_source_id === g.id).length > 0 ? 
+                                this.props.referrerAdminList.data.config.source.filter((g) => 
+                                    this.state.selected.referrer_users_source_id === g.id
+                            )[0].name : '',
+                          }}
+                          options={this.props.referrerAdminList.data.config.source.map((g) => { 
+                            return (
+                                { 
+                                label: g.name,
+                                value: g.name
+                                }
+                            )
+                          })}
+                        />
+                        )}
+                    </Grid>
+                    <Grid item xs={3} style={{margin:10}}>
+                      {(this.props.referrerAdminList && this.props.referrerAdminList.data &&
+                        this.props.referrerAdminList.data.config && 
+                        this.props.referrerAdminList.data.config.status) && (
+                      <TemplateSelect
+                          label='Vendor Status'
+                          onChange={this.onVendorStatusChange}
+                          value={{
+                            label:
+                                this.props.referrerAdminList.data.config.vendor_status.filter((g) => 
+                                    this.state.selected.referrer_users_vendor_status_id === g.id).length > 0 ? 
+                                this.props.referrerAdminList.data.config.vendor_status.filter((g) => 
+                                    this.state.selected.referrer_users_vendor_status_id === g.id
+                            )[0].name : '',
+                          }}
+                          options={this.props.referrerAdminList.data.config.vendor_status.map((g) => { 
                             return (
                                 { 
                                 label: g.name,
@@ -751,7 +707,7 @@ class RegistrationsEdit extends Component {
                                                         </font>
                                                     </Grid>
                                                     <Grid item xs="6">
-                                                        {moment(e.created).format('LLL')}
+                                                        {moment(e.created).format('lll')}
                                                     </Grid>
                                                 </Grid>
                                                 <hr/>

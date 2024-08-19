@@ -113,7 +113,7 @@ class ChatInfo extends Component {
                         {this.info().appt.title ? this.info().appt.title : ""
                             + " " + this.info().appt.first_name + " " + this.info().appt.last_name}
                       </h3>
-                      <h6>{moment(this.info().appt.day + " " + this.info().appt.time).format('LLL')}</h6>
+                      <h6>{moment(this.info().appt.day + " " + this.info().appt.time).format('lll')}</h6>
                       <h6>{this.info().appt.procedure}</h6>
                       </>
                   )}

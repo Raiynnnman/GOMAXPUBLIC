@@ -130,7 +130,7 @@ class Template extends Component {
                 ),
                 formatter:(cellContent,row) => (
                     <div>
-                        {moment(row['updated']).format('LLL')} 
+                        {moment(row['updated']).format('lll')} 
                     </div>
                 )
             },

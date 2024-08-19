@@ -192,16 +192,8 @@ class Referrers extends Component {
             {timezone:timeZoneIANA,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
         ));
     }
-    save() { 
-        var tosend = { 
-            email:this.state.selected.email,
-            name: this.state.selected.name,
-            first_name:this.state.selected.first_name,
-            comments:this.state.selected.comments,
-            last_name:this.state.selected.last_name,
-            addr:this.state.selected.addr,
-            phone: this.state.selected.phone
-        } 
+    save(e) { 
+        var tosend = e;
         this.props.dispatch(referralAdminUpdate(tosend,function(err,args) { 
               args.reload()
               toast.success('Successfully saved referral.', {
@@ -349,7 +341,7 @@ class Referrers extends Component {
                 ),
                 formatter:(cellContent,row) => (
                     <div>
-                        {moment(row['updated']).format('LLL')} 
+                        {moment(row['updated']).format('lll')} 
                     </div>
                 )
             },

@@ -36,6 +36,80 @@ log = Logging()
 config = settings.config()
 config.read("settings.cfg")
 
+class ReferrerUpdate(AdminBase):
+
+    def __init__(self):
+        super().__init__()
+
+    def isDeferred(self):
+        return False
+
+    @check_admin
+    def execute(self, *args, **kwargs):
+        ret = {}
+        job,user,off_id,params = self.getArgs(*args,**kwargs)
+        db = Query()
+        ref_id = 0
+        print(params)
+        if 'id' in params:
+            ref_id = params['id']
+        if 'referrer_users_source_id' in params:
+            db.update("""
+                update referrer_users set referrer_users_source_id=%s
+                where id = %s
+                """,(params['referrer_users_source_id'],ref_id)
+            )
+        if 'referrer_users_vendor_status_id' in params:
+            db.update("""
+                update referrer_users set referrer_users_vendor_status_id=%s
+                where id = %s
+                """,(params['referrer_users_vendor_status_id'],ref_id)
+            )
+        if 'phone' in params:
+            db.update("""
+                update referrer_users set phone=%s
+                where id = %s
+                """,(params['phone'],ref_id)
+            )
+        if 'email' in params:
+            db.update("""
+                update referrer_users set email=%s
+                where id = %s
+                """,(params['email'],ref_id)
+            )
+        if 'referrer_users_call_status_id' in params:
+            db.update("""
+                update referrer_users set referrer_users_call_status_id=%s
+                where id = %s
+                """,(params['referrer_users_call_status_id'],ref_id)
+            )
+        if 'referrer_users_status_id' in params:
+            db.update("""
+                update referrer_users set referrer_users_status_id=%s
+                where id = %s
+                """,(params['referrer_users_status_id'],ref_id)
+            )
+        if 'comments' in params:
+            for x in params['comments']:
+                if 'id' in x:
+                    continue
+                bb2 = encryption.encrypt(
+                    x['text'],
+                    config.getKey('encryption_key')
+                    )
+                db.update("""
+                    insert into referrer_users_comment(user_id,referrer_users_id,text)
+                    values 
+                    (%s,%s,%s)
+                    """,(user['user_id'],ref_id,bb2)
+                )
+                db.update("""
+                    insert into referrer_users_history(referrer_users_id,user_id,text) values
+                        (%s,%s,%s)""",(ref_id,user['id'],"ADDED_COMMENT")
+                )
+        db.commit()
+        return {'success': True}
+
 class ReferrerList(AdminBase):
 
     def __init__(self):
@@ -65,12 +139,17 @@ class ReferrerList(AdminBase):
         db = Query()
         ret['config'] = {}
         ret['config']['status'] = db.query("select id,name from referrer_users_status")
+        ret['config']['source'] = db.query("select id,name from referrer_users_source")
+        ret['config']['call_status'] = db.query("select id,name from referrer_users_call_status")
+        ret['config']['vendor_status'] = db.query("select id,name from referrer_users_vendor_status")
         q = """
             select 
                 ru.id,ru.email,ru.name,ru.phone,o.name as office_name,ru.referred,
                 ru.referrer_users_status_id, rs.name as status,ru.zipcode,
                 ro.name as referrer_name,
                 o.id as office_id, 
+                referrer_users_source_id,referrer_users_vendor_status_id,
+                vendor_id, referrer_users_call_status_id,price_per_lead,import_location,
                 date_add(ru.created,interval -%s hour) as created,
                 date_add(ru.updated,interval -%s hour) as updated,
                 timestampdiff(minute,ru.created,now()) as time
@@ -78,6 +157,9 @@ class ReferrerList(AdminBase):
                 referrer_users ru
                 left join referrer_users_status rs on ru.referrer_users_status_id=rs.id
                 left outer join office ro on ru.referrer_id=ro.id
+                left outer join referrer_users_vendor_status ruvs on ru.referrer_users_vendor_status_id=ruvs.id
+                left outer join referrer_users_source rus on rus.id = ru.referrer_users_source_id
+                left outer join referrer_users_call_status rcs on rcs.id = ru.referrer_users_call_status_id
                 left outer join office o on o.id = ru.office_id
             where 
                 1 = 1
@@ -103,6 +185,26 @@ class ReferrerList(AdminBase):
             g['last_comment'] = ''
             g['comments'] = []
             g['history'] = []
+            g['assignee'] = db.query("""
+                    select
+                        u.id,u.first_name,u.last_name
+                    from
+                        office_user ou, users u
+                    where
+                        ou.user_id=u.id
+                        and office_id=%s
+                    UNION
+                    select
+                        u.id,u.first_name,u.last_name
+                    from users u
+                    where id in
+                    (select user_id
+                        from user_entitlements ue,entitlements e
+                        where ue.entitlements_id=e.id and e.name='Admin')
+                    UNION ALL
+                    select 1,'System',''
+                    """,(g['id'],)
+            )
             comms = db.query("""
                 select 
                     ic.id,ic.text,ic.user_id,

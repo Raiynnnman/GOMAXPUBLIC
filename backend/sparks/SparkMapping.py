@@ -2,6 +2,7 @@
 import sys
 import os
 import re
+import traceback
 import json
 import sqlite3
 import math
@@ -11,6 +12,8 @@ import pyspark
 from datetime import datetime
 import time
 from util.DBManager import DBManager 
+from util.DBOps import Query
+from util.Performance import performance
 from common.SparkSQLException import SparkSQLException
 from pyspark.sql import SparkSession
 from pyspark.sql import Row
@@ -26,12 +29,16 @@ config.read("settings.cfg")
 class SparkMapping(SparkBase):
 
     __spark__ = None
+    __db__ = None
+    __TOTAL_ROWS__  = 0
+    __COMPLETE__ = 0
+    __SKIP__ = 0
+
     def __init__(self):
         super().__init__()
-        self.mydb = DBManager().getConnection()
 
     def logme(self, s):
-        sys.stderr.write("LOGGING: %s\n" % s)
+        sys.stderr.write("LOGGING: %s" % s)
 
     def isSQLReservedWord(self, t):
         RES = ["from", "select", "where", "to"]
@@ -71,7 +78,7 @@ class SparkMapping(SparkBase):
                     .config("spark.yarn.submit.waitAppCompletion", "false") \
                     .config("ipc.client.bind.wildcard.addr", "true") \
                     .config("spark.sql.hive.metastore.version", "3.1.2") \
-                    .config("javax.jdo.option.ConnectionURL", "jdbc:mysql://%s:3306/alben" % config.getKey("mysql_host")) \
+                    .config("javax.jdo.option.ConnectionURL", "jdbc:mysql://%s:3306/pain" % config.getKey("mysql_host")) \
                     .config("javax.jdo.option.ConnectionDriverName", "com.mysql.jdbc.Driver") \
                     .config("javax.jdo.option.ConnectionPassword", config.getKey("mysql_pass")) \
                     .config("javax.jdo.option.ConnectionUserName", config.getKey("mysql_user")) \
@@ -113,7 +120,9 @@ class SparkMapping(SparkBase):
             return "timestamp", v
         if 'date' in f:
             return "timestamp", v
-        if re.match(r'\d{4}-\d\d-\d\d',str(v)):
+        if re.match(r'\d{4}-\d\d-\d\dT\d{2}',str(v)):
+            return "timestamp", v
+        if re.match(r'\d{4}-\d\d-\d\d \d{2}',str(v)):
             return "timestamp", v
         if isinstance(v, datetime):
             return "timestamp", v
@@ -178,13 +187,11 @@ class SparkMapping(SparkBase):
         return ret
 
     def installobj(self, obj,tbl):
-        cur = self.mydb.cursor(buffered=True)
-        cur.execute("""
+        self.__db__.update("""
             replace into datastorage_objhash
                 (objid, tstamp, tbl, schema_version) values
                 (%s, CURRENT_TIMESTAMP, %s, %s)""", (obj,tbl,self.getSchemaVer())
         )
-        self.mydb.commit()
 
     def flush(self, sph, Q, I, count=0):
         if len(Q) < 1:
@@ -195,15 +202,23 @@ class SparkMapping(SparkBase):
             return
         F = "%s %s" % (" ".join(Q), "\n".join(I))
         F = F.replace(",,",",'',")
-        # self.logme("f=%s" % F[:2])
+        #self.logme("INS-----")
+        #self.logme("\n" + "\n".join(I))
         try:
+            p = performance()
+            p.start("SparkMapping")
             sph.sql(F)
+            self.logme("TTS: %s" % p.stop())
         except Exception as e:
             self.logme("EXCEPTION in SQL: %s" % str(e))
             raise SparkSQLException(e)
+        self.logme("C/S/T=%s/%s/%s - %2.2f%%" % (
+            self.__COMPLETE__,self.__SKIP__,self.__TOTAL_ROWS__,
+            ((self.__COMPLETE__ + self.__SKIP__)/self.__TOTAL_ROWS__) * 100
+        ))
 
     def getDBName(self):
-        e = "db_%s_%s" % (self.getSchemaVer(), "alben")
+        e = "db_%s_%s" % (self.getSchemaVer(), "pain")
         return e
 
     def getColumns(self, sph, tbl):
@@ -242,33 +257,29 @@ class SparkMapping(SparkBase):
         return COLS
 
     def checkOBJ(self, obj, tbl):
+        p = performance()
+        p.start("checkOBJ")
         ret = False
         q = "select * from datastorage_objhash where objid=%s and tbl=%s and schema_version=%s"
-        cur = self.mydb.cursor(buffered=True)
-        f = cur.execute(q, (obj,tbl,self.getSchemaVer()))
-        row = cur.fetchone()
-        if row is not None:
-            for x in row:
-                ret = True
+        rows = self.__db__.query(q, (obj,tbl,self.getSchemaVer()))
+        for x in rows:
+            ret = True
+            break
+        # self.logme("chkobj: %s" % p.stop())
         return ret
 
     def getObjids(self, sph, tbl):
-        sd = datetime.now()
-        f = sd.strftime("%Y-%m-%dT00:00:00.00Z")
-        tftom = calcdate.getTimeIntervalAddHoursRaw(
-            calcdate.sysParseDate(f), -24
-        ).strftime("%Y%m%d")
-        tf = sd.strftime("%Y%m%d")
-        f = calcdate.parseDate(f)
         q = """
-            select objid from %s where tframe >= %s and tframe < %s
-        """ % (tbl, tftom, tf)
+            select objid from %s 
+        """ % (tbl, )
         myt = sph.sql(q).collect()
         for n in myt:
             v = str(n[0])
-            installobj(self,v, tbl)
+            self.installobj(v, tbl)
+        self.__db__.commit()
 
     def writeSPARK(self, table, sph, data, r=None, cache=False):
+        self.__db__ = Query()
         EXCLUSION=[
             "changelog", "enabled", "deleted", 
             "aws", "certificate", ""
@@ -278,6 +289,9 @@ class SparkMapping(SparkBase):
         getdata=True
         DBNAME=self.getDBName()
         TBLNAME="%s" % (table,)
+        # WRITE_SIZE = int(len(data) * .05)
+        WRITE_SIZE = 50
+        self.__TOTAL_ROWS__ = len(data)
         COLS = {}
         TBLS = []
         if r is not None:
@@ -299,14 +313,14 @@ class SparkMapping(SparkBase):
         if config.getKey("hdfs_max_records") is not None:
             MAX=int(config.getKey("hdfs_max_records"))
         cols = types = values = None
-        SKIP = 0
-        COMPLETE = 0
+        self.__SKIP__ = 0
+        self.__COMPLETE__ = 0
         schema = {}
         commasep = False
         FLUSHED = False
         QUERY = []
         COLSIZE = 0
-        OBJLIST = []
+        OBJLIST = {}
         INS = []
         SL_FNAME=".schemalock-%s" % TBLNAME
         lcntr = 0
@@ -323,24 +337,23 @@ class SparkMapping(SparkBase):
         H.close()
         try:
             for row in data: 
+                p = performance()
+                p.start("SparkMapping")
                 lcntr += 1 
-                if lcntr % 5 == 0:
-                    self.mydb.commit()
                 if 'objid' not in row:
                     neo = encryption.getSHA256(json.dumps(row, sort_keys=True))
                     row['objid'] = neo
-                if self.checkOBJ(row['objid'], TBLNAME):
-                    SKIP += 1
+                if row['objid'] in OBJLIST or self.checkOBJ(row['objid'], TBLNAME):
+                    self.__SKIP__ += 1
                     continue
                 f = row['objid']
-                OBJLIST.append(f)
+                OBJLIST[f] = 1
                 schema = self.getSchema([row], COLS)
                 c = 0
                 for g in schema:
                     if g in EXCLUSION and g not in COLS:
                         continue
                     if g not in COLS:
-                        COMPLETE += len(INS)
                         self.flush(sph, QUERY, INS)
                         FLUSHED=True
                         b = """
@@ -424,11 +437,16 @@ class SparkMapping(SparkBase):
                         G = "%s" % (v,) 
                     elif len(G) > 0 and not quote:
                         G = "%s,%s" % (G, v) 
-                if len(INS) > 2*1024:
-                    COMPLETE += len(INS)
+                if len(INS) > WRITE_SIZE: 
                     self.flush(sph, QUERY, INS)
+                    p = performance()
+                    p.start("installobjs")
                     for gg in OBJLIST:
-                        self.installobj(gg,TBLNAME)
+                        if OBJLIST[gg] == 1:
+                            self.installobj(gg,TBLNAME)
+                            OBJLIST[gg] = 2
+                    self.__db__.commit()
+                    self.logme("dedupobj: %s" % p.stop())
                     commasep = False
                     INS=[]
                 if commasep:
@@ -436,20 +454,22 @@ class SparkMapping(SparkBase):
                 else:
                     commasep = True
                 INS.append("(%s)" % G)
+                self.__COMPLETE__ += 1
+            self.logme("rowproc: %s" % p.stop())
         except Exception as e:
+            traceback.print_exc(file=sys.stdout)
             raise SparkSQLException(str(e))
         finally:
             if os.path.exists(SL_FNAME):
                 os.unlink(SL_FNAME)
-        if not FLUSHED:
-            COMPLETE += len(INS)
+        self.logme("COMPIS NOW: %s" % self.__COMPLETE__)
         self.flush(sph, QUERY, INS)
+        self.__db__.commit()
         for gg in OBJLIST:
-            self.installobj(gg,TBLNAME)
-        self.logme("STATS: skip/comp: %s/%s" % (SKIP, COMPLETE))
-        # Close the pooled connection
-        if random.randint(1,100) > 50:
-            self.maintenance(self.__spark__,TBLNAME)
-        self.mydb.close()
-        return {"skip": SKIP, "complete": COMPLETE}
+            if OBJLIST[gg] == 1:
+                self.installobj(gg,TBLNAME)
+        self.logme("COMPIS END: %s"%  self.__COMPLETE__)
+        self.logme("STATS: skip/comp: %s/%s" % (self.__SKIP__, self.__COMPLETE__))
+        self.__db__.commit()
+        return {"skip": self.__SKIP__, "complete": self.__COMPLETE__}
 

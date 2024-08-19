@@ -32,8 +32,6 @@ class SparkEntry:
         os.environ["SPARK_HOME"] = os.path.join(had_home,"..", spark_home)
         # os.environ["PATH"] = $PATH:$HADOOP_HOME/sbin:$HADOOP_HOME/bin:$HIVE_HOME/bin:$HADOOP_HOME/../hbase/bin
 
-
-
     def process(self, category, table, data):
         ret = []
         spark = None
@@ -49,6 +47,7 @@ class SparkEntry:
             raise e
         finally:
             if spark is not None:
+                print("STOP_SPARK_INSTANCE")
                 spark.stop()
         return ret
 

@@ -325,7 +325,7 @@ class CouponAdminList extends Component {
                 formatter:(cellContent,row) => (
                     <div>
                         {moment(row['end_date']).isValid() ?  
-                         moment(row['end_date']).format('LLL') : row['end_date']}
+                         moment(row['end_date']).format('lll') : row['end_date']}
                     </div>
                 )
             },

@@ -191,6 +191,13 @@ def searchreg(*args, **kwargs):
     po = AdminRest.AdminBookingRegisterRest()
     return po.postWrapper(*args,**kwargs)
 
+@admin.route('/admin/referral/update', methods=['POST'])
+@token_required
+@swag_from(docs_dir + 'registrationlist.yaml')
+def refupdate(*args, **kwargs):
+    po = AdminRest.ReferrerUpdateRest()
+    return po.postWrapper(*args,**kwargs)
+
 @admin.route('/admin/referrer/list', methods=['POST'])
 @token_required
 @swag_from(docs_dir + 'registrationlist.yaml')

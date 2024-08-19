@@ -201,7 +201,7 @@ class UserAdminList extends Component {
                 formatter:(cellContent,row) => (
                     <div>
                         {moment(row['updated']).isValid() ?  
-                         moment(row['updated']).format('LLL') : moment(row['updated2']).format('LLL')}
+                         moment(row['updated']).format('lll') : moment(row['updated2']).format('lll')}
                     </div>
                 )
             },

@@ -583,7 +583,7 @@ class RegistrationsEdit extends Component {
                 text:'Created',
                 formatter:(cellContent,row) => (
                     <div>
-                        {moment(row['created']).format('LLL')} 
+                        {moment(row['created']).format('lll')} 
                     </div>
                 )
             },
@@ -1073,7 +1073,7 @@ class RegistrationsEdit extends Component {
                                                             </Grid>
                                                             <Grid item xs="4">
                                                                 <font style={{fontSize:14}}>
-                                                                    {moment(e.created).format('LLL')}
+                                                                    {moment(e.created).format('lll')}
                                                                 </font>
                                                             </Grid>
                                                             <Grid item xs="2">
@@ -1188,7 +1188,7 @@ class RegistrationsEdit extends Component {
                                                         </font>
                                                     </Grid>
                                                     <Grid item xs="6">
-                                                        {moment(e.created).format('LLL')}
+                                                        {moment(e.created).format('lll')}
                                                     </Grid>
                                                 </Grid>
                                                 <hr/>

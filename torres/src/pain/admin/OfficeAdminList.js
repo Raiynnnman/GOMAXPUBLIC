@@ -528,7 +528,7 @@ class OfficeList extends Component {
                 text:'Created',
                 formatter:(cellContent,row) => (
                     <div>
-                        {moment(row['created']).format('LLL')} 
+                        {moment(row['created']).format('lll')} 
                     </div>
                 )
             },
@@ -567,7 +567,7 @@ class OfficeList extends Component {
                 text:'Created',
                 formatter:(cellContent,row) => (
                     <div>
-                        {moment(row['created']).format('LLL')} 
+                        {moment(row['created']).format('lll')} 
                     </div>
                 )
             },
@@ -602,7 +602,7 @@ class OfficeList extends Component {
                 text:'Created',
                 formatter:(cellContent,row) => (
                     <div>
-                        {moment(row['created']).format('LLL')} 
+                        {moment(row['created']).format('lll')} 
                     </div>
                 )
             },
@@ -629,7 +629,7 @@ class OfficeList extends Component {
                 text:'Created',
                 formatter:(cellContent,row) => (
                     <div>
-                        {moment(row['created']).format('LLL')} 
+                        {moment(row['created']).format('lll')} 
                     </div>
                 )
             },
@@ -724,7 +724,7 @@ class OfficeList extends Component {
                 ),
                 formatter:(cellContent,row) => (
                     <div>
-                        {moment(row['updated']).format('LLL')} 
+                        {moment(row['updated']).format('lll')} 
                     </div>
                 )
             },
@@ -1308,7 +1308,7 @@ class OfficeList extends Component {
                                                         </font>
                                                     </Grid>
                                                     <Grid item xs="6">
-                                                        {moment(e.created).format('LLL')}
+                                                        {moment(e.created).format('lll')}
                                                     </Grid>
                                                 </Grid>
                                                 <hr/>

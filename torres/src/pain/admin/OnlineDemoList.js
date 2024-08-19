@@ -247,7 +247,7 @@ class OnlineDemoList extends Component {
                 text:'Start',
                 formatter:(cellContent,row) => (
                     <div>
-                        {moment(row.start_date).subtract(4,"hour").format("LLL") + " EDT"}
+                        {moment(row.start_date).subtract(4,"hour").format("lll") + " EDT"}
                     </div>
                 )
             },
@@ -256,7 +256,7 @@ class OnlineDemoList extends Component {
                 text:'End',
                 formatter:(cellContent,row) => (
                     <div>
-                        {moment(row.end_date).subtract(4,'hour').format("LLL") + " EDT"}
+                        {moment(row.end_date).subtract(4,'hour').format("lll") + " EDT"}
                     </div>
                 )
             },
@@ -317,8 +317,8 @@ class OnlineDemoList extends Component {
                     <Grid container xs="12">
                         <Grid item xs={12}>
                             <Typography variant="h6">All times are your current timezone {timeZoneIANA}.<br/> 
-                                EDT  : {moment().utc().utcOffset(-4).format("LLL")}<br/>
-                                Local: {moment().format("LLL")}
+                                EDT  : {moment().utc().utcOffset(-4).format("lll")}<br/>
+                                Local: {moment().format("lll")}
                             </Typography>
                         </Grid>
                     </Grid>
