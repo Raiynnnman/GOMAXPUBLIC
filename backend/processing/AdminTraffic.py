@@ -26,7 +26,6 @@ from util.DBOps import Query
 from processing.SubmitDataRequest import SubmitDataRequest
 from processing.Admin import AdminBase
 from processing.Audit import Audit
-from processing import Search,Office
 from common.DataException import DataException
 from common.InvalidCredentials import InvalidCredentials
 from util.Permissions import check_admin,check_bdr
@@ -43,6 +42,59 @@ class TrafficGet(AdminBase):
 
     def isDeferred(self):
         return False
+
+    def scoreProvider(self,lng,lat,office_id,oa_id,db):
+        o = db.query("""
+            select
+                ifnull(timestampdiff(day,op.start_date,now()),0) as days_in_network,
+                ifnull(timestampdiff(day,op.start_date,now()),0) as days_in_network_score,
+                ifnull(count(cio.id),0) as clients, 
+                ifnull(count(cio.id)*20,0) as clients_score, 
+                round(ifnull(
+                    if(
+                        st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192 > 5,
+                        st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192,
+                        -st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192
+                    ),
+                    0),
+                2) as distance,
+                ifnull(count(i.cnt),0) as paid_invoices,
+                ifnull(count(i.cnt)*5,0) as paid_invoices_score,
+                ifnull(pd.duration,0) as plan_duration,
+                ifnull(pd.duration*2,0) as plan_duration_score,
+                ifnull(o.priority,0) as priority,
+                ifnull(o.priority*10,0) as priority_score
+            from
+                office o
+                left outer join client_intake_offices cio on cio.office_id = o.id
+                left outer join office_addresses oa on oa.office_id=o.id
+                left outer join office_plans op on op.office_id = o.id
+                left outer join pricing_data pd on op.pricing_data_id = pd.id
+                left outer join (select office_id,count(id) as cnt from 
+                    invoices where office_id=%s and total > 0 and invoice_status_id=15) i on i.office_id=o.id
+            where
+                oa.id = %s
+            group by 
+                oa.id
+            """,(
+                lng,lat,lng,lat,lng,lat,office_id,oa_id
+                )
+        )
+        ret = {}
+        ret['score_components'] = []
+        for g in o[0]:
+            ret['score_components'].append({'key':g,'value':o[0][g]})
+        ret['score_components'].append({
+            'key':'calculation',
+            'value': "in_network_score - clients_score + distance_score + paid_invoices_score + plan_duration_score + priority_score"
+        })
+        ret['weighted_score'] = round(
+                (o[0]['days_in_network_score']    - o[0]['clients_score']       + o[0]['distance'] +\
+                 o[0]['paid_invoices_score'] + o[0]['plan_duration_score'] + o[0]['priority_score'])/100,2)
+        ret['score'] = round(
+                (o[0]['days_in_network_score']    - o[0]['clients_score']       + o[0]['distance'] +\
+                 o[0]['paid_invoices_score'] + o[0]['plan_duration_score'] + o[0]['priority_score']),2)
+        return ret
 
     def getTrafficData(self,*args,**kwargs):
         ret = {}
@@ -537,42 +589,14 @@ class TrafficGet(AdminBase):
                     and office_id = %s
                     """,(t['office_id'],)
                 )
-                t['score'] = db.query("""
-                    select
-                        round(
-                            timestampdiff(day,op.start_date,now()) -
-                            count(cio.id)*5                        +
-                            if(
-                                st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192 > 5,
-                                st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192,
-                                -st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192
-                            )                                      +
-                            count(i.cnt)*10                        +
-                            (pd.duration*2) + (o.priority * 10)
-                            ,2) as score
-                    from
-                        office o
-                        left outer join client_intake_offices cio on cio.office_id = o.id
-                        left outer join office_addresses oa on oa.office_id=o.id
-                        left outer join office_plans op on op.office_id = o.id
-                        left outer join pricing_data pd on op.pricing_data_id = pd.id
-                        left outer join (select office_id,count(id) as cnt from 
-                            invoices where office_id=%s and total > 0 and invoice_status_id=15) i on i.office_id=o.id
-                    where
-                        oa.id = %s
-                    group by 
-                        oa.id
-                    """,(
-                        ret['center']['lng'],ret['center']['lat'],
-                        ret['center']['lng'],ret['center']['lat'],
-                        ret['center']['lng'],ret['center']['lat'],
-                        t['office_id'], t['id'],
-                        )
-                )
-                t['score'] = t['score'][0]['score']
+                t.update(self.scoreProvider(
+                        ret['center']['lng'],
+                        ret['center']['lat'],
+                        t['office_id'], t['id'], db
+                ))
                 db.update("""
-                    update office set score = %s where id = %s
-                    """,(t['score'],t['office_id'])
+                    update office set score=%s,weighted_score = %s,score_components=%s where id = %s
+                    """,(t['score'],t['weighted_score'],json.dumps(t['score_components']),t['office_id'])
                 )
                 t['client_count'] = db.query("""
                     select count(id) as cnt from client_intake_offices where

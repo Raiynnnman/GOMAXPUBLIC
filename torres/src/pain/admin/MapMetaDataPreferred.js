@@ -1,11 +1,28 @@
 import React from 'react';
 import { Grid, Box, Typography, Avatar, Badge } from '@mui/material';
-
+import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip';
+import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDissatisfied';
+import SentimentDissatisfiedIcon from '@mui/icons-material/SentimentDissatisfied';
+import SentimentSatisfiedIcon from '@mui/icons-material/SentimentSatisfied';
+import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAltOutlined';
+import SentimentVerySatisfiedIcon from '@mui/icons-material/SentimentVerySatisfied';
 import EventSeatIcon from '@mui/icons-material/EventSeat';
 import LaunchIcon from '@mui/icons-material/Launch'
 import { Rating } from '@mui/material';
 import formatPhoneNumber from '../utils/formatPhone';
+import { styled } from '@mui/material/styles';
  
+const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))(({ theme }) => ({
+  [`& .${tooltipClasses.tooltip}`]: {
+    backgroundColor: '#f5f5f9',
+    color: 'rgba(0, 0, 0, 0.87)',
+    maxWidth: 420,
+    fontSize: theme.typography.pxToRem(12),
+    border: '1px solid #dadde9',
+  },
+}));
 
 const MapMetaDataPreferred = ({ selected }) => {
 
@@ -16,9 +33,58 @@ const MapMetaDataPreferred = ({ selected }) => {
               {selected.name}&nbsp;
             </Typography>
             <div style={{display:"flex",justifyContent:"flex-end"}}>
-            <Typography variant="h6" fontWeight="500" gutterBottom>
-                {selected.score && selected.score.toFixed ? (selected.score/10).toFixed(2) : selected.score || "0.00"}
-            </Typography>
+                <HtmlTooltip placement="bottom" title={
+                    <>
+                    <h6 style={{ fontFamily: "'Montserrat', sans-serif"}} >Score: {selected.weighted_score}</h6>
+                    <div style={{m:0,p:0,backgroundColor:"white",color:"black"}}>
+                        <table>
+                            <tr><th>Key</th><th>Value</th></tr>
+                            {selected.score_components.map((f) => { 
+                                return(
+                                    <tr>
+                                    <td>{f.key}</td>
+                                    <td>{f.value}</td>
+                                    </tr>
+                                )
+                            })}
+                        </table>
+                    </div>
+                    </>
+                    }>
+                    {selected.weighted_score < 1 && (
+                    <>
+                        <SentimentVerySatisfiedIcon color="success" />,
+                    </>
+                    )}
+                    {selected.weighted_score >= 1 && selected.weighted_score < 2 && (
+                    <>
+                        <SentimentSatisfiedIcon color="success" />
+                    </>
+                    )}
+                    {selected.weighted_score >= 2 && selected.weighted_score < 3 && (
+                    <>
+                        <SentimentDissatisfiedIcon color="warning" />
+                    </>
+                    )}
+                    {selected.weighted_score >= 3 && selected.weighted_score < 4 && (
+                    <>
+                        <SentimentVeryDissatisfiedIcon color="error" />
+                    </>
+                    )}
+                    {selected.weighted_score >= 4 && selected.weighted_score < 5 && (
+                    <>
+                        <SentimentVeryDissatisfiedIcon color="error" />
+                    </>
+                    )}
+                    {selected.weighted_score > 5 && (
+                    <>
+                        <SentimentVeryDissatisfiedIcon color="error" />
+                    </>
+                    )}
+                </HtmlTooltip>
+                <Typography style={{marginLeft:10}} variant="h6" fontWeight="500" gutterBottom>
+                    {selected.weighted_score && selected.weighted_score.toFixed ? (selected.weighted_score).toFixed(2) : selected.weighted_score || "0.00"}
+                </Typography>
             </div>
           </div>
 

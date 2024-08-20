@@ -9,6 +9,7 @@ import jwt
 sys.path.append(os.path.realpath(os.curdir))
 
 from util import encryption,calcdate
+from processing.AdminTraffic import TrafficGet
 from processing.UserLogin import ResetPasswordGetToken
 from util.Logging import Logging
 from common import settings
@@ -203,6 +204,17 @@ class SearchGet(SearchBase):
             where
                 o.id = %s
             """,(x['office_id'],)
+            )
+            tg = TrafficGet()
+            x.update(
+                tg.scoreProvider(
+                        ret['center']['lng'],
+                        ret['center']['lat'],
+                        t['office_id'], t['id'], db)
+            )
+            db.update("""
+                update office set score=%s,weighted_score = %s,score_components=%s where id = %s
+                """,(x['score'],x['weighted_score'],json.dumps(t['score_components']),t['office_id'])
             )
             x['rating'] = db.query(
                 "select ifnull(round(avg(rating),2),0) as avg from ratings where office_id=%s",(x['office_id'],)

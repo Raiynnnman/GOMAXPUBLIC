@@ -66,7 +66,9 @@ class OfficeList(AdminBase):
                     trim(concat(setu.first_name, ' ', setu.last_name)) as setter_name,
                     pq.business_name,pq.doing_business_as_name,pq.closed_date,
                     count(cio.id) as client_count,
-                    o.office_alternate_status_id, oas1.name as office_alternate_status_name,o.score
+                    o.office_alternate_status_id, 
+                    oas1.name as office_alternate_status_name,
+                    o.score as score,o.score_components,o.weighted_score
                 from 
                     office o
                     left outer join office_type ot on o.office_type_id = ot.id
@@ -130,7 +132,7 @@ class OfficeList(AdminBase):
                 search_par.append(z)
             q += ",".join(map(str,arr))
             q += ")"
-        q += " group by o.id order by o.id asc "
+        q += " group by o.id order by updated desc "
         cnt = db.query("select count(id) as cnt from (" + q + ") as t", count_par)
         repquery = q
         q += " limit %s offset %s " 
@@ -138,6 +140,11 @@ class OfficeList(AdminBase):
         o = db.query(q,search_par)
         ret['offices'] = []
         for x in o:
+            print(x['score_components'])
+            if x['score_components'] is not None:
+                x['score_components'] = json.loads(x['score_components'])
+            else:
+                x['score_components'] = []
             x['addr'] = db.query("""
                 select
                   oa.id,oa.name,addr1,addr2,phone,

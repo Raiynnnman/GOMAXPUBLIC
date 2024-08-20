@@ -524,7 +524,7 @@ class Registrations extends Component {
                 onClick: (content,row) => (
                     this.edit(content)
                 ),
-                text:'Name'
+                text:'Provider Name'
             },
             {
                 dataField:'email',
@@ -963,8 +963,8 @@ class Registrations extends Component {
                     <Box sx={{width:'100%'}}>
                     <>
                         <Tabs style={{marginBottom:20}} value={this.state.activeTab} onChange={this.toggleTab}>
-                            <Tab value='myregistrations' label='Assigned to Me'/>
-                            <Tab value='registrations' label='Registrations'/>
+                            <Tab value='myregistrations' label='My Leads'/>
+                            <Tab value='registrations' label='All Leads'/>
                             <Tab value='dealtracker' label='Deal Tracker'/>
                             {/*<Tab value='Tickets' label='Tickets'/>*/}
                             {/*<Tab value='myactivities' label='My Activities'/>*/}

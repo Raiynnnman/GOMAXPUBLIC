@@ -32,7 +32,7 @@ class Referrers extends Component {
         super(props);
         this.state = { 
             selected: null,
-            activeTab: "referrer",
+            activeTab: "patients",
             statusSelected:null,
             search:null,
             filter: [],
@@ -73,6 +73,9 @@ class Referrers extends Component {
             var t1 = [];
             for (c = 0; c < p.referrerAdminList.data.config.status.length; c++) { 
                 if (p.referrerAdminList.data.config.status[c].name === 'COMPLETED') { continue; }
+                if (p.referrerAdminList.data.config.status[c].name === 'SCHEDULED') { continue; }
+                if (p.referrerAdminList.data.config.status[c].name === 'ACCEPTED') { continue; }
+                if (p.referrerAdminList.data.config.status[c].name.includes('NOT_QUALI')) { continue; }
                 t.push(p.referrerAdminList.data.config.status[c]); 
                 t1.push(p.referrerAdminList.data.config.status[c].id); 
                 
@@ -242,7 +245,6 @@ class Referrers extends Component {
     } 
 
     render() {
-        console.log("p",this.props);
         var regheads = [
             {
                 dataField:'id',
@@ -322,13 +324,7 @@ class Referrers extends Component {
                 ),
                 formatter:(cellContent,row) => (
                     <div>
-                        {(row.status === 'QUEUED') && (<TemplateBadge label='QUEUED'/>)}
-                        {(row.status === 'REJECTED') && (<TemplateBadge label='REJECTED'/>)}
-                        {(row.status === 'ACCEPTED') && (<TemplateBadge label='ACCEPTED'/>)}
-                        {(row.status === 'CONTACTED') && (<TemplateBadge label='CONTACTED'/>)}
-                        {(row.status === 'FOLLOWUP') && (<TemplateBadge label='FOLLOWUP'/>)}
-                        {(row.status === 'SCHEDULED') && (<TemplateBadge label='SCHEDULED'/>)}
-                        {(row.status === 'COMPLETED') && (<TemplateBadge label='COMPLETED'/>)}
+                        <TemplateBadge label={row.status}/>
                     </div>
                 )
             },
@@ -341,7 +337,7 @@ class Referrers extends Component {
                 ),
                 formatter:(cellContent,row) => (
                     <div>
-                        {moment(row['updated']).format('lll')} 
+                        {moment(row['updated']).from()} 
                     </div>
                 )
             },
@@ -359,9 +355,10 @@ class Referrers extends Component {
             <Grid container xs="12" style={{marginTop:20}}>
                 <Grid item xs="12">
                     <Tabs value={this.state.activeTab} onChange={this.toggleTab}>
-                        <Tab value='referrer' label='Referrals'/>
+                        <Tab value='patients' label='All Patients'/>
+                        <Tab value='active_patients' label='Active Patients'/>
                     </Tabs>
-                    {(this.state.activeTab === 'referrer') && (
+                    {(this.state.activeTab === 'patients') && (
                     <>
                             {(this.state.selected !== null) && (
                                 <ReferrersEdit selected={this.state.selected} onSave={this.save} onCancel={this.close}/>
@@ -419,12 +416,6 @@ class Referrers extends Component {
                                       this.props.referrerAdminList.data.data && 
                                       this.props.referrerAdminList.data.data.length > 0)&& ( 
                                     <>
-                                        {/*<BootstrapTable 
-                                            keyField='id' data={this.props.referrerAdminList.data.data} 
-                                            pagination={paginationFactory(options)}
-                                            columns={regheads}>
-                                        </BootstrapTable>
-                                        */}
                                         <PainTable
                                                 keyField='id' 
                                                 data={this.props.referrerAdminList.data.data} 
@@ -441,7 +432,7 @@ class Referrers extends Component {
                                     {(this.props.referrerAdminList && this.props.referrerAdminList.data && 
                                       this.props.referrerAdminList.data.data && 
                                       this.props.referrerAdminList.data.data.length < 1)&& ( 
-                                      <h3>No referrals yet!</h3>
+                                      <h3>No patients yet!</h3>
                                     )}
                                     </>
                                 </Grid>

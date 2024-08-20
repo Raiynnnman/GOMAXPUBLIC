@@ -1,6 +1,14 @@
 import React, { Component } from 'react';
 import Badge from '@mui/material/Badge';
 import Chip from '@mui/material/Chip';
+import { styled } from '@mui/material/styles';
+import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip';
+import Rating, { IconContainerProps } from '@mui/material/Rating';
+import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDissatisfied';
+import SentimentDissatisfiedIcon from '@mui/icons-material/SentimentDissatisfied';
+import SentimentSatisfiedIcon from '@mui/icons-material/SentimentSatisfied';
+import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAltOutlined';
+import SentimentVerySatisfiedIcon from '@mui/icons-material/SentimentVerySatisfied';
 import moment from 'moment';
 import Box from '@mui/material/Box';
 import AddBoxIcon from '@mui/icons-material/AddBox';
@@ -43,6 +51,23 @@ import { useState } from 'react';
 import ContactCard from '../office/ContactCard';
 
 
+const StyledRating = styled(Rating)(({ theme }) => ({
+  '& .MuiRating-iconEmpty .MuiSvgIcon-root': {
+    color: theme.palette.action.disabled,
+  },
+}));
+
+const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))(({ theme }) => ({
+  [`& .${tooltipClasses.tooltip}`]: {
+    backgroundColor: '#f5f5f9',
+    color: 'rgba(0, 0, 0, 0.87)',
+    maxWidth: 420,
+    fontSize: theme.typography.pxToRem(12),
+    border: '1px solid #dadde9',
+  },
+}));
 
 class OfficeList extends Component {
 
@@ -507,7 +532,6 @@ class OfficeList extends Component {
     } 
 
     render() {
-
         var phonesheads = [
             {
                 dataField:'id',
@@ -659,7 +683,55 @@ class OfficeList extends Component {
                             </div>
                             <div></div>
                             <div style={{display:"flex",justifyContent:"space-around"}}>
-                                <Chip color="primary" label={(row.score/10).toFixed(2) + "s"}/>
+                                <HtmlTooltip placement="bottom" title={
+                                    <>
+                                    <h6 style={{ fontFamily: "'Montserrat', sans-serif"}} >Score: {row.weighted_score}</h6>
+                                    <div style={{m:0,p:0,backgroundColor:"white",color:"black"}}>
+                                        <table>
+                                            <tr><th>Key</th><th>Value</th></tr>
+                                            {row.score_components.map((f) => { 
+                                                return(
+                                                    <tr>
+                                                    <td>{f.key}</td>
+                                                    <td>{f.value}</td>
+                                                    </tr>
+                                                )
+                                            })}
+                                        </table>
+                                    </div>
+                                    </>
+                                    }>
+                                    {row.weighted_score < 1 && (
+                                    <>
+                                        <SentimentVerySatisfiedIcon color="success" />,
+                                    </>
+                                    )}
+                                    {row.weighted_score >= 1 && row.weighted_score < 2 && (
+                                    <>
+                                        <SentimentSatisfiedIcon color="success" />
+                                    </>
+                                    )}
+                                    {row.weighted_score >= 2 && row.weighted_score < 3 && (
+                                    <>
+                                        <SentimentDissatisfiedIcon color="warning" />
+                                    </>
+                                    )}
+                                    {row.weighted_score >= 3 && row.weighted_score < 4 && (
+                                    <>
+                                        <SentimentVeryDissatisfiedIcon color="error" />
+                                    </>
+                                    )}
+                                    {row.weighted_score >= 4 && row.weighted_score < 5 && (
+                                    <>
+                                        <SentimentVeryDissatisfiedIcon color="error" />
+                                    </>
+                                    )}
+                                    {row.weighted_score > 5 && (
+                                    <>
+                                        <SentimentVeryDissatisfiedIcon color="error" />
+                                    </>
+                                    )}
+                                </HtmlTooltip>
                                 <Chip color="secondary" style={{marginLeft:5}} label={row.clients.length + "c"}/>
                             </div>
                         </div>

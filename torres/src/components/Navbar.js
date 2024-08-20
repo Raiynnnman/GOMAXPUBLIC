@@ -521,7 +521,7 @@ class Navbar extends Component {
                                         <ul className="main-menu">
                                             <li className="active"><a href="/app">Home</a></li>
                                             <li><a href="/app/main/admin/search">Search</a></li>
-                                            <li><a href="/app/main/admin/customers">Customers</a></li>
+                                            <li><a href="/app/main/admin/patients">Patients</a></li>
                                             <li><a href="/app/main/admin/investors">Investors</a></li>
                                             <li><a href="/app/main/admin/map">Map</a></li>
                                             <li><a href="/app/main/admin/registrations">CRM</a></li>

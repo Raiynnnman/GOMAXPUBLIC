@@ -1,0 +1,22 @@
+
+update referrer_users_status set name ='NOT_QUALIFIED_AT_FAULT' where name = 'NO_CASE_POTENTIAL';
+insert into referrer_users_status(id,name) values (110,'NOT_QUALIFIED_STATUTE_EXPIRE');
+insert into referrer_users_status(id,name) values (120,'NOT_QUALIFIED_UNSOLICITED');
+update referrer_users_call_status set name='Day1 Morning Call 1' where id = 1;
+update referrer_users_call_status set name='Day1 Midday Call 2' where id = 10;
+update referrer_users_call_status set name='Day1 Afternoon Call 3' where id = 20;
+update referrer_users_call_status set name='Day2 Call 1' where id = 30;
+insert into referrer_users_call_status values (40,'Day2 Call 2');
+insert into referrer_users_call_status values (50,'Day2 Call 3');
+insert into referrer_users_call_status values (60,'Day3 Evening Call 1');
+insert into referrer_users_call_status values (70,'Day4 Morning Call 1');
+insert into referrer_users_call_status values (80,'Day4 Morning Call 2');
+insert into referrer_users_call_status values (90,'Day5 Call 1');
+update referrer_users_call_status set name='Day5 Call 2' where id = 100;
+insert into referrer_users_call_status values (110,'Day5 Call 2');
+insert into referrer_users_call_status values (120,'Day6 Call Attempt');
+insert into referrer_users_call_status values (130,'Day7 Call Attempt');
+insert into referrer_users_call_status values (140,'Day8 Call Attempt');
+insert into referrer_users_call_status values (150,'Day9 Call Attempt');
+update referrer_users_call_status set name='Day10 Call Attempt' where id = 200;
+update referrer_users_status set name='IN_PROCESS' where id = 10;
