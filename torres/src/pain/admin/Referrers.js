@@ -48,7 +48,6 @@ class Referrers extends Component {
         this.onStatusFilter = this.onStatusFilter.bind(this);
         this.pageChange = this.pageChange.bind(this);
         this.sortChange = this.sortChange.bind(this);
-        this.renderTotalLabel = this.renderTotalLabel.bind(this);
         this.pageGridsChange = this.pageGridsChange.bind(this);
         this.save = this.save.bind(this);
         this.reload = this.reload.bind(this);
@@ -94,10 +93,6 @@ class Referrers extends Component {
     } 
 
 
-    renderTotalLabel(f,t,s) { 
-        var numpage = s/t;
-        return "Showing page " + (this.state.page+1) + " of " + numpage.toFixed(0);
-    } 
 
     updateFirst(e) { 
         this.state.selected.first_name = e.target.value;
@@ -264,25 +259,12 @@ class Referrers extends Component {
                 text:'Name'
             },
             {
-                dataField:'email',
+                dataField:'date_of_accident',
                 sort:true,
                 onClick: (content,row) => (
                     this.edit(content)
                 ),
-                text:'Email'
-            },
-            {
-                dataField:'phone',
-                sort:true,
-                onClick: (content,row) => (
-                    this.edit(content)
-                ),
-                text:'Phone',
-                formatter: (cellContent,row) => (
-                    <div>
-                       {formatPhoneNumber(row.phone)} 
-                    </div>
-                )
+                text:'DOA'
             },
             {
                 dataField:'referrer_name',
@@ -290,7 +272,7 @@ class Referrers extends Component {
                 onClick: (content,row) => (
                     this.edit(content)
                 ),
-                text:'Ref Name'
+                text:'Ref Source'
             },
             {
                 dataField:'office_name',
@@ -298,7 +280,15 @@ class Referrers extends Component {
                 onClick: (content,row) => (
                     this.edit(content)
                 ),
-                text:'Off Name'
+                text:'Chiro'
+            },
+            {
+                dataField:'office_name1',
+                sort:true,
+                onClick: (content,row) => (
+                    this.edit(content)
+                ),
+                text:'Attny'
             },
             {
                 dataField:'time',

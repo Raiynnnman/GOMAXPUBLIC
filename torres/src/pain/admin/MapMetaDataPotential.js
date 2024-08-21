@@ -33,57 +33,8 @@ const MapMetaDataPreferred = ({ selected }) => {
               {selected.name}&nbsp;
             </Typography>
             <div style={{display:"flex",justifyContent:"flex-end"}}>
-                <HtmlTooltip placement="bottom" title={
-                    <>
-                    <h6 style={{ fontFamily: "'Montserrat', sans-serif"}} >Score: {selected.weighted_score}</h6>
-                    <div style={{m:0,p:0,backgroundColor:"white",color:"black"}}>
-                        <table>
-                            <tr><th>Key</th><th>Value</th></tr>
-                            {selected.score_components.map((f) => { 
-                                return(
-                                    <tr>
-                                    <td>{f.key}</td>
-                                    <td>{f.value}</td>
-                                    </tr>
-                                )
-                            })}
-                        </table>
-                    </div>
-                    </>
-                    }>
-                    {selected.weighted_score < 1 && (
-                    <>
-                        <SentimentVerySatisfiedIcon color="success" />,
-                    </>
-                    )}
-                    {selected.weighted_score >= 1 && selected.weighted_score < 2 && (
-                    <>
-                        <SentimentSatisfiedIcon color="success" />
-                    </>
-                    )}
-                    {selected.weighted_score >= 2 && selected.weighted_score < 3 && (
-                    <>
-                        <SentimentDissatisfiedIcon color="warning" />
-                    </>
-                    )}
-                    {selected.weighted_score >= 3 && selected.weighted_score < 4 && (
-                    <>
-                        <SentimentVeryDissatisfiedIcon color="error" />
-                    </>
-                    )}
-                    {selected.weighted_score >= 4 && selected.weighted_score < 5 && (
-                    <>
-                        <SentimentVeryDissatisfiedIcon color="error" />
-                    </>
-                    )}
-                    {selected.weighted_score > 5 && (
-                    <>
-                        <SentimentVeryDissatisfiedIcon color="error" />
-                    </>
-                    )}
-                </HtmlTooltip>
-                <Typography style={{marginLeft:10}} variant="h6" fontWeight="500" gutterBottom>
-                    {selected.weighted_score && selected.weighted_score.toFixed ? (selected.weighted_score).toFixed(2) : selected.weighted_score || "0.00"}
+                <Typography variant="h6" fontWeight="500" gutterBottom>
+                    {selected.alternate_status_name ? selected.alternate_status_name : "N/A"}
                 </Typography>
             </div>
           </div>
@@ -111,19 +62,13 @@ const MapMetaDataPreferred = ({ selected }) => {
 
         <Box display="flex" alignItems="center">
           <Typography variant="body2" color="textSecondary">
-            <a style={{color:"black"}} target="_blank" href={"/app/main/admin/providers/" + selected.office_id}>
+            <a style={{color:"black"}} target="_blank" href={"/app/main/admin/registrations/" + selected.id}>
                 <Typography variant="body2" color="textSecondary" mt={1}>
-                {"ID: " + selected.office_id + " (" + selected.id + ")"} <LaunchIcon style={{fontSize:20}}/> 
+                {"ID: " + selected.id} <LaunchIcon style={{fontSize:20}}/> 
                 </Typography>
             </a>
           </Typography>
         </Box>
-
-        <a style={{color:"black"}} target="_blank" href={"/app/main/admin/search/" + selected.id}>
-            <Typography variant="body2" color="textSecondary" mt={1}>
-              {selected.client_count  ? selected.client_count : "0" + " clients"} <EventSeatIcon style={{fontSize:20}}/>
-            </Typography>
-        </a>
 
         <Typography variant="body2" color="textSecondary" mt={1}>
             Rating: <Rating name="read-only" size="small" precision={0.5} 
@@ -136,6 +81,9 @@ const MapMetaDataPreferred = ({ selected }) => {
 
         <Typography variant="body2" color="textSecondary" mt={1}>
           {selected.office_type}
+        </Typography>
+        <Typography variant="body2" color="textSecondary" mt={1}>
+          Summary: {selected.account_summary}
         </Typography>
         {!selected.plan || selected.plan.length < 1 && (
             <Typography variant="body2" color="textSecondary" mt={1}>
@@ -172,9 +120,6 @@ const MapMetaDataPreferred = ({ selected }) => {
             </Typography>
           </Box>
         )}
-        <Typography variant="body2" color="textSecondary" mt={1}>
-          Summary: {selected.account_summary}
-        </Typography>
     </>
     )
 

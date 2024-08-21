@@ -81,7 +81,6 @@ class MapContainer extends React.Component {
   }; 
 
   render() {
-    console.log("p",this.props);
     var heads = [
         { 
         dataField:'zipcode',

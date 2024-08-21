@@ -130,11 +130,11 @@ class Registrations extends Component {
             var t = [];
             var t1 = [];
             for (c = 0; c < p.registrationsAdminList.data.config.alternate_status.length; c++) { 
-                if (p.registrationsAdminList.data.config.alternate_status[c].name === 'NO PI') { continue; }
+                if (p.registrationsAdminList.data.config.alternate_status[c].name === 'NO_PI') { continue; }
                 if (p.registrationsAdminList.data.config.alternate_status[c].name === 'DNC') { continue; }
-                if (p.registrationsAdminList.data.config.alternate_status[c].name === 'Not interested') { continue; }
-                if (p.registrationsAdminList.data.config.alternate_status[c].name === 'NOT INTERESTED IN PI NOW') { continue; }
-                if (p.registrationsAdminList.data.config.alternate_status[c].name === 'Not a Chiropractor') { continue; }
+                if (p.registrationsAdminList.data.config.alternate_status[c].name === 'NOT_INTERESTED') { continue; }
+                if (p.registrationsAdminList.data.config.alternate_status[c].name === 'NOT_INTERESTED_IN_PI_NOW') { continue; }
+                if (p.registrationsAdminList.data.config.alternate_status[c].name === 'NOT_A_CHIROPRACTOR') { continue; }
                 t.push(p.registrationsAdminList.data.config.alternate_status[c]); 
                 t1.push(p.registrationsAdminList.data.config.alternate_status[c].id); 
             } 
@@ -154,7 +154,7 @@ class Registrations extends Component {
             var t = [];
             var t1 = [];
             for (c = 0; c < p.registrationsAdminList.data.config.status.length; c++) { 
-                if (p.registrationsAdminList.data.config.status[c].name === 'INVITED') { continue; }
+                if (p.registrationsAdminList.data.config.status[c].name === 'IN_NETWORK') { continue; }
                 if (p.registrationsAdminList.data.config.status[c].name === 'CLOSED_WON') { continue; }
                 if (p.registrationsAdminList.data.config.status[c].name === 'APPROVED') { continue; }
                 if (p.registrationsAdminList.data.config.status[c].name === 'DO_NOT_CONTACT') { continue; }

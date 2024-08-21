@@ -24,7 +24,7 @@ from common import settings
 from util.DBOps import Query
 from processing.SubmitDataRequest import SubmitDataRequest
 from processing.Admin import AdminBase
-from processing.OfficeReferrals import ReferrerUpdate
+from processing import OfficeReferrals 
 from processing.Audit import Audit
 from processing import Search,Office
 from common.DataException import DataException
@@ -146,7 +146,7 @@ class ReferrerList(AdminBase):
             select 
                 ru.id,ru.email,ru.name,ru.phone,o.name as office_name,ru.referred,
                 ru.referrer_users_status_id, rs.name as status,ru.zipcode,
-                ro.name as referrer_name,
+                ro.name as referrer_name,ru.doa,
                 o.id as office_id, 
                 referrer_users_source_id,referrer_users_vendor_status_id,
                 vendor_id, referrer_users_call_status_id,price_per_lead,import_location,
@@ -259,51 +259,53 @@ class AdminBookingRegister(AdminBase):
         tosave = {}
         line = 0
         LANG = self.getLanguages()
-        print(params)
         try: 
-            j = params['value'].split('\n')
-            for x in j:
-                if ':' not in x:
-                    continue
-                i = x.split(':')
-                if len(i) < 2:
-                    continue
-                key = i[0]
-                value = i[1]
-                key = key.lower()
-                tosave[key] = value.rstrip().lstrip()
-                line += 1 
-            if 'address' not in tosave or len(tosave['address']) < 1:
-                return {'success': False,'message': 'ADDRESS_REQUIRED'}
-            api_key=config.getKey("google_api_key")
-            gmaps = googlemaps.Client(key=api_key)
-            # addr = pyap.parse(tosave['address'],country='US')
-            addr = gmaps.geocode(tosave['address'])
-            if len(addr) > 0:
-                addr = addr[0]
-                lat = addr['geometry']['location']['lat']
-                lon = addr['geometry']['location']['lng']
-                places_id = addr['place_id']
-                street = ''
-                city = ''
-                state =''
-                postal_code = ''
-                for y in addr['address_components']:
-                    if 'street_number' in y['types']:
-                        street = y['long_name']
-                    if 'route' in y['types']:
-                        street += " " + y['long_name']
-                    if 'locality' in y['types']:
-                        city += y['long_name']
-                    if 'administrative_area_level_1' in y['types']:
-                        state += y['long_name']
-                    if 'postal_code' in y['types']:
-                        postal_code = y['long_name']
-                tosave['addr1'] = street
-                tosave['city'] = city
-                tosave['state'] = state
-                tosave['zipcode'] = postal_code
-                tosave['fulladdr'] = tosave['address'] 
+            j = {}
+            if isinstance(params['value'],dict):
+                tosave = params['value']
+            else:
+                j = params['value'].split('\n')
+                for x in j:
+                    if ':' not in x:
+                        continue
+                    i = x.split(':')
+                    if len(i) < 2:
+                        continue
+                    key = i[0]
+                    value = i[1]
+                    key = key.lower()
+                    tosave[key] = value.rstrip().lstrip()
+                    line += 1 
+            if 'address' in tosave:
+                api_key=config.getKey("google_api_key")
+                gmaps = googlemaps.Client(key=api_key)
+                # addr = pyap.parse(tosave['address'],country='US')
+                addr = gmaps.geocode(tosave['address'])
+                if len(addr) > 0:
+                    addr = addr[0]
+                    lat = addr['geometry']['location']['lat']
+                    lon = addr['geometry']['location']['lng']
+                    places_id = addr['place_id']
+                    street = ''
+                    city = ''
+                    state =''
+                    postal_code = ''
+                    for y in addr['address_components']:
+                        if 'street_number' in y['types']:
+                            street = y['long_name']
+                        if 'route' in y['types']:
+                            street += " " + y['long_name']
+                        if 'locality' in y['types']:
+                            city += y['long_name']
+                        if 'administrative_area_level_1' in y['types']:
+                            state += y['long_name']
+                        if 'postal_code' in y['types']:
+                            postal_code = y['long_name']
+                    tosave['addr1'] = street
+                    tosave['city'] = city
+                    tosave['state'] = state
+                    tosave['zipcode'] = postal_code
+                    tosave['fulladdr'] = tosave['address'] 
             if 'language' not in tosave:
                 tosave['language'] = LANG['English']
             else:
@@ -379,7 +381,7 @@ class AdminBookingRegister(AdminBase):
                     json.dumps(tosave)
                 )
                 REF=self.getReferrerUserStatus()
-                r = ReferrerUpdate()
+                r1 = OfficeReferrals.ReferrerUpdate()
                 dest_office_id = None
                 status = None
                 if 'office_id' in params:
@@ -390,7 +392,7 @@ class AdminBookingRegister(AdminBase):
                     if len(g) < 1:
                         return {'success': False,'message': 'OFFICE_NOT_FOUND'}
                     dest_office_id = g[0]['office_id']
-                rus_id = r.processRow(1,tosave,insid,sha256,db,dest_office_id=dest_office_id,status=status)
+                rus_id = r1.processRow(1,tosave,insid,sha256,db,dest_office_id=dest_office_id,status=status)
                 db.commit()
         except Exception as e:
             print(str(e))

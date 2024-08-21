@@ -1148,31 +1148,44 @@ class RegistrationList(AdminBase):
         print("dashboard complete")
         if 'report' in params and params['report'] is not None:
             myq = prelimit
+            d = calcdate.getYearToday()
+            ret['filename'] = 'provider_report-%s.csv' % d
             if 'dnc' in params and params['dnc']:
+                ret['filename'] = 'dnc_list-%s.csv' % d
                 myq = prefilter
                 myq += "\n /* DNC */ and ("
                 myq += " office_alternate_status_id = %s " % ALT['DNC']
-                myq += " or pq.provider_queue_status_id = %s " % PQS['INVITED']
-                myq += " or office_alternate_status_id = %s " % ALT['Not interested']
+                myq += " or pq.provider_queue_status_id = %s " % PQS['IN_NETWORK']
+                myq += " or office_alternate_status_id = %s " % ALT['NOT_INTERESTED']
                 myq += " or office_alternate_status_id = %s " % ALT['RAIN_REQUIRED_TO_CLOSE']
                 myq += " or office_alternate_status_id = %s " % ALT['HOT_DEAL_PENDING_CLOSE']
                 myq += " or office_alternate_status_id = %s " % ALT['REQUIRES_REFERENCE']
-                myq += " or office_alternate_status_id = %s " % ALT['Not a Chiropractor']
+                myq += " or office_alternate_status_id = %s " % ALT['NOT_A_CHIROPRACTOR']
+                myq += " or office_alternate_status_id = %s " % ALT['WORKING_ATT1']
+                myq += " or office_alternate_status_id = %s " % ALT['WORKING_ATT2']
+                myq += " or office_alternate_status_id = %s " % ALT['WORKING_ATT3']
+                myq += " or office_alternate_status_id = %s " % ALT['WORKING_ATT4']
+                myq += " or office_alternate_status_id = %s " % ALT['REQUIRES_PATIENT']
+                myq += " or office_alternate_status_id = %s " % ALT['WORKING_ATT5']
+                myq += " or office_alternate_status_id = %s " % ALT['NURTURING']
+                myq += " or office_alternate_status_id = %s " % ALT['NURTURING_UNTIL_PATIENT_SENT']
+                myq += " or office_alternate_status_id = %s " % ALT['CLOSED_PAID']
+                myq += " or office_alternate_status_id = %s " % ALT['RAIN_REQUIRED_TO_CLOSE']
                 myq += ")\n"
                 i = []
-                for g in params['alt_status']:
-                    if g == None:
-                        continue
-                    if g == ALT['DNC']:
-                        continue
-                    if g == ALT['Not interested']:
-                        continue
-                    if g == ALT['Not a Chiropractor']:
-                        continue
-                    i.append(g)
-                myq += " /* PQS */ and provider_queue_status_id not in (" 
-                myq += ",".join(map(str,i))
-                myq += ")\n"
+                #for g in params['alt_status']:
+                #    if g == None:
+                #        continue
+                #    if g == ALT['DNC']:
+                #        continue
+                #    if g == ALT['Not interested']:
+                #        continue
+                #    if g == ALT['Not a Chiropractor']:
+                #        continue
+                #    i.append(g)
+                #myq += " /* PQS */ and provider_queue_status_id not in (" 
+                #myq += ",".join(map(str,i))
+                #myq += ")\n"
             myq += " group by o.id order by id desc "
             o = db.query(myq,pre_par)
             rep = []
@@ -1191,8 +1204,6 @@ class RegistrationList(AdminBase):
                 )
                 x['additional_emails'] = ae[0]['ad']
                 rep.append(x)
-            d = calcdate.getYearToday()
-            ret['filename'] = 'provider_report-%s.csv' % d
             frame = pd.DataFrame.from_dict(rep)
             t = frame.to_csv()
             ret['content'] = base64.b64encode(t.encode('utf-8')).decode('utf-8')

@@ -414,22 +414,20 @@ class TrafficGet(AdminBase):
                     oa.phone, oa.city,oa.state,oa.zipcode,101 as category_id,
                     'Potential Provider' as category, oa.lat, oa.lon as lng,oa.phone,
                     o.office_type_id as office_type_id, ot.name as office_type,
+                    o.account_summary,oas.name as alternate_status_name,
                     json_arrayagg(
                         json_object('lat',oa.lat,'lng',oa.lon)) as coords
                 from 
-                    office_addresses oa, 
-                    office o,
-                    provider_queue_lead_strength pqls,
-                    office_type ot,
-                    provider_queue pq
+                    office_addresses oa
+                    left join office o on oa.office_id = o.id
+                    left join office_type ot on ot.id = o.office_type_id
+                    left join provider_queue pq on pq.office_id = o.id
+                    left outer join office_alternate_status oas on o.office_alternate_status_id = oas.id
+                    left outer join provider_queue_lead_strength pqls on pq.provider_queue_lead_strength_id = pqls.id
                 where
                     lat <> 0 and
-                    oa.office_id = o.id and
-                    ot.id = o.office_type_id and 
                     pq.provider_queue_lead_strength_id = %s and
-                    round(st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192,2) < 50 and
-                    pq.provider_queue_lead_strength_id = pqls.id and
-                    pq.office_id = oa.office_id
+                    round(st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192,2) < 50 
                 group by 
                     oa.id
                 """,(zipcoords['lng'],
@@ -524,6 +522,7 @@ class TrafficGet(AdminBase):
                     oa.id,oa.name,oa.addr1,'' as uuid,
                     oa.city,oa.state,oa.zipcode,99 as category_id,
                     oa.phone,oa.office_id,
+                    o.account_summary,
                     ot.name as office_type,ot.id as office_type_id,
                     pq.provider_queue_lead_strength_id as lead_strength_id,
                     pqls.name as lead_strength,

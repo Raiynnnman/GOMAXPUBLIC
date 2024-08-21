@@ -498,7 +498,6 @@ class RegistrationsEdit extends Component {
         this.setState(this.state);
     }
     render() {
-        console.log("p",this.props);
         var historyheads = [
             {
                 dataField:'id',

@@ -9,8 +9,11 @@ import SentimentDissatisfiedIcon from '@mui/icons-material/SentimentDissatisfied
 import SentimentSatisfiedIcon from '@mui/icons-material/SentimentSatisfied';
 import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAltOutlined';
 import SentimentVerySatisfiedIcon from '@mui/icons-material/SentimentVerySatisfied';
+import SaveIcon from '@mui/icons-material/Save';
+import CancelIcon from '@mui/icons-material/Cancel';
 import moment from 'moment';
 import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Grid from '@mui/material/Grid';
@@ -50,6 +53,19 @@ import UserCard from '../office/UserCard';
 import { useState } from 'react';
 import ContactCard from '../office/ContactCard';
 
+const cardStyle = {
+    height: '100%',
+    marginBottom:12,
+    borderRadius:5,
+    '&:hover': {
+        backgroundColor: '#FFFAF2',
+    },
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    padding: '16px',
+    boxSizing: 'border-box'
+};
 
 const StyledRating = styled(Rating)(({ theme }) => ({
   '& .MuiRating-iconEmpty .MuiSvgIcon-root': {
@@ -76,7 +92,7 @@ class OfficeList extends Component {
         this.state = {  
             addButton:true,
             selected: null,
-            subTab: "plans",
+            subTab: "comments",
             filter: [],
             altFilter: [],
             comments:[],
@@ -94,6 +110,7 @@ class OfficeList extends Component {
         this.comment = this.comment.bind(this);
         this.editAddress = this.editAddress.bind(this);
         this.editUser = this.editUser.bind(this);
+        this.changeAccountSummary = this.changeAccountSummary.bind(this);
         this.search = this.search.bind(this);
         this.pageChange = this.pageChange.bind(this);
         this.priorityChange = this.priorityChange.bind(this);
@@ -109,6 +126,7 @@ class OfficeList extends Component {
         this.reload = this.reload.bind(this);
         this.toggleSubTab = this.toggleSubTab.bind(this);
         this.onStatusFilter = this.onStatusFilter.bind(this);
+        this.onLanguageChange = this.onLanguageChange.bind(this);
         this.onStatusChange = this.onStatusChange.bind(this);
         this.onAltStatusChange = this.onAltStatusChange.bind(this);
         this.websiteChange = this.websiteChange.bind(this);
@@ -137,7 +155,7 @@ class OfficeList extends Component {
             var t = [];
             var t1 = [];
             for (c = 0; c < p.offices.data.config.provider_status.length; c++) { 
-                if (p.offices.data.config.provider_status[c].name !== 'INVITED') { continue; }
+                if (p.offices.data.config.provider_status[c].name !== 'IN_NETWORK') { continue; }
                 t.push(p.offices.data.config.provider_status[c]); 
                 t1.push(p.offices.data.config.provider_status[c].id); 
             } 
@@ -334,6 +352,18 @@ class OfficeList extends Component {
         this.reload();
     } 
 
+    onLanguageChange(e,t) { 
+        var c = 0;
+        var t = [];
+        for (c = 0; c < e.length; c++) { 
+            var b = this.props.offices.data.config.languages.filter((f) => f.name === e[c].label)
+            t.push(b[0].id); 
+        } 
+        this.state.selected.languages = t;
+        this.setState(this.state)
+        this.reload();
+    } 
+
     onStatusFilter(e,t) { 
         if (e.length < 1 ) { return; }
         var c = 0;
@@ -490,6 +520,10 @@ class OfficeList extends Component {
   } 
     cancel() { 
         this.state.selected = null;
+        this.setState(this.state);
+    } 
+    changeAccountSummary(e) { 
+        this.state.selected.account_summary = e.target.value;
         this.setState(this.state);
     } 
     save() { 
@@ -662,6 +696,7 @@ class OfficeList extends Component {
         var heads = [
             {
                 dataField:'id',
+                hidden:true,
                 sort:true,
                 onClick: (content,row) => (
                     this.edit(content)
@@ -748,7 +783,7 @@ class OfficeList extends Component {
                 ),
                 formatter:(cellContent,row) => (
                     <div>
-                        {(row.status === 'INVITED') && (<TemplateBadge label='INVITED'/>)}
+                        {(row.status === 'IN_NETWORK') && (<TemplateBadge label='IN_NETWORK'/>)}
                         {(row.status === 'APPROVED') && (<TemplateBadge label='APPROVED'/>)}
                         {(row.status === 'QUEUED') && (<TemplateBadge label='QUEUED'/>)}
                         {(row.status === 'WAITING') && (<TemplateBadge label='WAITING'/>)}
@@ -1083,6 +1118,12 @@ class OfficeList extends Component {
                 <>
                 <Grid container xs="12" style={{margin:10}}>
                     <Grid container xs="6">
+                        <Grid item xs={12} style={{margin:20}}>
+                            <TemplateTextArea label="Account Summary" rows={2} 
+                                value={this.state.selected.account_summary} style={{marginRight:10}}
+                                onChange={this.changeAccountSummary} 
+                            />
+                        </Grid>
                         <Grid item xs={2} style={{margin:20}}>
                           <TemplateTextField readOnly label="ID" value={this.state.selected.id}/>
                         </Grid>
@@ -1103,15 +1144,15 @@ class OfficeList extends Component {
                                   onChange={this.emailChange} label="Email" value={this.state.selected.email}/>
                         </Grid>
                         <Grid item xs={4} style={{margin:20}}>
-                          <TemplateTextField 
-                                  onChange={this.websiteChange} label="Website" value={this.state.selected.website}/>
-                                    
-                                    <a style={{marginTop:10,color:'green'}} href={this.state.selected.website} target='_blank'><LaunchIcon/></a>
-
+                            <div style={{display:"flex",justifyContent:"space-between"}}>
+                              <TemplateTextField 
+                                      onChange={this.websiteChange} label="Website" value={this.state.selected.website}/>
+                              <a style={{marginTop:10,color:'green'}} href={this.state.selected.website} target='_blank'><LaunchIcon/></a>
+                            </div>
                         </Grid>
                     </Grid>
                     <Grid container xs="6" style={{borderLeft:"1px solid black"}}>
-                        <Grid item xs={3} style={{marginLeft:20}}>
+                        <Grid item xs={3} style={{margin:20}}>
                           {(this.props.offices && this.props.offices.data && 
                             this.props.offices.data.config &&
                             this.props.offices.data.config.commission_users) && (
@@ -1130,7 +1171,7 @@ class OfficeList extends Component {
                                 />
                             )}
                         </Grid>                
-                        <Grid item xs={3} style={{marginLeft:20}}>
+                        <Grid item xs={3} style={{margin:20}}>
                           {(this.props.offices && this.props.offices.data && 
                             this.props.offices.data.config &&
                             this.props.offices.data.config.commission_users) && (
@@ -1150,7 +1191,7 @@ class OfficeList extends Component {
                                 />
                             )}
                         </Grid>                
-                        <Grid item xs={3} style={{marginLeft:20}}>
+                        <Grid item xs={3} style={{margin:20}}>
                           {(this.props.offices && this.props.offices.data && 
                             this.props.offices.data.config &&
                             this.props.offices.data.config.commission_users) && (
@@ -1170,7 +1211,7 @@ class OfficeList extends Component {
                                 />
                             )}
                         </Grid>                
-                        <Grid item xs={3} style={{marginLeft:20}}>
+                        <Grid item xs={3} style={{margin:20}}>
                           {(this.props.offices && this.props.offices.data && 
                             this.props.offices.data.config &&
                             this.props.offices.data.config.commission_users) && (
@@ -1190,15 +1231,40 @@ class OfficeList extends Component {
                                 />
                             )}
                         </Grid>                
-                        <Grid item xs={12} style={{marginLeft:20}}>
+                        <Grid item xs={3} style={{margin:20}}>
+                          <TemplateSelectMulti
+                              closeMenuOnSelect={true}
+                              label='Languages'
+                              onChange={this.onLanguageChange}
+                              value={this.state.selected.languages.map((g) => { 
+                                return (
+                                    {
+                                    label:this.props.offices.data.config.languages.filter((f) => f.id === g).length > 0 ? 
+                                        this.props.offices.data.config.languages.filter((f) => f.id === g)[0].name : '',
+                                    id:this.props.offices.data.config.languages.filter((f) => f.id === g).length > 0 ? 
+                                        this.props.offices.data.config.languages.filter((f) => f.id === g)[0].id : ''
+                                    }
+                                )
+                              })}
+                              options={this.props.offices.data.config.languages.map((e) => { 
+                                return (
+                                    { 
+                                    label: e.name,
+                                    id: e.name
+                                    }
+                                )
+                              })}
+                            />
+                        </Grid>
+                        <Grid item xs={12} style={{margin:20}}>
                         <TemplateCheckbox 
                               onChange={this.activeChange} label="Active" checked={this.state.selected.active}/>
                         </Grid>
-                        <Grid item xs={12} style={{marginLeft:20}}>
+                        <Grid item xs={12} style={{margin:20}}>
                         <TemplateCheckbox 
                             onChange={this.donotCallChange} label="Do not call" checked={this.state.selected.do_not_contact}/>
                         </Grid>
-                        <Grid item xs={3} style={{marginLeft:20}}>
+                        <Grid item xs={3} style={{margin:20}}>
                         <TemplateTextField 
                               onChange={this.priorityChange} label="Priority" value={this.state.selected.priority}/>
                         </Grid>
@@ -1207,6 +1273,7 @@ class OfficeList extends Component {
                 <Grid container xs="12">
                     <Grid item xs="12">
                         <Tabs style={{marginBottom:30}} value={this.state.subTab} onChange={this.toggleSubTab}>
+                            <Tab value='comments' label='Comments' sx={{ color: 'black' }}/>
                             <Tab value='plans' label='Plans'  sx={{ color: 'black' }}/>
                             <Tab value='offices' label='Offices' sx={{ color: 'black' }}/>
                             <Tab value='contact' label='Contact' sx={{ color: 'black' }}/>
@@ -1216,7 +1283,6 @@ class OfficeList extends Component {
                             <Tab value='cards' label='Cards' sx={{ color: 'black' }}/>
                             <Tab value='clients' label='Clients' sx={{ color: 'black' }}/>
                             <Tab value='users' label='Users' sx={{ color: 'black' }}/>
-                            <Tab value='comments' label='Comments' sx={{ color: 'black' }}/>
                             
                         </Tabs>
                         {(this.state.subTab === 'users') && (
@@ -1368,7 +1434,8 @@ class OfficeList extends Component {
                                 {this.state.selected.comments.sort((a,b) => (a.created > b.created ? -1:1)).map((e) => { 
                                     return (
                                         <Grid item xs="3" key={e.id}>
-                                            <Container style={{margin:20,width:400,height:200}} className="mb-xlg border-1">
+                                            <Box sx={{mt:3}}>
+                                            <Paper elevation={3} sx={cardStyle}>
                                                 <Grid container xs="12">
                                                     <Grid item xs="6">
                                                         <font style={{fontSize:"14pt"}}>
@@ -1396,7 +1463,7 @@ class OfficeList extends Component {
                                                     {(e.edit) && ( 
                                                     <Grid item xs="12">
                                                       <Grid item xs={12}>
-                                                        <TemplateTextArea value={e.text} 
+                                                        <TemplateTextArea rows={5} value={e.text} style={{margin:10}}
                                                             onChange={this.comment} 
                                                         />
                                                       </Grid>
@@ -1406,15 +1473,18 @@ class OfficeList extends Component {
                                                 <Grid container xs="12">
                                                     {(e.edit) && ( 
                                                     <Grid item xs="12">
-                                                        <Grid item xs="6">
-                                                            <TemplateButton onClick={this.saveComment} label='Save'/>
-                                                            <TemplateButton outline style={{marginLeft:10}} 
-                                                                onClick={this.cancelComment} label='Cancel'/>
-                                                        </Grid>
+                                                        <div style={{display:"flex",justifyContent:"center"}}>
+                                                            <div style={{display:"flex",justifyContent:"spread-evenly"}}>
+                                                            <TemplateButtonIcon onClick={this.saveComment} label={<SaveIcon/>}/>
+                                                            <TemplateButtonIcon outline style={{marginLeft:10}} 
+                                                                onClick={this.cancelComment} label={<CancelIcon/>}/>
+                                                            </div>
+                                                        </div>
                                                     </Grid>
                                                     )}
                                                 </Grid>
-                                            </Container>
+                                            </Paper>
+                                            </Box>
                                         </Grid>
                                     )})}
                             </>

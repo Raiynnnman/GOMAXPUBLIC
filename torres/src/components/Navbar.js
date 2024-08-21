@@ -224,12 +224,12 @@ class Navbar extends Component {
              }
             },
             {
-             n:'Search',
+             n:'Providers',
              v:function(c) { 
                 return true;
              },
              a:function() { 
-                window.location = '/app/main/admin/search';
+                window.location = '/app/main/admin/providers';
              }
             },
             {
@@ -262,15 +262,6 @@ class Navbar extends Component {
             },
         ]
         const systemItems = [
-            {
-             n:'Providers',
-             v:function(c) { 
-                return true;
-             },
-             a:function() { 
-                window.location = '/app/main/admin/providers';
-             }
-            },
             {n:'Data Science',
              v:function(c) { 
                 return (c.entitlements.includes('DataScience') ? true : false)
@@ -402,7 +393,7 @@ class Navbar extends Component {
                                         <ul className="main-menu">
                                             <li className="active"><a href="/app">Home</a></li>
                                             <li><a href="/app/main/client/appointments">Appointments</a></li>
-                                            <li><a href="/app/main/client/search">Search</a></li>
+                                            {/*<li><a href="/app/main/client/search">Search</a></li>*/}
                                             <li><a> 
                                                 <DropdownMenu currentUser={this.props.currentUser} 
                                                     title={
@@ -420,7 +411,7 @@ class Navbar extends Component {
                                         <ul>                              
                                             <li className="active"><a href="/app">Home</a></li>
                                             <li><a href="/app/main/client/appointments">Appointments</a></li>
-                                            <li><a href="/app/main/client/search">Search</a></li>
+                                            {/*<li><a href="/app/main/client/search">Search</a></li>*/}
                                             <li><a href="#"> // eslint-disable-next-line jsx-a11y/anchor-is-valid
                                                 <DropdownMenu currentUser={this.props.currentUser} 
                                                     title={
@@ -520,11 +511,11 @@ class Navbar extends Component {
                                     <nav>
                                         <ul className="main-menu">
                                             <li className="active"><a href="/app">Home</a></li>
-                                            <li><a href="/app/main/admin/search">Search</a></li>
-                                            <li><a href="/app/main/admin/patients">Patients</a></li>
-                                            <li><a href="/app/main/admin/investors">Investors</a></li>
                                             <li><a href="/app/main/admin/map">Map</a></li>
+                                            <li><a href="/app/main/admin/providers">Providers</a></li>
+                                            <li><a href="/app/main/admin/patients">Patients</a></li>
                                             <li><a href="/app/main/admin/registrations">CRM</a></li>
+                                            <li><a href="/app/main/admin/investors">Investors</a></li>
                                             <li><a href="/app/main/admin/tickets">Support</a></li>
                                             <li><a>
                                                 <DropdownMenu currentUser={this.props.currentUser} 

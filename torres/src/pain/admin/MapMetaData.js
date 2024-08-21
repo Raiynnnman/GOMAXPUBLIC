@@ -6,6 +6,7 @@ import LaunchIcon from '@mui/icons-material/Launch'
 import { Rating } from '@mui/material';
 import formatPhoneNumber from '../utils/formatPhone';
 import MapMetaDataPreferred from './MapMetaDataPreferred';
+import MapMetaDataPotential from './MapMetaDataPotential';
 import MapMetaDataAccident from './MapMetaDataAccident';
 import MapMetaDataNoResult from './MapMetaDataNoResult';
  
@@ -33,7 +34,7 @@ const MapMetaData = ({ selected }) => {
                         <MapMetaDataPreferred selected={selected}/>
                     )}
                     {(selected.category_id === 101) && (
-                        <MapMetaDataPreferred selected={selected}/>
+                        <MapMetaDataPotential selected={selected}/>
                     )}
                     {(selected.category_id === 104) && (
                         <MapMetaDataPreferred selected={selected}/>

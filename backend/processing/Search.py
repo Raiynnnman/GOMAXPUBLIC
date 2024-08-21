@@ -207,10 +207,7 @@ class SearchGet(SearchBase):
             )
             tg = TrafficGet()
             x.update(
-                tg.scoreProvider(
-                        ret['center']['lng'],
-                        ret['center']['lat'],
-                        t['office_id'], t['id'], db)
+                tg.scoreProvider(lat, lon, t['office_id'], t['id'], db)
             )
             db.update("""
                 update office set score=%s,weighted_score = %s,score_components=%s where id = %s

@@ -68,7 +68,7 @@ class OfficeList(AdminBase):
                     count(cio.id) as client_count,
                     o.office_alternate_status_id, 
                     oas1.name as office_alternate_status_name,
-                    o.score as score,o.score_components,o.weighted_score
+                    o.score as score,o.score_components,o.weighted_score,o.account_summary
                 from 
                     office o
                     left outer join office_type ot on o.office_type_id = ot.id
@@ -132,7 +132,7 @@ class OfficeList(AdminBase):
                 search_par.append(z)
             q += ",".join(map(str,arr))
             q += ")"
-        q += " group by o.id order by updated desc "
+        q += " group by o.id order by id desc"
         cnt = db.query("select count(id) as cnt from (" + q + ") as t", count_par)
         repquery = q
         q += " limit %s offset %s " 
@@ -140,7 +140,6 @@ class OfficeList(AdminBase):
         o = db.query(q,search_par)
         ret['offices'] = []
         for x in o:
-            print(x['score_components'])
             if x['score_components'] is not None:
                 x['score_components'] = json.loads(x['score_components'])
             else:
@@ -153,6 +152,14 @@ class OfficeList(AdminBase):
                   where oa.office_id=%s and oa.deleted = 0
                 """,(x['id'],)
             )
+            x['languages'] = []
+            v = db.query("""
+                select languages_id from office_languages
+                    where office_id=%s
+                """,(x['id'],)
+            )
+            for g in v:
+                x['languages'].append(g['languages_id'])
             x['phones'] = db.query("""
                 select id,description,iscell,phone from office_phones 
                     where office_id=%s
@@ -330,7 +337,6 @@ class OfficeList(AdminBase):
                 x['plans']['items'] = json.loads(x['plans']['items'])
             ret['offices'].append(x)
         if 'report' in params:
-            print(repquery,count_par)
             j = db.query(repquery,count_par)
             v = []
             for g in j:
@@ -369,6 +375,7 @@ class OfficeList(AdminBase):
             select id,concat(first_name,' ',last_name) as name from users u
                 where id in (select user_id from user_entitlements where entitlements_id=14)
         """)
+        ret['config']['languages'] = db.query("select id,name from languages")
         ret['config']['coupons'] = db.query("select id,name,total,perc,reduction from coupons")
         ret['config']['provider_status'] = db.query("select id,name from provider_queue_status")
         ret['config']['alternate_status'] = db.query("""
@@ -433,6 +440,11 @@ class OfficeSave(AdminBase):
                 update provider_queue set website=%s where office_id = %s
                 """,(params['website'],params['id'])
             )
+        if 'account_summary' in params:
+            db.update("""
+                update office set account_summary=%s where id = %s
+                """,(params['account_summary'],params['id'])
+            )
         if 'office_alternate_status_id' in params:
             db.update("""
                 update office set office_alternate_status_id=%s where id = %s
@@ -453,6 +465,17 @@ class OfficeSave(AdminBase):
                 update office set setter_user_id=%s where id = %s
                 """,(params['setter_user_id'],insid)
             )
+        if 'languages' in params and params['languages'] is not None:
+            db.update("""
+                delete from office_languages where office_id = %s
+                """,(insid,)
+            )
+            for g in params['languages']:
+                db.update("""
+                    insert into office_languages (office_id,languages_id) values
+                        (%s,%s)
+                    """,(insid,g)
+                )
         if 'commission_user_id' in params:
             db.update("""
                 update office set commission_user_id=%s where id = %s

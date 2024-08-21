@@ -94,6 +94,12 @@ data = html.get()
 
 table = pd.read_html(page)
 
+o = db.query("""
+    select id from office where name = 'MARTINDALE'
+    """)
+
+OID = o[0]['id']
+
 print(f'Total tables: {len(table)}')
 TABLE_WITH_DATA = None
 C = 0
@@ -130,13 +136,13 @@ for x in df:
     db.update("""
         insert into referrer_users 
             (
-                referrer_users_status_id,row_meta,sha256,name,
+                referrer_id,referrer_users_status_id,row_meta,sha256,name,
                 referrer_users_accident_types_id,phone,vendor_id,
                 email,price_per_lead,import_location,referrer_users_source_id
             ) 
-            values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) ON DUPLICATE KEY update update_cntr=update_cntr+1
+            values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) ON DUPLICATE KEY update update_cntr=update_cntr+1
         """,(
-            REF['QUEUED'],json.dumps(j),sha,j['Name'],1,j['Phone'],j['Lead ID'],j['Email'],
+            OID,REF['QUEUED'],json.dumps(j),sha,j['Name'],1,j['Phone'],j['Lead ID'],j['Email'],
             j['Price Per Lead'].replace('$',''),j['Location'],5
         )
     )

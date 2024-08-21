@@ -1,6 +1,7 @@
 import React, { useState, useEffect, Component } from 'react';
 import { TextField, Grid, Paper, Typography, Button } from '@mui/material';
 import googleKey from '../../googleConfig';
+import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAltOutlined';
 import MapMetaData from "./MapMetaData";
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -8,6 +9,7 @@ import { APIProvider, Map, Marker,  AdvancedMarker, useMap, useMapsLibrary } fro
 import { HeatMap, GoogleApiWrapper } from "google-maps-react";
 import DirectionsComponent from '../utils/DirectionsComponent';
 import GoogleAutoComplete from '../utils/GoogleAutoComplete';
+import MapMetaDataAssignClient from './MapMetaDataAssignClient';
 
 const darkModeStyle = [
   { "elementType": "geometry", "stylers": [{ "color": "#1e1e1e" }] },
@@ -105,6 +107,7 @@ class MapContainer extends Component {
   };
 
   render() {
+    console.log("s",this.state);
     const styles = {
       mapContainer: {
         justifyContent: 'center',
@@ -125,8 +128,7 @@ class MapContainer extends Component {
         marginRight: 'auto',
       },
       directions: {
-        padding: '20px',
-        maxHeight: '60vh',
+        maxHeight: '100vh',
         overflowY: 'auto',
         
         width: '100%',
@@ -210,11 +212,19 @@ class MapContainer extends Component {
             <Tabs value={this.state.activeSubTab} onChange={this.toggleSubTab}>
                 <Tab value='information' label='Information'/>
                 <Tab value='directions' label='Directions'/>
+                {(this.state.office && this.state.office.category_id === 99) && (<Tab value='client' label='Assign Client'/>)}
             </Tabs>
             {this.state.activeSubTab === 'information' && (
                 <Grid container spacing={2} style={{marginTop:20}}>
                     <Grid item xs={12}>
                         <MapMetaData selected={this.state.office} />
+                    </Grid>
+                </Grid>
+            )}
+            {this.state.activeSubTab === 'client' && (
+                <Grid container spacing={2} style={{marginTop:20}}>
+                    <Grid item xs={12}>
+                        <MapMetaDataAssignClient selected={this.state.office} />
                     </Grid>
                 </Grid>
             )}
@@ -287,6 +297,24 @@ class MapContainer extends Component {
         return "http://maps.google.com/mapfiles/ms/icons/red-dot.png";
       case 99:
         if (e.lead_strength_id === 1 && e.office_type_id === 1) {
+            if (e.weighted_score > 5) { 
+                return "http://maps.google.com/mapfiles/kml/paddle/5.png"
+            } 
+            if (e.weighted_score >= 4 && e.weighted_score < 5) { 
+                return "http://maps.google.com/mapfiles/kml/paddle/4.png"
+            } 
+            if (e.weighted_score >= 3 && e.weighted_score < 4) { 
+                return "http://maps.google.com/mapfiles/kml/paddle/3.png"
+            } 
+            if (e.weighted_score >= 2 && e.weighted_score < 3) { 
+                return "http://maps.google.com/mapfiles/kml/paddle/2.png"
+            } 
+            if (e.weighted_score >= 1 && e.weighted_score < 2) { 
+                return "http://maps.google.com/mapfiles/kml/paddle/1.png"
+            } 
+            if (e.weighted_score < 1) { 
+                return "http://maps.google.com/mapfiles/kml/paddle/1.png"
+            } 
           return "http://maps.google.com/mapfiles/ms/icons/orange-dot.png";
         } else if (e.lead_strength_id === 1 && e.office_type_id === 6) {
           return "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png";
@@ -303,6 +331,18 @@ class MapContainer extends Component {
         }
         break;
       case 101:
+        if (e.alternate_status_name === 'REQUIRES_PATIENT') { 
+            return "http://maps.google.com/mapfiles/kml/pal3/icon0.png"
+        } 
+        if (e.alternate_status_name === 'NEED_TIME') { 
+            return "http://maps.google.com/mapfiles/kml/pal3/icon1.png"
+        } 
+        if (e.alternate_status_name === 'REQUIRES_REFERENCE') { 
+            return "http://maps.google.com/mapfiles/kml/pal3/icon10.png"
+        } 
+        if (e.alternate_status_name === 'HOT_LEAD_APP_SET') { 
+            return "http://maps.google.com/mapfiles/kml/pal3/icon0.png"
+        } 
         return "http://maps.google.com/mapfiles/ms/icons/purple-dot.png";
       case 104:
         if (e.office_type_id === 1) {
