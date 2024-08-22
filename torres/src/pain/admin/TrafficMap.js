@@ -76,6 +76,9 @@ class MapContainer extends Component {
 
   updateAddress = (r) => { 
     this.setState({origin:r.fulladdr});
+    if (!this.state.selected) { 
+        this.setState({destination:r.fulladdr});
+    } 
   } 
 
   handleMapLoad = (ref, map, ev) => {

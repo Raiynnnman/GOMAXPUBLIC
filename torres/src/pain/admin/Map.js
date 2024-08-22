@@ -32,13 +32,16 @@ class Map extends Component {
             officeTypeFilter:[],
             office_types: null,
             zipSelected: null,
+            searchFilter: null,
             address: '', 
             center: null, 
             recentlyViewed: [] 
         }
         this.toggleTab = this.toggleTab.bind(this);
+        this.reload = this.reload.bind(this);
         this.onDateChange = this.onDateChange.bind(this);
         this.onZipChange = this.onZipChange.bind(this);
+        this.onSearchFilter = this.onSearchFilter.bind(this);
         this.onCategoryChange = this.onCategoryChange.bind(this);
         this.onOfficeTypeChange = this.onOfficeTypeChange.bind(this);
         this.onOfficeFilterChange = this.onOfficeFilterChange.bind(this);
@@ -153,6 +156,25 @@ class Map extends Component {
             date: this.state.dateSelected, zipcode: this.state.zipSelected }))
     }
 
+    reload() { 
+        this.props.dispatch(getTraffic({ search: this.state.searchFilter, office_types: this.state.officeTypeFilter, categories: this.state.categoriesFilter, 
+            date: this.state.dateSelected, zipcode: this.state.zipSelected }));
+    } 
+
+    onSearchFilter(e) {
+        if (e.target.value) {
+            this.state.searchFilter = e.target.value;
+            if (e.target.value.length > 3) {
+                this.reload();
+            }
+            this.setState(this.state);
+        } else {
+            this.state.zipSelected = e.label;
+            this.setState(this.state);
+            this.reload();
+        }
+    }
+
     onZipChange(e) {
         if (e.target.value) {
             this.state.zipSelected = e.target.value;
@@ -195,7 +217,17 @@ class Map extends Component {
                 <Box style={{margin:20}}>
                 <div>
                     <Grid container ml={1} mt={5}>
-                        <Grid item xs={8} m={1} md={2}>
+                        <Grid item xs={3} m={0.5} md={4}>
+                            {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.data &&
+                                this.props.trafficData.data.data.length > 0) && (
+                                <TemplateTextField
+                                    onChange={this.onSearchFilter}
+                                    label='Search'
+                                    value={this.state.searchFilter}
+                                />
+                            )}
+                        </Grid>
+                        {/*<Grid item xs={8} m={1} md={2}>
                             {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.data &&
                                 this.props.trafficData.data.data.length > 0) && (
                                 <TemplateTextField
@@ -217,8 +249,8 @@ class Map extends Component {
                                     value={this.state.zipSelected}
                                 />
                             )}
-                        </Grid>
-                        <Grid item m={0.5} xs={4} md={4}>
+                        </Grid>*/}
+                        <Grid item m={0.5} xs={3} md={3}>
                             {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.config &&
                                 this.props.trafficData.data.config.avail && this.state.dateSelected !== null) && (
                                 <TemplateSelectMulti

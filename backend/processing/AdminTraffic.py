@@ -109,7 +109,6 @@ class TrafficGet(AdminBase):
         if 'location' in params:
             lat = params['lat']
             lng = parans['lng']
-        print("TG: params=%s" % params)
         STR = self.getLeadStrength()
         TZ = tzInfo.getTZ()
         OT = self.getOfficeTypes()
@@ -212,6 +211,36 @@ class TrafficGet(AdminBase):
             else:
                 w = int(len(l)/2)
                 ret['center'] = {'lat':l[w]['lat'],'lng':l[w]['lng']}
+            if 'search' in params:
+                ca = db.query("""
+                    select response from search_google_cache where entry = lower(%s)
+                    """,(params['search'].lstrip().rstrip(),)
+                )
+                addr = []
+                if len(ca) < 1:
+                    api_key=config.getKey("google_api_key")
+                    gmaps = googlemaps.Client(key=api_key)
+                    addr = gmaps.geocode(params['search'])
+                    db.update("""insert into search_google_cache (entry, response) 
+                           values (lower(%s),%s)
+                        """,(params['search'].lstrip().rstrip(),json.dumps(addr))
+                    ) 
+                    db.commit()
+                else:
+                    try:
+                        addr = json.loads(ca[0]['response'])
+                    except:
+                        pass
+                for z in addr:
+                    if 'geometry' in z and 'location' in z['geometry']:
+                        ret['center'] = {
+                            'lat':z['geometry']['location']['lat'],
+                            'lng':z['geometry']['location']['lng'],
+                        }
+                    ret['data'].append({
+                        'category_id':100,
+                        'coords':[ret['center']]
+                    })
         else:
             ret['center'] = {'lat':0,'lng':0}
         if 2 in params['categories']: # Accidents
@@ -260,7 +289,6 @@ class TrafficGet(AdminBase):
             #if 'zipcode' in params:
             #    q += " ti.zipcode = %s and "
             #    sqlp.append(params['zipcode'])
-            print(params)
             if 'categories' in params:
                 q += " and ("
                 A = []
@@ -287,7 +315,6 @@ class TrafficGet(AdminBase):
                     order by
                         ti.created desc
                 """
-            print(q,sqlp)
             l = db.query(q,sqlp)
             ret['total'] = limit
             for x in l:
