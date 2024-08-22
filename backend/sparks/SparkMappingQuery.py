@@ -13,14 +13,14 @@ from common import settings
 from sparks.SparkCommon import SparkCommon
 from sparks.SparkMapping import SparkMapping
 from util import calcdate, encryption
+from util.Logging import Logging
 
 config = settings.config()
 config.read("settings.cfg")
+log = Logging()
 
 
 class SparkMappingQuery(SparkMapping):
-    def logme(self, s):
-        sys.stderr.write("LOGGING: %s\n" % s)
 
     def querySPARK(self, sph, query):
         data = []

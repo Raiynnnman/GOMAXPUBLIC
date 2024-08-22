@@ -55,11 +55,9 @@ class SparkCommon(SparkBase):
             c0 = calcdate.sysParseDate(mykeys[c])
             c1 = calcdate.sysParseDate(mykeys[c + 1])
             if c0 < d > c1:
-                # print("val/k/c0/c1: %s/%s/%s/%s/%s" % (val, d, k, c0, c1))
                 r[k] += val
                 c = len(mykeys) + 1
             c += 1
-        # print(r)
         return r
 
     def sortTimedateKeys(self, r):
@@ -85,20 +83,4 @@ class SparkCommon(SparkBase):
             Sxy = Sxy + x*y
         det = Sxx * N - Sx * Sx
         return (Sxy * N - Sy * Sx)/det, (Sxx * Sy - Sx * Sxy)/det
-
-    def ERROR(self, m, c):
-        j = { "errors": {"m": m, "l": c} }
-        sys.stderr.write("ERR: %s: %s\n" % (m, c))
-        t = writeHADContent(json.dumps(j))
-        if isinstance(t, bytes):
-            t = t.encode('utf-8')
-        # print(t)
-
-    def DEBUG(self, m, c):
-        j = { "debug": {"m": m, "l": c} }
-        sys.stderr.write("DBG: %s: %s\n" % (m, c))
-        t = self.writeHADContent(json.dumps(j))
-        if isinstance(t, bytes):
-            t = t.encode('utf-8')
-        # print(t)
 

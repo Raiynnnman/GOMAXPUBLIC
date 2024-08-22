@@ -238,7 +238,6 @@ class RegistrationUpdate(AdminBase):
                 """,(params['provider_queue_presented_status_id'],offid)
             )
         if 'provider_queue_source_id' in params:
-            print(params['provider_queue_source_id'],offid)
             db.update("""
                 update provider_queue set provider_queue_source_id=%s where office_id=%s
                 """,(params['provider_queue_source_id'],offid)
@@ -279,7 +278,6 @@ class RegistrationUpdate(AdminBase):
                 """,(params['doing_business_as_name'],offid)
             )
         if 'presentation_result' in params:
-            print(params['presentation_result'],offid)
             db.update("""
                 update provider_queue set presentation_result=%s where office_id=%s
                 """,(params['presentation_result'],offid)
@@ -988,9 +986,7 @@ class RegistrationList(AdminBase):
         prelimit = q
         pre_par = json.loads(json.dumps(search_par))
         q += " group by o.id "
-        print("count start")
         cnt = db.query("select count(id) as cnt from (" + q + ") as t", count_par)
-        print("count complete")
         ret['total'] = cnt[0]['cnt']
         if 'sort' not in params or params['sort'] == None:
             q += """
@@ -1018,10 +1014,8 @@ class RegistrationList(AdminBase):
         search_par.append(int(offset)*int(limit))
         q += " limit %s offset %s " 
         o = []
-        print("query start")
         o = db.query(q,search_par)
         k = [] 
-        print("query complete")
         dtrack = []
         dtrack_start = db.query(deal_tracker + " and pq.include_on_deal_tracker = 1 group by o.id")
         ret['deal_tracker'] = dtrack
@@ -1145,7 +1139,6 @@ class RegistrationList(AdminBase):
             )
             select date_format(date_add(dt,interval -1 day),'%a, %D') as label,round(ifnull(count1,0),2) as count FROM t ;
             """)
-        print("dashboard complete")
         if 'report' in params and params['report'] is not None:
             myq = prelimit
             d = calcdate.getYearToday()
