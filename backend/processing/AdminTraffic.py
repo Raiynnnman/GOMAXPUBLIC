@@ -211,7 +211,7 @@ class TrafficGet(AdminBase):
             else:
                 w = int(len(l)/2)
                 ret['center'] = {'lat':l[w]['lat'],'lng':l[w]['lng']}
-            if 'search' in params:
+            if 'search' in params and params['search'] is not None and len(params['search']) > 0:
                 ca = db.query("""
                     select response from search_google_cache where entry = lower(%s)
                     """,(params['search'].lstrip().rstrip(),)

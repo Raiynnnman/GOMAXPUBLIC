@@ -162,7 +162,7 @@ class Map extends Component {
     } 
 
     onSearchFilter(e) {
-        if (e.target.value) {
+        if (e.target) {
             this.state.searchFilter = e.target.value;
             if (e.target.value.length > 3) {
                 this.reload();
@@ -218,14 +218,11 @@ class Map extends Component {
                 <div>
                     <Grid container ml={1} mt={5}>
                         <Grid item xs={3} m={0.5} md={4}>
-                            {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.data &&
-                                this.props.trafficData.data.data.length > 0) && (
-                                <TemplateTextField
-                                    onChange={this.onSearchFilter}
-                                    label='Search'
-                                    value={this.state.searchFilter}
-                                />
-                            )}
+                            <TemplateTextField
+                                onChange={this.onSearchFilter}
+                                label='Search'
+                                value={this.state.searchFilter}
+                            />
                         </Grid>
                         {/*<Grid item xs={8} m={1} md={2}>
                             {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.data &&
