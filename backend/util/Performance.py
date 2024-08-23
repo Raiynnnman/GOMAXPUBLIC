@@ -52,21 +52,21 @@ class performance():
                 j['ip'] = ip
             if ip is not None:
                 g = int(ipaddress.ip_address(ip))
-                print("g=%s" % g)
+                #print("g=%s" % g)
                 q = """select 
                         latitude, longitude, continent, 
                         country, stateprov, city 
                        from ip_lookup where %s between ip_st_int and ip_en_int
                     """
                 o = db.query(q,(g,))
-                print("iplat: %s (%s)" % (o,g))
+                #print("iplat: %s (%s)" % (o,g))
                 for n in o:
-                    j['lat'] = n[0] 
-                    j['lon'] = n[1]
-                    j['continent'] = n[2]
-                    j['country'] = n[3]
-                    j['stateprov'] = n[4]
-                    j['city'] = n[5]
+                    j['lat'] = n['latitude']
+                    j['lon'] = n['longitude']
+                    j['continent'] = n['continent']
+                    j['country'] = n['country']
+                    j['stateprov'] = n['stateprov']
+                    j['city'] = n['city']
                     break
                 self.__data__ = j
             return j
