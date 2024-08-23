@@ -698,7 +698,7 @@ class AdminReportGet(AdminBase):
                 left join pricing_data pd on op.pricing_data_id=pd.id
             where
                 pq.provider_queue_status_id=%s
-            """,(PQ['INVITED'],)
+            """,(PQ['IN_NETWORK'],)
         )
         ret = []
         for y in o:

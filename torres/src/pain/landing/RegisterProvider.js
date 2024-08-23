@@ -224,6 +224,7 @@ class RegisterProvider extends Component {
     };
 
     calculateDiscount = (coupon) => {
+        console.log("coup",coupon);
         const totalCost = this.state.selPlan.upfront_cost * this.state.selPlan.duration;
         if (coupon.perc) {
             return totalCost * coupon.perc;

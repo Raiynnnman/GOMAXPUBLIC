@@ -571,7 +571,7 @@ class RegistrationUpdate(AdminBase):
                         (%s,%s,%s)
                     """,(invid,user['id'],'Updated Invoice' )
                 )
-        if params['provider_queue_status_id'] == PQS['APPROVED'] or params['provider_queue_status_id'] == PQS['INVITED']:
+        if params['provider_queue_status_id'] == PQS['APPROVED'] or params['provider_queue_status_id'] == PQS['IN_NETWORK']:
             db.update("""
                 update office set active = 1 where id = %s
                 """,(offid,)
@@ -589,7 +589,7 @@ class RegistrationUpdate(AdminBase):
             db.update("""
                 update provider_queue set 
                     provider_queue_status_id = %s where office_id = %s
-            """,(PQS['INVITED'],offid)
+            """,(PQS['IN_NETWORK'],offid)
             )
             u = db.query("""
                 select u.id,u.email  from users u,office_user ou

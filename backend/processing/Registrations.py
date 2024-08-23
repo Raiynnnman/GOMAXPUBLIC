@@ -1078,11 +1078,11 @@ class RegisterProvider(RegistrationsBase):
             update provider_queue set 
             sf_lead_executed=1,closed_date=now(),
             provider_queue_status_id = %s where office_id = %s
-            """,(PQ['INVITED'],off_id)
+            """,(PQ['IN_NETWORK'],off_id)
         )
         db.update("""
             insert into office_history(office_id,user_id,text) values (
-                %s,1,'User Registered, Set to INVITED (SF Lead Registration)'
+                %s,1,'User Registered, Set to IN_NETWORK(SF Lead Registration)'
             )
         """,(off_id,))
         db.update("""
@@ -1308,7 +1308,7 @@ class RegisterReferrer(RegistrationsBase):
                 """
                 insert into provider_queue (office_id,provider_queue_lead_strength_id) 
                     values (%s,%s,provider_queue_status_id)
-                """,(insid,ST['Preferred Provider'],PQ['INVITED'])
+                """,(insid,ST['Preferred Provider'],PQ['IN_NETWORK'])
             )
             l = db.query("""
                 select id from users where email = %s
