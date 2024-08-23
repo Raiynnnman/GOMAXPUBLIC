@@ -2,6 +2,7 @@
 
 import os
 import random
+from urllib.parse import urlparse
 import sys
 from datetime import datetime, timedelta
 import time
@@ -18,6 +19,16 @@ from util import getIDs
 
 import argparse
 
+DAY_MAPPING = {
+    0: 'Sun',
+    1: 'Mon',
+    2: 'Tue',
+    3: 'Wed',
+    4: 'Thu',
+    5: 'Fri',
+    6: 'Sat',
+}
+
 config = settings.config()
 config.read("settings.cfg")
 parser = argparse.ArgumentParser()
@@ -30,38 +41,11 @@ gp = GooglePlaces(config.getKey("google_api_key"))
 
 db = Query()
 
-q = """
-        select 
-            office_id,
-            o.name,
-            JSON_ARRAYAGG(
-                JSON_OBJECT(
-                    'id',oa.id,'name',oa.name,'addr1',oa.addr1,'addr2',
-                    oa.addr2,'phone',ifnull(oa.phone,''),'office_id',oa.office_id,
-                    'city',oa.city,'state',oa.state,'zipcode',oa.zipcode)
-            ) as addr
-        from
-            office o,
-            office_addresses oa
-        where
-            o.id = oa.office_id and 
-            o.google_check = 0
-    """
-
-if args.office is not None:
-    q += " and o.id = %s " % args.office
-    
-q+=" group by o.id "
-q+=" limit 25 "
-o = db.query(q)
-
-random.shuffle(o)
-
 STR = getIDs.getLeadStrength()
 OT = getIDs.getOfficeTypes()
 PLACES = {}
 
-def processLocation(row,q,dedup=False):
+def processLocation(q,dedup=False):
     global db
     global PLACES
     FINAL = {}
@@ -72,6 +56,7 @@ def processLocation(row,q,dedup=False):
         print("not operational")
         return None
     pid = q['place_id']
+    FINAL['places_id'] = pid
     has = db.query("""
         select id from office_potential_places where places_id=%s
         UNION ALL
@@ -86,17 +71,8 @@ def processLocation(row,q,dedup=False):
         print("Already have %s" % pid)
         return None
     PLACES[pid] = 1
-    arr = ['addr1','city','state']
-    rtok = []
-    if 'addr1' in row:
-        rtok = row['addr1'].split(' ')
     gtok = q['formatted_address'].split(' ')
     score = 0
-    t = min(len(gtok),len(rtok))
-    # print("min = %s" % t)
-    for v in range(t):
-        if rtok[v].lower() == gtok[v].lower():
-            score += .2
     # print("q=%s" % json.dumps(q,indent=4))
     if 'formatted_phone_number' not in q:
         print("business has no phone")
@@ -104,14 +80,10 @@ def processLocation(row,q,dedup=False):
     gphone = q['formatted_phone_number']
     gphone = gphone.replace(" ",'').replace("-",'').replace(")","").replace("(",'')
     ophone = ''
-    if 'phone' in row:
-        ophone = row['phone'].replace(" ",'').replace("-",'').replace(")","").replace("(",'')
     FINAL['phone'] = gphone
     if 'website' in q:
         gweb = q['website']
         FINAL['website'] = gweb
-    if gphone == ophone:
-        score += 1
     addr = city = state = zipcode = ''
     for hh in q['address_components']:
         if 'street_number' in hh['types']:
@@ -130,46 +102,100 @@ def processLocation(row,q,dedup=False):
     FINAL['zipcode'] = zipcode
     FINAL['hours'] = []
     FINAL['open_today'] = False
+    FINAL['open_saturday'] = False
     if 'current_opening_hours' in q:
         if q['current_opening_hours']['open_now']:
             FINAL['open_today'] = True
         else: 
             FINAL['open_today'] = False
-        FINAL['hours'] = q['current_opening_hours']
+        if 'periods' in q['current_opening_hours']:
+            DH = {}
+            for g in q['current_opening_hours']['periods']:
+                print("g=%s" % g)
+                if 'close' in g:
+                    day = DAY_MAPPING[g['close']['day']]
+                    end = g['close']['time']
+                if 'open' in g:
+                    day = DAY_MAPPING[g['open']['day']]
+                    start = g['open']['time']
+                if day not in DH:
+                    FINAL['hours'].append({'day':day,'open':start, 'close': end})
+                DH[day] = 1
+                if day == 'Sat':
+                    FINAL['open_saturday'] = True
+    FINAL['hours'] = json.dumps(FINAL['hours'])
+    print("FINAL_HOURS=%s" % FINAL['hours'])
     ph = q['formatted_phone_number']
     ph = ph.replace(" ",'').replace("-",'').replace(")","").replace("(",'')
-    hh = db.query("""
-        select id,office_id from office_addresses where phone=%s
-        """,(ph,)
-    )
+    up = None
+    if 'website' not in q:
+        q['website'] = ''
+    else:
+        up = urlparse(q['website'])
+
     FINAL['name'] = q['name'] 
     FINAL['rating'] = 0
     if 'rating' in q:
         FINAL['rating'] = q['rating'] 
     FINAL['url'] = q['url'] 
+    HOST = encryption.getSHA256()
+    if up is not None:
+        HOST = up.hostname
+    print("ph=%s" % ph)
+    print("HOST=%s" % HOST)
+    hh = db.query("""
+        select id as id,office_id,'oa' as k from office_addresses where phone=%s
+        UNION ALL
+        select office_id as id, office_id,'pq' as k from provider_queue
+            where locate(%s,website) > 0
+        UNION ALL
+        select id as id,office_id,'op' as k from office_phones where phone=%s
+        """,(ph,
+            HOST,
+            ph
+        )
+    )
+    print("hh=%s" % hh)
     if len(hh) > 0:
         score = 1
-        row['office_id'] = hh[0]['office_id']
-        row['id'] = hh[0]['id']
         FINAL['office_id'] = hh[0]['office_id']
+        score = 1
     if score > .8:
         FINAL['have'] = True
         print("Score = %s" % score)
         print(json.dumps(q,indent=4))
-        print(row)
+        print(FINAL)
         if 'website' not in q:
             q['website'] = ''
         if 'rating' not in q:
             q['rating'] = 0
-        if 'office_id' in row:
+        if 'office_id' in FINAL:
+            db.update("""
+                update office set 
+                    name = %s,
+                    office_hours = %s,
+                    open_saturday = %s,
+                    google_url = %s,
+                    places_id = %s
+                    where id = %s
+                """,(
+                    FINAL['name'],json.dumps(FINAL['hours']),FINAL['open_saturday'], q['url'],
+                    FINAL['places_id'],FINAL['office_id']
+                )
+            )
+            db.update("""
+                insert into ratings (office_id,rating) values
+                    (%s,%s)
+                """,(FINAL['office_id'],FINAL['rating'])
+            )
             db.update("""
                 insert into office_potential_places (
-                    office_id,office_addresses_id,name,
+                    office_id,name,
                     places_id,addr1,city,state,zipcode,
                     score,lat,lon,website,google_url,rating
-                    ) values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                    ) values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
                 """,(
-                    row['office_id'],row['id'],q['name'],
+                    FINAL['office_id'],q['name'],
                     q['place_id'],addr,city,state,zipcode,score,
                     q['geometry']['location']['lat'],
                     q['geometry']['location']['lng'],
@@ -177,14 +203,10 @@ def processLocation(row,q,dedup=False):
                     )
             )
             db.update("""
-                update office set updated=now() where id=%s
-                """,(row['office_id'],)
-            )
-            db.update("""
                 insert into office_history(office_id,user_id,text) values (
                     %s,1,'Updated address with a score > .8'
                 )
-            """,(row['office_id'],)
+            """,(FINAL['office_id'],)
             )
     else:
         FINAL['have'] = False
@@ -194,13 +216,6 @@ def processLocation(row,q,dedup=False):
             q['rating'] = 0
         print("myq=")
         print(json.dumps(q,indent=4))
-        hh = db.query("""
-            select id from office_addresses where phone=%s
-            """,(ph,)
-        )
-        if len(hh) > 0:
-            print("I think I already have %s (%s)",(q['place_id'],ph))
-            return None
         em = encryption.getSHA256()
         db.update("""
             insert into users (
@@ -212,13 +227,19 @@ def processLocation(row,q,dedup=False):
         user_id = user_id[0]['LAST_INSERT_ID()']
         db.update("""
             insert into office (
-                name, places_id, active, office_type_id
-            ) values (%s,%s,0,%s) 
-            """,(q['name'],q['place_id'],OT['Chiropractor'])
+                name, places_id, active, office_type_id, 
+                google_url,
+                open_saturday, office_hours
+            ) values (%s,%s,0,%s,%s,%s,%s) 
+            """,(
+                q['name'],q['place_id'],OT['Chiropractor'],
+                q['url'], FINAL['open_saturday'],FINAL['hours']
+            )
         )
         off_id = db.query("select LAST_INSERT_ID()");
         off_id = off_id[0]['LAST_INSERT_ID()']
-        row['office_id'] = off_id
+        FINAL['office_id'] = off_id
+        FINAL['office_added'] = True
         db.update("""
             insert into office_history(office_id,user_id,text) values (
                 %s,1,'Imported from google places'
@@ -258,10 +279,10 @@ def processLocation(row,q,dedup=False):
         pq_id = db.query("select LAST_INSERT_ID()");
         pq_id = pq_id[0]['LAST_INSERT_ID()']
         db.update("""
-            insert into provider_queue_history(provider_queue_id,user_id,text) values (
+            insert into office_history(office_id,user_id,text) values (
                 %s,1,'Imported from google places'
             )
-        """,(pq_id,))
+        """,(off_id,))
         db.update("""
             insert into office_potential_places (
                 office_id,office_addresses_id,name,
@@ -278,10 +299,11 @@ def processLocation(row,q,dedup=False):
         )
     db.update("""
         update office set google_check = 1 where id=%s
-        """,(row['office_id'],)
+        """,(FINAL['office_id'],)
     )
-    db.commit()
     print("FINAL=%s" % FINAL)
+    if not args.dryrun:
+        db.commit()
     return FINAL
         
 
@@ -296,7 +318,7 @@ if args.zipcode is not None:
         token = None
         qr = gp.nearby_search(
             lat_lng={ 'lat':o[0]['lat'], 'lng':o[0]['lon'] },
-            radius=16093,
+            radius=50000,
             keyword='Chiropractor'
         )
         token = qr.next_page_token 
@@ -308,7 +330,7 @@ if args.zipcode is not None:
         while token is not None:
             qr = gp.nearby_search(
                 lat_lng={ 'lat':o[0]['lat'], 'lng':o[0]['lon'] },
-                radius=16093,
+                radius=50000,
                 keyword='Chiropractor',
                 pagetoken=token)
             print("token=%s" % qr.next_page_token)
@@ -339,7 +361,7 @@ if args.zipcode is not None:
         H.close()
     data = []
     for x in places:
-        j = processLocation({},x)
+        j = processLocation(x)
         print("ret=%s" % j)
         if j is not None:
             data.append(j)
@@ -350,29 +372,3 @@ if args.zipcode is not None:
     df.to_csv("output-%s.csv" % args.zipcode)
     sys.exit(0)
 
-for x in o:
-    x['addr'] = json.loads(x['addr'])
-    print(x)
-    DONE = False
-    r = []
-    for g in x['addr']:
-        if g['id'] is None:
-            continue
-        qr = None
-        qr = gp.nearby_search(
-            location='%s %s, %s' % (g['addr1'],g['city'],g['state']),
-            keyword='Chiropractor',
-            radius=1000
-        )
-        #qr = gp.nearby_search(
-        #    location="11623 Sagecanyon Dr, Houston, TX",
-        #    keyword='Chiropractor',
-        #    radius=1000
-        #)
-        for place in qr.places:
-            place.get_details()
-            q = json.loads(json.dumps(place.details,use_decimal=True))
-            r.append(q)
-        print(r)
-        processLocation(g,r)
-    break

@@ -915,7 +915,7 @@ for x in SF_DATA:
                         provider_queue_lead_strength_id = %s,
                         provider_queue_status_id = %s
                     where id = %s
-                    """,(j['Id'],ST['Preferred Provider'],PQ['INVITED'],int(pq_id))
+                    """,(j['Id'],ST['Preferred Provider'],PQ['IN_NETWORK'],int(pq_id))
                 )
                 db.update("""
                     insert into provider_queue_history(provider_queue_id,user_id,text) values (
@@ -929,7 +929,7 @@ for x in SF_DATA:
                 """,(pq_id,))
                 db.update("""
                     insert into provider_queue_history(provider_queue_id,user_id,text) values (
-                        %s,1,'Set to INVITED (SF Lead)'
+                        %s,1,'Set to IN_NETWORK (SF Lead)'
                     )
                 """,(pq_id,))
                 db.update("""

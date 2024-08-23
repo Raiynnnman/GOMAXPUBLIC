@@ -937,9 +937,25 @@ class RegistrationsEdit extends Component {
                           })}
                         />
                     </Grid>                
-                    <Grid item xs={6} style={{marginLeft:20}}>
+                    <Grid item xs={3} style={{marginLeft:20}}>
                         <TemplateCheckbox 
                               onClick={this.dealTrackerChange} label="Deal Tracker?" checked={this.state.selected.include_on_deal_tracker}/>
+                    </Grid>
+                    <Grid item xs={3} style={{marginLeft:20}}>
+                        <TemplateCheckbox 
+                              label="Open Saturday?" checked={this.state.selected.open_saturday}/>
+                    </Grid>
+                    <Grid item xs={6} style={{marginLeft:20}}>
+                        <table>
+                            <tr>
+                                <td>Day</td><td>Open</td><td>Close</td>
+                            </tr>
+                            {this.state.selected.office_hours.map((f) => { 
+                                return (
+                                    <tr> <td>{f.day}</td> <td>{f.open}</td> <td>{f.close}</td> </tr>
+                                )
+                            })}
+                        </table>
                     </Grid>
                     <Grid item xs={6} style={{marginLeft:20}}>
                         <TemplateCheckbox 

@@ -61,7 +61,7 @@ l = db.query("""
         and offset_days > 0
     group by
         op.id
-    """,(PQS['APPROVED'],PQS['QUEUED'],PQS['INVITED'],PQS['DENIED'])
+    """,(PQS['APPROVED'],PQS['QUEUED'],PQS['IN_NETWORK'],PQS['DENIED'])
 )
 CNT = 0
 for x in l:

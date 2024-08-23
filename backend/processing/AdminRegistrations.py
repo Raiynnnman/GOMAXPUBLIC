@@ -634,6 +634,10 @@ class RegistrationList(AdminBase):
                 where office_id = %s and deleted = 0
             """,(x['office_id'],)
         )
+        if 'office_hours' in x and x['office_hours'] is not None:
+            x['office_hours'] = json.loads(x['office_hours'])
+        else:
+            x['office_hours'] = []
         x['actions']  = []
         acts = db.query("""
             select pqa.id,pqa.user_id,
@@ -827,7 +831,6 @@ class RegistrationList(AdminBase):
             if params['search'] == None or len(params['search']) == 0:
                 del params['search']
         PQS = self.getProviderQueueStatus()
-        print(params)
         db = Query()
         ALT = self.getAltStatus()
         q = """
@@ -840,7 +843,7 @@ class RegistrationList(AdminBase):
                 pqcs.name as call_status, pqcs.id as call_status_id,
                 ot.name as office_type,op.pricing_data_id as pricing_id,
                 pq.do_not_contact,pq.website,
-                o.setter_user_id,
+                o.setter_user_id,o.open_saturday,o.office_hours,
                 o.commission_user_id,oa.state,op.start_date,
                 concat(comu.first_name, ' ', comu.last_name) as commission_name,
                 concat(setu.first_name, ' ', setu.last_name) as setter_name,
@@ -991,7 +994,7 @@ class RegistrationList(AdminBase):
         if 'sort' not in params or params['sort'] == None:
             q += """
                 order by
-                    pq.id asc
+                    id asc
             """
             ret['sort'][0]['active'] = True
             ret['sort'][0]['direction'] = 'desc'
