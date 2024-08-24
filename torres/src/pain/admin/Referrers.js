@@ -345,8 +345,8 @@ class Referrers extends Component {
             <Grid container xs="12" style={{marginTop:20}}>
                 <Grid item xs="12">
                     <Tabs value={this.state.activeTab} onChange={this.toggleTab}>
-                        <Tab value='patients' label='All Patients'/>
-                        <Tab value='active_patients' label='Active Patients'/>
+                        <Tab value='patients' label='All Clients'/>
+                        <Tab value='active_patients' label='Active Clients'/>
                     </Tabs>
                     {(this.state.activeTab === 'patients') && (
                     <>

@@ -82,8 +82,6 @@ class Registrations extends Component {
         this.cancelMass = this.cancelMass.bind(this);
         this.saveMass = this.saveMass.bind(this);
         this.close = this.close.bind(this);
-        this.onAltStatusFilter = this.onAltStatusFilter.bind(this);
-        this.onStatusFilter = this.onStatusFilter.bind(this);
         this.onMassChange = this.onMassChange.bind(this);
         this.onTypeFilter = this.onTypeFilter.bind(this);
         this.onUserFilter = this.onUserFilter.bind(this);
@@ -119,31 +117,6 @@ class Registrations extends Component {
                 var g = JSON.parse(localStorage.getItem("reg_user"));
                 this.state.userSelected = g[0];
                 this.state.userFilter = g[1];
-            } 
-            this.setState(this.state);
-            changed = true;
-        } 
-        if (p.registrationsAdminList.data && p.registrationsAdminList.data.config && 
-            p.registrationsAdminList.data.config.alternate_status && 
-            this.state.statusAltSelected === null) { 
-            var c = 0;
-            var t = [];
-            var t1 = [];
-            for (c = 0; c < p.registrationsAdminList.data.config.alternate_status.length; c++) { 
-                if (p.registrationsAdminList.data.config.alternate_status[c].name === 'NO_PI') { continue; }
-                if (p.registrationsAdminList.data.config.alternate_status[c].name === 'DNC') { continue; }
-                if (p.registrationsAdminList.data.config.alternate_status[c].name === 'NOT_INTERESTED') { continue; }
-                if (p.registrationsAdminList.data.config.alternate_status[c].name === 'NOT_INTERESTED_IN_PI_NOW') { continue; }
-                if (p.registrationsAdminList.data.config.alternate_status[c].name === 'NOT_A_CHIROPRACTOR') { continue; }
-                t.push(p.registrationsAdminList.data.config.alternate_status[c]); 
-                t1.push(p.registrationsAdminList.data.config.alternate_status[c].id); 
-            } 
-            this.state.statusAltSelected = t;
-            this.state.altFilter = t1;
-            if (localStorage.getItem('reg_alt_status')) { 
-                var g = JSON.parse(localStorage.getItem("reg_alt_status"));
-                this.state.statusAltSelected = g[0];
-                this.state.altFilter = g[1];
             } 
             this.setState(this.state);
             changed = true;
@@ -343,30 +316,6 @@ class Registrations extends Component {
         this.setState(this.state)
     } 
 
-    onAltStatusChange(e,t) { 
-        var g = this.props.registrationsAdminList.data.config.alternate_status.filter((g) => g.name === e.target.value)
-        if (g.length > 0) { 
-            this.state.selected.office_alternate_status_id = g[0].id;
-            this.state.selected.office_alternate_status_name = g[0].name;
-        } 
-        this.setState(this.state);
-    }
-
-    onAltStatusFilter(e) { 
-        var c = 0;
-        var t = [];
-        var t1 = [];
-        for (c = 0; c < e.length; c++) { 
-            e[c].name = e[c].value;
-            t.push(e[c]); 
-            t1.push(e[c].id);
-        } 
-        this.state.statusAltSelected = t;
-        this.state.altFilter = t1;
-        this.setState(this.state)
-        // this.reload();
-    } 
-
     onUserFilter(e,t) { 
         var c = 0;
         var t = [];
@@ -524,15 +473,20 @@ class Registrations extends Component {
                 onClick: (content,row) => (
                     this.edit(content)
                 ),
-                text:'Provider Name'
+                text:'Practice Name'
             },
             {
-                dataField:'email',
+                dataField:'provider_name',
                 sort:true,
                 onClick: (content,row) => (
                     this.edit(content)
                 ),
-                text:'Email'
+                text:'Provider Name',
+                formatter:(cellContent,row) => (
+                    <div>
+                        {row.last_name + ", " + row.first_name}
+                    </div>
+                )
             },
             {
                 dataField:'state',
@@ -558,28 +512,15 @@ class Registrations extends Component {
                 )
             },
             {
-                dataField:'call_status',
+                dataField:'city',
                 sort:true,
-                text:'Call Status',
+                text:'City',
                 onClick: (content,row) => (
                     this.edit(content)
                 ),
                 formatter:(cellContent,row) => (
                     <div>
-                        {row.call_status && <TemplateBadge label={row.call_status}/>}
-                    </div>
-                )
-            },
-            {
-                dataField:'office_alternate_status_name',
-                sort:true,
-                text:'Type',
-                onClick: (content,row) => (
-                    this.edit(content)
-                ),
-                formatter:(cellContent,row) => (
-                    <div>
-                        {row.office_alternate_status_name && <TemplateBadge label={row.office_alternate_status_name}/>}
+                        {row.city + ", " + row.state + " " + row.zipcode} 
                     </div>
                 )
             },
@@ -608,19 +549,6 @@ class Registrations extends Component {
                     <div>
                         {row.status && (<TemplateBadge label={row.status}/>)}
                     </div>
-                )
-            },
-            {
-                dataField:'actions',
-                sort:true,
-                text:'Actions',
-                formatter:(cellContent,row) => (
-                    <>
-                    <div>
-                        <TemplateButton 
-                            onClick={() => this.edit(row)} style={{marginRight:5,width:30,height:35}} color="primary" label={<EditIcon/>}/>
-                    </div>
-                    </>
                 )
             },
         ]
@@ -652,22 +580,12 @@ class Registrations extends Component {
                 )
             },
             {
-                dataField:'call_status',
+                dataField:'city',
                 sort:true,
-                text:'Call Status',
+                text:'Location',
                 formatter:(cellContent,row) => (
                     <div>
-                        {row.call_status && <TemplateBadge label={row.call_status}/>}
-                    </div>
-                )
-            },
-            {
-                dataField:'office_alternate_status_name',
-                sort:true,
-                text:'Type',
-                formatter:(cellContent,row) => (
-                    <div>
-                        {row.office_alternate_status_name && <TemplateBadge label={row.office_alternate_status_name}/>}
+                        {row.city + ", " + row.state + " " + row.zipcode}
                     </div>
                 )
             },
@@ -802,36 +720,6 @@ class Registrations extends Component {
                                     />
                                 )}
                             </Grid>
-                        </Grid>
-                        <Grid container xs="12">
-                            <Grid item xs="12">
-                              {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
-                                this.props.registrationsAdminList.data.config &&
-                                this.props.registrationsAdminList.data.config.alternate_status && this.state.statusAltSelected !== null) && (
-                                  <TemplateSelectMulti
-                                      label='Special Status'
-                                      onChange={this.onAltStatusFilter}
-                                      value={this.state.statusAltSelected.map((g) => { 
-                                        return (
-                                            {
-                                            label:this.props.registrationsAdminList.data.config.alternate_status.filter((f) => f.id === g.id).length > 0 ? 
-                                                this.props.registrationsAdminList.data.config.alternate_status.filter((f) => f.id === g.id)[0].name : '',
-                                            id:this.props.registrationsAdminList.data.config.alternate_status.filter((f) => f.id === g.id).length > 0 ? 
-                                                this.props.registrationsAdminList.data.config.alternate_status.filter((f) => f.id === g.id)[0].id: ''
-                                            }
-                                        )
-                                      })}
-                                      options={this.props.registrationsAdminList.data.config.alternate_status.map((e) => { 
-                                        return (
-                                            { 
-                                            label: e.name,
-                                            id: e.id
-                                            }
-                                        )
-                                      })}
-                                    />
-                                )}
-                            </Grid>                
                         </Grid>
                         <Grid container xs="12">
                             <Grid item xs="12">

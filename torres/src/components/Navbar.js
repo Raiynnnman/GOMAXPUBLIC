@@ -513,7 +513,7 @@ class Navbar extends Component {
                                             <li className="active"><a href="/app">Home</a></li>
                                             <li><a href="/app/main/admin/map">Map</a></li>
                                             <li><a href="/app/main/admin/providers">Providers</a></li>
-                                            <li><a href="/app/main/admin/patients">Patients</a></li>
+                                            <li><a href="/app/main/admin/clients">Patients</a></li>
                                             <li><a href="/app/main/admin/registrations">CRM</a></li>
                                             <li><a href="/app/main/admin/investors">Investors</a></li>
                                             <li><a href="/app/main/admin/tickets">Support</a></li>

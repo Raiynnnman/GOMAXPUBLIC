@@ -729,58 +729,6 @@ class RegistrationsEdit extends Component {
                         </Grid>
                 </Grid>
                 <Grid container style={{borderLeft:"1px solid black"}} xs="6">
-                    <Grid item xs="3" style={{margin:10}}>
-                      {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
-                        this.props.registrationsAdminList.data.config &&
-                        this.props.registrationsAdminList.data.config.alternate_status) && (
-                          <TemplateSelect
-                              label='Special Status'
-                              onChange={this.onAltStatusChange}
-                              value={{
-                                label:
-                                    this.props.registrationsAdminList.data.config.alternate_status.filter((g) => 
-                                        this.state.selected.office_alternate_status_id === g.id).length > 0 ? 
-                                    this.props.registrationsAdminList.data.config.alternate_status.filter((g) => 
-                                        this.state.selected.office_alternate_status_id === g.id
-                                )[0].name : '',
-                              }}
-                              options={this.props.registrationsAdminList.data.config.alternate_status.map((g) => { 
-                                return (
-                                    { 
-                                    label: g.name,
-                                    value: g.name
-                                    }
-                                )
-                              })}
-                            />
-                        )}
-                    </Grid>                
-                    <Grid item xs={4} style={{margin:10}}>
-                      {(this.props.registrationsAdminList && this.props.registrationsAdminList.data &&
-                        this.props.registrationsAdminList.data.config && 
-                        this.props.registrationsAdminList.data.config.status) && (
-                      <TemplateSelect
-                          label='Call Status'
-                          onChange={this.onCallStatusChange}
-                          value={{
-                            label:
-                                this.props.registrationsAdminList.data.config.call_status.filter((g) => 
-                                    this.state.selected.call_status_id === g.id).length > 0 ? 
-                                this.props.registrationsAdminList.data.config.call_status.filter((g) => 
-                                    this.state.selected.call_status_id === g.id
-                            )[0].name : '',
-                          }}
-                          options={this.props.registrationsAdminList.data.config.call_status.map((g) => { 
-                            return (
-                                { 
-                                label: g.name,
-                                value: g.name
-                                }
-                            )
-                          })}
-                        />
-                        )}
-                    </Grid>
                     <Grid item xs={3} style={{margin:10}}>
                       {(this.props.registrationsAdminList && this.props.registrationsAdminList.data &&
                         this.props.registrationsAdminList.data.config && 
@@ -812,7 +760,7 @@ class RegistrationsEdit extends Component {
                         this.props.registrationsAdminList.data.config &&
                         this.props.registrationsAdminList.data.config.status && this.state.statusSelected !== null) && (
                           <TemplateSelect
-                              label='Commission User'
+                              label='Assignee'
                               onChange={this.onCommissionChange}
                               value={{label:this.state.selected.commission_name}}
                               options={this.props.registrationsAdminList.data.config.commission_users.map((e) => { 

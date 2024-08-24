@@ -64,7 +64,6 @@ class RegistrationUpdate(AdminBase):
                 pq.id,pqs.name,o.name,o.id as office_id,pqs.name as status,
                 pq.provider_queue_status_id,
                 u.first_name,u.last_name,u.email,u.phone,u.id as uid,
-                o.office_alternate_status_id, oas1.name as office_alternate_status_name,
                 pq.initial_payment,op.id as planid
             from
                 provider_queue pq
@@ -74,7 +73,6 @@ class RegistrationUpdate(AdminBase):
                 left outer join office_plans op on op.office_id = o.id
                 left outer join office_user ou on ou.office_id = o.id
                 left outer join users u on u.id = ou.user_id
-                left outer join office_alternate_status oas1 on o.office_alternate_status_id=oas1.id
             where
                 o.id = %s
             group by 
@@ -200,11 +198,6 @@ class RegistrationUpdate(AdminBase):
             params['lead_strength_id'] = STR['Potential Provider']
         if 'initial_payment' not in params:
             params['initial_payment'] = None
-        if 'office_alternate_status_id' in params:
-            db.update("""
-                update office set office_alternate_status_id=%s where id = %s
-                """,(params['office_alternate_status_id'],params['office_id'])
-            )
         if 'website' in params:
             db.update("""
                 update provider_queue set website=%s where office_id = %s
@@ -222,11 +215,6 @@ class RegistrationUpdate(AdminBase):
             """,(params['provider_queue_status_id'],params['lead_strength_id'],
                  params['initial_payment'],offid)
         )
-        if 'office_alternate_status_id' in params:
-            db.update("""
-                update office set office_alternate_status_id=%s where id = %s
-                """,(params['office_alternate_status_id'],offid)
-            )
         if 'commission_user_id' in params:
             db.update("""
                 update office set commission_user_id=%s where id=%s
@@ -673,7 +661,10 @@ class RegistrationList(AdminBase):
                 office_id=%s
             """,(x['office_id'],)
         )
+        x['zipcode'] = x['city'] = x['state'] = 'N/A'
         if len(x['addr']) > 0:
+            x['zipcode'] = x['addr'][0]['zipcode']
+            x['city'] = x['addr'][0]['city']
             x['state'] = x['addr'][0]['state']
         x['assignee'] = db.query("""
             select
@@ -848,7 +839,6 @@ class RegistrationList(AdminBase):
                 concat(comu.first_name, ' ', comu.last_name) as commission_name,
                 concat(setu.first_name, ' ', setu.last_name) as setter_name,
                 comu.email as commission_email,
-                o.office_alternate_status_id, oas1.name as office_alternate_status_name,
                 coup.id as coupon_id,coup.name as coupon_name,pqqs.name as source_name,
                 pqps.name as presented_status_name,pq.presentation_result,
                 pq.set_date,pq.present_date,pq.estimated_close_date,
@@ -874,7 +864,6 @@ class RegistrationList(AdminBase):
                 left outer join users off_u on off_u.id = ou.user_id
                 left outer join users comu on comu.id = o.commission_user_id
                 left outer join users setu on setu.id = o.setter_user_id
-                left outer join office_alternate_status oas1 on o.office_alternate_status_id=oas1.id
             where
                 1 = 1 
         """
@@ -946,24 +935,16 @@ class RegistrationList(AdminBase):
                     count_par.append(user['id'])
                     search_par.insert(0,user['id'])
                     count_par.append(user['id'])
+                if 'open_saturday' in params and params['open_saturday'] is not None:
+                    q += " and open_saturday = "
+                    search_par.append(params['open_saturday'])
+                    count_par.append(params['open_saturday'])
                 if 'status' in params and len(params['status']) > 0:
                     q += " and provider_queue_status_id in ("
                     arr = []
                     for z in params['status']:
                         arr.append(z)
                     q += ",".join(map(str,arr))
-                    q += ")"
-                if 'alt_status' not in params or len(params['alt_status']) == 0:
-                    params['alt_status'] = [-1]
-                if 'alt_status' in params and params['alt_status'] is not None and len(params['alt_status']) > 0: 
-                    q += " and ("
-                    arr = []
-                    for z in params['alt_status']:
-                        if z == str(0) or z == 0:
-                            arr.append("office_alternate_status_id is null")
-                        else:
-                            arr.append("office_alternate_status_id = %s" % z)
-                    q += " or ".join(map(str,arr))
                     q += ")"
                 if 'mine' in params and params['mine'] is not None and params['mine']: # Delete users if mine is True
                     params['users'] = [user['id']]
@@ -1031,10 +1012,6 @@ class RegistrationList(AdminBase):
             dtrack.append(x)
         ret['config'] = {}
         ret['config']['type'] = db.query("select id,name from office_type where name <> 'Customer'")
-        ret['config']['alternate_status'] = db.query("""
-                select 0 as id,'NONE' as name
-                UNION ALL
-                select id,name from office_alternate_status""")
         ret['config']['call_status'] = db.query("select id,name from provider_queue_call_status")
         ret['config']['action_status'] = db.query("select id,name from provider_queue_actions_status")
         ret['config']['action_type'] = db.query("select id,name from provider_queue_actions_type where id in (1,3)")
@@ -1150,38 +1127,18 @@ class RegistrationList(AdminBase):
                 ret['filename'] = 'dnc_list-%s.csv' % d
                 myq = prefilter
                 myq += "\n /* DNC */ and ("
-                myq += " office_alternate_status_id = %s " % ALT['DNC']
-                myq += " or pq.provider_queue_status_id = %s " % PQS['IN_NETWORK']
-                myq += " or office_alternate_status_id = %s " % ALT['NOT_INTERESTED']
-                myq += " or office_alternate_status_id = %s " % ALT['RAIN_REQUIRED_TO_CLOSE']
-                myq += " or office_alternate_status_id = %s " % ALT['HOT_DEAL_PENDING_CLOSE']
-                myq += " or office_alternate_status_id = %s " % ALT['REQUIRES_REFERENCE']
-                myq += " or office_alternate_status_id = %s " % ALT['NOT_A_CHIROPRACTOR']
-                myq += " or office_alternate_status_id = %s " % ALT['WORKING_ATT1']
-                myq += " or office_alternate_status_id = %s " % ALT['WORKING_ATT2']
-                myq += " or office_alternate_status_id = %s " % ALT['WORKING_ATT3']
-                myq += " or office_alternate_status_id = %s " % ALT['WORKING_ATT4']
-                myq += " or office_alternate_status_id = %s " % ALT['REQUIRES_PATIENT']
-                myq += " or office_alternate_status_id = %s " % ALT['WORKING_ATT5']
-                myq += " or office_alternate_status_id = %s " % ALT['NURTURING']
-                myq += " or office_alternate_status_id = %s " % ALT['NURTURING_UNTIL_PATIENT_SENT']
-                myq += " or office_alternate_status_id = %s " % ALT['CLOSED_PAID']
-                myq += " or office_alternate_status_id = %s " % ALT['RAIN_REQUIRED_TO_CLOSE']
+                myq += " provider_queue_status_id = %s " % PQS['DO_NOT_CONTACT']
+                myq += " or provider_queue_status_id = %s " % PQS['IN_NETWORK']
+                myq += " or provider_queue_status_id = %s " % PQS['NOT_INTERESTED']
+                myq += " or provider_queue_status_id = %s " % PQS['REQUIRES_RAIN']
+                myq += " or provider_queue_status_id = %s " % PQS['REQUIRES_REFERENCE']
+                myq += " or provider_queue_status_id = %s " % PQS['REQUIRES_PATIENT']
+                myq += " or provider_queue_status_id = %s " % PQS['NOT_A_CHIROPRACTOR']
+                myq += " or provider_queue_status_id = %s " % PQS['PAYMENT_COMMITTED']
+                myq += " or provider_queue_status_id = %s " % PQS['WARMING']
+                myq += " or provider_queue_status_id = %s " % PQS['RAIN_REQUIRED_TO_CLOSE']
                 myq += ")\n"
                 i = []
-                #for g in params['alt_status']:
-                #    if g == None:
-                #        continue
-                #    if g == ALT['DNC']:
-                #        continue
-                #    if g == ALT['Not interested']:
-                #        continue
-                #    if g == ALT['Not a Chiropractor']:
-                #        continue
-                #    i.append(g)
-                #myq += " /* PQS */ and provider_queue_status_id not in (" 
-                #myq += ",".join(map(str,i))
-                #myq += ")\n"
             myq += " group by o.id order by id desc "
             o = db.query(myq,pre_par)
             rep = []
