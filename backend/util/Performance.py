@@ -69,6 +69,7 @@ class performance():
                             latitude, longitude, continent, 
                             country, stateprov, city 
                            from ip_lookup where %s between ip_st_int and ip_en_int
+                            limit 1
                         """
                     o = db.query(q,(g,))
                     if len(o) > 0:
