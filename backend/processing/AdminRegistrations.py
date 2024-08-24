@@ -682,7 +682,7 @@ class RegistrationList(AdminBase):
             where id in
             (select user_id
                 from user_entitlements ue,entitlements e
-                where ue.entitlements_id=e.id and e.name='CRM')
+                where ue.entitlements_id=e.id and e.name='CRMUser')
             UNION ALL
             select
                 u.id,u.first_name,u.last_name

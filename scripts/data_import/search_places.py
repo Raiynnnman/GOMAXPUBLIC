@@ -50,10 +50,10 @@ def processLocation(q,dedup=False):
     global PLACES
     FINAL = {}
     if 'health' not in q['types']:
-        print("not health")
+        # print("not health")
         return None
     if q['business_status'] != "OPERATIONAL":
-        print("not operational")
+        # print("not operational")
         return None
     pid = q['place_id']
     FINAL['places_id'] = pid
@@ -65,17 +65,17 @@ def processLocation(q,dedup=False):
         select id from office where places_id=%s
     """,(pid,pid,pid))
     if len(has) > 0:
-        print("places found")
+        print("Already have %s" % pid)
         return None
     if pid in PLACES:
-        print("Already have %s" % pid)
+        print("Already did %s" % pid)
         return None
     PLACES[pid] = 1
     gtok = q['formatted_address'].split(' ')
     score = 0
     # print("q=%s" % json.dumps(q,indent=4))
     if 'formatted_phone_number' not in q:
-        print("business has no phone")
+        # print("business has no phone")
         return None
     gphone = q['formatted_phone_number']
     gphone = gphone.replace(" ",'').replace("-",'').replace(")","").replace("(",'')
@@ -111,7 +111,7 @@ def processLocation(q,dedup=False):
         if 'periods' in q['current_opening_hours']:
             DH = {}
             for g in q['current_opening_hours']['periods']:
-                print("g=%s" % g)
+                # print("g=%s" % g)
                 if 'close' in g:
                     day = DAY_MAPPING[g['close']['day']]
                     end = g['close']['time']
@@ -124,7 +124,7 @@ def processLocation(q,dedup=False):
                 if day == 'Sat':
                     FINAL['open_saturday'] = True
     FINAL['hours'] = json.dumps(FINAL['hours'])
-    print("FINAL_HOURS=%s" % FINAL['hours'])
+    # print("FINAL_HOURS=%s" % FINAL['hours'])
     ph = q['formatted_phone_number']
     ph = ph.replace(" ",'').replace("-",'').replace(")","").replace("(",'')
     up = None
@@ -141,8 +141,8 @@ def processLocation(q,dedup=False):
     HOST = encryption.getSHA256()
     if up is not None:
         HOST = up.hostname
-    print("ph=%s" % ph)
-    print("HOST=%s" % HOST)
+    # print("ph=%s" % ph)
+    # print("HOST=%s" % HOST)
     hh = db.query("""
         select id as id,office_id,'oa' as k from office_addresses where phone=%s
         UNION ALL
@@ -155,16 +155,16 @@ def processLocation(q,dedup=False):
             ph
         )
     )
-    print("hh=%s" % hh)
+    # print("hh=%s" % hh)
     if len(hh) > 0:
         score = 1
         FINAL['office_id'] = hh[0]['office_id']
         score = 1
     if score > .8:
         FINAL['have'] = True
-        print("Score = %s" % score)
-        print(json.dumps(q,indent=4))
-        print(FINAL)
+        # print("Score = %s" % score)
+        # print(json.dumps(q,indent=4))
+        # print(FINAL)
         if 'website' not in q:
             q['website'] = ''
         if 'rating' not in q:
@@ -214,8 +214,8 @@ def processLocation(q,dedup=False):
             q['website'] = ''
         if 'rating' not in q:
             q['rating'] = 0
-        print("myq=")
-        print(json.dumps(q,indent=4))
+        # print("myq=")
+        # print(json.dumps(q,indent=4))
         em = encryption.getSHA256()
         db.update("""
             insert into users (
@@ -301,7 +301,7 @@ def processLocation(q,dedup=False):
         update office set google_check = 1 where id=%s
         """,(FINAL['office_id'],)
     )
-    print("FINAL=%s" % FINAL)
+    # print("FINAL=%s" % FINAL)
     if not args.dryrun:
         db.commit()
     return FINAL
@@ -333,8 +333,8 @@ if args.zipcode is not None:
                 radius=50000,
                 keyword='Chiropractor',
                 pagetoken=token)
-            print("token=%s" % qr.next_page_token)
-            print("len=%s" % len(qr.places))
+            # print("token=%s" % qr.next_page_token)
+            # print("len=%s" % len(qr.places))
             if isinstance(qr.next_page_token,list):
                 break
             token = qr.next_page_token
@@ -344,12 +344,12 @@ if args.zipcode is not None:
                 place.get_details()
                 q = json.loads(json.dumps(place.details,use_decimal=True))
                 pid = q['place_id']
-                print("pid=%s" % pid)
+                # print("pid=%s" % pid)
                 if pid in PLACE_CACHE:
                     continue
                 PLACE_CACHE[pid] = 1
                 places.append(q)
-            print(len(places))
+            # print(len(places))
 
         H=open("%s.json" % args.zipcode,"w")
         H.write(json.dumps(places,indent=4))
@@ -362,7 +362,7 @@ if args.zipcode is not None:
     data = []
     for x in places:
         j = processLocation(x)
-        print("ret=%s" % j)
+        # print("ret=%s" % j)
         if j is not None:
             data.append(j)
     H = open("output-%s.json" % args.zipcode,"w")

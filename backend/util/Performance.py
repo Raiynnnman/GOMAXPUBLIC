@@ -14,6 +14,8 @@ from util import calcdate, encryption
 from flask import request
 from util.DBOps import Query
 
+__CACHE__ = {}
+
 class performance():
     __start = None
     __subsys = None
@@ -45,21 +47,35 @@ class performance():
             'continent':''
         }
         self.__data__ = j
+        __s = 0
         try:
+            __s = datetime.datetime.now()
             ip = None
             if "X-Forwarded-For" in request.headers:
                 ip = request.headers['X-Forwarded-For']
                 j['ip'] = ip
             if ip is not None:
+                print("ip is not none")
+                o = []
                 g = int(ipaddress.ip_address(ip))
-                #print("g=%s" % g)
-                q = """select 
-                        latitude, longitude, continent, 
-                        country, stateprov, city 
-                       from ip_lookup where %s between ip_st_int and ip_en_int
-                    """
-                o = db.query(q,(g,))
-                #print("iplat: %s (%s)" % (o,g))
+                print("g=%s" % g)
+                if g in __CACHE__:
+                    print("PERF_CACHE_HIT")
+                    o = [__CACHE__[g]]
+                else:
+                    #print("g=%s" % g)
+                    print("PERF_CACHE_MISS")
+                    q = """select 
+                            latitude, longitude, continent, 
+                            country, stateprov, city 
+                           from ip_lookup where %s between ip_st_int and ip_en_int
+                        """
+                    o = db.query(q,(g,))
+                    if len(o) > 0:
+                        __CACHE__[g] = o[0]
+                    else:
+                        __CACHE__[g] = []
+                    #print("iplat: %s (%s)" % (o,g))
                 for n in o:
                     j['lat'] = n['latitude']
                     j['lon'] = n['longitude']
@@ -72,6 +88,10 @@ class performance():
             return j
         except Exception as e:
             print("PERFORMANCE_ERROR:%s" % str(e))
+        finally:
+            __p = datetime.datetime.now() - __s
+            __ms = float("%s.%s" % (__p.seconds,__p.microseconds))
+            print("PERF_LOOKUP: %2.6fs" % __ms)
 
     def status(self,s):
         self.__status__ = s
@@ -81,12 +101,13 @@ class performance():
         j = self.__data__
         db.update("""
             insert into performance 
-                (classname,lat,lon,country,state,city,ms,ip,continent,user_id,data) 
-                values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                (classname,lat,lon,country,state,city,ms,ip,continent,user_id,data,data_sha) 
+                values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
             """,(j['classname'],j['lat'],j['lon'],j['country'],
                  j['stateprov'],j['city'],j['ms'],
                  j['ip'],j['continent'],self.__user_id__,
-                json.dumps(self.__metadata__)
+                json.dumps(self.__metadata__),
+                encryption.getSHA256(json.dumps(self.__metadata__,sort_keys=True))
                 )
         )
         db.commit()
