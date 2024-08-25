@@ -106,8 +106,8 @@ class App extends Component {
                         <Route exact path='/app/main/admin/registrations' component={Registrations}/>
                         <Route exact path='/app/main/admin/registrations/:id' component={Registrations}/>
                         <Route exact path='/app/main/admin/clients' component={Referrers}/>
-                        <Route exact path='/app/main/admin/providers' component={OfficeAdminList}/>
-                        <Route exact path='/app/main/admin/providers/:id' component={OfficeAdminList}/>
+                        <Route exact path='/app/main/admin/subscribers' component={OfficeAdminList}/>
+                        <Route exact path='/app/main/admin/subscribers/:id' component={OfficeAdminList}/>
                         <Route exact path='/app/main/admin/invoices' component={InvoiceAdminList}/>
                         <Route exact path='/app/main/admin/commissions' component={CommissionAdminList}/>
                         <Route exact path='/app/main/admin/demos' component={OnlineDemoList}/>
@@ -121,6 +121,12 @@ class App extends Component {
                         <Route exact path="/app/main/client/chat" component={ChatUser} />
                         <Route exact path="/app/main/client/appointments" component={Appointments} />
                         <Route exact path="/app/main/client/appointments/:id" component={Appointments} />
+                        {this.props.currentUser && (
+                            <Redirect from="*" to="/app"/>
+                        )}
+                        {!this.props.currentUser && (
+                            <Redirect from="*" to="/"/>
+                        )}
                     </Switch>
                 </BrowserRouter>
             </div>

@@ -65,15 +65,14 @@ class OfficeList(AdminBase):
                     trim(concat(comu.first_name, ' ', comu.last_name)) as commission_name,pq.website,
                     trim(concat(setu.first_name, ' ', setu.last_name)) as setter_name,
                     pq.business_name,pq.doing_business_as_name,pq.closed_date,
-                    count(cio.id) as client_count,
-                    o.office_alternate_status_id, 
-                    oas1.name as office_alternate_status_name,
+                    count(cio.id) as client_count,timestampdiff(day,oplan.start_date,now()) as days_in_network,
                     o.score as score,o.score_components,o.weighted_score,o.account_summary
                 from 
                     office o
                     left outer join office_type ot on o.office_type_id = ot.id
                     left outer join provider_queue pq on pq.office_id = o.id
                     left outer join office_phones op on op.office_id = o.id 
+                    left outer join office_plans oplan on oplan.office_id = o.id 
                     left outer join office_addresses oa on oa.office_id = o.id 
                     left outer join client_intake_offices cio on cio.office_id=o.id
                     left outer join office_user ou on ou.office_id = o.id
@@ -81,7 +80,6 @@ class OfficeList(AdminBase):
                     left outer join provider_queue_status pqs on pq.provider_queue_status_id=pqs.id
                     left outer join users comu on comu.id = o.commission_user_id
                     left outer join users setu on setu.id = o.setter_user_id
-                    left outer join office_alternate_status oas1 on o.office_alternate_status_id=oas1.id
                 where 
                     o.office_type_id <> %s 
             """ % (OT['Customer'],)
@@ -123,15 +121,6 @@ class OfficeList(AdminBase):
             count_par.insert(0,'%%' + params['search']+'%%')
         if 'status' in params and params['status'] is not None and len(params['status']) > 0:
             q += " and pq.provider_queue_status_id in (%s) " % ','.join(map(str,params['status']))
-        if 'alt_status' in params and params['alt_status'] is not None and 0 not in params['alt_status']:
-            q += " and office_alternate_status_id in ("
-            arr = []
-            for z in params['alt_status']:
-                arr.append("%s")
-                count_par.append(z)
-                search_par.append(z)
-            q += ",".join(map(str,arr))
-            q += ")"
         q += " group by o.id order by id desc"
         cnt = db.query("select count(id) as cnt from (" + q + ") as t", count_par)
         repquery = q
@@ -378,10 +367,6 @@ class OfficeList(AdminBase):
         ret['config']['languages'] = db.query("select id,name from languages")
         ret['config']['coupons'] = db.query("select id,name,total,perc,reduction from coupons")
         ret['config']['provider_status'] = db.query("select id,name from provider_queue_status")
-        ret['config']['alternate_status'] = db.query("""
-                select 0 as id,'NONE' as name
-                UNION ALL
-                select id,name from office_alternate_status""")
         ret['config']['invoice_status'] = db.query("select id,name from invoice_status")
         return ret
 
@@ -444,11 +429,6 @@ class OfficeSave(AdminBase):
             db.update("""
                 update office set account_summary=%s where id = %s
                 """,(params['account_summary'],params['id'])
-            )
-        if 'office_alternate_status_id' in params:
-            db.update("""
-                update office set office_alternate_status_id=%s where id = %s
-                """,(params['office_alternate_status_id'],params['id'])
             )
         if 'business_name' in params:
             db.update("""

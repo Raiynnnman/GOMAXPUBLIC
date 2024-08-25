@@ -224,12 +224,12 @@ class Navbar extends Component {
              }
             },
             {
-             n:'Providers',
+             n:'Subscribers',
              v:function(c) { 
                 return true;
              },
              a:function() { 
-                window.location = '/app/main/admin/providers';
+                window.location = '/app/main/admin/subscribers';
              }
             },
             {
@@ -512,7 +512,7 @@ class Navbar extends Component {
                                         <ul className="main-menu">
                                             <li className="active"><a href="/app">Home</a></li>
                                             <li><a href="/app/main/admin/map">Map</a></li>
-                                            <li><a href="/app/main/admin/providers">Providers</a></li>
+                                            <li><a href="/app/main/admin/subscribers">Subscribers</a></li>
                                             <li><a href="/app/main/admin/clients">Patients</a></li>
                                             <li><a href="/app/main/admin/registrations">CRM</a></li>
                                             <li><a href="/app/main/admin/investors">Investors</a></li>

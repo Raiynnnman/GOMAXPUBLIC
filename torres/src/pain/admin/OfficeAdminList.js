@@ -99,7 +99,6 @@ class OfficeList extends Component {
             commentAdd:false,
             addrState:{},
             statusSelected:null,
-            statusAltSelected:null,
             search:null,
             selProvider:null,
             page: 0,
@@ -128,12 +127,10 @@ class OfficeList extends Component {
         this.onStatusFilter = this.onStatusFilter.bind(this);
         this.onLanguageChange = this.onLanguageChange.bind(this);
         this.onStatusChange = this.onStatusChange.bind(this);
-        this.onAltStatusChange = this.onAltStatusChange.bind(this);
         this.websiteChange = this.websiteChange.bind(this);
         this.onCommissionChange = this.onCommissionChange.bind(this);
         this.onSetterChange = this.onSetterChange.bind(this);
         this.save = this.save.bind(this);
-        this.onAltStatusFilter = this.onAltStatusFilter.bind(this);
         this.delGrid = this.delGrid.bind(this);
         this.addAddress = this.addAddress.bind(this);
         this.addUser = this.addUser.bind(this);
@@ -161,21 +158,6 @@ class OfficeList extends Component {
             } 
             this.state.statusSelected = t;
             this.state.filter = t1;
-            this.setState(this.state);
-            changed = true;
-        } 
-        if (p.offices.data && p.offices.data.config && 
-            p.offices.data.config.provider_status && 
-            this.state.statusAltSelected === null && this.state.selProvider === null) { 
-            var c = 0;
-            var t = [];
-            var t1 = [];
-            for (c = 0; c < p.offices.data.config.alternate_status.length; c++) { 
-                t.push(p.offices.data.config.alternate_status[c]); 
-                t1.push(p.offices.data.config.alternate_status[c].id); 
-            } 
-            this.state.statusAltSelected = t;
-            this.state.altFilter = t1;
             this.setState(this.state);
             changed = true;
         } 
@@ -272,7 +254,7 @@ class OfficeList extends Component {
         this.props.dispatch(getOffices(
             {office_id:this.state.selProvider,sort:this.state.sort,direction:this.state.direction,
              search:this.state.search,limit:this.state.pageSize,
-            offset:this.state.page,status:this.state.filter,alt_status:this.state.altFilter}
+            offset:this.state.page,status:this.state.filter,}
         ));
     }
 
@@ -304,15 +286,6 @@ class OfficeList extends Component {
         ));
     } 
 
-    onAltStatusChange(e,t) { 
-        var g = this.props.offices.data.config.alternate_status.filter((g) => g.name === e.target.value)
-        if (g.length > 0) { 
-            this.state.selected.office_alternate_status_id = g[0].id;
-            this.state.selected.office_alternate_status_name = g[0].name;
-        } 
-        this.setState(this.state);
-    }
-
     onStatusChange(e,t) { 
         var g = this.props.offices.data.config.provider_status.filter((g) => g.name === e.target.value)
         if (g.length > 0) { 
@@ -335,22 +308,6 @@ class OfficeList extends Component {
             this.props.offices.data.config.commission_users.filter((g) => g.name === e.target.value)[0].id
         this.setState(this.state);
     }
-
-    onAltStatusFilter(e) { 
-        if (e.length < 1 ) { return; }
-        var c = 0;
-        var t = [];
-        var t1 = [];
-        for (c = 0; c < e.length; c++) { 
-            e[c].name = e[c].value;
-            t.push(e[c]); 
-            t1.push(e[c].id);
-        } 
-        this.state.statusAltSelected = t;
-        this.state.altFilter = t1;
-        this.setState(this.state)
-        this.reload();
-    } 
 
     onLanguageChange(e,t) { 
         var c = 0;
@@ -1049,42 +1006,14 @@ class OfficeList extends Component {
                         />
                     )}
                 </Grid>                
-                <Grid item xs="3" style={{zIndex:9995,margin:10}}>
-                  {(this.props.offices && this.props.offices.data && 
-                    this.props.offices.data.config &&
-                    this.props.offices.data.config.alternate_status && this.state.statusAltSelected !== null) && (
-                      <TemplateSelectMulti
-                          closeMenuOnSelect={true}
-                          label='Special Status'
-                          onChange={this.onAltStatusFilter}
-                          value={this.state.statusAltSelected.map((g) => { 
-                            return (
-                                {
-                                label:this.props.offices.data.config.alternate_status.filter((f) => f.id === g.id).length > 0 ? 
-                                    this.props.offices.data.config.alternate_status.filter((f) => f.id === g.id)[0].name : '',
-                                id:this.props.offices.data.config.alternate_status.filter((f) => f.id === g.id).length > 0 ? 
-                                    this.props.offices.data.config.alternate_status.filter((f) => f.id === g.id)[0].id: ''
-                                }
-                            )
-                          })}
-                          options={this.props.offices.data.config.alternate_status.map((e) => { 
-                            return (
-                                { 
-                                label: e.name,
-                                id: e.id
-                                }
-                            )
-                          })}
-                        />
-                    )}
-                </Grid>                
                 <Grid item xs={3} style={{margin:10}}>
                     <TemplateTextField type="text" id="normal-field" onChange={this.search}
                     label="Search" value={this.state.search}/>
                 </Grid>
+                <Grid item xs={3}></Grid>
                 <Grid item xs={2}>
                     <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
-                        <div style={{justifyContent:'spread-evenly'}}>
+                        <div style={{justifyContent:'space-between'}}>
                             <TemplateButtonIcon onClick={() => this.reload()} style={{width:35}}
                                 label={<AutorenewIcon/>}/>
                             <TemplateButtonIcon onClick={this.officeReport} style={{width:35}} label={<AssessmentIcon/>}/>
@@ -1176,26 +1105,6 @@ class OfficeList extends Component {
                             this.props.offices.data.config &&
                             this.props.offices.data.config.commission_users) && (
                               <TemplateSelect
-                                  label='Special Status'
-                                  onChange={this.onAltStatusChange}
-                                  value={{label:this.state.selected.office_alternate_status_name}}
-                                  options={this.props.offices.data.config.alternate_status.map((e) => { 
-                                    return (
-                                        { 
-                                        label: e.name,
-                                        name: e.name,
-                                        value: e.name
-                                        }
-                                    )
-                                  })}
-                                />
-                            )}
-                        </Grid>                
-                        <Grid item xs={3} style={{margin:20}}>
-                          {(this.props.offices && this.props.offices.data && 
-                            this.props.offices.data.config &&
-                            this.props.offices.data.config.commission_users) && (
-                              <TemplateSelect
                                   label='Commission User'
                                   onChange={this.onCommissionChange}
                                   value={{label:this.state.selected.commission_name}}
@@ -1231,6 +1140,10 @@ class OfficeList extends Component {
                                 />
                             )}
                         </Grid>                
+                        <Grid item xs={4} style={{margin:20}}>
+                          <TemplateTextField 
+                                  readOnly label="Days in Network" value={this.state.selected.days_in_network}/>
+                        </Grid>
                         <Grid item xs={3} style={{margin:20}}>
                           <TemplateSelectMulti
                               closeMenuOnSelect={true}
