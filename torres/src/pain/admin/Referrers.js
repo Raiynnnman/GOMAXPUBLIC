@@ -32,7 +32,8 @@ class Referrers extends Component {
         super(props);
         this.state = { 
             selected: null,
-            activeTab: "patients",
+            activeTab: "clients",
+            activeOnly: false,
             statusSelected:null,
             search:null,
             filter: [],
@@ -187,7 +188,11 @@ class Referrers extends Component {
     } 
     reload() { 
         this.props.dispatch(getReferrers(
-            {timezone:timeZoneIANA,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
+            {active_only:this.state.activeOnly,
+             timezone:timeZoneIANA,
+             search:this.state.search,
+             limit:this.state.pageSize,
+             offset:this.state.page,status:this.state.filter}
         ));
     }
     save(e) { 
@@ -229,8 +234,13 @@ class Referrers extends Component {
         this.state.subTab = e;
         this.setState(this.state);
     } 
-    toggleTab(e) { 
-        this.state.activeTab = e;
+    toggleTab(e,t) { 
+        if (t === 'active_clients') { 
+            this.state.activeOnly = true;
+        } else { 
+            this.state.activeOnly = false;
+        } 
+        this.state.activeTab = t;
         this.setState(this.state);
     } 
 
@@ -345,10 +355,10 @@ class Referrers extends Component {
             <Grid container xs="12" style={{marginTop:20}}>
                 <Grid item xs="12">
                     <Tabs value={this.state.activeTab} onChange={this.toggleTab}>
-                        <Tab value='patients' label='All Clients'/>
-                        <Tab value='active_patients' label='Active Clients'/>
+                        <Tab value='clients' label='All Clients'/>
+                        {/*<Tab value='active_clients' label='Active Clients'/>*/}
                     </Tabs>
-                    {(this.state.activeTab === 'patients') && (
+                    {(this.state.activeTab === 'clients' || this.state.activeTab === 'active_clients') && (
                     <>
                             {(this.state.selected !== null) && (
                                 <ReferrersEdit selected={this.state.selected} onSave={this.save} onCancel={this.close}/>

@@ -172,7 +172,6 @@ class ReferrerList(AdminBase):
                 arr.append("referrer_users_status_id = %s " % z)
             q += " or ".join(arr)
             q += ")"
-        print(q)
         cnt = db.query("select count(id) as cnt from (%s) as t" % (q,))
         ret['total'] = cnt[0]['cnt']
         p.append(limit)
