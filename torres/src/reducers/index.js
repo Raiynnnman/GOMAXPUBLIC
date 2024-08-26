@@ -1,5 +1,7 @@
 import { combineReducers } from 'redux';
 import dataScienceQueries from './dataScienceQueries';
+import support from './support';
+import supportSave from './supportSave';
 import adminNotifications from './adminNotifications';
 import dataScienceDataset from './dataScienceDataset';
 import referralAdminUpdate from './referralAdminUpdate';
@@ -219,6 +221,8 @@ export default combineReducers({
     referralAdminUpdate,
     dataScienceDataset,
     adminNotifications,
+    support,
+    supportSave,
     dataScienceResults,
     dataScienceDatasetRun,
     onlineDemoSave,

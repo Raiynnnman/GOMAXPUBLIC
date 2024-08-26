@@ -885,7 +885,6 @@ class OnlineDemoSave(AdminBase):
         # TODO: Compensate for CDT/CST
         TZ = tzInfo.getTZ()
         mytz = 0
-        print(params)
         if params['timezone'] in TZ:
             mytz = TZ[params['timezone']]
         if 'id' in params:
@@ -901,7 +900,6 @@ class OnlineDemoSave(AdminBase):
             u = config.getKey("host_url")
             ud = str(uuid.uuid4())
             url = "%s/online-demo/%s" % (u,ud)
-            print(params,ud,url)
             db.update("""
                 insert into online_demo_meetings 
                     (description,meeting_id, start_date,end_date, url)

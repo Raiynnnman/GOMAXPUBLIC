@@ -30,14 +30,11 @@ class TicketCreate(AdminBase):
         else:
             raise ValueError("User is required")
 
-        print("Creating ticket with params:", params)
-
         if not email:
             raise ValueError("Email is required")
 
-        # Insert into support_queue table with ticket_name
         db.update("""
-            INSERT INTO support_queue (office_id, assignee_id, support_status_id, urgency_id, description, ticket_name)
+            INSERT INTO support_queue (office_id, assignee_id, support_status_id, urgency_id, description, summary)
             VALUES (%s, %s, %s, %s, %s, %s)
         """, (office_id, user_id, params['status'], params['urgency'], params['description'], params['ticketName']))
         
@@ -48,7 +45,9 @@ class TicketCreate(AdminBase):
         # Return the created entry
         return db.query("""
             SELECT 
-                sq.id AS ticket_id, sq.office_id, sq.assignee_id, sq.support_status_id, sq.urgency_id, sq.description, sq.created, sq.updated, sq.ticket_name
+                sq.id AS ticket_id, sq.office_id, 
+                sq.assignee_id, sq.support_status_id, 
+                sq.urgency_id, sq.description, sq.created, sq.updated, sq.summary
             FROM
                 support_queue sq
             WHERE
@@ -80,15 +79,12 @@ class TicketUpdate(AdminBase):
         return False
 
     def processRow(self, params, user, db):
-        print("User:", user, "Params:", params)
         
         # Get office_id from user or params
         office_id = user.get('offices', [None])[0]  # Assuming 'offices' is a list
         email = user.get('email')
         user_id = user.get('id')
 
-        print("Updating ticket with params:", params)
-        print("email", email, "office", office_id, "user", user_id)
 
         if not email:
             raise ValueError("Email is required")
@@ -193,8 +189,6 @@ class TicketList(AdminBase):
     @check_crm
     def execute(self, *args, **kwargs):
         job, user, off_id, params = self.getArgs(*args, **kwargs)
-        if not params:
-            raise ValueError("Params cannot be None")
 
         limit = params.get('limit', 10000)
         offset = params.get('offset', 0)
@@ -202,17 +196,27 @@ class TicketList(AdminBase):
         db = Query()
         base_query = """
             SELECT 
-                sq.id, sq.ticket_name, u.email, o.id as office_id, ss.status_name as status,
-                sq.support_status_id, sq.created, sq.updated, sq.description,
-                sq.assignee_id, u.first_name, u.last_name, u.email as user_email, urg.level_name as urgency_level
+                sq.id, sq.summary, o.id as office_id, ss.name as status,
+                sq.support_urgency_id, sq.support_status_id, sq.created, 
+                sq.updated, sq.description,sq.first_name as contact_first_name,
+                sq.last_name as contact_last_name,
+                sq.email as contact_email,sq.phone as contact_phone,
+                o.name as office_name, sq.assignee_id, 
+                u2.first_name as linked_user_first_name,
+                u2.last_name as linked_user_last_name,
+                u2.phone as linked_user_phone,
+                u2.email as linked_user_email,
+                o.email as office_email,
+                u.first_name as assignee_first, 
+                u.last_name as assignee_last, u.email as assignee_email, 
+                urg.name as urgency_level
             FROM
                 support_queue sq
-                LEFT JOIN office o ON sq.office_id = o.id
-                LEFT JOIN office_addresses oa ON oa.office_id = o.id
-                LEFT JOIN support_status ss ON ss.id = sq.support_status_id
-                LEFT JOIN users u ON sq.assignee_id = u.id
-                LEFT JOIN office_plans op ON op.office_id = o.id
-                LEFT JOIN urgency_levels urg ON sq.urgency_id = urg.id
+                LEFT OUTER JOIN office o ON sq.office_id = o.id
+                LEFT OUTER JOIN support_status ss ON ss.id = sq.support_status_id
+                LEFT OUTER JOIN users u ON sq.assignee_id = u.id
+                LEFT OUTER JOIN users u2 ON sq.contact_user_id = u.id
+                LEFT OUTER JOIN support_urgency urg ON sq.support_urgency_id = urg.id
             WHERE 1 = 1
         """
         search_params = []
@@ -220,38 +224,22 @@ class TicketList(AdminBase):
             base_query += " AND sq.id = %s"
             search_params.append(int(params['ticket_id']))
         elif 'mine' in params:
-            base_query += " AND (o.commission_user_id = %s OR o.setter_user_id = %s)"
+            base_query += " AND (o.assignee_id = %s)"
             search_params.append(user['id'])
-            search_params.append(user['id'])
-
         if 'status' in params:
             base_query += " AND sq.support_status_id IN (" + ",".join(["%s"] * len(params['status'])) + ")"
             search_params.extend(params['status'])
-
         if 'search' in params:
             search_term = params['search']
-            if 'state:' in search_term.lower():
-                base_query += " AND oa.state = %s"
-                search_params.append(search_term.split(":")[1].strip())
-            elif 'created:' in search_term.lower():
-                search_date = search_term.split(":")[1].strip()
-                if len(search_date) == 10:
-                    base_query += " AND sq.created = %s"
-                    search_params.append(search_date)
-            elif 'id:' in search_term.lower():
-                base_query += " AND sq.id = %s"
-                search_params.append(search_term.split(":")[1].strip())
-            else:
-                base_query += """
-                    AND (
-                        o.email LIKE %s OR o.name LIKE %s OR u.last_name LIKE %s 
-                        OR u.first_name LIKE %s OR oa.name LIKE %s
-                    )
-                """
-                search_val = '%' + search_term + '%'
-                search_params.extend([search_val] * 5)
+            base_query += """
+                AND (
+                    o.email LIKE %s OR o.name LIKE %s OR u.last_name LIKE %s 
+                    OR u.first_name LIKE %s 
+                )
+            """
+            search_val = '%' + search_term + '%'
+            search_params.extend([search_val] * 5)
 
-        base_query += " AND o.office_alternate_status_id IS NULL"
         base_query += " GROUP BY sq.id"
 
         count_query = "SELECT COUNT(*) as cnt FROM (" + base_query + ") as t"
@@ -268,38 +256,69 @@ class TicketList(AdminBase):
         search_params.extend([limit, offset])
         base_query += " LIMIT %s OFFSET %s"
 
-        print(f"Executing query: {base_query}")
-        print(f"With params: {search_params}")
-
         ret = {
-            'tickets': [],
+            'data': [],
             'total': total,
-            'comments': []
         }
 
-        results = db.query(base_query, search_params)
-        if results:
-            ret['tickets'] = results
-            ret['comments'] = db.query(
+        ret['config'] = {}
+        ret['config']['support_status'] = db.query(""" select id, name from support_status """)
+        ret['config']['support_urgency'] = db.query(""" select id, name from support_urgency """)
+        ret['config']['assignees'] = db.query(""" 
+            select
+                u.id,u.first_name,u.last_name
+            from users u
+            where id in
+            (select user_id
+                from user_entitlements ue,entitlements e
+                where ue.entitlements_id=e.id and e.name='SupportUser')
+            UNION ALL
+            select
+                u.id,u.first_name,u.last_name
+            from users u
+            where id in
+            (select user_id
+                from user_entitlements ue,entitlements e
+                where ue.entitlements_id=e.id and e.name='CRMUser')
+            UNION ALL
+            select
+                u.id,u.first_name,u.last_name
+            from users u
+            where id in
+            (select user_id
+                from user_entitlements ue,entitlements e
+                where ue.entitlements_id=e.id and e.name='Admin')
+            UNION ALL
+            select 1,'System',''
+            """
+        )
+
+        o = db.query(base_query, search_params)
+        ret['data'] = []
+        for x in o:
+            x['ticket_id'] = str(x['id']).zfill(6)
+            x['history'] = db.query("""
+                    SELECT
+                        sqc.support_queue_id, sqc.text, sqc.created, u.first_name, u.last_name, sqc.user_id
+                    FROM
+                        support_queue_history sqc
+                        LEFT OUTER JOIN users u ON sqc.user_id = u.id
+                    WHERE
+                        sqc.support_queue_id = %s
+                """,(x['id'],)
+            )
+            x['comments'] = db.query(
                 """
                     SELECT
                         sqc.support_queue_id, sqc.text, sqc.created, u.first_name, u.last_name, sqc.user_id
                     FROM
                         support_queue_comments sqc
-                        LEFT JOIN users u ON sqc.user_id = u.id
+                        LEFT OUTER JOIN users u ON sqc.user_id = u.id
                     WHERE
-                        sqc.support_queue_id IN (""" + ",".join(["%s"] * len(results)) + """)
-                """, [r['id'] for r in results]
+                        sqc.support_queue_id = %s
+                """,(x['id'],)
             )
-
+            ret['data'].append(x)
         return ret
 
 
-# class TicketListByUser(TicketList):
-#     def execute(self, *args, **kwargs):
-#         job, user, off_id, params = self.getArgs(*args, **kwargs)
-#         if not params:
-#             raise ValueError("Params cannot be None")
-
-#         params['mine'] = True  # Ensure we filter tickets by the current user
-#         return super().execute(*args, **kwargs)

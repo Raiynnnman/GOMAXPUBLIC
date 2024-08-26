@@ -371,7 +371,6 @@ class RegistrationLandingData(RegistrationsBase):
             select value from system_settings where name='do_billing_charge'
             """)[0]['value']
         ret['billing_system_id'] = self.getBillingSystem()
-        print(request.headers)
         if "X-Forwarded-For" in request.headers:
             try:
                 ip = request.headers['X-Forwarded-For']

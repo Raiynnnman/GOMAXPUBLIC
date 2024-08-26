@@ -69,7 +69,6 @@ class Navbar extends Component {
         if (!this.props.currentUser) { return; }
         if (!this.props.currentUser.entitlements) { return; }
         if (!this.props.currentUser.entitlements.includes("Admin")) { return; }
-        console.log("here");
         this.props.dispatch(getNotifications());
     } 
 
@@ -85,7 +84,6 @@ class Navbar extends Component {
     } 
 
     render(){
-        console.log("p",this.props);
         const mainMenuItems = [
             {
              n:'Home',
@@ -193,7 +191,7 @@ class Navbar extends Component {
             {
              n:'Support',
              v:function(c) { 
-                return true;
+                return (c.entitlements.includes('SupportUser') ? true : false)
              },
              a:function() { 
                 window.location = '/#support';
@@ -375,7 +373,10 @@ class Navbar extends Component {
                                         <ul className="main-menu">
                                             <li className="active"><a href="/app">Home</a></li>
                                             <li><a href="/app/main/admin/registrations">CRM</a></li>
-                                            <li><a href="/app/main/admin/tickets">Support</a></li>
+                                            {(this.props.currentUser && this.props.currentUser.entitlements && 
+                                              this.props.currentUser.entitlements.includes('SupportUser')) && (
+                                                <li><a href="/app/main/admin/support">Support</a></li>
+                                            )}
                                             <li><a> 
                                                 <DropdownMenu currentUser={this.props.currentUser} 
                                                     title={
@@ -393,7 +394,10 @@ class Navbar extends Component {
                                         <ul>                              
                                             <li className="active"><a href="/app">Home</a></li>
                                             <li><a href="/app/main/admin/registrations">CRM</a></li>
-                                            <li><a href="/app/main/admin/tickets">Support</a></li>
+                                            {(this.props.currentUser && this.props.currentUser.entitlements && 
+                                              this.props.currentUser.entitlements.includes('SupportUser')) && (
+                                            <li><a href="/app/main/admin/support">Support</a></li>
+                                            )}
                                             <li><a href="#"> // eslint-disable-next-line jsx-a11y/anchor-is-valid
                                                 <DropdownMenu currentUser={this.props.currentUser} 
                                                     title={
@@ -538,7 +542,10 @@ class Navbar extends Component {
                                             <li><a href="/app/main/admin/subscribers">Subscribers</a></li>
                                             <li><a href="/app/main/admin/clients">Clients</a></li>
                                             <li><a href="/app/main/admin/registrations">CRM</a></li>
+                                            {(this.props.currentUser && this.props.currentUser.entitlements && 
+                                              this.props.currentUser.entitlements.includes('SupportUser')) && (
                                             <li><a href="/app/main/admin/support">Support</a></li>
+                                            )}
                                             <li><a>
                                                 <DropdownMenu currentUser={this.props.currentUser} 
                                                     title='System' items={systemItems} dispatch={this.props.dispatch}/>
