@@ -40,7 +40,6 @@ class Map extends Component {
         this.toggleTab = this.toggleTab.bind(this);
         this.reload = this.reload.bind(this);
         this.onDateChange = this.onDateChange.bind(this);
-        this.onZipChange = this.onZipChange.bind(this);
         this.onSearchFilter = this.onSearchFilter.bind(this);
         this.onCategoryChange = this.onCategoryChange.bind(this);
         this.onOfficeTypeChange = this.onOfficeTypeChange.bind(this);
@@ -139,9 +138,9 @@ class Map extends Component {
                 d.push(this.state.categories[c].value);
             }
         }
-        this.state.categoryTypesFilter = d;
+        this.state.categoriesFilter = d;
         this.setState(this.state);
-        this.props.dispatch(getTraffic({ office_types: this.state.officeTypesFilter, categories: d, date: this.state.dateSelected, zipcode: this.state.zipSelected }))
+        this.reload()
     }
 
     onDateChange(e) {
@@ -152,13 +151,15 @@ class Map extends Component {
         }
         this.state.dateSelected = e.label
         this.setState(this.state);
-        this.props.dispatch(getTraffic({ office_types: this.state.officeTypeFilter, categories: this.state.categoriesFilter, 
-            date: this.state.dateSelected, zipcode: this.state.zipSelected }))
+        this.reload()
     }
 
     reload() { 
-        this.props.dispatch(getTraffic({ search: this.state.searchFilter, office_types: this.state.officeTypeFilter, categories: this.state.categoriesFilter, 
-            date: this.state.dateSelected, zipcode: this.state.zipSelected }));
+        this.props.dispatch(getTraffic({ 
+            search: this.state.searchFilter, 
+            office_types: this.state.officeTypeFilter, 
+            categories: this.state.categoriesFilter, 
+            date: this.state.dateSelected }));
     } 
 
     onSearchFilter(e) {
@@ -172,24 +173,6 @@ class Map extends Component {
             this.state.zipSelected = e.label;
             this.setState(this.state);
             this.reload();
-        }
-    }
-
-    onZipChange(e) {
-        if (e.target.value) {
-            this.state.zipSelected = e.target.value;
-            if (e.target.value.length === 5) {
-                this.props.dispatch(getTraffic({ office_types: this.state.officeTypeFilter, categories: this.state.categoriesFilter, 
-                    date: this.state.dateSelected, zipcode: this.state.zipSelected }));
-                // this.geocodeZipcode(e.target.value);
-            }
-            this.setState(this.state);
-        } else {
-            this.state.zipSelected = e.label;
-            this.setState(this.state);
-            this.props.dispatch(getTraffic({ office_types: this.state.officeTypeFilter, categories: this.state.categoriesFilter, 
-                date: this.state.dateSelected, zipcode: this.state.zipSelected }));
-            // this.geocodeZipcode(e.label);
         }
     }
 
@@ -224,29 +207,6 @@ class Map extends Component {
                                 value={this.state.searchFilter}
                             />
                         </Grid>
-                        {/*<Grid item xs={8} m={1} md={2}>
-                            {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.data &&
-                                this.props.trafficData.data.data.length > 0) && (
-                                <TemplateTextField
-                                    onChange={this.onOfficeFilterChange}
-                                    label='Office'
-                                    value={this.state.officeFilter}
-                                />
-                            )}
-                        </Grid>
-                        <Grid item xs={8} m={1} md={2}>
-                            {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.config &&
-                                this.props.trafficData.data.config.avail && this.state.dateSelected !== null) && (
-                                <TemplateTextField
-                                    type="text"
-                                    id="normal-field"
-                                    label="Zipcode"
-                                    onChange={this.onZipChange}
-                                    placeholder=""
-                                    value={this.state.zipSelected}
-                                />
-                            )}
-                        </Grid>*/}
                         <Grid item m={0.5} xs={3} md={3}>
                             {(this.props.trafficData && this.props.trafficData.data && this.props.trafficData.data.config &&
                                 this.props.trafficData.data.config.avail && this.state.dateSelected !== null) && (

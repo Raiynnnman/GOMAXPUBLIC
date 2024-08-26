@@ -110,7 +110,6 @@ class MapContainer extends Component {
   };
 
   render() {
-    console.log("s",this.state);
     const styles = {
       mapContainer: {
         justifyContent: 'center',

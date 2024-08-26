@@ -120,6 +120,7 @@ class TrafficGet(AdminBase):
         ret['data'] = []
         ret['config']['avail'] = []
         tz_off = 0
+        print(params)
         if 'timezone' in params and params['timezone'] in TZ:
              tz_off = TZ[params['timezone']]
         if False: # Take this out for now
@@ -365,13 +366,6 @@ class TrafficGet(AdminBase):
                             g += "****"
                             x['contact']['phone'] = g
                 ret['data'].append(x)
-        zipcoords = {}
-        if 'zipcode' in params:
-            ret['data'].append({
-                'category_id':100,
-                'coords':[ret['center']]
-            })
-            zipcoords = ret['center']
         if False and 102 in params['categories'] and 'zipcode' in params:
             o = db.query("""
                 select 
@@ -393,9 +387,9 @@ class TrafficGet(AdminBase):
                     pq.office_id = oa.office_id
                 group by 
                     oa.id
-                """,(zipcoords['lng'],
-                     zipcoords['lat'],
-                     zipcoords['lng'],zipcoords['lat'])
+                """,(ret['center']['lng'],
+                     ret['center']['lat'],
+                     ret['center']['lng'],ret['center']['lat'])
             )
             for t in o:
                 t['coords'] = json.loads(t['coords'])
@@ -432,8 +426,6 @@ class TrafficGet(AdminBase):
                 t['coords'] = json.loads(t['coords'])
                 ret['data'].append(t) 
         if 101 in params['categories']:
-            if 'lng' not in zipcoords:
-                zipcoords = ret['center']
             o = db.query("""
                 select 
                     oa.id,oa.name,oa.addr1,'' as uuid,
@@ -457,9 +449,9 @@ class TrafficGet(AdminBase):
                     round(st_distance_sphere(point(%s,%s),point(oa.lon,oa.lat))*.000621371192,2) < 50 
                 group by 
                     oa.id
-                """,(zipcoords['lng'],
-                     zipcoords['lat'],STR['Potential Provider'],
-                     zipcoords['lng'],zipcoords['lat'])
+                """,(ret['center']['lng'],
+                     ret['center']['lat'],STR['Potential Provider'],
+                     ret['center']['lng'],ret['center']['lat'])
             )
             for t in o:
                 t['coords'] = json.loads(t['coords'])
