@@ -373,6 +373,7 @@ class RegistrationLandingData(RegistrationsBase):
         ret['billing_system_id'] = self.getBillingSystem()
         if "X-Forwarded-For" in request.headers:
             try:
+                j = {}
                 ip = request.headers['X-Forwarded-For']
                 j['ip'] = ip
                 g = int(ipaddress.ip_address(ip))
@@ -384,7 +385,6 @@ class RegistrationLandingData(RegistrationsBase):
                         limit 1
                     """
                 o = db.query(q,(g,))
-                j = {}
                 for n in o:
                     j['lat'] = n['latitude']
                     j['lon'] = n['longitude']
