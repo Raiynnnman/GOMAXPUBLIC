@@ -894,6 +894,7 @@ class RegistrationsEdit extends Component {
                               label="Open Saturday?" checked={this.state.selected.open_saturday}/>
                     </Grid>
                     <Grid item xs={6} style={{marginLeft:20}}>
+                        {(this.state.selected.office_hours && this.state.selected.office_hours.map) && (
                         <table>
                             <tr>
                                 <td>Day</td><td>Open</td><td>Close</td>
@@ -904,6 +905,7 @@ class RegistrationsEdit extends Component {
                                 )
                             })}
                         </table>
+                        )}
                     </Grid>
                     <Grid item xs={6} style={{marginLeft:20}}>
                         <TemplateCheckbox 
