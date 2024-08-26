@@ -216,3 +216,10 @@ class OnlineDemoListRest(RestBase):
         u = Admin.OnlineDemoList()
         ret = u.process(args[0])
         return ret
+
+class NotificationsListRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Admin.NotificationsList()
+        ret = u.process(args[0])
+        return ret

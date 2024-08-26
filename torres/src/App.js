@@ -102,7 +102,7 @@ class App extends Component {
                         <Route exact path='/app/main/admin/search' component={SearchAdmin}/>
                         <Route exact path='/app/main/admin/search/:id' component={SearchAdmin}/>
                         <Route exact path='/app/main/admin/map' component={Map}/>
-                        <Route exact path='/app/main/admin/tickets' component={Tickets}/>
+                        <Route exact path='/app/main/admin/support' component={Tickets}/>
                         <Route exact path='/app/main/admin/registrations' component={Registrations}/>
                         <Route exact path='/app/main/admin/registrations/:id' component={Registrations}/>
                         <Route exact path='/app/main/admin/clients' component={Referrers}/>

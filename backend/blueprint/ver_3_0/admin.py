@@ -261,3 +261,10 @@ def onlinedemosave(*args, **kwargs):
 def onlinedemolist(*args, **kwargs):
     po = AdminRest.OnlineDemoListRest()
     return po.postWrapper(*args,**kwargs)
+
+@admin.route('/admin/notifications/list', methods=['POST'])
+@token_required
+@swag_from(docs_dir + 'admin_office_list.yaml')
+def notificationslist(*args, **kwargs):
+    po = AdminRest.NotificationsListRest()
+    return po.postWrapper(*args,**kwargs)

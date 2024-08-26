@@ -990,3 +990,38 @@ class BDRDashboard(AdminBase):
         ret['commissions'] = self.getCommissionsThisMonth(u)
         return ret
 
+class NotificationsList(AdminBase):
+    def __init__(self):
+        super().__init__()
+
+    def isDeferred(self):
+        return False
+
+    @check_admin
+    def execute(self, *args, **kwargs):
+        ret = []
+        job,user,off_id,params = self.getArgs(*args,**kwargs)
+        db = Query()
+        o = db.query("""
+            select 
+                lat,lng,state,city,url,created,
+                    timestampdiff(minute,created,now()) as timer
+            from visits
+            where 
+                timestampdiff(minute,created,now()) < 30 and
+                    lat <> 0 and city is not null
+            limit 5
+            """)
+        for x in o:
+            msg = "Visit from %s, %s to %s" % (x['city'],x['state'],x['url'])
+            ret.append({
+                'created': x['created'],
+                'message': msg, 
+                'city': x['city'],
+                'state': x['state'],
+                'timer': x['timer'],
+                'url': x['url'],
+                'coords': {'lat': x['lat'], 'lng':x['lng']}
+            })
+        return ret
+

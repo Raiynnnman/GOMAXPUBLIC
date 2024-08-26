@@ -5,6 +5,8 @@ import DropdownMenu from './DropdownMenu';
 import { logoutUser } from '../actions/auth';
 import { delContext } from '../actions/delContext';
 import { locationUpdate } from '../actions/location';
+import { getNotifications }  from '../actions/adminNotifications';
+import NotificationsMenu from './NotificationsMenu';
 import siteType from '../siteType';
 
 class Navbar extends Component {
@@ -18,12 +20,14 @@ class Navbar extends Component {
             geo: false,
         } 
         this.logout = this.logout.bind(this);
+        this.getNotifications = this.getNotifications.bind(this);
         this.leaveContext = this.leaveContext.bind(this);
         this.setLocation = this.setLocation.bind(this);
         this.sendLocation = this.sendLocation.bind(this);
     } 
 
     componentDidMount() { 
+        this.getNotifications();
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition((position) => {
                 this.setLocation(position.coords.latitude, position.coords.longitude);
@@ -60,6 +64,15 @@ class Navbar extends Component {
         this.setState(this.state);
     } 
 
+    getNotifications() { 
+        setTimeout((e) => { e.getNotifications() }, 300000, this)
+        if (!this.props.currentUser) { return; }
+        if (!this.props.currentUser.entitlements) { return; }
+        if (!this.props.currentUser.entitlements.includes("Admin")) { return; }
+        console.log("here");
+        this.props.dispatch(getNotifications());
+    } 
+
     logout() { 
         this.props.dispatch(logoutUser());
     } 
@@ -72,6 +85,7 @@ class Navbar extends Component {
     } 
 
     render(){
+        console.log("p",this.props);
         const mainMenuItems = [
             {
              n:'Home',
@@ -270,6 +284,15 @@ class Navbar extends Component {
                 window.location = '/app/main/admin/datascience';
              },
              u:'/'
+            },
+            {
+             n:'Investors',
+             v:function(c) { 
+                return true;
+             },
+             a:function() { 
+                window.location = '/app/main/admin/investors';
+             }
             },
             {
              n:'Invoices',
@@ -515,8 +538,7 @@ class Navbar extends Component {
                                             <li><a href="/app/main/admin/subscribers">Subscribers</a></li>
                                             <li><a href="/app/main/admin/clients">Clients</a></li>
                                             <li><a href="/app/main/admin/registrations">CRM</a></li>
-                                            <li><a href="/app/main/admin/investors">Investors</a></li>
-                                            <li><a href="/app/main/admin/tickets">Support</a></li>
+                                            <li><a href="/app/main/admin/support">Support</a></li>
                                             <li><a>
                                                 <DropdownMenu currentUser={this.props.currentUser} 
                                                     title='System' items={systemItems} dispatch={this.props.dispatch}/>
@@ -527,6 +549,11 @@ class Navbar extends Component {
                                                     title={
                                                     this.props.currentUser.first_name + " " + this.props.currentUser.last_name
                                                           } items={profileItems} dispatch={this.props.dispatch}/>
+                                                </a>
+                                            </li>
+                                            <li><a>
+                                                <NotificationsMenu currentUser={this.props.currentUser} 
+                                                          items={this.props.adminNotifications.data.length ? this.props.adminNotifications.data :  []} dispatch={this.props.dispatch}/>
                                                 </a>
                                             </li>
                                         </ul>
@@ -646,7 +673,8 @@ class Navbar extends Component {
 
 function mapStateToProps(store) {
     return {
-        currentUser: store.auth.currentUser
+        currentUser: store.auth.currentUser,
+        adminNotifications: store.adminNotifications
     }
 }
 

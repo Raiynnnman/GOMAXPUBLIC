@@ -371,6 +371,38 @@ class RegistrationLandingData(RegistrationsBase):
             select value from system_settings where name='do_billing_charge'
             """)[0]['value']
         ret['billing_system_id'] = self.getBillingSystem()
+        print(request.headers)
+        if "X-Forwarded-For" in request.headers:
+            try:
+                ip = request.headers['X-Forwarded-For']
+                j['ip'] = ip
+                g = int(ipaddress.ip_address(ip))
+                j['ip_int'] = g
+                q = """select 
+                        latitude, longitude, continent, 
+                        country, stateprov, city 
+                       from ip_lookup where %s between ip_st_int and ip_en_int
+                        limit 1
+                    """
+                o = db.query(q,(g,))
+                j = {}
+                for n in o:
+                    j['lat'] = n['latitude']
+                    j['lon'] = n['longitude']
+                    j['continent'] = n['continent']
+                    j['country'] = n['country']
+                    j['stateprov'] = n['stateprov']
+                    j['city'] = n['city']
+                    break
+                db.update(""" insert into visits (lat,lng,continent,country,state,city,ip,ip_int,url)
+                    values (%s,%s,%s,%s,%s,%s,%s,%s)
+                    """,(
+                        j['lat'],j['lon'],j['continent'],j['country'],j['stateprov'],j['city'],
+                        j['ip'],j['ip_int'],request.path
+                    )
+                )
+            except Exception as e:
+                print("LANDING_ERROR: %s" % str(e))
         return ret
 
 class RegisterProvider(RegistrationsBase):
