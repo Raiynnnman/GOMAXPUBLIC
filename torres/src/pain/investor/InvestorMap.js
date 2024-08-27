@@ -71,7 +71,7 @@ class InvestorMap extends Component {
         } else { 
             this.props.dispatch(
                 getTraffic(
-                    {all_today:true,timezone:timeZoneIANA,nationwide:true,categories:[2],limit:50,offset:0},
+                    {blur:true,all_today:true,timezone:timeZoneIANA,nationwide:true,categories:[2],limit:50,offset:0},
                     function(e,t) { 
                         var c = new moment().add("ms",t.state.delay);
                         t.state.nextReload = moment(c)
