@@ -119,10 +119,6 @@ class TrafficGet(AdminBase):
         ret['config'] = {}
         ret['data'] = []
         ret['config']['avail'] = []
-        tz_off = 0
-        print(params)
-        if 'timezone' in params and params['timezone'] in TZ:
-             tz_off = TZ[params['timezone']]
         if False: # Take this out for now
             l = db.query("""
                 select count(id) as cnt,date(ti.created) as day 
@@ -253,7 +249,7 @@ class TrafficGet(AdminBase):
                     ti.traf_end_time,ti.traf_num_reports,ti.lat,ti.lon as lng,
                     ti.traf_magnitude,ti.traf_delay,ti.state,ti.created,
                     ti.traffic_incidents_contact_id,ti.traf_from,
-                    date_add(traf_start_time,INTERVAL %s hour) as traf_start_time_offset,
+                    traf_start_time as traf_start_time_offset,
                     ifnull(pz.tz_name,'UTC') as tz_name,
                     ifnull(pz.tz_hours,0) as tz_hours,
                     ifnull(pz.tz_short,'UTC') as tz_short,
@@ -273,7 +269,6 @@ class TrafficGet(AdminBase):
                 where
                     1 = 1 
             """
-            sqlp.append(-tz_off) # Make it negative because that dict has it set to positive
             if 'nationwide' not in params:
                 q += """ 
                     and round(st_distance_sphere(point(%s,%s),point(ti.lon,ti.lat))*.000621371192,2) < 50

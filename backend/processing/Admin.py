@@ -888,6 +888,7 @@ class OnlineDemoSave(AdminBase):
         if params['timezone'] in TZ:
             mytz = TZ[params['timezone']]
         if 'id' in params:
+            # NOTE: Keep this offset for saving
             db.update("""
                 update online_demo_meetings set 
                     description=%s,

@@ -3,6 +3,7 @@
 import os
 import time
 import unittest
+from datetime import datetime, timedelta
 from util.DBManager import DBManager
 from mysql.connector.locales.eng import client_error
 import json
@@ -10,8 +11,11 @@ import datetime
 import decimal
 from json import JSONEncoder
 from util.Logging import Logging
+from flask import request
+from util import tzInfo
 
 log = Logging()
+TZ = tzInfo.getTZ()
 
 class DBBase:
     __handle__ = None
@@ -20,8 +24,19 @@ class DBBase:
 
 class DateTimeEncoder(JSONEncoder):
         def default(self, obj):
+            tz_off = 0
+            try:
+                if request and request.headers:
+                    mytz = request.headers['TIMEZONE']
+                    # print("HEAD: %s" % mytz)
+                    tz_off = TZ[mytz]
+            except Exception as e:
+                print("TZERR: %s" % str(e))
+            # print("tz_off: %s" % (tz_off))
             if isinstance(obj, (datetime.date, datetime.datetime)):
-                return obj.isoformat()
+                nt = obj - timedelta(hours=tz_off)
+                # print("oldtime: %s, newtime: %s" % (obj.isoformat(),nt.isoformat()))
+                return nt.isoformat()
             if isinstance(obj, (decimal.Decimal,)):
                 return float(obj)
             if isinstance(obj, (str,)):

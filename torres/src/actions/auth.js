@@ -22,6 +22,7 @@ export const REGISTER_REQUEST = 'REGISTER_REQUEST';
 export const REGISTER_SUCCESS = 'REGISTER_SUCCESS';
 
 axios.defaults.headers.common['UI'] = "2";
+axios.defaults.headers.common['TIMEZONE'] = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 async function findMe() {
     const response = await axios.create({ //eslint-disable-line no-unused-vars

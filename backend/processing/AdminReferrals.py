@@ -123,11 +123,7 @@ class ReferrerList(AdminBase):
         ret = {}
         job,user,off_id,params = self.getArgs(*args,**kwargs)
         limit = 10000
-        tz_off = 0
         TZ = tzInfo.getTZ()
-        print(params)
-        if 'timezone' in params and params['timezone'] in TZ:
-             tz_off = TZ[params['timezone']]
         if 'limit' in params:
             limit = params['limit']
         offset = 0
@@ -150,8 +146,7 @@ class ReferrerList(AdminBase):
                 o.id as office_id, 
                 referrer_users_source_id,referrer_users_vendor_status_id,
                 vendor_id, referrer_users_call_status_id,price_per_lead,import_location,
-                date_add(ru.created,interval -%s hour) as created,
-                date_add(ru.updated,interval -%s hour) as updated,
+                created, updated,
                 timestampdiff(minute,ru.created,now()) as time
             from 
                 referrer_users ru
@@ -163,7 +158,7 @@ class ReferrerList(AdminBase):
                 left outer join office o on o.id = ru.office_id
             where 
                 1 = 1
-            """ % (tz_off,tz_off)
+            """ 
         p = []
         if 'status' in params and params['status'] is not None and len(params['status']) > 0:
             q += " and ("
