@@ -83,7 +83,7 @@ class ServiceLegal extends Component{
                 <>
                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                         <iframe 
-                            src='https://calendly.com/melissa-gopoundpain/10min?_kx=p12gT4sSUTlIplHLgkYh4w.RucnQz8'
+                            src='https://calendly.com/rain-ygej/pound-pain-tech-founder-ceo-call?utm_source=Klaviyo&utm_medium=campaign&_kx=p12gT4sSUTlIplHLgkYh4w.RucnQz'
                             style={{overflow:"hidden",width:window.innerWidth < 500 ? window.innerWidth : "600px",
                                     height:900
                                     }}
