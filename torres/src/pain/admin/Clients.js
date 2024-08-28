@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { toast } from 'react-toastify';
 import Grid from '@mui/material/Grid';
+import GoogleAutoComplete from '../utils/GoogleAutoComplete';
 import Box from '@mui/material/Box';
 import moment from 'moment';
 import EditIcon from '@mui/icons-material/Edit';
@@ -23,11 +24,11 @@ import TemplateTextField from '../utils/TemplateTextField';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Navbar from '../../components/Navbar';
-import ReferrersEdit from './ReferrersEdit';
+import ClientsEdit from './ClientsEdit';
 
 const timeZoneIANA = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-class Referrers extends Component {
+class Clients extends Component {
     constructor(props) { 
         super(props);
         this.state = { 
@@ -253,7 +254,6 @@ class Referrers extends Component {
         var regheads = [
             {
                 dataField:'id',
-                sort:true,
                 onClick: (content,row) => (
                     this.edit(content)
                 ),
@@ -262,61 +262,65 @@ class Referrers extends Component {
             },
             {
                 dataField:'name',
-                sort:true,
                 onClick: (content,row) => (
                     this.edit(content)
+                ),
+                formatter: (content,row) => (
+                    <div>{row.last_name + ", " + row.first_name}</div>
                 ),
                 text:'Name'
             },
             {
                 dataField:'date_of_accident',
-                sort:true,
                 onClick: (content,row) => (
                     this.edit(content)
                 ),
-                text:'DOA'
+                text:'DOI'
             },
             {
-                dataField:'referrer_name',
-                sort:true,
+                dataField:'date_of_birth',
                 onClick: (content,row) => (
                     this.edit(content)
                 ),
-                text:'Ref Source'
+                text:'DOB'
             },
             {
-                dataField:'office_name',
-                sort:true,
+                dataField:'phone',
                 onClick: (content,row) => (
                     this.edit(content)
                 ),
-                text:'Chiro'
+                text:'phone'
             },
             {
-                dataField:'office_name1',
-                sort:true,
+                dataField:'city',
                 onClick: (content,row) => (
                     this.edit(content)
                 ),
-                text:'Attny'
+                text:'City'
             },
             {
-                dataField:'time',
-                sort:true,
-                align:'center',
+                dataField:'state',
                 onClick: (content,row) => (
                     this.edit(content)
                 ),
-                text:'Elapsed',
-                formatter: (cellContent,row) => (
-                    <div>
-                        {moment(row.created).fromNow()}
-                    </div>
-                )
+                text:'State'
+            },
+            {
+                dataField:'zipcode',
+                onClick: (content,row) => (
+                    this.edit(content)
+                ),
+                text:'Zipcode'
+            },
+            {
+                dataField:'email',
+                onClick: (content,row) => (
+                    this.edit(content)
+                ),
+                text:'Email'
             },
             {
                 dataField:'status',
-                sort:true,
                 align:'center',
                 text:'Status',
                 onClick: (content,row) => (
@@ -329,19 +333,29 @@ class Referrers extends Component {
                 )
             },
             {
-                dataField:'updated',
-                sort:true,
-                text:'Updated',
+                dataField:'office_name',
                 onClick: (content,row) => (
                     this.edit(content)
                 ),
-                formatter:(cellContent,row) => (
-                    <div>
-                        {moment(row['updated']).from()} 
-                    </div>
-                )
+                text:'Chiro'
+            },
+            {
+                dataField:'office_name1',
+                onClick: (content,row) => (
+                    this.edit(content)
+                ),
+                text:'Attny'
+            },
+            {
+                dataField:'referrer_name',
+                onClick: (content,row) => (
+                    this.edit(content)
+                ),
+                text:'Source'
             },
         ]
+        console.log("p",this.props);
+        console.log("s",this.state);
         return (
         <>
             {(this.props.referralAdminUpdate && this.props.referralAdminUpdate.isReceiving) && (
@@ -350,97 +364,90 @@ class Referrers extends Component {
             {(this.props.referrerAdminList && this.props.referrerAdminList.isReceiving) && (
                 <AppSpinner/>
             )}
-            <Navbar/>
-            <Box style={{margin:20}}>
-            <Grid container xs="12" style={{marginTop:20}}>
+            <Box style={{margin:0}}>
+            <Grid container xs="12" style={{marginTop:0}}>
                 <Grid item xs="12">
-                    <Tabs value={this.state.activeTab} onChange={this.toggleTab}>
-                        <Tab value='clients' label='All Clients'/>
-                        {/*<Tab value='active_clients' label='Active Clients'/>*/}
-                    </Tabs>
-                    {(this.state.activeTab === 'clients' || this.state.activeTab === 'active_clients') && (
                     <>
-                            {(this.state.selected !== null) && (
-                                <ReferrersEdit selected={this.state.selected} onSave={this.save} onCancel={this.close}/>
-                            )}
-                            {(this.state.selected === null) && (
-                            <>
-                            <div style={{marginTop:20}}>
-                                <Grid container xs="12">
-                                    <Grid item xs="6" style={{zIndex:9995,margin:10}}>
-                                      {(this.props.referrerAdminList && this.props.referrerAdminList.data && 
-                                        this.props.referrerAdminList.data.config &&
-                                        this.props.referrerAdminList.data.config.status && this.state.statusSelected !== null) && (
-                                          <TemplateSelectMulti
-                                              label="Status"
-                                              onChange={this.onStatusFilter}
-                                              value={this.state.statusSelected.map((g) => { 
-                                                return (
-                                                    {
-                                                     label: g.label ? g.label : g.name, 
-                                                     value: g.label ? g.label : g.name 
-                                                    }
-                                                )
-                                              })}
-                                              options={this.props.referrerAdminList.data.config.status.map((e) => { 
-                                                return (
-                                                    { 
-                                                    label: e.name,
-                                                    value: e.name
-                                                    }
-                                                )
-                                              })}
-                                            />
-                                        )}
-                                    </Grid>                
-                                    <Grid item xs={3} style={{margin:10}}>
-                                        <TemplateTextField onChange={this.search}
-                                        label="Search" value={this.state.search}/>
-                                    </Grid>
-                                    <Grid item xs={2}>
-                                        <div>
-                                            <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
-                                                <div style={{justifyContent:'spread-evenly'}}>
-                                                    <TemplateButton onClick={() => this.reload()} style={{marginRight:5,width:50}} outline 
-                                                        label={<AutorenewIcon/>}/>
-                                                </div>
+                        {(this.state.selected !== null) && (
+                            <ClientsEdit selected={this.state.selected} onSave={this.save} onCancel={this.close}/>
+                        )}
+                        {(this.state.selected === null) && (
+                        <>
+                        <div style={{marginTop:0}}>
+                            <Grid container xs="12">
+                                <Grid item xs="6" style={{zIndex:9995,margin:10}}>
+                                  {(this.props.referrerAdminList && this.props.referrerAdminList.data && 
+                                    this.props.referrerAdminList.data.config &&
+                                    this.props.referrerAdminList.data.config.status && this.state.statusSelected !== null) && (
+                                      <TemplateSelectMulti
+                                          label="Status"
+                                          onChange={this.onStatusFilter}
+                                          value={this.state.statusSelected.map((g) => { 
+                                            return (
+                                                {
+                                                 label: g.label ? g.label : g.name, 
+                                                 value: g.label ? g.label : g.name 
+                                                }
+                                            )
+                                          })}
+                                          options={this.props.referrerAdminList.data.config.status.map((e) => { 
+                                            return (
+                                                { 
+                                                label: e.name,
+                                                value: e.name
+                                                }
+                                            )
+                                          })}
+                                        />
+                                    )}
+                                </Grid>                
+                                <Grid item xs={3} style={{margin:10}}>
+                                    <TemplateTextField onChange={this.search}
+                                    label="Search" value={this.state.search}/>
+                                </Grid>
+                                <Grid item xs={2}>
+                                    <div>
+                                        <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
+                                            <div style={{justifyContent:'spread-evenly'}}>
+                                                <TemplateButton onClick={() => this.reload()} style={{marginRight:5,width:50}} outline 
+                                                    label={<AutorenewIcon/>}/>
                                             </div>
                                         </div>
-                                    </Grid>
-                                </Grid>
-                            </div>
-                            <Grid container xs="12" style={{marginTop:10}}>
-                                <Grid item xs="12">
-                                    <>
-                                    {(this.props.referrerAdminList && this.props.referrerAdminList.data && 
-                                      this.props.referrerAdminList.data.data && 
-                                      this.props.referrerAdminList.data.data.length > 0)&& ( 
-                                    <>
-                                        <PainTable
-                                                keyField='id' 
-                                                data={this.props.referrerAdminList.data.data} 
-                                                total={this.props.referrerAdminList.data.total}
-                                                page={this.state.page}
-                                                pageSize={this.state.pageSize}
-                                                onPageChange={this.pageChange}
-                                                onSort={this.sortChange}
-                                                onPageGridsPerPageChange={this.pageGridsChange}
-                                                columns={regheads}>
-                                        </PainTable> 
-                                    </>
-                                    )}
-                                    {(this.props.referrerAdminList && this.props.referrerAdminList.data && 
-                                      this.props.referrerAdminList.data.data && 
-                                      this.props.referrerAdminList.data.data.length < 1)&& ( 
-                                      <h3>No patients yet!</h3>
-                                    )}
-                                    </>
+                                    </div>
                                 </Grid>
                             </Grid>
-                            </>
-                            )}
+                        </div>
+                        <Grid container xs="12" style={{marginTop:10}}>
+                            <Grid item xs="12" style={{overflow:"auto"}}>
+                                <>
+                                {(this.props.referrerAdminList && this.props.referrerAdminList.data && 
+                                  this.props.referrerAdminList.data.data && 
+                                  this.props.referrerAdminList.data.data.length > 0)&& ( 
+                                <>
+                                    <PainTable
+                                            keyField='id' 
+                                            data={this.props.referrerAdminList.data.data} 
+                                            total={this.props.referrerAdminList.data.total}
+                                            page={this.state.page}
+                                            pageSize={this.state.pageSize}
+                                            onPageChange={this.pageChange}
+                                            onSort={this.sortChange}
+                                            onPageGridsPerPageChange={this.pageGridsChange}
+                                            columns={regheads}>
+                                    </PainTable> 
+                                </>
+                                )}
+                                {(this.props.referrerAdminList && this.props.referrerAdminList.data && 
+                                  this.props.referrerAdminList.data.data && 
+                                  this.props.referrerAdminList.data.data.length < 1)&& ( 
+                                  <h3>No clients yet!</h3>
+                                )}
+                                </>
+                            </Grid>
+                        </Grid>
                         </>
-                    )}
+                        )}
+                    </>
                 </Grid>                
             </Grid>
         </Box>
@@ -458,4 +465,4 @@ function mapStateToProps(store) {
     }
 }
 
-export default connect(mapStateToProps)(Referrers);
+export default connect(mapStateToProps)(Clients);

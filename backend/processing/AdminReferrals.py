@@ -83,6 +83,27 @@ class ReferrerUpdate(AdminBase):
                 where id = %s
                 """,(params['referrer_users_call_status_id'],ref_id)
             )
+        if 'addr1' in params and 'city' in params and 'state' in params:
+            db.update("""
+                delete from user_addresses where user_id = %s
+                """,(params['user_id'],)
+            )
+            db.update("""
+                insert into user_addresses (addr1,city,state,zipcode) values (%s,%s,%s,%s)
+                """,(params['addr1'],params['city'],params['state'],'')
+            )
+        if 'assignee_id' in params:
+            cliid = params['client_intake_id']
+            if params['client_intake_id'] == None:
+                db.update("""
+                    insert into client_intake (description) values (%s)
+                    """,('')
+                )
+                cliid = db.LAST_INSERT_ID()
+            db.update("""
+                update client_intake set assignee_id = %s
+                """,(params['assignee_id'],)
+            )
         if 'referrer_users_status_id' in params:
             db.update("""
                 update referrer_users set referrer_users_status_id=%s
@@ -138,23 +159,45 @@ class ReferrerList(AdminBase):
         ret['config']['source'] = db.query("select id,name from referrer_users_source")
         ret['config']['call_status'] = db.query("select id,name from referrer_users_call_status")
         ret['config']['vendor_status'] = db.query("select id,name from referrer_users_vendor_status")
+        ret['config']['assignee'] = db.query("""
+                select
+                    u.id,concat(u.first_name,' ',u.last_name) as name
+                from users u
+                where id in
+                (select user_id
+                    from user_entitlements ue,entitlements e
+                    where ue.entitlements_id=e.id and e.name='CRMUser')
+                UNION ALL
+                select
+                    u.id,concat(u.first_name,' ',u.last_name) as name
+                from users u
+                where id in
+                (select user_id
+                    from user_entitlements ue,entitlements e
+                    where ue.entitlements_id=e.id and e.name='Admin')
+                UNION ALL
+                select 1,'System'
+                """
+        )
         q = """
             select 
                 ru.id,ru.email,ru.name,ru.phone,o.name as office_name,ru.referred,
-                ru.referrer_users_status_id, rs.name as status,ru.zipcode,
+                ru.referrer_users_status_id, rs.name as status,
                 ro.name as referrer_name,ru.doa,
-                o.id as office_id, 
+                o.id as office_id, ci.id as client_intake_id,ci.assignee_id as assignee_id,
                 referrer_users_source_id,referrer_users_vendor_status_id,
                 vendor_id, referrer_users_call_status_id,price_per_lead,import_location,
-                created, updated,
-                timestampdiff(minute,ru.created,now()) as time
+                ru.created, ru.updated,ua.addr1,ua.city,ua.state,ua.zipcode,
+                ru.date_of_birth, timestampdiff(minute,ru.created,now()) as time
             from 
                 referrer_users ru
                 left join referrer_users_status rs on ru.referrer_users_status_id=rs.id
+                left outer join client_intake ci on ru.client_intake_id = ci.id
                 left outer join office ro on ru.referrer_id=ro.id
                 left outer join referrer_users_vendor_status ruvs on ru.referrer_users_vendor_status_id=ruvs.id
                 left outer join referrer_users_source rus on rus.id = ru.referrer_users_source_id
                 left outer join referrer_users_call_status rcs on rcs.id = ru.referrer_users_call_status_id
+                left outer join user_addresses ua on ru.user_id = ua.user_id
                 left outer join office o on o.id = ru.office_id
             where 
                 1 = 1
@@ -167,6 +210,8 @@ class ReferrerList(AdminBase):
                 arr.append("referrer_users_status_id = %s " % z)
             q += " or ".join(arr)
             q += ")"
+        if 'mine' in params and params['mine']:
+            q += " and cl.assignee_id = %s " % user['id']
         cnt = db.query("select count(id) as cnt from (%s) as t" % (q,))
         ret['total'] = cnt[0]['cnt']
         p.append(limit)
@@ -176,29 +221,19 @@ class ReferrerList(AdminBase):
         o = db.query(q,p)
         ret['data'] = []
         for g in o:
+            g['first_name'] = ''
+            g['last_name'] = ''
+            try:
+                t1 = HumanName(g['name'])
+                g['first_name'] = "%s %s" % (t1.title,t1.first)
+                g['last_name'] = "%s %s" % (t1.last,t1.suffix)
+                g['first_name'] = g['first_name'].lstrip().rstrip()
+                g['last_name'] = g['last_name'].lstrip().rstrip()
+            except:
+                pass
             g['last_comment'] = ''
             g['comments'] = []
             g['history'] = []
-            g['assignee'] = db.query("""
-                    select
-                        u.id,u.first_name,u.last_name
-                    from
-                        office_user ou, users u
-                    where
-                        ou.user_id=u.id
-                        and office_id=%s
-                    UNION
-                    select
-                        u.id,u.first_name,u.last_name
-                    from users u
-                    where id in
-                    (select user_id
-                        from user_entitlements ue,entitlements e
-                        where ue.entitlements_id=e.id and e.name='Admin')
-                    UNION ALL
-                    select 1,'System',''
-                    """,(g['id'],)
-            )
             comms = db.query("""
                 select 
                     ic.id,ic.text,ic.user_id,

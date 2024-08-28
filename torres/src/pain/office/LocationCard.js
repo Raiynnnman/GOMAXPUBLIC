@@ -105,6 +105,7 @@ class LocationCard extends Component {
     changePhone = (e) => {
         var g = e.target.value;
         if (g.length > 10 && !g.includes('(')) { return; } 
+        if (g.length > 14 && g.includes('(')) { return; } 
         const phone = formatPhoneNumber(g);
         this.setState({
             selected: { ...this.state.selected, phone: phone }
@@ -131,6 +132,7 @@ class LocationCard extends Component {
                                             <Typography variant="h6">{this.props.provider.name}</Typography>
                                         )}
                                     </Grid>
+                                    {(!this.props.no_del) && (
                                     <Grid item xs={1}>
                                         {!this.state.edit && (
                                         <Button variant="contained" sx={buttonStyle} style={{marginTop:0,marginRight:20}} 
@@ -139,6 +141,7 @@ class LocationCard extends Component {
                                         </Button>
                                         )}
                                     </Grid>
+                                    )}
                                 </Grid>
                                 <Grid container spacing={2}>
                                     <Grid item xs={12} style={{marginTop:10}}>
@@ -148,8 +151,8 @@ class LocationCard extends Component {
                                             </div>
                                         ) : (
                                             <Typography>
-                                                {`${this.props.provider.addr1} ${this.props.provider.addr2 || ''}`}<br />
-                                                {`${this.props.provider.city}, ${this.props.provider.state} ${this.props.provider.zipcode}`}
+                                                {this.props.provider.addr1 || '' } {this.props.provider.addr2 || ''}<br />
+                                                {this.props.provider.city || ''} {this.props.provider.state || ''} {this.props.provider.zipcode || ''}
                                             </Typography>
                                         )}
                                     </Grid>
@@ -164,6 +167,7 @@ class LocationCard extends Component {
                                         </Grid>
                                     )}
                                 </Grid>
+                                {(!this.props.no_phone) && (
                                 <Grid container spacing={2}>
                                     <Grid item xs={12} style={{marginTop:10}}>
                                         {this.state.edit && this.state.selected ? (
@@ -178,6 +182,7 @@ class LocationCard extends Component {
                                         )}
                                     </Grid>
                                 </Grid>
+                                )}
                             </Box>
                             <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
                                 {!this.state.edit && (

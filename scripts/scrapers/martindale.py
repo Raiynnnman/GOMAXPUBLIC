@@ -133,17 +133,30 @@ for x in df:
         continue
     # print("new one!")
     sha = encryption.getSHA256(json.dumps(j,sort_keys=True))
+    j['description'] = 'Import from NOLO'
+    db.update("""
+        insert into users (email) values (%s)
+            """,(j['Email'],)
+    )
+    userid = db.query("select LAST_INSERT_ID()");
+    userid = cliid[0]['LAST_INSERT_ID()']
+    db.update("""
+        insert into client_intake (user_id,description) values (%s,%s)
+            """,(userid,j['description'],)
+    )
+    cliid = db.query("select LAST_INSERT_ID()");
+    cliid = cliid[0]['LAST_INSERT_ID()']
     db.update("""
         insert into referrer_users 
             (
-                referrer_id,referrer_users_status_id,row_meta,sha256,name,
+                referrer_id,client_intake_id,referrer_users_status_id,row_meta,sha256,name,
                 referrer_users_accident_types_id,phone,vendor_id,
-                email,price_per_lead,import_location,referrer_users_source_id
+                email,price_per_lead,import_location,referrer_users_source_id,user_id
             ) 
-            values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) ON DUPLICATE KEY update update_cntr=update_cntr+1
+            values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) ON DUPLICATE KEY update update_cntr=update_cntr+1
         """,(
-            OID,REF['QUEUED'],json.dumps(j),sha,j['Name'],1,j['Phone'],j['Lead ID'],j['Email'],
-            j['Price Per Lead'].replace('$',''),j['Location'],5
+            OID,REF['QUEUED'],cliid,json.dumps(j),sha,j['Name'],1,j['Phone'],j['Lead ID'],j['Email'],
+            j['Price Per Lead'].replace('$',''),j['Location'],5,userid
         )
     )
     insid = db.query("select LAST_INSERT_ID()");

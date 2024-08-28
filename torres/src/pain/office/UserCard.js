@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import GoogleAutoComplete from '../utils/GoogleAutoComplete';
 import DeleteIcon from '@mui/icons-material/Delete';
 import formatPhoneNumber from '../utils/formatPhone';
 import { Grid, Typography, Paper, Box, TextField, Divider, Button } from '@mui/material';
@@ -19,8 +18,6 @@ const buttonStyle = {
 };
 
 const cardStyle = {
-    height: '100%',
-    marginBottom:12,
     borderRadius:5,
     '&:hover': {
         backgroundColor: '#FFFAF2',
@@ -28,7 +25,8 @@ const cardStyle = {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
-    padding: '16px',
+    paddingLeft: '16px',
+    paddingRight: '16px',
     boxSizing: 'border-box'
 };
 
@@ -115,7 +113,7 @@ class UserCard extends Component {
                     <Box sx={{ mt: 3 }}>
                         <Paper elevation={3} sx={cardStyle}>
                             <Box>
-                                <Grid container spacing={1}>
+                                <Grid container spacing={1} style={{marginTop:5}}>
                                     <Grid item xs={this.state.edit ? 12 : 10}>
                                         {this.state.edit && this.state.selected ? (
                                             <TextField
@@ -170,7 +168,7 @@ class UserCard extends Component {
                                     </Grid>
                                 </Grid>
                             </Box>
-                            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                            <Box sx={{ display: 'flex', justifyContent: 'center', mb:2, mt: 2 }}>
                                 {!this.state.edit && (
                                     <Button variant="contained" sx={buttonStyle} onClick={this.editCard}>
                                         Edit

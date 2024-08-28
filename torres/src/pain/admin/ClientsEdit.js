@@ -75,7 +75,7 @@ class RegistrationsEdit extends Component {
         this.updateName = this.updateName.bind(this);
         this.updateBusinessName = this.updateBusinessName.bind(this);
         this.updateBASName = this.updateBASName.bind(this);
-        this.onCommissionChange = this.onCommissionChange.bind(this);
+        this.onAssigneeChange = this.onAssigneeChange.bind(this);
         this.onSetterChange = this.onSetterChange.bind(this);
         this.updateEmail = this.updateEmail.bind(this);
         this.updateFirst = this.updateFirst.bind(this);
@@ -107,6 +107,7 @@ class RegistrationsEdit extends Component {
         this.saveComment = this.saveComment.bind(this);
         this.saveContact = this.saveContact.bind(this);
         this.cancelComment = this.cancelComment.bind(this);
+        this.updateAddress = this.updateAddress.bind(this);
         this.onCancelEvent = this.onCancelEvent.bind(this);
         this.onCreateEvent = this.onCreateEvent.bind(this);
         this.comment = this.comment.bind(this);
@@ -149,13 +150,10 @@ class RegistrationsEdit extends Component {
     } 
 
     editAddress(e,t) { 
-        var v = this.state.selected.addr.findIndex((f) => f.id === e.id)
-        if (v < 0) { 
-            this.state.selected.addr.push(e);
-        } else { 
-            this.state.selected.addr[v] = e;
-        } 
-        this.state.addButton = true;
+        console.log(e,t);
+        this.state.selected.addr1 = e.addr1
+        this.state.selected.city = e.city
+        this.state.selected.state = e.state
         this.setState(this.state)
     } 
 
@@ -163,6 +161,12 @@ class RegistrationsEdit extends Component {
         this.state.addContactButton = true;
         this.setState(this.state)
     } 
+
+    updateAddress(e) {
+        this.setState({
+            selected: { ...this.state.selected, ...e }
+        });
+    }
 
     editAction(e) { 
         var g = this.state.selected.actions.findIndex((f) => f.id === e.id);
@@ -443,13 +447,6 @@ class RegistrationsEdit extends Component {
         this.setState(this.state);
     }
 
-    onCommissionChange(e,t) { 
-        this.state.selected.commission_name = e.target.value;
-        this.state.selected.commission_user_id = 
-            this.props.referrerAdminList.data.config.commission_users.filter((g) => g.name === e.target.value)[0].id
-        this.setState(this.state);
-    }
-
     addContact() { 
         this.state.addContactButton = false;
         this.state.selected.phones.push({
@@ -497,7 +494,15 @@ class RegistrationsEdit extends Component {
         this.state.selected.email = e.target.value;
         this.setState(this.state);
     }
+    onAssigneeChange(e,t) { 
+        this.state.selected.assignee_id = 
+            this.props.referrerAdminList.data.config.assignee.filter((g) => g.name === e.target.value)[0].id
+        this.setState(this.state);
+    }
+
     render() {
+        console.log("p",this.props);
+        console.log("s",this.state);
         var historyheads = [
             {
                 dataField:'id',
@@ -573,6 +578,29 @@ class RegistrationsEdit extends Component {
                       </Grid>
                 </Grid>
                 <Grid container style={{borderLeft:"1px solid black"}} xs="6">
+                    <Grid item xs="3" style={{margin:10}}>
+                      {(this.props.referrerAdminList && this.props.referrerAdminList.data && 
+                        this.props.referrerAdminList.data.config &&
+                        this.props.referrerAdminList.data.config.assignee && this.state.statusSelected !== null) && (
+                          <TemplateSelect
+                              label='Assignee'
+                              onChange={this.onAssigneeChange}
+                              value={{label:
+                                this.props.referrerAdminList.data.config.assignee.filter((f) => f.id === this.state.selected.assignee_id).length > 0 ? 
+                                this.props.referrerAdminList.data.config.assignee.filter((f) => f.id === this.state.selected.assignee_id)[0].name :
+                                ''
+                                }}
+                              options={this.props.referrerAdminList.data.config.assignee.map((e) => { 
+                                return (
+                                    { 
+                                    label: e.name,
+                                    value: e.name
+                                    }
+                                )
+                              })}
+                            />
+                        )}
+                    </Grid>
                     <Grid item xs={3} style={{margin:10}}>
                       {(this.props.referrerAdminList && this.props.referrerAdminList.data &&
                         this.props.referrerAdminList.data.config && 
@@ -685,8 +713,14 @@ class RegistrationsEdit extends Component {
                         <Grid item xs="12">
                             <Tabs style={{marginBottom:20}} value={this.state.subTab} onChange={this.toggleSubTab}>
                                 <Tab value='comments' label='Comments'/>
+                                <Tab value='address' label='Address'/>
                                 <Tab value='history' label='History'/>
                             </Tabs>
+                            {(this.state.subTab === 'address') && (
+                                <Grid item xs="3">
+                                    <LocationCard no_del={true} no_phone={true} onEdit={this.editAddress} provider={this.state.selected}/>
+                                </Grid>
+                            )}
                             {(this.state.subTab === 'comments') && (
                             <>
                                 <TemplateButtonIcon onClick={() => this.addComment({id:"new"})} label={<AddBoxIcon/>}/>

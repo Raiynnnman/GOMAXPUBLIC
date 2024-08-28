@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Grid from '@mui/material/Grid';
 import Checkbox from '@mui/material/Checkbox';
+import { getRegistrations } from '../../actions/registrationsAdminList';
 import AnalyticEcommerce from '../dashboard/components/cards/AnalyticCard';
 import PainTable from '../utils/PainTable';
 import MainCard from '../dashboard/components/cards/MainCard';
@@ -190,7 +191,7 @@ class DealTracker extends Component {
         ]
         return (
         <>
-        <Box style={{margin:20}}>
+        <Box style={{margin:0}}>
             {(this.props.data && this.props.data.length > 0) && (
             <>
             <div style={{}}>
@@ -239,7 +240,8 @@ class DealTracker extends Component {
 
 function mapStateToProps(store) {
     return {
-        currentUser: store.auth.currentUser
+        currentUser: store.auth.currentUser,
+        registrationsAdminList: store.registrationsAdminList,
     }
 }
 

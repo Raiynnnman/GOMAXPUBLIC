@@ -21,10 +21,7 @@ import Reset from './pain/reset/Reset';
 import 'react-toastify/dist/ReactToastify.css'
 import SearchAdmin from './pain/admin/SearchAdmin';
 import Map from './pain/admin/Map';
-import Registrations from './pain/admin/Registrations';
-import Referrers from './pain/admin/Referrers';
 import Register from './pain/register/Register';
-import OfficeAdminList from './pain/admin/OfficeAdminList';
 import InvoiceAdminList from './pain/admin/InvoiceAdminList';
 import CommissionAdminList from './pain/admin/CommissionAdminList';
 import CouponAdminList from './pain/admin/CouponAdminList';
@@ -45,6 +42,7 @@ import OnlineDemoList from './pain/admin/OnlineDemoList';
 import Tickets from "./pain/admin/Tickets";
 import Calendar from "./pain/calendar/Calender";
 import DataScience from './pain/datascience/DataScience';
+import CRMMain from './pain/admin/CRMMain';
 const CloseButton = ({closeToast}) => <i onClick={closeToast} className="la la-close notifications-close"/>
 
 class App extends Component {
@@ -103,11 +101,7 @@ class App extends Component {
                         <Route exact path='/app/main/admin/search/:id' component={SearchAdmin}/>
                         <Route exact path='/app/main/admin/map' component={Map}/>
                         <Route exact path='/app/main/admin/support' component={Tickets}/>
-                        <Route exact path='/app/main/admin/registrations' component={Registrations}/>
-                        <Route exact path='/app/main/admin/registrations/:id' component={Registrations}/>
-                        <Route exact path='/app/main/admin/clients' component={Referrers}/>
-                        <Route exact path='/app/main/admin/subscribers' component={OfficeAdminList}/>
-                        <Route exact path='/app/main/admin/subscribers/:id' component={OfficeAdminList}/>
+                        <Route exact path='/app/main/admin/crm' component={CRMMain}/>
                         <Route exact path='/app/main/admin/invoices' component={InvoiceAdminList}/>
                         <Route exact path='/app/main/admin/commissions' component={CommissionAdminList}/>
                         <Route exact path='/app/main/admin/demos' component={OnlineDemoList}/>

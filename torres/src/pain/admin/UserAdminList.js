@@ -218,8 +218,7 @@ class UserAdminList extends Component {
         ];
         return (
         <>
-        <Navbar/>
-        <Box style={{margin:20}}>
+        <Box style={{margin:0}}>
             {(this.props.userAdmin && this.props.userAdmin.isReceiving) && (
                 <AppSpinner/>
             )}

@@ -236,15 +236,6 @@ class Navbar extends Component {
              }
             },
             {
-             n:'Subscribers',
-             v:function(c) { 
-                return true;
-             },
-             a:function() { 
-                window.location = '/app/main/admin/subscribers';
-             }
-            },
-            {
              n:'Investors',
              v:function(c) { 
                 return true;
@@ -539,9 +530,7 @@ class Navbar extends Component {
                                         <ul className="main-menu">
                                             <li className="active"><a href="/app">Home</a></li>
                                             <li><a href="/app/main/admin/map">Map</a></li>
-                                            <li><a href="/app/main/admin/subscribers">Subscribers</a></li>
-                                            <li><a href="/app/main/admin/clients">Clients</a></li>
-                                            <li><a href="/app/main/admin/registrations">CRM</a></li>
+                                            <li><a href="/app/main/admin/crm">CRM</a></li>
                                             {(this.props.currentUser && this.props.currentUser.entitlements && 
                                               this.props.currentUser.entitlements.includes('SupportUser')) && (
                                             <li><a href="/app/main/admin/support">Support</a></li>

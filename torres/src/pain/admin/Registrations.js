@@ -35,14 +35,12 @@ import TemplateCheckbox from '../utils/TemplateCheckbox';
 import TemplateButton from '../utils/TemplateButton';
 import TemplateButtonIcon from '../utils/TemplateButtonIcon';
 import TemplateBadge from '../utils/TemplateBadge';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
 import Navbar from '../../components/Navbar';
 import RegistrationsEdit from './RegistrationsEdit';
 import Office365SSO from '../utils/Office365SSO';
-import DealTracker from './DealTracker';
 import Tickets from './Tickets';
 import { Container } from '@mui/material';
+import DealTracker from './DealTracker';
 
 class Registrations extends Component {
     constructor(props) { 
@@ -62,7 +60,6 @@ class Registrations extends Component {
             saveSearches:[],
             filterType: [],
             subTab: "plans",
-            mine:true,
             massSel:[],
             userSelected:null,
             userFilter:[],
@@ -97,7 +94,6 @@ class Registrations extends Component {
         this.saveSearchValue = this.saveSearchValue.bind(this);
         this.saveSearchName = this.saveSearchName.bind(this);
         this.pageGridsChange = this.pageGridsChange.bind(this);
-        this.toggleTab = this.toggleTab.bind(this);
     } 
 
     componentWillReceiveProps(p) { 
@@ -139,11 +135,6 @@ class Registrations extends Component {
             } 
             this.state.statusSelected = t;
             this.state.filter = t1;
-            if (localStorage.getItem('reg_status')) { 
-                var g = JSON.parse(localStorage.getItem("reg_status"));
-                this.state.statusSelected = g[0];
-                this.state.filter = g[1];
-            } 
             var v = [];
             var v1 = [];
             c = 0;
@@ -153,18 +144,8 @@ class Registrations extends Component {
             } 
             this.state.typeSelected = v;
             this.state.filterType = v1;
-            if (localStorage.getItem('reg_type')) { 
-                var g = JSON.parse(localStorage.getItem("reg_type"));
-                this.state.statusSelected = g[0];
-                this.state.filter = g[1];
-            } 
             this.setState(this.state);
-            if (this.props.match.params.id) { 
-                this.reload();
-            }
-            if (!this.props.match.params.id) { 
-                this.reload();
-            }
+            if (changed) { this.reload(); }
         } 
     }
     close() { 
@@ -347,20 +328,8 @@ class Registrations extends Component {
     } 
 
     componentDidMount() {
-        if (this.props.match.params.id) { 
-            this.state.pq_id = this.props.match.params.id;
-        } 
-        this.state.saveSearches = 
-            localStorage.getItem("reg_saved_filters") ? JSON.parse(localStorage.getItem("reg_saved_filters"))
-         : []
         this.props.dispatch(getPlansList({}));
-        var i = localStorage.getItem("reg_tab_sel"); 
-        if (i && i !== 'undefined') { 
-            this.state.activeTab = i;
-            this.toggleTab(null,i);
-        } 
-        this.setState(this.state);
-        
+        this.reload()
     }
 
     add() { 
@@ -385,25 +354,14 @@ class Registrations extends Component {
         this.setState(this.state);
     } 
     reload() { 
-        if (this.state.pq_id) { 
-            this.props.dispatch(getRegistrations(
-                {alt_status:this.state.altFilter,users:this.state.userFilter,
-                 mine:this.state.mine,pq_id:this.state.pq_id,limit:this.state.pageSize,offset:this.state.page}
-            ));
-        } else { 
-            this.props.dispatch(getRegistrations(
-                {type:this.state.filterType,mine:this.state.mine,sort:this.state.sort,direction:this.state.direction,
-                 search:this.state.search,limit:this.state.pageSize,users:this.state.userFilter,
-                offset:this.state.page,status:this.state.filter,alt_status:this.state.altFilter}
-            ));
-        } 
+        this.props.dispatch(getRegistrations(
+            {type:this.state.filterType,sort:this.state.sort,direction:this.state.direction,
+             search:this.state.search,limit:this.state.pageSize,users:this.state.userFilter,
+            offset:this.state.page,status:this.state.filter,alt_status:this.state.altFilter}
+        ));
     }
 
     updateFilter() { 
-        localStorage.setItem("reg_type",JSON.stringify([this.state.statusSelected,this.state.filter]));
-        localStorage.setItem("reg_alt_status",JSON.stringify([this.state.statusAltSelected,this.state.altFilter]));
-        localStorage.setItem("reg_user",JSON.stringify([this.state.userSelected,this.state.userFilter]));
-        localStorage.setItem("reg_status",JSON.stringify([this.state.statusSelected,this.state.filter]));
         this.reload();
         this.toggleDrawer();
         this.setState(this.state);
@@ -426,18 +384,10 @@ class Registrations extends Component {
                 args.close()
             },this));
     } 
-    toggleTab(e,t) { 
-        this.state.activeTab = t;
-        if (t !== 'myassigned') { this.state.mine = null; }
-        if (t === 'myregistrations') { this.state.mine = true; }
-        localStorage.setItem("reg_tab_sel",t);
-        this.setState(this.state);
-        this.reload();
-    } 
 
     dncReport() { 
         this.props.dispatch(getRegistrations(
-            {type:this.state.filterType,mine:this.state.mine,sort:this.state.sort,direction:this.state.direction,
+            {type:this.state.filterType,sort:this.state.sort,direction:this.state.direction,
              search:this.state.search,limit:this.state.pageSize, report:1, dnc:1,
             offset:this.state.page,status:this.state.filter,alt_status:this.state.altFilter}
         ));
@@ -445,7 +395,7 @@ class Registrations extends Component {
 
     providerReport() { 
         this.props.dispatch(getRegistrations(
-            {type:this.state.filterType,mine:this.state.mine,sort:this.state.sort,direction:this.state.direction,
+            {type:this.state.filterType,sort:this.state.sort,direction:this.state.direction,
              search:this.state.search,limit:this.state.pageSize, report:1,
             offset:this.state.page,status:this.state.filter,alt_status:this.state.altFilter}
         ));
@@ -457,6 +407,8 @@ class Registrations extends Component {
     } 
 
     render() {
+        console.log("p",this.props);
+        console.log("s",this.state);
         var regheads = [
             {
                 dataField:'office_id',
@@ -644,8 +596,7 @@ class Registrations extends Component {
             {(this.props.registrationsAdminList && this.props.registrationsAdminList.isReceiving) && (
                 <AppSpinner/>
             )}
-            <Navbar/>
-            <Box style={{margin:20}}>
+            <Box style={{margin:0}}>
                 <Office365SSO showWelcome={true}/>
                 <Drawer
                   anchor="right"
@@ -845,118 +796,94 @@ class Registrations extends Component {
                     </Grid>
                 </>
                 )}
-                {!this.state.transition && (
-                <Grid item xs="12">
+                {this.props.dealTrackerOnly && (
                 <>
-                    <Box sx={{width:'100%'}}>
-                    <>
-                        <Tabs style={{marginBottom:20}} value={this.state.activeTab} onChange={this.toggleTab}>
-                            <Tab value='myregistrations' label='My Leads'/>
-                            <Tab value='registrations' label='All Leads'/>
-                            <Tab value='dealtracker' label='Deal Tracker'/>
-                            {/*<Tab value='Tickets' label='Tickets'/>*/}
-                            {/*<Tab value='myactivities' label='My Activities'/>*/}
-                        </Tabs>
-                        {(this.state.activeTab === 'dealtracker')  && ( 
-                            <>
-                            {(this.state.selected === null ) && (
+                    {(this.state.selected) && ( 
+                        <RegistrationsEdit selected={this.state.selected} onSave={this.save} onCancel={this.close}/>
+                    )}
+                    {(!this.state.selected) && ( 
+                        <div style={{overflow:"auto"}}>
                             <DealTracker 
                                 dashboard={this.props.registrationsAdminList.data.dashboard}
                                 onEdit={this.edit}
                                 data={this.props.registrationsAdminList.data.deal_tracker}
                                 config={this.props.registrationsAdminList.data.config}
                                 />
+                        </div>
+                    )}
+                </>
+                )}
+                {!this.props.dealTrackerOnly && !this.state.transition && (
+                <Grid item xs="12">
+                <>
+                    {(this.state.selected === null) && (
+                    <>
+                    <Grid container xs="12" style={{marginTop:10}}>
+                        <Grid item xs={.5} style={{margin:10}}>
+                            <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
+                                <TemplateButtonIcon onClick={this.add} style={{width:50}}
+                                    label={<AddBoxIcon/>}/>
+                            </div>
+                        </Grid>
+                        <Grid item xs={1} style={{margin:10}}>
+                            <TemplateButton onClick={this.toggleDrawer} label='Filters'/>
+                        </Grid>
+                        <Grid item xs={3} style={{margin:10}}>
+                            <TemplateTextField type="text" id="normal-field" onChange={this.search}
+                            label="Search" value={this.state.search}/>
+                        </Grid>
+                        <Grid item xs={2}></Grid>
+                        <Grid item xs={2.5} style={{margin:10}}>
+                            <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
+                                <div style={{display:'flex',justifyContent:"spread-evenly"}}>
+                                    <TemplateButtonIcon disabled={this.state.massSel.length < 1} onClick={this.transition} size="small" label={<InputIcon/>}/>
+                                    <TemplateButtonIcon onClick={this.dncReport} style={{marginLeft:5}} size="small" label={<DoNotDisturbIcon/>}/>
+                                    <TemplateButtonIcon onClick={this.providerReport} size="small" style={{marginLeft:5}} label={<AssessmentIcon/>}/>
+                                    <TemplateButtonIcon onClick={() => this.reload()} style={{marginLeft:5}} 
+                                        label={<AutorenewIcon/>}/>
+                                </div>
+                            </div>
+                        </Grid>
+                        <Grid item xs={2} style={{height:50}}>
+                            {this.state.filterName && (
+                            <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
+                                <font style={{fontSize:20,fontWeight:'bold'}}>
+                                    Selected Filter: {this.state.filterName.name}
+                                </font>
+                            </div>
                             )}
-                            {(this.state.selected !== null ) && (
-                                <RegistrationsEdit selected={this.state.selected} onSave={this.save} onCancel={this.close}/>
-                            )}
-                            </>
-                        )}
-                        {(this.state.activeTab === 'Tickets')  && ( 
-                                <Tickets/>
-                        )}
-                        {(this.state.activeTab === 'myactivities')  && ( 
-                            <Office365SSO showCalendar={true}/>
-                        )}
-                        {(this.state.activeTab === 'registrations' || this.state.activeTab === 'myregistrations') && ( 
-                        <>
-                            {(this.state.selected === null) && (
+                        </Grid>
+                    </Grid>
+                    <Grid container xs="12" style={{marginTop:10}}>
+                        <Grid item xs="12">
                             <>
-                            <Grid container xs="12" style={{marginTop:10}}>
-                                <Grid item xs={.5} style={{margin:10}}>
-                                    <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
-                                        <TemplateButtonIcon onClick={this.add} style={{width:50}}
-                                            label={<AddBoxIcon/>}/>
-                                    </div>
-                                </Grid>
-                                <Grid item xs={1} style={{margin:10}}>
-                                    <TemplateButton onClick={this.toggleDrawer} label='Filters'/>
-                                </Grid>
-                                <Grid item xs={3} style={{margin:10}}>
-                                    <TemplateTextField type="text" id="normal-field" onChange={this.search}
-                                    label="Search" value={this.state.search}/>
-                                </Grid>
-                                <Grid item xs={2}></Grid>
-                                <Grid item xs={2.5} style={{margin:10}}>
-                                    <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
-                                        <div style={{display:'flex',justifyContent:"spread-evenly"}}>
-                                            <TemplateButtonIcon disabled={this.state.massSel.length < 1} onClick={this.transition} size="small" label={<InputIcon/>}/>
-                                            <TemplateButtonIcon onClick={this.dncReport} style={{marginLeft:5}} size="small" label={<DoNotDisturbIcon/>}/>
-                                            <TemplateButtonIcon onClick={this.providerReport} size="small" style={{marginLeft:5}} label={<AssessmentIcon/>}/>
-                                            <TemplateButtonIcon onClick={() => this.reload()} style={{marginLeft:5}} 
-                                                label={<AutorenewIcon/>}/>
-                                        </div>
-                                    </div>
-                                </Grid>
-                                <Grid item xs={2} style={{height:50}}>
-                                    {this.state.filterName && (
-                                    <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
-                                        <font style={{fontSize:20,fontWeight:'bold'}}>
-                                            Selected Filter: {this.state.filterName.name}
-                                        </font>
-                                    </div>
-                                    )}
-                                </Grid>
-                            </Grid>
-                            <Grid container xs="12" style={{marginTop:10}}>
-                                <Grid item xs="12">
-                                    <>
-                                    {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
-                                      this.props.registrationsAdminList.data.registrations && 
-                                      this.props.registrationsAdminList.data.registrations.length > 0)&& ( 
-                                        <PainTable
-                                            keyField='id' 
-                                            selectAll={true}
-                                            data={this.props.registrationsAdminList.data.registrations} 
-                                            total={this.props.registrationsAdminList.data.total}
-                                            page={this.state.page}
-                                            pageSize={this.state.pageSize}
-                                            onPageChange={this.pageChange}
-                                            onMassChange={this.onMassChange}
-                                            onSort={this.sortChange}
-                                            onPageGridsPerPageChange={this.pageGridsChange}
-                                            columns={regheads}>
-                                        </PainTable> 
-                                    )}
-                                    {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
-                                      this.props.registrationsAdminList.data.registrations && 
-                                      this.props.registrationsAdminList.data.registrations.length < 1)&& ( 
-                                      <h3>No registrations yet!</h3>
-                                    )}
-                                    </>
-                                </Grid>
-                             </Grid> 
-                            </>
+                            {(this.props.registrationsAdminList && this.props.registrationsAdminList.data && 
+                              this.props.registrationsAdminList.data.registrations && 
+                              this.props.registrationsAdminList.data.registrations.length > 0)&& ( 
+                                <PainTable
+                                    keyField='id' 
+                                    selectAll={true}
+                                    data={this.props.registrationsAdminList.data.registrations} 
+                                    total={this.props.registrationsAdminList.data.total}
+                                    page={this.state.page}
+                                    pageSize={this.state.pageSize}
+                                    onPageChange={this.pageChange}
+                                    onMassChange={this.onMassChange}
+                                    onSort={this.sortChange}
+                                    onPageGridsPerPageChange={this.pageGridsChange}
+                                    columns={regheads}>
+                                </PainTable> 
                             )}
-                            {(this.state.selected !== null ) && (
-                            <>
-                                <RegistrationsEdit selected={this.state.selected} onSave={this.save} onCancel={this.close}/>
                             </>
-                            )}
-                        </>
-                        )}
+                        </Grid>
+                     </Grid> 
                     </>
-                    </Box>
+                    )}
+                    {(this.state.selected !== null ) && (
+                    <>
+                        <RegistrationsEdit selected={this.state.selected} onSave={this.save} onCancel={this.close}/>
+                    </>
+                    )}
                 </>
                 </Grid>                
                 )}

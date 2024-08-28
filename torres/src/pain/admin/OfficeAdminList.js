@@ -55,7 +55,6 @@ import ContactCard from '../office/ContactCard';
 
 const cardStyle = {
     height: '100%',
-    marginBottom:12,
     borderRadius:5,
     '&:hover': {
         backgroundColor: '#FFFAF2',
@@ -90,7 +89,9 @@ class OfficeList extends Component {
     constructor(props) { 
         super(props);
         this.state = {  
-            addButton:true,
+            addUserButton:true,
+            addOfficeButton:true,
+            addContactButton:true,
             selected: null,
             subTab: "comments",
             filter: [],
@@ -167,17 +168,11 @@ class OfficeList extends Component {
 
     componentDidMount() {
         var i = null;
-        if (this.props.match && this.props.match.params && this.props.match.params.id) { 
-            i = this.props.match.params.id;
-        } 
-        this.state.selProvider = i;
         this.props.dispatch(getOffices({
             limit:this.state.pageSize,
             office_id:i,
             offset:this.state.page
         }));
-        this.setState(this.state);
-        // this.props.dispatch(getOffices({page:this.state.page,limit:this.state.pageSize}))
     }
 
     addComment() { 
@@ -204,7 +199,7 @@ class OfficeList extends Component {
         } else { 
             this.state.selected.users[v] = e;
         } 
-        this.state.addButton = true;
+        this.state.addUserButton = false;
         this.setState(this.state)
     } 
 
@@ -215,7 +210,7 @@ class OfficeList extends Component {
         } else { 
             this.state.selected.phones[v] = e;
         } 
-        this.state.addContactButton = true;
+        this.state.addContactButton = false;
         this.setState(this.state)
     } 
 
@@ -226,7 +221,7 @@ class OfficeList extends Component {
         } else { 
             this.state.selected.addr[v] = e;
         } 
-        this.state.addButton = true;
+        this.state.addOfficeButton = false;
         this.setState(this.state)
     } 
 
@@ -386,13 +381,13 @@ class OfficeList extends Component {
         this.setState(this.state);
     } 
     addUser() { 
-        this.state.selected.user.push({
+        this.state.selected.users.push({
             first_name:'',
             last_name:'',
             email:'',
             phone:''
         })
-        this.state.addButton = true;
+        this.state.addUserButton = true;
         this.setState(this.state);
     } 
 
@@ -415,7 +410,7 @@ class OfficeList extends Component {
             zipcode:'',
             phone:''
         })
-        this.state.addButton = false; 
+        this.state.addOfficeButton = false; 
         this.setState(this.state);
     } 
     getContext(e) { 
@@ -523,6 +518,8 @@ class OfficeList extends Component {
     } 
 
     render() {
+        console.log("p",this.props);
+        console.log("s",this.state);
         var phonesheads = [
             {
                 dataField:'id',
@@ -654,7 +651,6 @@ class OfficeList extends Component {
             {
                 dataField:'id',
                 hidden:true,
-                sort:true,
                 onClick: (content,row) => (
                     this.edit(content)
                 ),
@@ -662,7 +658,6 @@ class OfficeList extends Component {
             },
             {
                 dataField:'name',
-                sort:true,
                 onClick: (content,row) => (
                     this.edit(content)
                 ),
@@ -731,8 +726,44 @@ class OfficeList extends Component {
                 )
             },
             {
+                dataField:'first_name',
+                align:'center',
+                text:'Contact',
+                onClick: (content,row) => (
+                    this.edit(content)
+                ),
+                formatter:(cellContent,row) => (
+                    <div>
+                        {row.last_name + ", " + row.first_name}
+                    </div>
+                )
+            },
+            {
+                dataField:'city',
+                align:'center',
+                text:'City',
+                onClick: (content,row) => (
+                    this.edit(content)
+                ),
+            },
+            {
+                dataField:'state',
+                align:'center',
+                text:'State',
+                onClick: (content,row) => (
+                    this.edit(content)
+                ),
+            },
+            {
+                dataField:'commission_name',
+                align:'center',
+                text:'Assignee',
+                onClick: (content,row) => (
+                    this.edit(content)
+                ),
+            },
+            {
                 dataField:'status',
-                sort:true,
                 align:'center',
                 text:'Status',
                 onClick: (content,row) => (
@@ -749,20 +780,6 @@ class OfficeList extends Component {
                 )
             },
             {
-                dataField:'active',
-                align:'center',
-                text:'Active',
-                onClick: (content,row) => (
-                    this.edit(content)
-                ),
-                formatter: (cellContent,row) => (
-                    <div>
-                        {(row.active === 1) && (<TemplateBadge label='Active'/>)}
-                        {(row.active === 0) && (<TemplateBadge label='Inactive'/>)}
-                    </div>
-                )
-            },
-            {
                 dataField:'office_type',
                 align:'center',
                 onClick: (content,row) => (
@@ -771,33 +788,10 @@ class OfficeList extends Component {
                 text:'Office Type'
             },
             {
-                dataField:'last_paid',
-                sort:true,
-                align:'center',
-                onClick: (content,row) => (
-                    this.edit(content)
-                ),
-                text:'Last Payment'
-            },
-            {
-                dataField:'updated',
-                sort:true,
-                text:'Updated',
-                onClick: (content,row) => (
-                    this.edit(content)
-                ),
-                formatter:(cellContent,row) => (
-                    <div>
-                        {moment(row['updated']).format('lll')} 
-                    </div>
-                )
-            },
-            {
                 dataField:'id',
                 text:'Actions',
                 formatter:(cellContent,row) => ( 
                     <div>
-                        <TemplateButtonIcon onClick={() => this.edit(row)} style={{marginRight:5,width:30,height:35}} label={<EditIcon/>}/>
                         <TemplateButtonIcon onClick={() => this.getContext(row)} style={{height:35,width:30}} label={<LaunchIcon/>}/>
                     </div>
                 )
@@ -806,19 +800,16 @@ class OfficeList extends Component {
         var potheads = [
             {
                 dataField:'id',
-                sort:true,
                 hidden:true,
                 text:'ID'
             },
             {
                 dataField:'name',
-                sort:true,
                 hidden:false,
                 text:'name'
             },
             {
                 dataField:'addr',
-                sort:true,
                 hidden:false,
                 text:'Address',
                 formatter:(cc,r) => (
@@ -829,13 +820,11 @@ class OfficeList extends Component {
             },
             {
                 dataField:'phone',
-                sort:true,
                 hidden:false,
                 text:'Phone',
             },
             {
                 dataField:'website',
-                sort:true,
                 hidden:false,
                 text:'Website',
             },
@@ -843,7 +832,6 @@ class OfficeList extends Component {
         var offheads = [
             {
                 dataField:'id',
-                sort:true,
                 hidden:true,
                 text:'ID'
             },
@@ -885,7 +873,6 @@ class OfficeList extends Component {
         var planheads = [
             {
                 dataField:'id',
-                sort:true,
                 hidden:true,
                 text:'ID'
             },
@@ -917,7 +904,6 @@ class OfficeList extends Component {
         var invheads = [
             {
                 dataField:'id',
-                sort:true,
                 text:'ID'
             },
             {
@@ -925,7 +911,7 @@ class OfficeList extends Component {
                 text:'Link',
                 formatter: (cellContent,row) => (
                     <div>
-                        <a style={{color:'black'}} href={'https://squareup.com/dashboard/invoices/' + row.stripe_invoice_id}
+                        <a style={{color:'black'}} href={'https://dashboard.stripe.com/invoices/' + row.stripe_invoice_id}
                             target='_blank'>{row.stripe_invoice_id}</a>
                     </div>
                 )
@@ -973,8 +959,7 @@ class OfficeList extends Component {
             {(this.props.officeReportDownload && this.props.officeReportDownload.isReceiving) && (
                 <AppSpinner/>
             )}
-            <Navbar/>
-            <Box style={{margin:20}}>
+            <Box style={{margin:0}}>
             {(this.state.selected === null) && (
             <Grid container xs="12">
                 <Grid item xs="3" style={{zIndex:9995,margin:10}}>
@@ -1007,11 +992,18 @@ class OfficeList extends Component {
                     )}
                 </Grid>                
                 <Grid item xs={3} style={{margin:10}}>
+                  {(this.props.offices && this.props.offices.data && 
+                    this.props.offices.data.config &&
+                    this.props.offices.data.config.provider_status && this.state.statusSelected !== null) && (
                     <TemplateTextField type="text" id="normal-field" onChange={this.search}
                     label="Search" value={this.state.search}/>
+                  )}
                 </Grid>
                 <Grid item xs={3}></Grid>
                 <Grid item xs={2}>
+                  {(this.props.offices && this.props.offices.data && 
+                    this.props.offices.data.config &&
+                    this.props.offices.data.config.provider_status && this.state.statusSelected !== null) && (
                     <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                         <div style={{justifyContent:'space-between'}}>
                             <TemplateButtonIcon onClick={() => this.reload()} style={{width:35}}
@@ -1019,6 +1011,7 @@ class OfficeList extends Component {
                             <TemplateButtonIcon onClick={this.officeReport} style={{width:35}} label={<AssessmentIcon/>}/>
                         </div>
                     </div>
+                    )}
                 </Grid>
             </Grid>
             )}
@@ -1188,19 +1181,16 @@ class OfficeList extends Component {
                         <Tabs style={{marginBottom:30}} value={this.state.subTab} onChange={this.toggleSubTab}>
                             <Tab value='comments' label='Comments' sx={{ color: 'black' }}/>
                             <Tab value='plans' label='Plans'  sx={{ color: 'black' }}/>
-                            <Tab value='offices' label='Offices' sx={{ color: 'black' }}/>
+                            <Tab value='offices' label='Locations' sx={{ color: 'black' }}/>
                             <Tab value='contact' label='Contact' sx={{ color: 'black' }}/>
                             <Tab value='invoices' label='Invoices' sx={{ color: 'black' }} />
-                            <Tab value='potentials' label='Potentials' sx={{ color: 'black' }}/>
-                            <Tab value='history' label='History' sx={{ color: 'black' }}/>
-                            <Tab value='cards' label='Cards' sx={{ color: 'black' }}/>
                             <Tab value='clients' label='Clients' sx={{ color: 'black' }}/>
                             <Tab value='users' label='Users' sx={{ color: 'black' }}/>
-                            
+                            <Tab value='history' label='History' sx={{ color: 'black' }}/>
                         </Tabs>
                         {(this.state.subTab === 'users') && (
                             <>
-                                {this.state.addButton && ( 
+                                {this.state.addUserButton && ( 
                                 <TemplateButtonIcon
                                     style={{ width:50,marginBottom: 10 }}
                                     onClick={this.addUser}
@@ -1223,35 +1213,31 @@ class OfficeList extends Component {
                                 </Grid>
                             </>
                         )}
-
-
-
-
-                    {this.state.subTab === 'contact' && (
-                                <>
-                                    <TemplateButtonIcon
-                                        style={{ width:50,marginBottom: 10 }}
-                                        onClick={this.addContact}
-                                        label={<AddBoxIcon />}
-                                    />
-                                    <Grid container xs={12}>
-                                    {this.state.selected.phones && this.state.selected.phones.length > 0 && (
-                                        this.state.selected.phones.map((p, i) => (
-                                        <>
-                                            {!p.deleted && (
-                                            <Grid item xs={3} style={{margin:20}}>
-                                            <ContactCard onSave={this.saveContact} onEdit={this.editContact} key={i} 
-                                                provider={p} />
-                                            </Grid>
-                                            )}
-                                        </>
-                                        ))
-                                    )}
-                                    </Grid>
-                                </>
-                            )}    
-
-                        
+                        {this.state.subTab === 'contact' && (
+                            <>
+                                {(this.state.addContactButton) && (
+                                <TemplateButtonIcon
+                                    style={{ width:50,marginBottom: 10 }}
+                                    onClick={this.addContact}
+                                    label={<AddBoxIcon />}
+                                />
+                                )}
+                                <Grid container xs={12}>
+                                {this.state.selected.phones && this.state.selected.phones.length > 0 && (
+                                    this.state.selected.phones.map((p, i) => (
+                                    <>
+                                        {!p.deleted && (
+                                        <Grid item xs={3} style={{margin:20}}>
+                                        <ContactCard onSave={this.saveContact} onEdit={this.editContact} key={i} 
+                                            provider={p} />
+                                        </Grid>
+                                        )}
+                                    </>
+                                    ))
+                                )}
+                                </Grid>
+                            </>
+                        )}    
                         {(this.state.subTab === 'clients') && (
                           <PainTable
                               keyField="id"
@@ -1307,7 +1293,7 @@ class OfficeList extends Component {
 
                         {this.state.subTab === 'offices' && (
                             <>
-                                {this.state.addButton && ( 
+                                {this.state.addOfficeButton && ( 
                                 <TemplateButtonIcon
                                     style={{ width:50,marginBottom: 10 }}
                                     onClick={this.addAddress}
@@ -1344,9 +1330,10 @@ class OfficeList extends Component {
                         {(this.state.subTab === 'comments') && (
                         <>
                                 <TemplateButtonIcon onClick={() => this.addComment({id:"new"})} label={<AddBoxIcon/>}/>
+                                <Grid container xs="12">
                                 {this.state.selected.comments.sort((a,b) => (a.created > b.created ? -1:1)).map((e) => { 
                                     return (
-                                        <Grid item xs="3" key={e.id}>
+                                        <Grid item xs="3" style={{margin:5}} key={e.id}>
                                             <Box sx={{mt:3}}>
                                             <Paper elevation={3} sx={cardStyle}>
                                                 <Grid container xs="12">
@@ -1400,6 +1387,7 @@ class OfficeList extends Component {
                                             </Box>
                                         </Grid>
                                     )})}
+                                </Grid>
                             </>
                             )}
                     </Grid>

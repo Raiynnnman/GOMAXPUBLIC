@@ -56,6 +56,9 @@ class OfficeList(AdminBase):
         db = Query()
         OT = self.getOfficeTypes()
         PQS = self.getProviderQueueStatus()
+        print(params)
+        if 'status' not in params or params['status'] is None:
+            params['status'] = [PQS['IN_NETWORK']]
         q = """
                 select 
                     o.id,o.name,o.active,o.email,pqs.name as status,
@@ -141,6 +144,15 @@ class OfficeList(AdminBase):
                   where oa.office_id=%s and oa.deleted = 0
                 """,(x['id'],)
             )
+            x['city'] = ''
+            x['state'] = ''
+            if len(x['addr']) > 0:
+                if x['addr'][0]['city'] is None:
+                    x['addr'][0]['city'] = ''
+                if x['addr'][0]['state'] is None:
+                    x['addr'][0]['state'] = ''
+                x['city'] = x['addr'][0]['city'] 
+                x['state'] = x['addr'][0]['state'] 
             x['languages'] = []
             v = db.query("""
                 select languages_id from office_languages
@@ -150,7 +162,7 @@ class OfficeList(AdminBase):
             for g in v:
                 x['languages'].append(g['languages_id'])
             x['phones'] = db.query("""
-                select id,description,iscell,phone from office_phones 
+                select id,description,iscell,phone as contact,'phone' as type from office_phones 
                     where office_id=%s
                 """,(x['id'],)
             )
@@ -166,6 +178,15 @@ class OfficeList(AdminBase):
                     ou.office_id = %s
                 """,(x['id'],)
             )
+            x['first_name'] = ''
+            x['last_name'] = ''
+            if len(x['users']) > 0:
+                if x['users'][0]['first_name'] is None:
+                    x['users'][0]['first_name'] = ''
+                if x['users'][0]['last_name'] is None:
+                    x['users'][0]['last_name'] = ''
+                x['first_name'] = x['users'][0]['first_name'].rstrip().lstrip()
+                x['last_name'] = x['users'][0]['last_name'].rstrip().lstrip()
             x['comments'] = []
             comms = db.query("""
                 select 
@@ -277,14 +298,11 @@ class OfficeList(AdminBase):
                     ) as items,i.stripe_invoice_id,sis.status as stripe_status,i.office_id
                 
                 from
-                    invoices i,
-                    invoice_status isi,
-                    stripe_invoice_status sis,
-                    invoice_items ii
+                    invoices i
+                    left outer join invoice_status isi on isi.id = i.invoice_status_id
+                    left outer join stripe_invoice_status sis on sis.invoices_id = i.id
+                    left outer join invoice_items ii on ii.invoices_id = i.id
                 where
-                    i.invoice_status_id = isi.id and
-                    sis.invoices_id = i.id and
-                    ii.invoices_id = i.id and
                     month(billing_period) <= month(now()) and
                     year(billing_period) <= year(now()) and
                     i.office_id = %s
