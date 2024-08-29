@@ -18,13 +18,13 @@ class SparkQuery(SparkEntry):
     def __init__(self):
         super().__init__()
 
-    def process(self, table, category, query):
+    def process(self, table, category, query, orderby='created', pageSize=100, page=0, system=False):
         ret = []
         spark = None
         try: 
             smq = SparkMappingQuery()
             spark = smq.getSparkConfig(table, category)
-            ret = smq.querySPARK(spark, query)
+            ret = smq.querySPARK(spark, query, orderby=orderby, pageSize=pageSize, page=page, system=system)
         except Exception as e:
             raise e
         finally:

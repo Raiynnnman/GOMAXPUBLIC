@@ -12,10 +12,15 @@ spark = sm.getSparkConfig('default','pain')
 spark.sql("use userdata.db_1_pain")
 t = spark.sql("show tables").collect()
 
-tsToExpire = calcdate.getTimeIntervalAddHoursRaw(None,-48).strftime("%Y-%m-%d %H:%M:%S")
 for g in t:
-    s = """call system.expire_snapshots(table=>'%s',retain_last => 5)
-        """ % ("userdata.db_1_pain.%s" % g['tableName'],)
+    print(g)
+    s = """
+        alter table %s set TBLPROPERTIES (
+            'history.expire.min-snapshots-to-keep'='5',
+            'write.metadata.delete-after-commit.enabled'='true',
+            'history.expire.max-snapshot-age-ms'='10000000'
+        )
+        """ % (g['tableName'],)
     print("s=%s" % s)
     spark.sql(s)
 

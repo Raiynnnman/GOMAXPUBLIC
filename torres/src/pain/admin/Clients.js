@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { toast } from 'react-toastify';
 import Grid from '@mui/material/Grid';
 import GoogleAutoComplete from '../utils/GoogleAutoComplete';
+import TemplateCheckbox from '../utils/TemplateCheckbox';
 import Box from '@mui/material/Box';
 import moment from 'moment';
 import EditIcon from '@mui/icons-material/Edit';
@@ -38,6 +39,7 @@ class Clients extends Component {
             statusSelected:null,
             search:null,
             filter: [],
+            mine: true,
             subTab: "plans",
             page: 0,
             pageSize: 10
@@ -54,6 +56,7 @@ class Clients extends Component {
         this.save = this.save.bind(this);
         this.reload = this.reload.bind(this);
         this.edit = this.edit.bind(this);
+        this.showAllRecords = this.showAllRecords.bind(this);
         this.add = this.add.bind(this);
         this.pageChange = this.pageChange.bind(this);
         this.toggleTab = this.toggleTab.bind(this);
@@ -94,6 +97,11 @@ class Clients extends Component {
         this.reload()
     } 
 
+    showAllRecords() { 
+        this.state.mine = !this.state.mine;
+        this.setState(this.state);
+        this.reload()
+    } 
 
 
     updateFirst(e) { 
@@ -190,6 +198,7 @@ class Clients extends Component {
     reload() { 
         this.props.dispatch(getReferrers(
             {active_only:this.state.activeOnly,
+             mine:this.state.mine,
              timezone:timeZoneIANA,
              search:this.state.search,
              limit:this.state.pageSize,
@@ -199,13 +208,13 @@ class Clients extends Component {
     save(e) { 
         var tosend = e;
         this.props.dispatch(referralAdminUpdate(tosend,function(err,args) { 
-              args.reload()
               toast.success('Successfully saved referral.', {
                     position:"top-right",
                     autoClose:3000,
                     hideProgressBar:true
                 }
               );
+              args.reload()
               args.close()
             },this)
         )
@@ -354,8 +363,6 @@ class Clients extends Component {
                 text:'Source'
             },
         ]
-        console.log("p",this.props);
-        console.log("s",this.state);
         return (
         <>
             {(this.props.referralAdminUpdate && this.props.referralAdminUpdate.isReceiving) && (
@@ -375,7 +382,7 @@ class Clients extends Component {
                         <>
                         <div style={{marginTop:0}}>
                             <Grid container xs="12">
-                                <Grid item xs="6" style={{zIndex:9995,margin:10}}>
+                                <Grid item xs="4" style={{zIndex:9995,margin:10}}>
                                   {(this.props.referrerAdminList && this.props.referrerAdminList.data && 
                                     this.props.referrerAdminList.data.config &&
                                     this.props.referrerAdminList.data.config.status && this.state.statusSelected !== null) && (
@@ -402,10 +409,16 @@ class Clients extends Component {
                                     )}
                                 </Grid>                
                                 <Grid item xs={3} style={{margin:10}}>
-                                    <TemplateTextField onChange={this.search}
-                                    label="Search" value={this.state.search}/>
+                                  {(this.props.referrerAdminList && this.props.referrerAdminList.data && 
+                                    this.props.referrerAdminList.data.config &&
+                                    this.props.referrerAdminList.data.config.status && this.state.statusSelected !== null) && (
+                                    <TemplateTextField onChange={this.search} label="Search" value={this.state.search}/>
+                                   )}
                                 </Grid>
                                 <Grid item xs={2}>
+                                  {(this.props.referrerAdminList && this.props.referrerAdminList.data && 
+                                    this.props.referrerAdminList.data.config &&
+                                    this.props.referrerAdminList.data.config.status && this.state.statusSelected !== null) && (
                                     <div>
                                         <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                                             <div style={{justifyContent:'spread-evenly'}}>
@@ -414,6 +427,22 @@ class Clients extends Component {
                                             </div>
                                         </div>
                                     </div>
+                                    )}
+                                </Grid>
+                                <Grid item xs={1} style={{height:50}}>
+                                {(this.props.referrerAdminList && this.props.referrerAdminList.data && 
+                                  this.props.referrerAdminList.data.data && 
+                                  this.props.referrerAdminList.data.data.length > 0)&& ( 
+                                <>
+                                    {(this.props.currentUser && this.props.currentUser.entitlements && 
+                                    this.props.currentUser.entitlements.includes('Admin'))  && ( 
+                                    <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
+                                        <TemplateCheckbox 
+                                              onClick={this.showAllRecords} label="Show All?" checked={!this.state.mine}/>
+                                    </div>
+                                    )}
+                                </>
+                                )}
                                 </Grid>
                             </Grid>
                         </div>

@@ -29,11 +29,9 @@ class QueryEdit extends Component {
     } 
 
     componentWillReceiveProps(p) { 
-        console.log("cwrp",p);
     }
 
     componentDidMount() {
-        console.log("cdm",this.props);
         this.state.selected = JSON.parse(JSON.stringify(this.props.selected));
         this.setState(this.state);
         this.generateFlow()
@@ -53,7 +51,6 @@ class QueryEdit extends Component {
                 })
             } 
         } 
-        console.log("ret",ret)
         return ret;
     } 
 
@@ -66,7 +63,6 @@ class QueryEdit extends Component {
         
         /* Columns here */
         for (c = 0; c < this.state.selected.columns.length; c++) { 
-            console.log("col:", this.state.selected.columns[c]);
             this.state.nodes.push({
                 id: this.state.selected.columns[c].table + "." + this.state.selected.columns[c].field,
                 data: { label: this.state.selected.columns[c].field, table: this.state.selected.columns[c].table },
@@ -95,13 +91,9 @@ class QueryEdit extends Component {
     } 
 
     onOperationChange(e,n,t) { 
-        console.log("op",e,n,t);
     } 
 
     onItemChange(n,e,t) { 
-        console.log("field",n);
-        console.log("e",e);
-        console.log("t",t);
         if (e.target && e.target.value) { 
             this.state.selected[n] = e.target.value
         } else { 
@@ -112,8 +104,6 @@ class QueryEdit extends Component {
     } 
 
     render() {
-        console.log("p",this.props);
-        console.log("s",this.state);
         return (
         <>
         <Box style={{margin:0}}>

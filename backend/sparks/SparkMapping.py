@@ -60,7 +60,26 @@ class SparkMapping(SparkBase):
         except Exception as e:
             log.debug("Maintenance Failed! Reason: %s" % (str(e)))
 
+    def setEnv(self):
+        had_home = config.getKey("hadoop_home")
+        jdk_home = config.getKey("jdk_home")
+        spark_home = config.getKey("spark_home")
+        os.environ["JAVA_HOME"] = jdk_home
+        os.environ["HADOOP_HOME"] = had_home
+        os.environ["HADOOP_INSTALL"] = had_home
+        os.environ["HADOOP_MAPRED_HOME"] = had_home
+        os.environ["HADOOP_COMMON_HOME"] = had_home
+        os.environ["HADOOP_HDFS_HOME"] = had_home
+        os.environ["YARN_CONF_DIR"] = os.path.join(had_home,"etc","hadoop")
+        os.environ["HADOOP_YARN_HOME"] = had_home
+        os.environ["HADOOP_COMMON_LIB_NATIVE_DIR"] = os.path.join(had_home,"lib","native")
+        os.environ["HADOOP_OPTS"] = "-Djava.library.path=%s" % os.path.join(had_home,"lib","native")
+        # os.environ["HIVE_HOME"] = $HADOOP_HOME/../hive
+        os.environ["SPARK_HOME"] = os.path.join(had_home,"..", spark_home)
+        # os.environ["PATH"] = $PATH:$HADOOP_HOME/sbin:$HADOOP_HOME/bin:$HIVE_HOME/bin:$HADOOP_HOME/../hbase/bin
+
     def getSparkConfig(self, table, category):
+        self.setEnv()
         masternode = config.getKey("hdfs_master_node")
         timeout = 240
         if config.getKey("spark_app_timeout") is not None:
@@ -79,7 +98,8 @@ class SparkMapping(SparkBase):
                     .builder \
                     .appName(category) \
                     .config("spark.sql.warehouse.dir", warehouse_loc) \
-                    .config("spark.driver.memory", "8g") \
+                    .config("spark.driver.memory", "4g") \
+                    .config("spark.master", "yarn") \
                     .config("spark.yarn.submit.waitAppCompletion", "false") \
                     .config("ipc.client.bind.wildcard.addr", "true") \
                     .config("javax.jdo.option.ConnectionURL", "jdbc:mysql://%s:3306/pain" % config.getKey("mysql_host")) \
@@ -102,6 +122,11 @@ class SparkMapping(SparkBase):
                     .config("spark.worker.cleanup.enabled","true") \
                     .config("spark.worker.cleanup.appDataTtl","86400") \
                     .config("hive.exec.dynamic.partition", "true") \
+                    .config("log4j.rootCategory","DEBUG, console") \
+                    .config("spark.log4j.rootCategory","DEBUG, console") \
+                    .config("spark.network.timeout","120s") \
+                    .config("spark.shuffle.io.connectionTimeout","120s") \
+                    .config("spark.shuffle.blockTransferService","nio") \
                     .config("hive.exec.dynamic.partition.mode", "nostrict") \
                     .config("yarn.resourcemanager.app.timeout.minutes", timeout) \
                     .enableHiveSupport() \
@@ -125,16 +150,21 @@ class SparkMapping(SparkBase):
         if f == 'updated':
             return "timestamp", 'current_timestamp()'
         if 'time' in f:
+            log.debug("ts_type: 1")
             return "timestamp", v
         if 'date' in f:
+            log.debug("ts_type: 2")
             return "timestamp", v
         if re.match(r'\d{4}-\d\d-\d\dT\d{2}',str(v)):
+            log.debug("ts_type: 3")
             v = v.replace("T"," ")
             v = v.replace("Z","")
             return "timestamp", v
         if re.match(r'\d{4}-\d\d-\d\d \d{2}',str(v)):
+            log.debug("ts_type: 4")
             return "timestamp", v
         if isinstance(v, datetime):
+            log.debug("ts_type: 5")
             return "timestamp", v
         if isinstance(v, dict):
             return "string", json.dumps(v) 
@@ -208,6 +238,8 @@ class SparkMapping(SparkBase):
         #)
 
     def flush(self, sph, Q, I, count=0):
+        p = performance()
+        p.start("sparkFlush")
         if len(Q) < 1:
             #logme("Nothing to do, skip")
             return
@@ -219,15 +251,13 @@ class SparkMapping(SparkBase):
         #log.debug("INS-----")
         #log.debug("\n" + "\n".join(I))
         try:
-            p = performance()
-            p.start("SparkMapping")
             sph.sql(F)
-            log.debug("TTS: %s" % p.stop())
         except Exception as e:
             log.debug("EXCEPTION in SQL: %s" % str(e))
             raise SparkSQLException(e)
-        log.debug("C/S/T=%s/%s/%s - %2.2f%%" % (
-            self.__COMPLETE__,self.__SKIP__,self.__TOTAL_ROWS__,
+        log.debug("TTS: %s" % p.stop())
+        log.debug("C/S/T/R=%s/%s/%s/%s - %2.2f%%" % (
+            self.__COMPLETE__,self.__SKIP__,self.__TOTAL_ROWS__,len(I),
             ((self.__COMPLETE__ + self.__SKIP__)/self.__TOTAL_ROWS__) * 100
         ))
 
@@ -270,6 +300,10 @@ class SparkMapping(SparkBase):
         COLS["created"] = "timestamp"
         COLS["updated"] = "timestamp"
         COLS["tframe"] = "int"
+        sph.sql("""alter table %s set TBLPROPERTIES (
+            'history.expire.min-snapshots-to-keep'='5',
+            'history.expire.max-snapshot-age-ms'='10000000'
+        )""" % name)
         return COLS
 
     def checkOBJ(self, obj, tbl):
@@ -288,6 +322,7 @@ class SparkMapping(SparkBase):
         #return ret
 
     def getObjids(self, sph, tbl):
+        return
         q = """
             select objid from %s 
         """ % (tbl, )
@@ -451,14 +486,14 @@ class SparkMapping(SparkBase):
                         G = "%s,%s" % (G, v) 
                 if len(INS) > WRITE_SIZE: 
                     self.flush(sph, QUERY, INS)
-                    p = performance()
-                    p.start("installobjs")
-                    for gg in OBJLIST:
-                        if OBJLIST[gg] == 1:
-                            self.installobj(gg,TBLNAME)
-                            OBJLIST[gg] = 2
-                    self.__db__.commit()
-                    log.debug("dedupobj: %s" % p.stop())
+                    #p = performance()
+                    #p.start("installobjs")
+                    #for gg in OBJLIST:
+                    #    if OBJLIST[gg] == 1:
+                    #        self.installobj(gg,TBLNAME)
+                    #        OBJLIST[gg] = 2
+                    #self.__db__.commit()
+                    #log.debug("dedupobj: %s" % p.stop())
                     commasep = False
                     INS=[]
                 if commasep:
@@ -476,12 +511,12 @@ class SparkMapping(SparkBase):
         log.debug("COMPIS NOW: %s" % self.__COMPLETE__)
         self.flush(sph, QUERY, INS)
         self.__db__.commit()
-        for gg in OBJLIST:
-            if OBJLIST[gg] == 1:
-                self.installobj(gg,TBLNAME)
-        log.debug("COMPIS END: %s"%  self.__COMPLETE__)
-        log.debug("STATS: skip/comp: %s/%s" % (self.__SKIP__, self.__COMPLETE__))
+        #for gg in OBJLIST:
+        #    if OBJLIST[gg] == 1:
+        #        self.installobj(gg,TBLNAME)
+        #log.debug("COMPIS END: %s"%  self.__COMPLETE__)
+        # log.debug("STATS: skip/comp: %s/%s" % (self.__SKIP__, self.__COMPLETE__))
         self.__db__.commit()
-        self.maintenance(sph,TBLNAME)
+        # self.maintenance(sph,TBLNAME)
         return {"skip": self.__SKIP__, "complete": self.__COMPLETE__}
 

@@ -9,13 +9,12 @@ from sparks.SparkMapping import SparkMapping
 
 sm = SparkMapping()
 spark = sm.getSparkConfig('default','pain')
-spark.sql("use userdata.db_1_pain")
+spark.sql("use userdata.db_1_pan")
 t = spark.sql("show tables").collect()
 
-tsToExpire = calcdate.getTimeIntervalAddHoursRaw(None,-48).strftime("%Y-%m-%d %H:%M:%S")
 for g in t:
-    s = """call system.expire_snapshots(table=>'%s',retain_last => 5)
+    s = """drop table  %s
         """ % ("userdata.db_1_pain.%s" % g['tableName'],)
-    print("s=%s" % s)
+    print(s)
     spark.sql(s)
 

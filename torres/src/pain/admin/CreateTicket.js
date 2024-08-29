@@ -34,10 +34,7 @@ const CreateTicketModal = ({ opened, color,variant}) => {
             office_id: currentUser.offices[0]
         }
     };
-    // console.log("Blended ticket info: ", ticketInformation);    
-    // console.log(currentUser)
     dispatch(createTicketAction(ticketInformation));
-    // console.log(ticket);
     handleClose();
   };
 

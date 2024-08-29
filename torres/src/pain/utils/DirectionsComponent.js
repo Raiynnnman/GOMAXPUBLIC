@@ -18,7 +18,6 @@ function DirectionsComponent({ origin, destination, onRouteSelect, routes, selec
 
 
   useEffect(() => {
-    console.log(origin, destination);
     if (!directionsRenderer || !directionsService || !origin || !destination) return;
 
     const fetchDirections = async () => {

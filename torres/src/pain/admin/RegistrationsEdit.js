@@ -1146,11 +1146,7 @@ class RegistrationsEdit extends Component {
                                                 <Grid container xs="12">
                                                     <Grid item xs="6">
                                                         <font style={{fontSize:"14pt"}}>
-                                                            {
-                                                            this.state.selected.assignee.filter((g) => g.id === e.user_id).length > 0 ? 
-                                                            this.state.selected.assignee.filter((g) => g.id === e.user_id)[0].first_name + " " +
-                                                            this.state.selected.assignee.filter((g) => g.id === e.user_id)[0].last_name + " " : ""
-                                                            }
+                                                            {e.comment_user}
                                                         </font>
                                                     </Grid>
                                                     <Grid item xs="6">

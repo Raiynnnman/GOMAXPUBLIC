@@ -156,7 +156,6 @@ class Tickets extends Component {
     };
 
     render() { 
-        console.log("p",this.props)
         const columns = [
             { dataField: 'ticket_id', text: 'Ticket ID', 
                 onClick: (content,row) => (

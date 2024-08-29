@@ -150,7 +150,6 @@ class RegistrationsEdit extends Component {
     } 
 
     editAddress(e,t) { 
-        console.log(e,t);
         this.state.selected.addr1 = e.addr1
         this.state.selected.city = e.city
         this.state.selected.state = e.state
@@ -501,8 +500,6 @@ class RegistrationsEdit extends Component {
     }
 
     render() {
-        console.log("p",this.props);
-        console.log("s",this.state);
         var historyheads = [
             {
                 dataField:'id',
@@ -732,11 +729,7 @@ class RegistrationsEdit extends Component {
                                                 <Grid container xs="12">
                                                     <Grid item xs="6">
                                                         <font style={{fontSize:"14pt"}}>
-                                                            {
-                                                            this.state.selected.assignee.filter((g) => g.id === e.user_id).length > 0 ? 
-                                                            this.state.selected.assignee.filter((g) => g.id === e.user_id)[0].first_name + " " +
-                                                            this.state.selected.assignee.filter((g) => g.id === e.user_id)[0].last_name + " " : ""
-                                                            }
+                                                            { e.comment_user }
                                                         </font>
                                                     </Grid>
                                                     <Grid item xs="6">

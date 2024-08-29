@@ -56,7 +56,6 @@ class Template extends Component {
         this.reload();
     } 
     run(e) { 
-        console.log("run",e);
     } 
 
     pageGridsChange(t) { 
@@ -93,7 +92,6 @@ class Template extends Component {
     } 
 
     render() {
-        console.log("p",this.props);
         var heads = [
             {
                 dataField:'id',
@@ -134,7 +132,6 @@ class Template extends Component {
                 )
             },
         ];
-        console.log("p",this.props);
         return (
         <>
         <Box style={{margin:20}}>

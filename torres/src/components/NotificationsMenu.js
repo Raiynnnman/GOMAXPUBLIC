@@ -26,7 +26,6 @@ function NotificationsMenu({onChange,items,title,currentUser}) {
     setOpen(false);
   };
 
-  console.log("i",items)
   return (
     <div onMouseEnter={handleClick} style={{marginLeft:10}}>
         <ClickAwayListener onClickAway={handleClickAway}>

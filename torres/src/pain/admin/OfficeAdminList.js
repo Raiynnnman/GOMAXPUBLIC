@@ -518,8 +518,6 @@ class OfficeList extends Component {
     } 
 
     render() {
-        console.log("p",this.props);
-        console.log("s",this.state);
         var phonesheads = [
             {
                 dataField:'id',

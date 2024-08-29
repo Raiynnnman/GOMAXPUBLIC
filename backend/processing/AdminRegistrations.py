@@ -610,6 +610,141 @@ class RegistrationList(AdminBase):
     def isDeferred(self):
         return False
 
+    def dashboardData(self, uid, db):
+        m = {}
+        add_sql = " o.commission_user_id = %s and " % uid
+        if uid == 0:
+            add_sql = ' 1 = 1 and '
+        m['appointments'] = db.query("""
+            select t1.num1 as num1 
+            from 
+            (select count(pqa.id) as num1 from 
+                provider_queue_actions pqa, provider_queue pq, office o 
+            where 
+                """ + add_sql + """
+                pq.office_id = o.id and 
+                pqa.provider_queue_id = pq.id and
+                date(pqa.start_date) = date(now())) as t1
+            """ 
+        )
+        m['appointments'] = m['appointments'][0]
+        m['commissions'] = db.query("""
+            WITH RECURSIVE t as (
+                select date_add(now(),INTERVAL -7 day) as dt, 0 as count1
+                UNION 
+                 SELECT DATE_ADD(t.dt, INTERVAL 1 day) as month,
+                 (select sum(amount) from commission_users cu, provider_queue pq, office o
+                    where 
+                    """ + add_sql + """
+                    pq.office_id = o.id and 
+                    cu.office_id = pq.office_id and
+                    month(t.dt)=month(cu.created) and 
+                    year(t.dt)=year(cu.created) 
+                 ) as count1
+                 FROM t
+                 WHERE DATE_ADD(t.dt, INTERVAL 1 DAY) <= date_add(now(),interval 1 day)
+            )
+            select date_format(date_add(dt,interval -1 day),'%a, %D') as label,round(ifnull(count1,0),2) as count FROM t ;
+        """)
+        m['presented'] = db.query("""
+            WITH RECURSIVE t as (
+                select date_add(now(),INTERVAL -7 day) as dt, 0 as count1
+                UNION 
+                 SELECT DATE_ADD(t.dt, INTERVAL 1 day) as month,
+                 (select count(pq.id) from provider_queue pq, office o 
+                    where 
+                    """ + add_sql + """
+                    pq.office_id = o.id and 
+                    day(t.dt)=day(pq.set_to_present_date) and month(t.dt)=month(pq.set_to_present_date) and 
+                    year(t.dt)=year(pq.set_to_present_date) 
+                 ) as count1
+                 FROM t
+                 WHERE DATE_ADD(t.dt, INTERVAL 1 DAY) <= date_add(now(),interval 1 day)
+            )
+            select date_format(date_add(dt,interval -1 day),'%a, %D') as label,round(ifnull(count1,0),2) as count FROM t ;
+        """ )
+        m['future_appointments'] = db.query("""
+            WITH RECURSIVE t as (
+                select date(now()) as dt, 0 as count1
+                UNION 
+                 SELECT DATE_ADD(t.dt, INTERVAL 1 day) as month,
+                 (select count(pq.id) from provider_queue_actions pqa, provider_queue pq, office o
+                    where 
+                    """ + add_sql + """
+                    pq.office_id = o.id and 
+                    day(t.dt)=day(pqa.start_date) and month(t.dt)=month(pqa.start_date) and 
+                    year(t.dt)=year(pqa.start_date) 
+                 ) as count1
+                 FROM t
+                 WHERE DATE_ADD(t.dt, INTERVAL 1 DAY) <= date_add(now(),interval 7 day)
+            )
+            select date_format(date_add(dt,interval -1 day),'%a, %D') as label,round(ifnull(count1,0),2) as count FROM t ;
+        """)
+        m['potential_sales'] = db.query("""
+            WITH RECURSIVE t as (
+                select date(now()) as dt, 0 as count1
+                UNION 
+                 SELECT DATE_ADD(t.dt, INTERVAL 1 day) as month,
+                 (select sum(deal_value) from provider_queue pq, office o
+                    where 
+                    """ + add_sql + """
+                    pq.office_id = o.id and 
+                    day(t.dt)=day(pq.estimated_close_date) and month(t.dt)=month(pq.estimated_close_date) and 
+                    year(t.dt)=year(pq.estimated_close_date) 
+                 ) as count1
+                 FROM t
+                 WHERE DATE_ADD(t.dt, INTERVAL 1 DAY) <= date_add(now(),interval 7 day)
+            )
+            select date_format(date_add(dt,interval -1 day),'%a, %D') as label,round(ifnull(count1,0),2) as count FROM t ;
+        """)
+        m['week_sales'] = db.query("""
+            WITH RECURSIVE t as (
+                select date(date_add(now(),INTERVAL -7 day)) as dt,
+                 (select sum(total) from invoices p, provider_queue pq, office o
+                    where 
+                    pq.office_id = p.office_id and
+                    """ + add_sql + """
+                    pq.office_id = o.id and 
+                    day(date(date_add(now(),INTERVAL -7 day)))=day(p.created) 
+                    and p.invoice_status_id=15 
+                    and month(date(date_add(now(),INTERVAL -7 day)))=month(p.created) 
+                    and year(date(date_add(now(),INTERVAL -7 day)))=year(p.created) 
+                 ) as count1,
+                 (select sum(total) from invoices p, provider_queue pq, office o
+                    where 
+                    pq.office_id = p.office_id and
+                    """ + add_sql + """
+                    day(date(date_add(now(),INTERVAL -7 day)))=day(p.created) 
+                    and p.invoice_status_id=15 
+                    and month(date(date_add(now(),INTERVAL -7 day)))=month(p.created) 
+                    and year(date(date_add(now(),INTERVAL -7 day)))=year(p.created) 
+                 ) as count2
+                UNION 
+                 SELECT DATE_ADD(t.dt, INTERVAL 1 day) as month,
+                 (select sum(total) from invoices p, provider_queue pq, office o
+                    where 
+                    pq.office_id = p.office_id and
+                    """ + add_sql + """
+                    pq.office_id = o.id and 
+                    day(t.dt)=day(p.created) and month(t.dt)=month(p.created) and year(t.dt)=year(p.created) 
+                    and p.invoice_status_id=15 
+                 ) as count1,
+                 (select sum(total) from invoices p, provider_queue pq, office o
+                    where 
+                    pq.office_id = p.office_id and
+                    """ + add_sql + """
+                    pq.office_id = o.id and 
+                    day(t.dt)=day(p.created) and month(t.dt)=month(p.created) and year(t.dt)=year(p.created) 
+                    and p.invoice_status_id=15 
+                 ) as count2
+                 FROM t
+                 WHERE DATE_ADD(t.dt, INTERVAL 1 DAY) <= date_add(now(),interval 1 day)
+            )
+            select date_format(date_add(dt,interval -1 day),'%a, %D') as label,round(ifnull(count1,0),2) as count FROM t ;
+            """)
+
+        return m
+
     def populateValues(self,entry,db):
         x = entry
         x['additional_emails'] = db.query("""
@@ -690,7 +825,7 @@ class RegistrationList(AdminBase):
         comms = db.query("""
             select 
                 ic.id,ic.text,ic.user_id,
-                u.first_name,u.last_name,u.title,
+                concat(u.first_name,' ', u.last_name) as comment_user,
                 ic.created
             from 
             office_comment ic, users u
@@ -929,7 +1064,7 @@ class RegistrationList(AdminBase):
                     count_par.insert(0,params['search']+'%%')
                     count_par.insert(0,params['search']+'%%')
             else:
-                if 'mine' in params and params['mine'] is not None:
+                if 'mine' in params and params['mine'] is not None and params['mine']:
                     q += " and ( o.commission_user_id = %s or o.setter_user_id = %s )"
                     search_par.insert(0,user['id'])
                     count_par.append(user['id'])
@@ -1001,15 +1136,16 @@ class RegistrationList(AdminBase):
         o = db.query(q,search_par)
         k = [] 
         dtrack = []
-        dtrack_start = db.query(deal_tracker + " and pq.include_on_deal_tracker = 1 group by o.id")
+        if 'Admin' in user['entitlements']:
+            dtrack_start = db.query(deal_tracker + " and pq.include_on_deal_tracker = 1 group by o.id")
+            for x in dtrack_start:
+                x = self.populateValues(x,db)
+                dtrack.append(x)
         ret['deal_tracker'] = dtrack
         for x in o:
             x = self.populateValues(x,db)
             k.append(x)
         ret['registrations'] = k
-        for x in dtrack_start:
-            x = self.populateValues(x,db)
-            dtrack.append(x)
         ret['config'] = {}
         ret['config']['type'] = db.query("select id,name from office_type where name <> 'Customer'")
         ret['config']['call_status'] = db.query("select id,name from provider_queue_call_status")
@@ -1032,93 +1168,10 @@ class RegistrationList(AdminBase):
                 where id in (select user_id from user_entitlements where entitlements_id=14)
         """)
         ret['config']['strength'] = db.query("select id,name from provider_queue_lead_strength")
-        ret['dashboard'] = {}
-        ret['dashboard']['appointments'] = db.query("""
-            select t1.num1 as num1 
-            from 
-            (select count(id) as num1 from provider_queue_actions where date(start_date) = date(now())) as t1
-            """
-        )
-        ret['dashboard']['appointments'] = ret['dashboard']['appointments'][0]
-        ret['dashboard']['presented'] = db.query("""
-            WITH RECURSIVE t as (
-                select date_add(now(),INTERVAL -7 day) as dt, 0 as count1
-                UNION 
-                 SELECT DATE_ADD(t.dt, INTERVAL 1 day) as month,
-                 (select count(id) from provider_queue p
-                    where 
-                    day(t.dt)=day(p.set_to_present_date) and month(t.dt)=month(p.set_to_present_date) and 
-                    year(t.dt)=year(p.set_to_present_date) 
-                 ) as count1
-                 FROM t
-                 WHERE DATE_ADD(t.dt, INTERVAL 1 DAY) <= date_add(now(),interval 1 day)
-            )
-            select date_format(date_add(dt,interval -1 day),'%a, %D') as label,round(ifnull(count1,0),2) as count FROM t ;
-        """)
-        ret['dashboard']['future_appointments'] = db.query("""
-            WITH RECURSIVE t as (
-                select date(now()) as dt, 0 as count1
-                UNION 
-                 SELECT DATE_ADD(t.dt, INTERVAL 1 day) as month,
-                 (select count(id) from provider_queue_actions p
-                    where 
-                    day(t.dt)=day(p.start_date) and month(t.dt)=month(p.start_date) and 
-                    year(t.dt)=year(p.start_date) 
-                 ) as count1
-                 FROM t
-                 WHERE DATE_ADD(t.dt, INTERVAL 1 DAY) <= date_add(now(),interval 7 day)
-            )
-            select date_format(date_add(dt,interval -1 day),'%a, %D') as label,round(ifnull(count1,0),2) as count FROM t ;
-        """)
-        ret['dashboard']['potential_sales'] = db.query("""
-            WITH RECURSIVE t as (
-                select date(now()) as dt, 0 as count1
-                UNION 
-                 SELECT DATE_ADD(t.dt, INTERVAL 1 day) as month,
-                 (select sum(deal_value) from provider_queue p
-                    where 
-                    day(t.dt)=day(p.estimated_close_date) and month(t.dt)=month(p.estimated_close_date) and 
-                    year(t.dt)=year(p.estimated_close_date) 
-                 ) as count1
-                 FROM t
-                 WHERE DATE_ADD(t.dt, INTERVAL 1 DAY) <= date_add(now(),interval 7 day)
-            )
-            select date_format(date_add(dt,interval -1 day),'%a, %D') as label,round(ifnull(count1,0),2) as count FROM t ;
-        """)
-        ret['dashboard']['week_sales'] = db.query("""
-            WITH RECURSIVE t as (
-                select date(date_add(now(),INTERVAL -7 day)) as dt,
-                 (select sum(total) from invoices p
-                    where 
-                    day(date(date_add(now(),INTERVAL -7 day)))=day(p.created) 
-                    and p.invoice_status_id=15 
-                    and month(date(date_add(now(),INTERVAL -7 day)))=month(p.created) 
-                    and year(date(date_add(now(),INTERVAL -7 day)))=year(p.created) 
-                 ) as count1,
-                 (select sum(total) from invoices p
-                    where 
-                    day(date(date_add(now(),INTERVAL -7 day)))=day(p.created) 
-                    and p.invoice_status_id=15 
-                    and month(date(date_add(now(),INTERVAL -7 day)))=month(p.created) 
-                    and year(date(date_add(now(),INTERVAL -7 day)))=year(p.created) 
-                 ) as count2
-                UNION 
-                 SELECT DATE_ADD(t.dt, INTERVAL 1 day) as month,
-                 (select sum(total) from invoices p
-                    where 
-                    day(t.dt)=day(p.created) and month(t.dt)=month(p.created) and year(t.dt)=year(p.created) 
-                    and p.invoice_status_id=15 
-                 ) as count1,
-                 (select sum(total) from invoices p
-                    where 
-                    day(t.dt)=day(p.created) and month(t.dt)=month(p.created) and year(t.dt)=year(p.created) 
-                    and p.invoice_status_id=15 
-                 ) as count2
-                 FROM t
-                 WHERE DATE_ADD(t.dt, INTERVAL 1 DAY) <= date_add(now(),interval 1 day)
-            )
-            select date_format(date_add(dt,interval -1 day),'%a, %D') as label,round(ifnull(count1,0),2) as count FROM t ;
-            """)
+        ret['dashboard'] = {'mine':{},'dealtracker':{}}
+        if 'Admin' in user['entitlements']:
+            ret['dashboard']['dealtracker'] = self.dashboardData(0,db)
+        ret['dashboard']['mine'] = self.dashboardData(user['id'],db)
         if 'report' in params and params['report'] is not None:
             myq = prelimit
             d = calcdate.getYearToday()
@@ -1130,13 +1183,11 @@ class RegistrationList(AdminBase):
                 myq += " provider_queue_status_id = %s " % PQS['DO_NOT_CONTACT']
                 myq += " or provider_queue_status_id = %s " % PQS['IN_NETWORK']
                 myq += " or provider_queue_status_id = %s " % PQS['NOT_INTERESTED']
-                myq += " or provider_queue_status_id = %s " % PQS['REQUIRES_RAIN']
                 myq += " or provider_queue_status_id = %s " % PQS['REQUIRES_REFERENCE']
                 myq += " or provider_queue_status_id = %s " % PQS['REQUIRES_PATIENT']
                 myq += " or provider_queue_status_id = %s " % PQS['NOT_A_CHIROPRACTOR']
-                myq += " or provider_queue_status_id = %s " % PQS['PAYMENT_COMMITTED']
+                myq += " or provider_queue_status_id = %s " % PQS['PAYMENT_PENDING']
                 myq += " or provider_queue_status_id = %s " % PQS['WARMING']
-                myq += " or provider_queue_status_id = %s " % PQS['RAIN_REQUIRED_TO_CLOSE']
                 myq += ")\n"
                 i = []
             myq += " group by o.id order by id desc "

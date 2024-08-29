@@ -54,7 +54,6 @@ class ChatDialog extends Component {
     const token = `Bearer ${localStorage.getItem('token')}`;
     const socket = io(chatURL(), { extraHeaders: { Authorization: token } });
     socket.on('connect', () => {
-      console.log('Socket connected');
       this.joinChannel(this.props.activeChatId);
     });
 

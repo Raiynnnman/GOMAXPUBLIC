@@ -60,6 +60,7 @@ class Registrations extends Component {
             saveSearches:[],
             filterType: [],
             subTab: "plans",
+            mine: true,
             massSel:[],
             userSelected:null,
             userFilter:[],
@@ -72,6 +73,7 @@ class Registrations extends Component {
             pageSize: 10
         }
         this.search = this.search.bind(this);
+        this.showAllRecords = this.showAllRecords.bind(this);
         this.updateFilter = this.updateFilter.bind(this);
         this.onMassUpdateValue = this.onMassUpdateValue.bind(this);
         this.toggleDrawer = this.toggleDrawer.bind(this);
@@ -174,6 +176,12 @@ class Registrations extends Component {
             },this));
     } 
 
+    showAllRecords() { 
+        this.state.mine = !this.state.mine;
+        this.setState(this.state);
+        this.reload()
+    } 
+
     loadSavedSearch(e) { 
         var g = this.state.saveSearches.findIndex((f) => f.name === e.name)
         if (g !== -1) { 
@@ -242,10 +250,8 @@ class Registrations extends Component {
             g = g[0]
             this.state.sort = g.id
             this.state.direction = g.direction === 'asc' ? 'desc' : 'asc'
-            this.props.dispatch(getRegistrations(
-                {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
-            ));
             this.setState(this.state);
+            this.reload()
         } 
     } 
 
@@ -257,10 +263,8 @@ class Registrations extends Component {
     pageGridsChange(t) { 
         this.state.pageSize = t
         this.state.page = 0
-        this.props.dispatch(getRegistrations(
-            {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
-        ));
         this.setState(this.state);
+        this.reload()
     } 
     pageChange(e) { 
         this.state.page = e
@@ -355,7 +359,7 @@ class Registrations extends Component {
     } 
     reload() { 
         this.props.dispatch(getRegistrations(
-            {type:this.state.filterType,sort:this.state.sort,direction:this.state.direction,
+            {mine:this.state.mine,type:this.state.filterType,sort:this.state.sort,direction:this.state.direction,
              search:this.state.search,limit:this.state.pageSize,users:this.state.userFilter,
             offset:this.state.page,status:this.state.filter,alt_status:this.state.altFilter}
         ));
@@ -407,8 +411,6 @@ class Registrations extends Component {
     } 
 
     render() {
-        console.log("p",this.props);
-        console.log("s",this.state);
         var regheads = [
             {
                 dataField:'office_id',
@@ -804,7 +806,7 @@ class Registrations extends Component {
                     {(!this.state.selected) && ( 
                         <div style={{overflow:"auto"}}>
                             <DealTracker 
-                                dashboard={this.props.registrationsAdminList.data.dashboard}
+                                dashboard={this.props.registrationsAdminList.data.dashboard.dealtracker}
                                 onEdit={this.edit}
                                 data={this.props.registrationsAdminList.data.deal_tracker}
                                 config={this.props.registrationsAdminList.data.config}
@@ -845,11 +847,11 @@ class Registrations extends Component {
                             </div>
                         </Grid>
                         <Grid item xs={2} style={{height:50}}>
-                            {this.state.filterName && (
+                            {(this.props.currentUser && this.props.currentUser.entitlements && 
+                            this.props.currentUser.entitlements.includes('Admin'))  && ( 
                             <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
-                                <font style={{fontSize:20,fontWeight:'bold'}}>
-                                    Selected Filter: {this.state.filterName.name}
-                                </font>
+                                <TemplateCheckbox 
+                                      onClick={this.showAllRecords} label="Show All?" checked={!this.state.mine}/>
                             </div>
                             )}
                         </Grid>

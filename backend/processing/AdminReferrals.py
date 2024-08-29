@@ -50,7 +50,7 @@ class ReferrerUpdate(AdminBase):
         job,user,off_id,params = self.getArgs(*args,**kwargs)
         db = Query()
         ref_id = 0
-        print(params)
+        print(json.dumps(params,indent=4))
         if 'id' in params:
             ref_id = params['id']
         if 'referrer_users_source_id' in params:
@@ -83,26 +83,43 @@ class ReferrerUpdate(AdminBase):
                 where id = %s
                 """,(params['referrer_users_call_status_id'],ref_id)
             )
+        cliid = params['client_intake_id']
+        if params['client_intake_id'] == None:
+            db.update("""
+                insert into client_intake (description) values (%s)
+                """,('IMPORT SYSTEM',)
+            )
+            cliid = db.LAST_INSERT_ID()
+            db.update("""
+                update referrer_users set client_intake_id = %s
+                    where id = %s
+                """,(cliid, params['id'],)
+            )
+        userid = params['user_id']
+        if params['user_id'] is None:
+            db.update("""
+                insert into users (email) values (%s)
+                """,(params['email'],)
+            )
+            userid = db.LAST_INSERT_ID()
+            db.update("""
+                update referrer_users set user_id=%s where id = %s
+                """,(userid,params['id'])
+            )
         if 'addr1' in params and 'city' in params and 'state' in params:
             db.update("""
                 delete from user_addresses where user_id = %s
-                """,(params['user_id'],)
+                """,(userid,)
             )
             db.update("""
-                insert into user_addresses (addr1,city,state,zipcode) values (%s,%s,%s,%s)
-                """,(params['addr1'],params['city'],params['state'],'')
+                insert into user_addresses (user_id,addr1,city,state,zipcode) values (%s,%s,%s,%s,%s)
+                """,(userid,params['addr1'],params['city'],params['state'],'')
             )
         if 'assignee_id' in params:
-            cliid = params['client_intake_id']
-            if params['client_intake_id'] == None:
-                db.update("""
-                    insert into client_intake (description) values (%s)
-                    """,('')
-                )
-                cliid = db.LAST_INSERT_ID()
             db.update("""
-                update client_intake set assignee_id = %s
-                """,(params['assignee_id'],)
+                update client_intake set assignee_id = %s 
+                        where id = %s
+                """,(params['assignee_id'],cliid,)
             )
         if 'referrer_users_status_id' in params:
             db.update("""
@@ -183,7 +200,7 @@ class ReferrerList(AdminBase):
             select 
                 ru.id,ru.email,ru.name,ru.phone,o.name as office_name,ru.referred,
                 ru.referrer_users_status_id, rs.name as status,
-                ro.name as referrer_name,ru.doa,
+                ro.name as referrer_name,ru.doa,ci.user_id,
                 o.id as office_id, ci.id as client_intake_id,ci.assignee_id as assignee_id,
                 referrer_users_source_id,referrer_users_vendor_status_id,
                 vendor_id, referrer_users_call_status_id,price_per_lead,import_location,
@@ -210,8 +227,8 @@ class ReferrerList(AdminBase):
                 arr.append("referrer_users_status_id = %s " % z)
             q += " or ".join(arr)
             q += ")"
-        if 'mine' in params and params['mine']:
-            q += " and cl.assignee_id = %s " % user['id']
+        if 'mine' in params and params['mine'] is not None and params['mine']:
+            q += " and ci.assignee_id = %s " % user['id']
         cnt = db.query("select count(id) as cnt from (%s) as t" % (q,))
         ret['total'] = cnt[0]['cnt']
         p.append(limit)
@@ -237,7 +254,7 @@ class ReferrerList(AdminBase):
             comms = db.query("""
                 select 
                     ic.id,ic.text,ic.user_id,
-                    u.first_name,u.last_name,u.title,
+                    concat(u.first_name,' ',u.last_name) as comment_user,
                     ic.created
                 from 
                 referrer_users_comment ic, users u

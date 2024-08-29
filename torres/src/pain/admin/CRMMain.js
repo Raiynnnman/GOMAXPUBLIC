@@ -9,6 +9,7 @@ import Tab from '@mui/material/Tab';
 import OfficeAdminList from './OfficeAdminList';
 import Clients from './Clients';
 import UserAdminList from './UserAdminList';
+import MyStuff from './MyStuff';
 
 
 class CRMMain extends Component {
@@ -50,28 +51,35 @@ class CRMMain extends Component {
                     <>
                         <Box sx={{width:'100%'}}>
                             <Tabs style={{marginBottom:0}} value={this.state.activeTab} onChange={this.toggleTab}>
-                                {/*<Tab value='mydashboard' label='My Dashboard'/>*/}
-                                <Tab value='contacts' label='Contacts'/>
+                                <Tab value='mydashboard' label='My Dashboard'/>
                                 <Tab value='subscribers' label='Subscribers'/>
+                                <Tab value='contacts' label='Contacts'/>
                                 <Tab value='clients' label='Clients'/>
+                                {(this.props.currentUser && this.props.currentUser.entitlements && 
+                                this.props.currentUser.entitlements.includes('Admin'))   && ( 
                                 <Tab value='endusers' label='End Users'/>
-                                <Tab value='dealtracker' label='Deal Tracker'/>
-                                {/*<Tab value='myactivities' label='My Activities'/>*/}
+                                )}
+                                {(this.props.currentUser && this.props.currentUser.entitlements && 
+                                this.props.currentUser.entitlements.includes('Admin'))   && ( 
+                                    <Tab value='dealtracker' label='Deal Tracker'/>
+                                )}
                             </Tabs>
                             {(this.state.activeTab === 'endusers')  && ( 
                                 <UserAdminList/>
                             )}
                             {(this.state.activeTab === 'contacts')  && ( 
-                                <Registrations/>
+                                <Registrations mine={false}/>
                             )}
                             {(this.state.activeTab === 'subscribers')  && ( 
                                 <OfficeAdminList/>
                             )}
                             {(this.state.activeTab === 'clients')  && ( 
-                                <Clients/>
+                                <Clients mine={false}/>
                             )}
                             {(this.state.activeTab === 'mydashboard') && ( 
-                                <h1>My Dashboard</h1>
+                            <>
+                                <MyStuff/>
+                            </>
                             )}
                             {(this.props.currentUser && this.props.currentUser.entitlements && 
                             this.props.currentUser.entitlements.includes('Admin') && this.state.activeTab === 'dealtracker')  && ( 

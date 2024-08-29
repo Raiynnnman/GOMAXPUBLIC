@@ -92,7 +92,7 @@ class performance():
         finally:
             __p = datetime.datetime.now() - __s
             __ms = float("%s.%s" % (__p.seconds,__p.microseconds))
-            print("PERF_LOOKUP: %2.6fs" % __ms)
+            print("PERF_LOOKUP: %s: %2.6fs" % (self.__subsys,__ms))
 
     def status(self,s):
         self.__status__ = s

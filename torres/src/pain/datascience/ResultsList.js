@@ -80,7 +80,6 @@ class Template extends Component {
         this.setState(this.state);
     } 
     run(e) { 
-        console.log("run",e);
     } 
     edit(e) { 
         this.state.selected = e;
@@ -88,7 +87,6 @@ class Template extends Component {
     } 
 
     render() {
-        console.log("p",this.props);
         var heads = [
             {
                 dataField:'id',
@@ -120,7 +118,6 @@ class Template extends Component {
                 )
             },
         ];
-        console.log("p",this.props);
         return (
         <>
         <Box style={{margin:20}}>

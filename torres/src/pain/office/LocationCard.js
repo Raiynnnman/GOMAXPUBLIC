@@ -150,10 +150,12 @@ class LocationCard extends Component {
                                             <GoogleAutoComplete initVal={this.state.selected.addr1} onChange={this.changeAddr1} />
                                             </div>
                                         ) : (
+                                        <>
                                             <Typography>
                                                 {this.props.provider.addr1 || '' } {this.props.provider.addr2 || ''}<br />
                                                 {this.props.provider.city || ''} {this.props.provider.state || ''} {this.props.provider.zipcode || ''}
                                             </Typography>
+                                        </>
                                         )}
                                     </Grid>
                                     {this.state.edit && this.state.selected && (
