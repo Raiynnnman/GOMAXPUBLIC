@@ -395,7 +395,7 @@ class RegistrationLandingData(RegistrationsBase):
                     j['city'] = n['city']
                     break
                 db.update(""" insert into visits (lat,lng,continent,country,state,city,ip,ip_int,url)
-                    values (%s,%s,%s,%s,%s,%s,%s,%s)
+                    values (%s,%s,%s,%s,%s,%s,%s,%s,%s)
                     """,(
                         j['lat'],j['lon'],j['continent'],j['country'],j['stateprov'],j['city'],
                         j['ip'],j['ip_int'],request.path
