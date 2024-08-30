@@ -50,7 +50,6 @@ const buttonStyle = {
 };
 const cardStyle = {
     height: '100%',
-    marginBottom:12,
     borderRadius:5,
     '&:hover': {
         backgroundColor: '#FFFAF2',
@@ -121,9 +120,10 @@ class RegistrationsEdit extends Component {
             selected: null,
             savedAction:{},
             addContactButton:true,
+            addLocationButton:true,
             statusAltSelected:null,
             actionIdx:null,
-            subTab: "activity",
+            subTab: "comments",
         } 
     } 
 
@@ -153,7 +153,7 @@ class RegistrationsEdit extends Component {
         } else { 
             this.state.selected.addr[v] = e;
         } 
-        this.state.addButton = true;
+        this.state.addLocationButton = true;
         this.setState(this.state)
     } 
 
@@ -480,7 +480,6 @@ class RegistrationsEdit extends Component {
     addContact() { 
         this.state.addContactButton = false;
         this.state.selected.phones.push({
-            id:0,
             phone:'',
             iscell:false,
         })
@@ -488,9 +487,9 @@ class RegistrationsEdit extends Component {
     } 
 
     addAddress() { 
+        this.state.addLocationButton = false;
         this.state.selected.addr.push({
-            id:0,
-            name:'Practice Name',
+            name:'',
             addr1:'',
             city:'',
             state:'',
@@ -956,14 +955,14 @@ class RegistrationsEdit extends Component {
                     {this.state.selected.office_type !== 'Referrer' && (
                         <Grid item xs="12">
                             <Tabs style={{marginBottom:20}} value={this.state.subTab} onChange={this.toggleSubTab}>
+                                <Tab value='comments' label='Comments'/>
                                 <Tab value='activity' label='Activity'/>
                                 <Tab value='plans' label='Plans'/>
                                 <Tab value='contact' label='Contact'/>
-                                <Tab value='registrationsAdminList' label='Offices'/>
+                                <Tab value='locations' label='Locations'/>
                                 <Tab value='invoice' label='Invoice'/>
                                 <Tab value='history' label='History'/>
                                 <Tab value='users' label='Users'/>
-                                <Tab value='comments' label='Comments'/>
                             </Tabs>
                             {this.state.subTab === 'contact' && (
                                 <>
@@ -1138,6 +1137,8 @@ class RegistrationsEdit extends Component {
                             {(this.state.subTab === 'comments') && (
                             <>
                                 <TemplateButtonIcon onClick={() => this.addComment({id:"new"})} label={<AddBoxIcon/>}/>
+                                <Grid container xs="12">
+                                <>
                                 {this.state.selected.comments.sort((a,b) => (a.created > b.created ? -1:1)).map((e) => { 
                                     return (
                                         <Grid item xs="3" key={e.id}>
@@ -1189,8 +1190,11 @@ class RegistrationsEdit extends Component {
                                             </Paper>
                                             </Box>
                                         </Grid>
-                                    )})}
+                                    )}
+                                )}
                                 </>
+                                </Grid>
+                            </>
                             )}
                             {(this.state.subTab === 'history') && (
                             <>
@@ -1204,9 +1208,9 @@ class RegistrationsEdit extends Component {
                                 )}
                             </>
                             )}
-                            {(this.state.subTab === 'offices') && (
+                            {(this.state.subTab === 'locations') && (
                             <>
-                                {this.state.addButton && ( 
+                                {this.state.addLocationButton && ( 
                                 <TemplateButton
                                     style={{ width:50,marginBottom: 10 }}
                                     onClick={this.addAddress}

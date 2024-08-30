@@ -16,7 +16,7 @@ class CRMMain extends Component {
     constructor(props) { 
         super(props);
         this.state = { 
-            activeTab:"contacts",
+            activeTab:"mydashboard",
             selected: null
         }
         this.toggleTab = this.toggleTab.bind(this);
@@ -78,6 +78,7 @@ class CRMMain extends Component {
                             )}
                             {(this.state.activeTab === 'mydashboard') && ( 
                             <>
+                                <div style={{display:"none"}}><Registrations/></div>
                                 <MyStuff/>
                             </>
                             )}

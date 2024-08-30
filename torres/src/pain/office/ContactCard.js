@@ -21,7 +21,6 @@ const buttonStyle = {
 
 const cardStyle = {
     height: '100%',
-    marginBottom: 12,
     borderRadius: 5,
     '&:hover': {
         backgroundColor: '#FFFAF2',

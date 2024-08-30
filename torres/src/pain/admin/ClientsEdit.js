@@ -721,6 +721,7 @@ class RegistrationsEdit extends Component {
                             {(this.state.subTab === 'comments') && (
                             <>
                                 <TemplateButtonIcon onClick={() => this.addComment({id:"new"})} label={<AddBoxIcon/>}/>
+                                <Grid container xs="12">
                                 {this.state.selected.comments.sort((a,b) => (a.created > b.created ? -1:1)).map((e) => { 
                                     return (
                                         <Grid item xs="3" key={e.id}>
@@ -773,6 +774,7 @@ class RegistrationsEdit extends Component {
                                             </Box>
                                         </Grid>
                                     )})}
+                                    </Grid>
                                 </>
                             )}
                             {(this.state.subTab === 'history') && (

@@ -203,7 +203,7 @@ class Clients extends Component {
              search:this.state.search,
              limit:this.state.pageSize,
              offset:this.state.page,status:this.state.filter}
-        ));
+        ,function(err,args) { args.close() },this));
     }
     save(e) { 
         var tosend = e;
@@ -215,7 +215,6 @@ class Clients extends Component {
                 }
               );
               args.reload()
-              args.close()
             },this)
         )
     } 

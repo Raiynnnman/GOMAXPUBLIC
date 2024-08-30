@@ -362,7 +362,7 @@ class Registrations extends Component {
             {mine:this.state.mine,type:this.state.filterType,sort:this.state.sort,direction:this.state.direction,
              search:this.state.search,limit:this.state.pageSize,users:this.state.userFilter,
             offset:this.state.page,status:this.state.filter,alt_status:this.state.altFilter}
-        ));
+        ,function(err,args) { args.close() },this));
     }
 
     updateFilter() { 
@@ -378,14 +378,13 @@ class Registrations extends Component {
 
     save(tosend) { 
         this.props.dispatch(registrationAdminUpdate(tosend,function(err,args) { 
-                args.reload();
+                console.log("here")
                 toast.success('Successfully saved registration.', {
                     position:"top-right",
                     autoClose:3000,
                     hideProgressBar:true
-                }
-                );
-                args.close()
+                });
+                args.reload()
             },this));
     } 
 

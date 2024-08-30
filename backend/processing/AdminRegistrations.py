@@ -485,11 +485,13 @@ class RegistrationUpdate(AdminBase):
                         """
                             insert into office_phones (
                                 office_id,description,phone,iscell
-                            ) values (%s,%s,%s)
-                        """,(offid,x['description'],x['phone'],x['iscell'])
+                            ) values (%s,%s,%s,%s)
+                        """,(offid,a['description'],a['phone'],a['iscell'])
                     )
         if 'addr' in params and params['addr'] is not None:
             for a in params['addr']:
+                if 'zipcode' not in a:
+                    a['zipcode'] = None
                 if 'id' in a and a['id'] is not None:
                     db.update("""
                         update office_addresses set 
@@ -512,7 +514,7 @@ class RegistrationUpdate(AdminBase):
                             insert into office_addresses (
                                 office_id,name,addr1,addr2,phone,city,state,zipcode
                             ) values (%s,%s,%s,%s,%s,%s,%s,%s)
-                        """,(offid,x['name'],x['addr1'],x['addr2'],x['phone'],x['city'],x['state'],x['zipcode'])
+                        """,(offid,a['name'],a['addr1'],a['addr2'],a['phone'],a['city'],a['state'],a['zipcode'])
                     )
         if 'call_status_id' in params and params['call_status_id'] is not None:
             db.update(

@@ -162,7 +162,7 @@ class OfficeList(AdminBase):
             for g in v:
                 x['languages'].append(g['languages_id'])
             x['phones'] = db.query("""
-                select id,description,iscell,phone as contact,'phone' as type from office_phones 
+                select id,description,iscell,phone,'phone' as type from office_phones 
                     where office_id=%s
                 """,(x['id'],)
             )
