@@ -403,6 +403,7 @@ class RegistrationLandingData(RegistrationsBase):
                 )
             except Exception as e:
                 print("LANDING_ERROR: %s" % str(e))
+        db.commit()
         return ret
 
 class RegisterProvider(RegistrationsBase):
