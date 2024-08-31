@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Box from '@mui/material/Box';
+import AppSpinner from '../utils/Spinner';
 import Grid from '@mui/material/Grid';
 import Navbar from '../../components/Navbar';
 import Registrations from './Registrations';
@@ -44,6 +45,9 @@ class CRMMain extends Component {
     render() { 
         return (
         <>
+            {(this.props.registrationsAdminList && this.props.registrationsAdminList.isReceiving) && (
+                <AppSpinner/>
+            )}
             <Navbar/>
             <Box style={{margin:20}}>
                 <Grid container xs="12" style={{margin:0}}>

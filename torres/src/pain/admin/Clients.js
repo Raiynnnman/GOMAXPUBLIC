@@ -259,6 +259,7 @@ class Clients extends Component {
     } 
 
     render() {
+        console.log("p",this.props);
         var regheads = [
             {
                 dataField:'id',
@@ -430,8 +431,8 @@ class Clients extends Component {
                                 </Grid>
                                 <Grid item xs={1} style={{height:50}}>
                                 {(this.props.referrerAdminList && this.props.referrerAdminList.data && 
-                                  this.props.referrerAdminList.data.data && 
-                                  this.props.referrerAdminList.data.data.length > 0)&& ( 
+                                    this.props.referrerAdminList.data.config &&
+                                    this.props.referrerAdminList.data.config.status && this.state.statusSelected !== null) && (
                                 <>
                                     {(this.props.currentUser && this.props.currentUser.entitlements && 
                                     this.props.currentUser.entitlements.includes('Admin'))  && ( 
