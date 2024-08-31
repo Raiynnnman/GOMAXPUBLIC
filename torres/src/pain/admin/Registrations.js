@@ -90,6 +90,7 @@ class Registrations extends Component {
         this.dncReport = this.dncReport.bind(this);
         this.edit = this.edit.bind(this);
         this.add = this.add.bind(this);
+        this.onStatusFilter = this.onStatusFilter.bind(this);
         this.pageChange = this.pageChange.bind(this);
         this.sortChange = this.sortChange.bind(this);
         this.loadSavedSearch = this.loadSavedSearch.bind(this);
@@ -111,11 +112,6 @@ class Registrations extends Component {
             } 
             this.state.userSelected = t;
             this.state.userFilter = t1;
-            if (localStorage.getItem('reg_user')) { 
-                var g = JSON.parse(localStorage.getItem("reg_user"));
-                this.state.userSelected = g[0];
-                this.state.userFilter = g[1];
-            } 
             this.setState(this.state);
             changed = true;
         } 
@@ -222,7 +218,6 @@ class Registrations extends Component {
                 status:[this.state.statusSelected,this.state.filter]
             })
         } 
-        localStorage.setItem('reg_saved_filters',JSON.stringify(this.state.saveSearches));
         this.state.searchname = '';
         this.setState(this.state);
     } 
