@@ -39,22 +39,22 @@ class TestimonialLegal extends React.Component {
                                                 <img src={require('../assets/main_page/headshots/testimonial1.png')} alt="testimonial 1" />
                                             </div>
                                             <div className="sin-testiImage">
-                                                <img src={require('../assets/main_page/headshots/headshot-5.png')} alt="testimonial 1" />
+                                                <img src={require('../assets/main_page/headshots/curtis.jpg')} alt="testimonial 1" />
                                             </div>
                                             <div className="sin-testiImage">
-                                                <img src={require('../assets/main_page/headshots/a_beautiful_woman_headshot_for_a_website.jpeg')} alt="testimonial 1" />
+                                                <img src={require('../assets/main_page/headshots/lindsey.jpg')} alt="testimonial 1" />
                                             </div>
                                             <div className="sin-testiImage">
                                                 <img src={require('../assets/main_page/headshots/headshot(2).jpeg')} alt="testimonial 2" />
                                             </div>
                                             <div className="sin-testiImage">
-                                                <img src={require('../assets/main_page/headshots/a_spanish_woman_headshot.jpeg')} alt="testimonial 3" />
+                                                <img src={require('../assets/main_page/headshots/laura.jpg')} alt="testimonial 3" />
                                             </div>
                                             <div className="sin-testiImage">
-                                                <img src={require('../assets/main_page/headshots/a_black_man_headshot.jpeg')} alt="testimonial 2" />
+                                                <img src={require('../assets/main_page/headshots/robert.jpg')} alt="testimonial 2" />
                                             </div>
                                             <div className="sin-testiImage">
-                                                <img src={require('../assets/main_page/headshots/headshot-4.jpeg')} alt="testimonial 2" />
+                                                <img src={require('../assets/main_page/headshots/maria.jpg')} alt="testimonial 2" />
                                             </div>
                                         </Slider>
 

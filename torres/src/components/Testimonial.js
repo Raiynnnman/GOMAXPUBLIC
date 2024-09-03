@@ -35,26 +35,26 @@ class Testimonial extends React.Component {
                                     <div className="col-lg-8 offset-lg-2 col-xl-6 offset-xl-3">
 
                                         <Slider {...testimonial} asNavFor={this.state.nav2} ref={slider => (this.testimonial = slider)} className="testimonial-image-slider text-center">
-                                            <div className="sin-testiImage">
+                                            <div className="sin-testiImage"> {/* Ali */}
                                                 <img src={require('../assets/main_page/headshots/testimonial1.png')} alt="testimonial 1" />
                                             </div>
-                                            <div className="sin-testiImage">
+                                            <div className="sin-testiImage"> {/* Curtis */}
                                                 <img src={require('../assets/main_page/headshots/headshot-5.png')} alt="testimonial 1" />
                                             </div>
-                                            <div className="sin-testiImage">
+                                            <div className="sin-testiImage"> {/* Lindsey */}
                                                 <img src={require('../assets/main_page/headshots/a_beautiful_woman_headshot_for_a_website.jpeg')} alt="testimonial 1" />
                                             </div>
-                                            <div className="sin-testiImage">
-                                                <img src={require('../assets/main_page/headshots/headshot(2).jpeg')} alt="testimonial 2" />
+                                            <div className="sin-testiImage"> {/* Manion */}
+                                                <img src={require('../assets/main_page/headshots/manion.jpg')} alt="testimonial 2" />
                                             </div>
-                                            <div className="sin-testiImage">
-                                                <img src={require('../assets/main_page/headshots/a_spanish_woman_headshot.jpeg')} alt="testimonial 3" />
+                                            <div className="sin-testiImage"> {/* Laura */}
+                                                <img src={require('../assets/main_page/headshots/laura.jpg')} alt="testimonial 3" />
                                             </div>
-                                            <div className="sin-testiImage">
-                                                <img src={require('../assets/main_page/headshots/a_black_man_headshot.jpeg')} alt="testimonial 2" />
+                                            <div className="sin-testiImage"> {/* Robert */}
+                                                <img src={require('../assets/main_page/headshots/robert.jpg')} alt="testimonial 2" />
                                             </div>
-                                            <div className="sin-testiImage">
-                                                <img src={require('../assets/main_page/headshots/headshot-4.jpeg')} alt="testimonial 2" />
+                                            <div className="sin-testiImage"> {/* Maria */}
+                                                <img src={require('../assets/main_page/headshots/maria.jpg')} alt="testimonial 2" />
                                             </div>
                                         </Slider>
 
@@ -103,7 +103,7 @@ I am writing to express my gratitude from my family for the care given to my mot
                                         </p>
                                     </div>
                                     <div className="sin-testiText">
-                                        <h2>Dr. Michael Nguyen, Telemedicine Specialist</h2>
+                                        <h2>Dr. Joel Manion, Chiropractor</h2>
                                         <div className="client-rating">
                                             <i className="zmdi zmdi-star color"></i>
                                             <i className="zmdi zmdi-star color"></i>
@@ -112,7 +112,7 @@ I am writing to express my gratitude from my family for the care given to my mot
                                             <i className="zmdi zmdi-star color"></i>
                                         </div>
                                         <p>
-The integrated telehealth services are a huge benefit for my practice. I can reach patients who otherwise wouldn’t have access to specialized care. The analytics dashboard has also provided valuable insights into my patient demographics and referral sources.
+As a chiropractor who knows the struggle to find patient's in need, I can confidently say Pound Pain Tech is a fantastic company and has an exceptional team. Their innovative approach and dedication to improving patient care has made collaboration incredibly rewarding. Pound Pain truly is revolutionizing patient acquisition for chiros!
                                         </p>
                                     </div>
                                     <div className="sin-testiText">
