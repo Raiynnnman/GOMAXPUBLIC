@@ -39,7 +39,7 @@ export function receivingData(params) {
               Accept: "application/json",
               "Content-Type": "application/json",
             },
-        }).get('/legal/dashboard')
+        }).get('/office/dashboard')
       .then((e) => { 
           dispatch({
                 type: RECEIVED_CONDASH_DATA_SUCCESS,
