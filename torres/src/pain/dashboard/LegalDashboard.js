@@ -3,16 +3,15 @@ import { connect } from 'react-redux';
 import Grid from '@mui/material/Grid';
 import cx from 'classnames';
 import classnames from 'classnames';
-import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
+import TrendHeroWithStats from './components/TrendHeroWithStats';
 
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
-import { getLegalDashboard } from '../../actions/legalDashboard';
-import TrendHeroWithStats from './components/TrendHeroWithStats';
-import MainChart from './components/charts/MainChart';
+import {getProviderDashboard} from '../../actions/providerDashboard';
+import OfficeDashboard from './OfficeDashboard';
+import { getContext } from '../../actions/context';
 
-class LegalDashboard extends Component {
+class Template extends Component {
     constructor(props) { 
         super(props);
         this.state = { 
@@ -23,29 +22,23 @@ class LegalDashboard extends Component {
     }
 
     componentDidMount() {
-        this.props.dispatch(getLegalDashboard())
+        this.props.dispatch(getProviderDashboard())
     }
 
     render() {
+        const OfficeDashboardData = this.props.providerDashboard.data.notifications
         return (
         <>
-            {(this.props.legalDashboard && this.props.legalDashboard.isReceiving) && (
+            {(this.props.offices && this.props.offices.isReceiving) && (
                 <AppSpinner/>
             )}
-            {(this.props.legalDashboard && this.props.legalDashboard.data && this.props.legalDashboard.data.revenue_month) && (
-            <>
-            <Grid container xs="12">
-                <>
-                <Grid item xs="3">
-                    <TrendHeroWithStats data={this.props.legalDashboard.data.revenue_month}
-                        title="Revenue (month)" num1isdollar={true} num2title="Consults" num2isdollar={false} num3title="Appointments" num3ispercent={false}
-                        num4title="Payouts"/>
-                </Grid>
-                </>
-            </Grid>
-            <Grid container xs="12">
-            </Grid>
-            </>
+            {(this.props.providerDashboard && this.props.providerDashboard.data && 
+              this.props.providerDashboard.data.customers) && (
+                <OfficeDashboard 
+                name={this.props.currentUser.contextValue ? this.props.currentUser.contextValue.name : this.props.currentUser.first_name}
+                state={this.props.providerDashboard.data.customers} 
+                notifications={OfficeDashboardData} 
+            />            
             )}
         </>
         )
@@ -55,8 +48,8 @@ class LegalDashboard extends Component {
 function mapStateToProps(store) {
     return {
         currentUser: store.auth.currentUser,
-        legalDashboard: store.legalDashboard
+        providerDashboard: store.providerDashboard
     }
 }
 
-export default connect(mapStateToProps)(LegalDashboard);
+export default connect(mapStateToProps)(Template);
