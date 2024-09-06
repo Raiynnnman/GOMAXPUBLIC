@@ -139,7 +139,7 @@ for x in df:
             """,(j['Email'],)
     )
     userid = db.query("select LAST_INSERT_ID()");
-    userid = cliid[0]['LAST_INSERT_ID()']
+    userid = userid[0]['LAST_INSERT_ID()']
     db.update("""
         insert into client_intake (user_id,description) values (%s,%s)
             """,(userid,j['description'],)
