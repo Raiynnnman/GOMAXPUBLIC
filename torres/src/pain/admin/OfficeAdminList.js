@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import SearchIcon from '@mui/icons-material/Search';
 import Badge from '@mui/material/Badge';
 import Chip from '@mui/material/Chip';
 import { styled } from '@mui/material/styles';
@@ -112,6 +113,7 @@ class OfficeList extends Component {
         this.editUser = this.editUser.bind(this);
         this.changeAccountSummary = this.changeAccountSummary.bind(this);
         this.search = this.search.bind(this);
+        this.searchUpdate = this.searchUpdate.bind(this);
         this.pageChange = this.pageChange.bind(this);
         this.priorityChange = this.priorityChange.bind(this);
         this.donotCallChange = this.donotCallChange.bind(this);
@@ -353,15 +355,17 @@ class OfficeList extends Component {
         ));
         this.setState(this.state);
     } 
-    search(e) { 
+    searchUpdate(e) { 
         this.state.search = e.target.value;
         if (this.state.search.length === 0) { 
             this.state.search = null;
+            this.setState(this.state);
+            this.reload();
         } 
-        this.props.dispatch(getOffices(
-            {direction:this.state.direction,sort:this.state.sort,search:this.state.search,limit:this.state.pageSize,offset:this.state.page,status:this.state.filter}
-        ));
         this.setState(this.state);
+    }
+    search(e) { 
+        this.reload();
     } 
     pageChange(e) { 
         this.state.page = e
@@ -993,8 +997,11 @@ class OfficeList extends Component {
                   {(this.props.offices && this.props.offices.data && 
                     this.props.offices.data.config &&
                     this.props.offices.data.config.provider_status && this.state.statusSelected !== null) && (
-                    <TemplateTextField type="text" id="normal-field" onChange={this.search}
-                    label="Search" value={this.state.search}/>
+                        <div style={{display:"flex",justifyContent:"space-around",alignContent:"center"}}>
+                            <TemplateTextField type="text" id="normal-field" onChange={this.searchUpdate}
+                            label="Search" value={this.state.search}/>
+                            <TemplateButtonIcon style={{mt:10,height:30,width:30}} label={<SearchIcon size="small"/>} onClick={this.search}/>
+                        </div>
                   )}
                 </Grid>
                 <Grid item xs={3}></Grid>

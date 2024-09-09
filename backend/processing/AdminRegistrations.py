@@ -255,6 +255,11 @@ class RegistrationUpdate(AdminBase):
                 update provider_queue set set_to_present_date=%s where office_id=%s
                 """,(params['set_to_present_date'],offid)
             )
+        if 'name' in params:
+            db.update("""
+                update office set name=%s where id=%s
+                """,(params['name'],offid)
+            )
         if 'business_name' in params:
             db.update("""
                 update provider_queue set business_name=%s where office_id=%s

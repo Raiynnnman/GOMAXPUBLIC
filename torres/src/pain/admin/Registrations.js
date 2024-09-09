@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import SearchIcon from '@mui/icons-material/Search';
 import { toast } from 'react-toastify';
 import Drawer from '@mui/material/Drawer';
 import Divider from '@mui/material/Divider';
@@ -73,6 +74,7 @@ class Registrations extends Component {
             pageSize: 10
         }
         this.search = this.search.bind(this);
+        this.searchUpdate = this.searchUpdate.bind(this);
         this.showAllRecords = this.showAllRecords.bind(this);
         this.updateFilter = this.updateFilter.bind(this);
         this.onMassUpdateValue = this.onMassUpdateValue.bind(this);
@@ -272,12 +274,17 @@ class Registrations extends Component {
         this.setState(this.state);
     } 
 
-    search(e) { 
+    searchUpdate(e) { 
         this.state.search = e.target.value;
         if (this.state.search.length === 0) { 
             this.state.search = null;
+            this.setState(this.state);
+            this.reload();
         } 
         this.setState(this.state);
+    } 
+
+    search(e) { 
         this.reload();
     } 
 
@@ -825,11 +832,14 @@ class Registrations extends Component {
                             <TemplateButton onClick={this.toggleDrawer} label='Filters'/>
                         </Grid>
                         <Grid item xs={3} style={{margin:10}}>
-                            <TemplateTextField type="text" id="normal-field" onChange={this.search}
-                            label="Search" value={this.state.search}/>
+                            <div style={{display:"flex",justifyContent:"center",alignContent:"center"}}>
+                                <TemplateTextField type="text" id="normal-field" onChange={this.searchUpdate}
+                                label="Search" value={this.state.search}/>
+                                <TemplateButtonIcon style={{mt:20,height:30,width:30}} label={<SearchIcon size="small"/>} onClick={this.search}/>
+                            </div>
                         </Grid>
-                        <Grid item xs={2}></Grid>
-                        <Grid item xs={2.5} style={{margin:10}}>
+                        <Grid item xs={3}></Grid>
+                        <Grid item xs={1.5} style={{margin:10}}>
                             <div style={{display:'flex',alignContent:'center',justifyContent:'center'}}>
                                 <div style={{display:'flex',justifyContent:"spread-evenly"}}>
                                     <TemplateButtonIcon disabled={this.state.massSel.length < 1} onClick={this.transition} size="small" label={<InputIcon/>}/>
