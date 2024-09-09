@@ -59,6 +59,8 @@ class RegistrationUpdate(AdminBase):
         invid = 0
         pqid = 0
         planid = 0
+        if 'office_id' not in params:
+            params['office_id'] = 0
         l = db.query("""
             select 
                 pq.id,pqs.name,o.name,o.id as office_id,pqs.name as status,
