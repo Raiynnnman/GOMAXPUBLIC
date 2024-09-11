@@ -63,7 +63,7 @@ class OfficeList(AdminBase):
                 select 
                     o.id,o.name,o.active,o.email,pqs.name as status,
                     o.stripe_cust_id,o.old_stripe_cust_id,pq.tags,
-                    o.priority,pq.do_not_contact,pq.provider_queue_status_id pq_status_id,
+                    o.priority,pq.do_not_contact,pq.provider_queue_status_id as pq_status_id,
                     pqs.name as provider_queue_status,ot.name as office_type,o.updated,o.commission_user_id,
                     trim(concat(comu.first_name, ' ', comu.last_name)) as commission_name,pq.website,
                     trim(concat(setu.first_name, ' ', setu.last_name)) as setter_name,
@@ -357,13 +357,14 @@ class OfficeList(AdminBase):
                 )
                 c = 0
                 for k in g['addr']:
-                    k['addr_%s_addr1' % c] = k['addr1']
-                    k['addr_%s_addr2' % c] = k['addr1']
-                    k['addr_%s_phone' % c] = k['phone']
-                    k['addr_%s_city' % c] = k['city']
-                    k['addr_%s_state' % c] = k['state']
-                    k['addr_%s_zipcode' % c] = k['zipcode']
-                    g.update(k)
+                    t = {}
+                    t['addr_%s_addr1' % c] = k['addr1']
+                    t['addr_%s_addr2' % c] = k['addr1']
+                    t['addr_%s_phone' % c] = k['phone']
+                    t['addr_%s_city' % c] = k['city']
+                    t['addr_%s_state' % c] = k['state']
+                    t['addr_%s_zipcode' % c] = k['zipcode']
+                    g.update(t)
                     c += 1
                 del g['addr']
                 v.append(g)
