@@ -58,7 +58,7 @@ prompt-toolkit==3.0.8
 py==1.11.0
 py4j==0.10.9
 pycodestyle==2.6.0
-pycryptodome==3.9.9
+pycryptodome
 pydocstyle==5.1.1
 pyflakes==2.2.0
 Pygments==2.7.2
