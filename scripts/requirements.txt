@@ -91,7 +91,6 @@ pydocstyle==5.1.1
 pyflakes==2.2.0
 Pygments==2.7.2
 PyJWT==1.7.1
-PyMuPDF==1.22.5
 pyparsing==2.4.7
 PyPDF2==3.0.1
 pyrsistent==0.17.3
