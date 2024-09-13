@@ -105,3 +105,4 @@ boto3
 botocore
 s3transfer
 jira
+squareup
