@@ -37,6 +37,7 @@ install: build
 	cp -r tests/*.sh pre/tests
 	cp -r tests/storage/*.sh pre/tests/storage
 	cp -r tests/storage/*.json pre/tests/storage
+	if [ -d p ]; then cp -r p pre; fi
 	(cd pre && tar cfz ../targets/install.tar.gz  --exclude p \
 		--exclude targets \
         --exclude ui/src --exclude .git --exclude src \

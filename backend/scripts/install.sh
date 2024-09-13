@@ -101,13 +101,15 @@ if [ -f .front-ui ]; then
 fi
 
 if [ -f requirements.txt ]; then 
-    python3 -m venv p
-    check_error $? "generate virtual environment"
+    if [ ! -f p ]; then 
+        python3 -m venv p
+        check_error $? "generate virtual environment"
 
-    source p/bin/activate
+        source p/bin/activate
 
-    pip3 install -r requirements.txt
-    check_error $? "get requirements"
+        pip3 install -r requirements.txt
+        check_error $? "get requirements"
+    fi
 fi
 
 
