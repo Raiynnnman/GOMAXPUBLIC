@@ -91,7 +91,7 @@ unicodecsv==0.14.1
 urllib3==1.26.2
 uwsgitop==0.11
 vine==5.0.0
-watchdog==0.10.3
+watchdog
 wcwidth==0.2.5
 Werkzeug==1.0.1
 wrapt==1.12.1
