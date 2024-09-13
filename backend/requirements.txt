@@ -1,4 +1,5 @@
 alabaster
+flasgger==0.9.5
 setuptools
 amqp
 aniso8601
@@ -21,7 +22,6 @@ et-xmlfile
 expiringdict
 flake8
 flake8-polyfill
-flasgger
 Flask
 Flask-Cors
 Flask-Login
