@@ -101,7 +101,7 @@ if [ -f .front-ui ]; then
 fi
 
 if [ -f requirements.txt ]; then 
-    if [ ! -f p ]; then 
+    if [ ! -d p ]; then 
         python3 -m venv p
         check_error $? "generate virtual environment"
 
