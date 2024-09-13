@@ -52,7 +52,7 @@ app.config['MAX_CONTENT_LENGTH'] = max_upload
 
 app.config['SWAGGER'] = {
     "swagger_version": "2.0",
-    "uiversion": "2",
+    "uiversion": 2,
     "specs": [
         {
             "version": "%s.%s.%s.%s-%s" % (
