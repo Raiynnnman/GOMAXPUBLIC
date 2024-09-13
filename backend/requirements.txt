@@ -101,8 +101,8 @@ python-jenkins==1.8.2
 pyap==0.3.1
 pycurl==7.45.3; sys_platform == "Linux"
 googlemaps==4.10.0
-boto3==1.16.21
-botocore==1.19.21
+boto3
+botocore
 s3transfer==0.3.3
 jira==3.8.0
 squareup
