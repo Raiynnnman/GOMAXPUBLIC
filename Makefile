@@ -1,6 +1,6 @@
 
 SHELL=/bin/bash
-D=backend scripts torres chat
+D=backend scripts torres chat vuePain
     
 
 .PHONY: all $D save all-tests
