@@ -1,5 +1,4 @@
 #!/bin/sh
-
 T='{'
 for x in `cat settings.cfg| grep -v '#' | grep -v Configuration`; do
     K=`echo $x | awk -F= '{ print $1 }'`
