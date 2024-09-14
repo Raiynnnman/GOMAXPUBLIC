@@ -53,7 +53,9 @@ class Mail:
             to = config.getKey("email_to_override")
         if config.getKey("no_email_send") is not None:
             return
-        sender = "noreply@poundpain.com"
+        sender = config.getKey("email_from")
+        if sender is None:
+            sender = "noreply@poundpain.com"
         access = config.getKey("email_user")
         secret = config.getKey("email_pass")
         with open(template, "rb") as H:

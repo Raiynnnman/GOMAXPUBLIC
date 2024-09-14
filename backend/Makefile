@@ -53,9 +53,9 @@ install: build
 	if [ -f version.sh ]; then cp version.sh pre; fi
 	if [ -f ../version.sh ]; then cp ../version.sh pre; fi
 	if [ -d bin ]; then cp -r bin pre; rm -f pre/bin/dev*; fi
-	if [ -d p ]; then cp -r p pre; fi
 	if [ -f pre/bin/launch-celery-template.sh ]; then rm pre/bin/launch-celery-template.sh; fi
 	if [ -d docs ]; then cp -r docs pre; fi
+	rm -f pre/bin/*.py pre/bin/conf
 	(cd pre && tar cfz ../targets/install.tar.gz  --exclude p \
 		--exclude targets \
         --exclude ui/src --exclude .git --exclude src \
