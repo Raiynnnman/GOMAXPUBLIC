@@ -804,7 +804,8 @@ class Registrations extends Component {
                     {(this.state.selected) && ( 
                         <RegistrationsEdit selected={this.state.selected} onSave={this.save} onCancel={this.close}/>
                     )}
-                    {(!this.state.selected) && ( 
+                    {(!this.state.selected && this.props.registrationsAdminList && this.props.registrationsAdminList.data &&
+                      this.props.registrationsAdminList.data.dashboard && this.props.registrationsAdminList.data.dashboard.dealtracker) && ( 
                         <div style={{overflow:"auto"}}>
                             <DealTracker 
                                 dashboard={this.props.registrationsAdminList.data.dashboard.dealtracker}
