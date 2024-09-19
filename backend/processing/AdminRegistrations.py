@@ -510,7 +510,7 @@ class RegistrationUpdate(AdminBase):
                             a['id'],
                         )
                     )
-                    if 'deleted' in x and x['deleted']:
+                    if 'deleted' in a and a['deleted']:
                         db.update("""
                             update office_addresses set deleted=1 where id=%s
                         """,(a['id'],)
@@ -802,7 +802,8 @@ class RegistrationList(AdminBase):
             from 
                 office_addresses ou
             where 
-                office_id=%s
+                office_id=%s and
+                deleted = 0
             """,(x['office_id'],)
         )
         x['zipcode'] = x['city'] = x['state'] = 'N/A'
@@ -854,14 +855,6 @@ class RegistrationList(AdminBase):
                 x['last_comment'] = bb2
             except:
                 pass
-        x['addr'] = db.query("""
-            select
-              oa.id,oa.name,addr1,addr2,phone,
-              city,oa.state,oa.zipcode
-            from office_addresses oa
-              where oa.office_id=%s and oa.deleted = 0
-            """,(x['office_id'],)
-        )
         x['users'] = db.query("""
             select u.first_name,u.email,u.last_name,u.phone,u.id
             from users u
@@ -881,14 +874,6 @@ class RegistrationList(AdminBase):
                 ph.user_id=u.id and
                 ph.office_id = %s
             order by created desc
-            """,(x['office_id'],)
-        )
-        x['addr'] = db.query("""
-            select 
-                oa.id,oa.addr1,oa.addr2,oa.phone,
-                oa.city,oa.state,oa.zipcode,oa.name
-            from 
-                office_addresses oa where office_id=%s
             """,(x['office_id'],)
         )
         t = db.query("""
