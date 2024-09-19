@@ -1206,13 +1206,9 @@ class RegistrationList(AdminBase):
                 x['additional_emails'] = []
                 ae = db.query("""
                     select group_concat(oe.email) as ad 
-                    from office_emails oe,office o,users u,office_user ou
+                    from office_emails oe
                     where 
-                        o.id = %s
-                        and oe.office_id = o.id
-                        and ou.office_id = o.id
-                        and ou.user_id = u.id
-                        and oe.email <> o.email and oe.email <> u.email
+                        oe.office_id = %s
                     """,(x['office_id'],)
                 )
                 x['additional_emails'] = ae[0]['ad']
