@@ -1188,15 +1188,18 @@ class RegistrationList(AdminBase):
             o = db.query(myq,pre_par)
             rep = []
             for x in o:
-                x['additional_emails'] = []
                 ae = db.query("""
-                    select group_concat(oe.email) as ad 
+                    select oe.email as ad 
                     from office_emails oe
                     where 
                         oe.office_id = %s
                     """,(x['office_id'],)
                 )
-                x['additional_emails'] = ae[0]['ad']
+                # x['additional_emails'] = ae[0]['ad']
+                for g in ae:
+                    b = json.loads(json.dumps(x))
+                    b['email'] = g['ad']
+                    rep.append(b)
                 rep.append(x)
             frame = pd.DataFrame.from_dict(rep)
             t = frame.to_csv()
