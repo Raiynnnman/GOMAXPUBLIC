@@ -1187,6 +1187,7 @@ class RegistrationList(AdminBase):
             myq += " group by o.id order by id desc "
             o = db.query(myq,pre_par)
             rep = []
+            HE = {}
             for x in o:
                 ae = db.query("""
                     select oe.email as ad 
@@ -1195,11 +1196,12 @@ class RegistrationList(AdminBase):
                         oe.office_id = %s
                     """,(x['office_id'],)
                 )
-                # x['additional_emails'] = ae[0]['ad']
                 for g in ae:
-                    b = json.loads(json.dumps(x))
-                    b['email'] = g['ad']
-                    rep.append(b)
+                    if g['ad'] not in HE and g['ad'] != x['email']:
+                        b = json.loads(json.dumps(x))
+                        b['email'] = g['ad']
+                        rep.append(b)
+                    HE[g['ad']] = 1
                 rep.append(x)
             frame = pd.DataFrame.from_dict(rep)
             t = frame.to_csv()
