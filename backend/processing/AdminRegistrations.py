@@ -499,6 +499,8 @@ class RegistrationUpdate(AdminBase):
             for a in params['addr']:
                 if 'zipcode' not in a:
                     a['zipcode'] = None
+                if 'name' not in a:
+                    a['name'] = ''
                 if 'id' in a and a['id'] is not None:
                     db.update("""
                         update office_addresses set 
@@ -798,7 +800,7 @@ class RegistrationList(AdminBase):
                 print(cc)
         x['addr'] = db.query("""
             select 
-                ou.addr1,ou.addr2,ou.city,ou.state,ou.zipcode,ou.phone
+                ou.name,ou.addr1,ou.addr2,ou.city,ou.state,ou.zipcode,ou.phone
             from 
                 office_addresses ou
             where 
