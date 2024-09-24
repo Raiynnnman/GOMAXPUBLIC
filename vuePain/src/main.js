@@ -4,13 +4,20 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import PrimeVue from 'primevue/config';
 import { definePreset } from '@primevue/themes';
-import Aura from '@primevue/themes/aura';
+import Nora from '@primevue/themes/nora';
 import App from './App.vue'
 import router from './router'
 
+//PrimeVue components
 import Button from 'primevue/button';
+import Card from 'primevue/card';
+import Password from 'primevue/password';
+import InputText from 'primevue/inputtext';
+import FloatLabel from 'primevue/floatlabel';
 
-const MyPreset = definePreset(Aura, {
+
+
+const MyPreset = definePreset(Nora, {
     semantic: {
         primary: {
             50: '{orange.50}',
@@ -29,6 +36,10 @@ const MyPreset = definePreset(Aura, {
 });
 const app = createApp(App)
 app.component('Button', Button);
+app.component('Card', Card);
+app.component('Password', Password);
+app.component('InputText', InputText);
+app.component('FloatLabel', FloatLabel);
 app.use(PrimeVue, {
     theme: {
         preset: MyPreset,

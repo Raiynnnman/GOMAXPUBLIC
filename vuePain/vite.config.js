@@ -12,6 +12,16 @@ export default defineConfig({
     vueJsx(),
     vueDevTools(),
   ],
+  server: {
+    port: 3001,
+    proxy: {
+      'baseURL': {
+        target: 'http://localhost:8001',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/baseURL/, ''),
+      }
+    }
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
