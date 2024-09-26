@@ -31,12 +31,11 @@ const email = ref('');
 const password = ref('');
 const authStore = useAuthStore();
 
+if (localStorage.getItem("token")) { 
+    router.push("/dashboard");
+} 
 const signIn = () => {
-    authStore.login({ email: email.value, password: password.value});
-    if(authStore.isLoggedIn)
-    {
-        router.push('/dashboard');
-    }
+    authStore.login2({ email: email.value, password: password.value});
 }
 
 

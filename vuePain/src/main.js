@@ -6,6 +6,8 @@ import PrimeVue from 'primevue/config';
 import { definePreset } from '@primevue/themes';
 import Nora from '@primevue/themes/nora';
 import App from './App.vue'
+import { useProfileStore } from '@/stores/profile';
+import { useAuthStore } from '@/stores/auth';
 import router from './router'
 
 //PrimeVue components
@@ -52,5 +54,12 @@ app.use(PrimeVue, {
 });
 app.use(createPinia())
 app.use(router)
+
+const profileStore = useProfileStore();
+const authStore = useAuthStore();
+if (localStorage.getItem("token")) { 
+    profileStore.getProfile({},null,null);
+}
+
 
 app.mount('#app')
