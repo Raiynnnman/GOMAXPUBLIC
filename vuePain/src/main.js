@@ -4,7 +4,7 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import PrimeVue from 'primevue/config';
 import { definePreset } from '@primevue/themes';
-import Nora from '@primevue/themes/nora';
+import Lara from '@primevue/themes/lara';
 import App from './App.vue'
 import { useProfileStore } from '@/stores/profile';
 import { useAuthStore } from '@/stores/auth';
@@ -16,10 +16,19 @@ import Card from 'primevue/card';
 import Password from 'primevue/password';
 import InputText from 'primevue/inputtext';
 import FloatLabel from 'primevue/floatlabel';
+import Dialog from 'primevue/dialog';
+import SelectButton from 'primevue/selectbutton';
+import Toolbar from 'primevue/toolbar';
+import Navbar from './components/Navbar.vue';
+import Avatar from 'primevue/avatar';
+import Drawer from 'primevue/drawer';
+import PanelMenu from 'primevue/panelmenu';
+import InputMask from 'primevue/inputmask';
 
 
 
-const MyPreset = definePreset(Nora, {
+
+const MyPreset = definePreset(Lara, {
     semantic: {
         primary: {
             50: '{orange.50}',
@@ -37,17 +46,31 @@ const MyPreset = definePreset(Nora, {
     }
 });
 const app = createApp(App)
+//PrimeVue Components
 app.component('Button', Button);
 app.component('Card', Card);
 app.component('Password', Password);
 app.component('InputText', InputText);
 app.component('FloatLabel', FloatLabel);
+app.component('Dialog', Dialog);
+app.component('SelectButton', SelectButton);
+app.component('Toolbar', Toolbar);
+app.component('Avatar', Avatar);
+app.component('Drawer', Drawer);
+app.component('PanelMenu', PanelMenu);
+app.component('InputMask', InputMask);
+
+
+
+//Custom Components
+app.component('Navbar', Navbar);
+
 app.use(PrimeVue, {
     theme: {
         preset: MyPreset,
         options: {
             prefix: 'p',
-            darkModeSelector: 'light',
+            darkModeSelector: 'dark',
             cssLayer: false
         }
     }

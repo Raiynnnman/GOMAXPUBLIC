@@ -1,9 +1,12 @@
 @import './base.css';
 
 #app {
-  font-weight: normal;
+  font-weight: 400;
   height: 100vh !important;
+ 
 }
+
+
 
 input[type="password"] {
   width: 100% !important;
@@ -12,4 +15,9 @@ input[type="password"] {
 
 input[type="text"] {
   width: 100% !important;
+}
+
+.main-logo{
+  width: auto;
+  height: 24px;
 }
