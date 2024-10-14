@@ -8,21 +8,26 @@
                             <div class="d-flex justify-content-center">
                                 <h1 class="text-white">Welcome</h1>
                             </div>
-                            
-                            <FloatLabel class="mt-4 w-auto">
-                                <InputText class="w-100" id="username" v-model="email" />
-                                <label for="username">Email</label>
-                            </FloatLabel>
-                            <FloatLabel class="mt-4">
-                                <Password class="w-100" id="pass" v-model="password" toggleMask :feedback="false" />
-                                <label for="pass">Password</label>
-                            </FloatLabel>
+
+                            <div class="mt-4 w-auto">
+                                <InputText placeholder="Email" class="w-100 p-input-normal" id="username"
+                                    v-model="email" />
+
+                            </div>
+                            <div class="mt-4">
+                                <Password placeholder="Password" class="w-100" id="pass" v-model="password" toggleMask
+                                    :feedback="false" />
+
+                            </div>
                             <div class="d-flex justify-content-end my-3">
-                                <a class="cursor-pointers" @click="resetDialog=true">Forgot password?</a>
-                            </div> 
-                            <Button class="mt-4 w-100 p-button-gradient" label="Login" @click="signIn()"></Button>
-                            <div class="d-flex justify-content-center my-3">
-                                <p>Or login using</p>
+                                <a class="cursor-pointers" @click="resetDialog = true">Forgot password?</a>
+                            </div>
+                            <Button class="mt-4 mb-3 w-100 p-button-gradient" label="Login" @click="signIn()"></Button>
+                            <Divider align="center">
+                                <b>OR</b>
+                            </Divider>
+                            <div class="d-flex justify-content-center mb-3">
+                                <p>login using</p>
                             </div>
                             <div class="my-4 social-login justify-content-center">
                                 <a><i class="fa-brands fa-google fa-2x"></i></a>
@@ -30,7 +35,9 @@
                                 <a><i class="fa-brands fa-microsoft fa-2x"></i></a>
                             </div>
                             <div class="d-flex justify-content-center my-3">
-                                <p>Don't have an account yet? <RouterLink :to="'/signup'"><strong> Join Max</strong> </RouterLink></p>
+                                <p>Don't have an account yet? <RouterLink :to="'/signup'"><strong> Join Max</strong>
+                                    </RouterLink>
+                                </p>
                             </div>
                         </div>
                     </template>
@@ -39,12 +46,12 @@
         </div>
     </div>
     <Dialog v-model:visible="resetDialog" modal header="Reset Password" :style="{ width: '25rem' }">
-        <FloatLabel class="mt-4 w-auto">
-            <InputText class="w-100" id="email" v-model="email" />
-            <label for="email">Email</label>
-        </FloatLabel>
+        <div class="mt-4 w-auto">
+            <InputText placeholder="Email" class="w-100" id="email" v-model="email" />
+
+        </div>
         <div class="d-flex justify-content-center my-3">
-            <Button class="mt-4 w-50" label="Reset"></Button>
+            <Button class="mt-4 w-50 p-button-gradient" label="Reset"></Button>
         </div>
     </Dialog>
 </template>
@@ -57,11 +64,11 @@ const password = ref('');
 const authStore = useAuthStore();
 const resetDialog = ref(false);
 
-if (localStorage.getItem("token")) { 
+if (localStorage.getItem("token")) {
     router.push("/dashboard");
-} 
+}
 const signIn = () => {
-    authStore.login2({ email: email.value, password: password.value});
+    authStore.login2({ email: email.value, password: password.value });
 }
 
 
@@ -70,16 +77,15 @@ const signIn = () => {
 <style scoped>
 .container-fluid {
 
-  background-color: #303030;
+    background-color: #303030;
 }
 
 .login-container {
-    background-color: rgba(36, 36, 36, 0.7) !important;
-    backdrop-filter: blur(5px);
+    background-color: transparent !important;
     color: #fff !important;
-    border: 5px solid #f97316;
-    border-radius: 30px;
-   
+    height: auto !important;
+    box-shadow: none !important;
+
 }
 
 .social-login {

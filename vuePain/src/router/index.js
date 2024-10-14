@@ -4,7 +4,8 @@ import Login from '@/views/Login.vue'
 import Dashboard from '@/views/Dashboard.vue'
 import Register from '@/views/Register.vue'
 import ProviderPlans from '@/views/ProviderPlans.vue' 
-
+import familyHome from '@/views/familyTracker/familyHome.vue'
+import FamilyHome from '@/views/familyTracker/familyHome.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -27,6 +28,11 @@ const router = createRouter({
       path: '/plans',
       name: 'plans',
       component: ProviderPlans
+    },
+    {
+      path: '/maxTracker',
+      name: 'maxTracker',
+      component: FamilyHome
     }
   ]
 })

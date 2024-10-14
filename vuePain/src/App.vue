@@ -27,25 +27,16 @@ const items = ref([
       icon: 'pi pi-file',
       command: () => {
          router.push('/');
+         visible.value = false;
       },
 
    },
    {
-      label: 'Family Tracker 360',
-      icon: 'pi pi-cloud',
-      items: [
-         {
-            label: 'Track friends and family',
-            icon: 'pi pi-cloud-download',
-            command: () => {
-               router.push('/');
-            },
-         },
-         {
-            label: 'Curfew reminder',
-            icon: 'pi pi-refresh'
-         },
-      ]
+      label: 'Family Tracker',
+      command: () => {
+         router.push('/maxTracker');
+         visible.value = false;
+      },
    },
 ]);
 

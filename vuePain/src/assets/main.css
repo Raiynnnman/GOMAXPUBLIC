@@ -3,21 +3,57 @@
 #app {
   font-weight: 400;
   height: 100vh !important;
- 
+
 }
 
 
 
 input[type="password"] {
   width: 100% !important;
+  color: #fff !important;
+  background-color: transparent !important;
+  border: none !important;
+  outline: none !important;
+  font-size: 1.2rem;
 }
 
+.p-password-toggle-mask-icon {
+  color: #fff !important;
+  width: 18px !important;
+  height: auto !important;
+}
 
 input[type="text"] {
-  width: 100% !important;
+
+  color: #fff !important;
+
+  border: none !important;
+  outline: none !important;
+  font-size: 1.2rem;
+
 }
 
-.main-logo{
+input:focus-visible,
+input.form-control:focus-visible {
+
+  outline: none !important;
+  outline-width: 0 !important;
+  box-shadow: none !important;
+  -moz-box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+
+::placeholder {
+  color: #fff !important;
+}
+
+.main-logo {
   width: auto;
   height: 24px;
+}
+
+
+.stepper-container {
+  color: #fff !important;
+  height: auto !important;
 }

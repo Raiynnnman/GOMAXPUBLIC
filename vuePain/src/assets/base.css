@@ -3,7 +3,8 @@
 
 body {
   font-size: 16px;
-  font-family: "Lato", sans-serif;
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
   margin: 0 !important;
 
 }
@@ -97,6 +98,9 @@ a,
   color: #f97316;
 }
 
+.p-input-normal{
+  background-color: transparent !important;
+}
 
 .p-overlay-mask {
   backdrop-filter: blur(5px) !important;
@@ -163,7 +167,11 @@ a,
 
 .p-button-gradient{
   background: linear-gradient(270deg, rgba(255,211,0,1) 0%, rgba(249,115,22,1) 50%, rgba(244,83,13,1) 100%) !important;
-  font-weight: bold;
+  font-weight: bolder !important;
+  font-family: "Montserrat", sans-serif !important;
+  font-optical-sizing: auto !important;
+  border-radius: 30px !important;
+  
 }
 
 .font-bold {
@@ -174,6 +182,28 @@ ul{
   list-style-type: none;
 }
 
+.p-steppanel{
+  background-color: transparent !important;
+}
+
+.p-dialog{
+  background-color: #272727 !important;
+  color: #fff !important;
+}
+
+
+.p-inputotp-input{
+  background-color: #272727!important;
+  width: 2.5rem !important;
+  
+}
+
+.p-divider-content{
+  background-color: #f97316 !important;
+  color: #fff !important;
+  padding: .75rem .5rem !important;
+  border-radius: 50%;
+}
 
 @media (min-width: 576px) {
  
@@ -187,7 +217,7 @@ ul{
     border-top: none !important;
     border-bottom: none !important;
     border-left: none !important;
-    width: 20rem !important;
+    width: 25rem !important;
   }
 }
 

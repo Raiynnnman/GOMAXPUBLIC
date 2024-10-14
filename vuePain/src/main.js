@@ -24,10 +24,20 @@ import Avatar from 'primevue/avatar';
 import Drawer from 'primevue/drawer';
 import PanelMenu from 'primevue/panelmenu';
 import InputMask from 'primevue/inputmask';
+import Stepper from 'primevue/stepper';
+import StepList from 'primevue/steplist';
+import StepPanels from 'primevue/steppanels';
+import StepItem from 'primevue/stepitem';
+import Step from 'primevue/step';
+import StepPanel from 'primevue/steppanel';
+import ToggleButton from 'primevue/togglebutton';
+import SpeedDial from 'primevue/speeddial';
+import InputOtp from 'primevue/inputotp';
+import Toast from 'primevue/toast';
+import Divider from 'primevue/divider';
+import FileUpload from 'primevue/fileupload';
 
-
-
-
+import ToastService from 'primevue/toastservice';
 const MyPreset = definePreset(Lara, {
     semantic: {
         primary: {
@@ -59,7 +69,18 @@ app.component('Avatar', Avatar);
 app.component('Drawer', Drawer);
 app.component('PanelMenu', PanelMenu);
 app.component('InputMask', InputMask);
-
+app.component('ToggleButton', ToggleButton);
+app.component('Stepper', Stepper);
+app.component('StepList', StepList);
+app.component('StepPanels', StepPanels);
+app.component('StepItem', StepItem);
+app.component('Step', Step);
+app.component('StepPanel', StepPanel);
+app.component('SpeedDial', SpeedDial);
+app.component('InputOtp', InputOtp);
+app.component('Toast', Toast);
+app.component('Divider', Divider);
+app.component('FileUpload', FileUpload);
 
 
 //Custom Components
@@ -76,6 +97,7 @@ app.use(PrimeVue, {
     }
 });
 app.use(createPinia())
+app.use(ToastService)
 app.use(router)
 
 const profileStore = useProfileStore();
