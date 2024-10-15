@@ -68,7 +68,7 @@ if (localStorage.getItem("token")) {
     router.push("/dashboard");
 }
 const signIn = () => {
-    authStore.login2({ email: email.value, password: password.value });
+    authStore.login({ email: email.value, password: password.value });
 }
 
 
