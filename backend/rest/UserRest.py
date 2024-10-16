@@ -56,3 +56,24 @@ class UserRatingsRest(RestBase):
         u = User.UserRatings()
         ret = u.process(args[0])
         return ret
+
+class UserTrackerListRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = User.UserTrackerList()
+        ret = u.process(args[0])
+        return ret
+
+class UserTrackerUpdateRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = User.UserTrackerUpdate()
+        ret = u.process(args[0])
+        return ret
+
+class UserTrackerCodeVerifyRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = User.UserTrackerCodeVerify()
+        ret = u.process(args[0])
+        return ret

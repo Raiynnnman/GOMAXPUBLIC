@@ -83,3 +83,24 @@ def userdash(*args, **kwargs):
 def userratings(*args, **kwargs):
     po = UserRest.UserRatingsRest()
     return po.postWrapper(*args,**kwargs)
+
+@users.route('/user/tracker/list', methods=['POST'])
+@token_required
+@swag_from(docs_dir + 'user_ratings.yaml')
+def usertrackerlist(*args, **kwargs):
+    po = UserRest.UserTrackerListRest()
+    return po.postWrapper(*args,**kwargs)
+
+@users.route('/user/tracker/update', methods=['POST'])
+@token_required
+@swag_from(docs_dir + 'user_ratings.yaml')
+def usertrackerupdate(*args, **kwargs):
+    po = UserRest.UserTrackerUpdateRest()
+    return po.postWrapper(*args,**kwargs)
+
+@users.route('/user/tracker/verify', methods=['POST'])
+@token_required
+@swag_from(docs_dir + 'user_ratings.yaml')
+def usertrackerverify(*args, **kwargs):
+    po = UserRest.UserTrackerCodeVerifyRest()
+    return po.postWrapper(*args,**kwargs)

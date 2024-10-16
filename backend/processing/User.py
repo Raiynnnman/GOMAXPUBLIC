@@ -196,3 +196,124 @@ class UserRatings(UserBase):
         )
         db.commit()
         return {'success':True}
+
+class UserTrackerList(UserBase):
+
+    def __init__(self):
+        super().__init__()
+
+    def isDeferred(self):
+        return False
+
+    def execute(self, *args, **kwargs):
+        ret = {}
+        job,user,off_id,params = self.getArgs(*args,**kwargs)
+        lat = lon = 0
+        db = Query()
+
+        o = db.query("""
+            select 
+                ft.id,ft.name,ul.lat,ul.lon as lng
+            from
+                family_tracker ft
+                left outer join family_tracker_members ftm on ftm.family_tracker_id=ft.id
+            where
+                ftm.user_id = %s
+            """,(user['id'],)
+        )
+
+        ret['data'] = []
+        for x in o:
+            j = x
+            ret['code'] = db.query("""
+                select ft.name, ftc.code 
+                from 
+                    family_tracker ft,
+                    family_tracker_codes ftc
+                where
+                    ft.user_id = %s and
+                    ftc.family_tracker_id = ft.id
+                """,(user['id'],)
+            )
+            j['family'] = db.query("""
+                select
+                   u.first_name, u.last_name,
+                       JSON_ARRAYAGG(
+                            JSON_OBJECT(
+                                'last_update',ul.created,
+                                'lat',ul.lat,'lng',ul.lon
+                            )
+                       ) as coords
+                from
+                    family_tracker_members ftm
+                    left outer join user_location ul on ul.user_id = ftm.user_id
+                where
+                    ftm.family_tracker_id = %s and
+                    ul.created > date(now())
+                """,(j['id'],)
+            )
+            ret['data'].append(j)
+
+        return ret
+
+class UserTrackerUpdate(UserBase):
+
+    def __init__(self):
+        super().__init__()
+
+    def isDeferred(self):
+        return False
+
+    def execute(self, *args, **kwargs):
+        ret = {}
+        job,user,off_id,params = self.getArgs(*args,**kwargs)
+        lat = lon = 0
+        db = Query()
+        if 'id' in params:
+            db.update("""
+                update family_tracker set name = %s, enabled = %s
+                    where user_id = %s and id = %s
+                """,(params['name'],params['enabled'],user['id'],params['id'])
+            )
+        else:
+            db.update("""
+                insert into family_tracker (user_id,name) values (%s,%s)
+                """,(user['id'],params['name'])
+            )
+            ft_id = db.LAST_INSERT_ID()
+            db.update("""
+                insert into family_tracker_codes (family_tracker_id,code) values (%s,%s)
+                """,(user['id'],encryption.getSHA256()[:6])
+            )
+            db.update("""
+                insert into family_tracker_members(family_tracker_id,user_id) values (%s,%s)
+                """,(ft_id,user['id'],)
+            )
+        db.commit()
+        return ret
+
+class UserTrackerCodeVerify(UserBase):
+
+    def __init__(self):
+        super().__init__()
+
+    def isDeferred(self):
+        return False
+
+    def execute(self, *args, **kwargs):
+        ret = {}
+        job,user,off_id,params = self.getArgs(*args,**kwargs)
+        lat = lon = 0
+        db = Query()
+        o = db.query("""
+            select 
+                ft.name 
+            from 
+                family_tracker_codes ftc, family_tracker ft
+            where
+                lower(ftc.code) = lower(%s)
+            """,(params['code'],)
+        )
+        return o
+
+
