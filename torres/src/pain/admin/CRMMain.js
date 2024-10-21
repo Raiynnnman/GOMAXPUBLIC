@@ -17,7 +17,7 @@ class CRMMain extends Component {
     constructor(props) { 
         super(props);
         this.state = { 
-            activeTab:"mydashboard",
+            activeTab:"subscribers",
             selected: null
         }
         this.toggleTab = this.toggleTab.bind(this);
@@ -55,38 +55,38 @@ class CRMMain extends Component {
                     <>
                         <Box sx={{width:'100%'}}>
                             <Tabs style={{marginBottom:0}} value={this.state.activeTab} onChange={this.toggleTab}>
-                                <Tab value='mydashboard' label='My Dashboard'/>
+                                {/*<Tab value='mydashboard' label='My Dashboard'/>*/}
                                 <Tab value='subscribers' label='Subscribers'/>
-                                <Tab value='contacts' label='Contacts'/>
-                                <Tab value='clients' label='Clients'/>
-                                {(this.props.currentUser && this.props.currentUser.entitlements && 
+                                {/*<Tab value='contacts' label='Contacts'/>*/}
+                                {/*<Tab value='clients' label='Clients'/>*/}
+                                {/*(this.props.currentUser && this.props.currentUser.entitlements && 
                                 this.props.currentUser.entitlements.includes('Admin'))   && ( 
                                 <Tab value='endusers' label='End Users'/>
-                                )}
-                                {(this.props.currentUser && this.props.currentUser.entitlements && 
+                                )*/}
+                                {/*(this.props.currentUser && this.props.currentUser.entitlements && 
                                 this.props.currentUser.entitlements.includes('Admin'))   && ( 
                                     <Tab value='dealtracker' label='Deal Tracker'/>
-                                )}
+                                )*/}
                             </Tabs>
-                            {(this.state.activeTab === 'endusers')  && ( 
+                            {(false && this.state.activeTab === 'endusers')  && ( 
                                 <UserAdminList/>
                             )}
-                            {(this.state.activeTab === 'contacts')  && ( 
+                            {(false && this.state.activeTab === 'contacts')  && ( 
                                 <Registrations mine={false}/>
                             )}
                             {(this.state.activeTab === 'subscribers')  && ( 
                                 <OfficeAdminList/>
                             )}
-                            {(this.state.activeTab === 'clients')  && ( 
+                            {(false && this.state.activeTab === 'clients')  && ( 
                                 <Clients mine={false}/>
                             )}
-                            {(this.state.activeTab === 'mydashboard') && ( 
+                            {(false && this.state.activeTab === 'mydashboard') && ( 
                             <>
                                 <div style={{display:"none"}}><Registrations/></div>
                                 <MyStuff/>
                             </>
                             )}
-                            {(this.props.currentUser && this.props.currentUser.entitlements && 
+                            {(false && this.props.currentUser && this.props.currentUser.entitlements && 
                             this.props.currentUser.entitlements.includes('Admin') && this.state.activeTab === 'dealtracker')  && ( 
                                 <Registrations dealTrackerOnly={true}/>
                             )}
