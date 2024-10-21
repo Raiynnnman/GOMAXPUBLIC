@@ -179,7 +179,7 @@ class Navbar extends Component {
                 window.location = '/#about';
              }
             },
-            {
+            /*{
              n:'Pricing',
              v:function(c) { 
                 return true;
@@ -187,7 +187,7 @@ class Navbar extends Component {
              a:function() { 
                 window.location = '/#pricing';
              }
-            },
+            },*/
             {
              n:'Support',
              v:function(c) { 
@@ -596,7 +596,7 @@ class Navbar extends Component {
                                         <ul className="main-menu">
                                             <li className="active"><a href="/">Home</a></li>
                                             <li><a href="/#about">About</a></li>
-                                            <li><a href="/#pricing">Pricing</a></li>
+                                            {/*<li><a href="/#pricing">Pricing</a></li>*/}
                                             <li><a href="/#support">Support</a></li>
                                         </ul>
                                     </nav>
@@ -643,7 +643,7 @@ class Navbar extends Component {
                                         <ul className="main-menu">
                                             <li className="active"><a href="/">Home</a></li>
                                             <li><a href="/#about">About</a></li>
-                                            <li><a href="/#pricing">Pricing</a></li>
+                                            {/*<li><a href="/#pricing">Pricing</a></li>*/}
                                             <li><a href="/#support">Support</a></li>
                                         </ul>
                                     </nav>

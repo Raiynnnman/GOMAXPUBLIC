@@ -58,7 +58,6 @@ class RestBase:
             ret['version'] = version.getVersion()
             return jsonify(ret)
         except InvalidCredentials as ic:
-           log.error(str(ic))
            abort(401,jsonify({"success":False,"message":str(ic)}))
         except Exception as e:
            log.error(str(e))

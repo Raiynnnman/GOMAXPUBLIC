@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import Navbar from '../components/Navbar';
-import Pricing from '../components/Pricing';
+// import Pricing from '../components/Pricing';
 import HeroOlive from '../components/HeroOlive';
 import HeroOliveCustomer from '../components/HeroOliveCustomer';
 import About from '../components/About';
@@ -67,7 +67,7 @@ class HomeHorizontal extends Component {
                     <AboutLegal horizontalabout="horizontal-about" />
                     <ServiceLegal horizontal="horizontal" />
                     <FeatureLegal horizontalfeature="horizontal-feature" />
-                    <Pricing office_type={2} showButton={true} onSelectPlan={this.handleSelectPlanLegal} horizontalfeature="horizontal-pricing" />
+                    {/*<Pricing office_type={2} showButton={true} onSelectPlan={this.handleSelectPlanLegal} horizontalfeature="horizontal-pricing" />*/}
                     {/*<TestimonialLegal/>*/}
                     <div style={{margin:20,backgroundColor:"black",display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                         <iframe src="https://player.vimeo.com/video/954405043?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" 
@@ -88,7 +88,7 @@ class HomeHorizontal extends Component {
                     <About horizontalabout="horizontal-about" />
                     <Service horizontal="horizontal" />
                     <Feature horizontalfeature="horizontal-feature" />
-                    <Pricing office_type={1} showButton={true} onSelectPlan={this.handleSelectPlanProvider} horizontalfeature="horizontal-pricing" />
+                    {/*<Pricing office_type={1} showButton={true} onSelectPlan={this.handleSelectPlanProvider} horizontalfeature="horizontal-pricing" />*/}
                     <Testimonial />
                     <div style={{margin:20,backgroundColor:"black",display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                         <iframe src="https://player.vimeo.com/video/954405043?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" 
