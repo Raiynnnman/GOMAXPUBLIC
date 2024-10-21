@@ -52,8 +52,9 @@ class Forgot extends React.Component {
   doSendResetEmail(e) {
     e.preventDefault();
     if (this.state.errorMessage === '') {
-      this.props.dispatch(sendPasswordResetEmail(this.state.email));
-      window.location = '/login';
+      this.props.dispatch(sendPasswordResetEmail(this.state.email)).then((e) => { 
+            /* Something here */
+      });
     }
   }
 

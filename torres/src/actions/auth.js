@@ -200,7 +200,7 @@ export function resetPassword(token, password) {
   }
 }
 
-export function sendPasswordResetEmail(email) {
+export function sendPasswordResetEmail(email,callback) {
   return (dispatch) => {
       dispatch({
         type: PASSWORD_RESET_EMAIL_REQUEST,
