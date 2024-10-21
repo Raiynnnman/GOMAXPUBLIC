@@ -212,12 +212,14 @@ export function sendPasswordResetEmail(email) {
             "Content-Type": "application/json",
         }
       }).post("/request", {email:email}).then(res => {
+            console.log("success");
             dispatch({
               type: PASSWORD_RESET_EMAIL_SUCCESS,
             });
             toast.success("Email with resetting instructions has been sent");
             dispatch(push('/login'));
         }).catch(err => {
+            console.log("err",err);
             dispatch(authError(err.response.data));
         })
   }
