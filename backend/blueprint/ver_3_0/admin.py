@@ -177,6 +177,13 @@ def planslist(*args, **kwargs):
     po = AdminRest.PlansGetRest()
     return po.postWrapper(*args,**kwargs)
 
+@admin.route('/admin/plans/update', methods=['POST'])
+@token_required
+@swag_from(docs_dir + 'registrationlist.yaml')
+def plansupdate(*args, **kwargs):
+    po = AdminRest.PlansUpdateRest()
+    return po.postWrapper(*args,**kwargs)
+
 @admin.route('/admin/report/get', methods=['POST'])
 @token_required
 @swag_from(docs_dir + 'registrationlist.yaml')

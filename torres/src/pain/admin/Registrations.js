@@ -380,7 +380,6 @@ class Registrations extends Component {
 
     save(tosend) { 
         this.props.dispatch(registrationAdminUpdate(tosend,function(err,args) { 
-                console.log("here")
                 toast.success('Successfully saved registration.', {
                     position:"top-right",
                     autoClose:3000,

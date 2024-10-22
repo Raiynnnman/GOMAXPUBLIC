@@ -565,6 +565,46 @@ class WelcomeEmail(AdminBase):
             m.defer(email,"Welcome to POUNDPAIN TECH","templates/mail/welcome.html",data)
         return ret
 
+class PlansUpdate(AdminBase):
+
+    def __init__(self):
+        super().__init__()
+
+    def isDeferred(self):
+        return False
+
+    @check_admin
+    def execute(self, *args, **kwargs):
+        ret = []
+        job,user,off_id,params = self.getArgs(*args,**kwargs)
+        limit = 10000
+        offset = 0
+        db = Query()
+        OT = self.getOfficeTypes()
+        if 'id' in params and params['id'] is not None:
+            db.update("""
+                update pricing_data set description=%s,duration=%s,start_date=%s,
+                    end_date=%s,upfront_cost=%s,price=%s where id = %s
+                """,(
+                    params['description'],params['duration'],params['start_date'],
+                    params['end_date'],params['upfront_cost'],params['price'],params['id']
+                )
+            )
+        else:
+            db.update("""
+                insert into pricing_data
+                (description,duration,start_date,end_date,upfront_cost,price,office_type_id)
+                values
+                (%s,%s,%s,%s,%s,%s,%s)
+                """,
+                (
+                    params['description'],params['duration'],params['start_date'],
+                    params['end_date'],params['upfront_cost'],params['price'],1
+                )
+            )
+        db.commit()
+        return {'success': True}
+
 class PlansList(AdminBase):
 
     def __init__(self):
@@ -596,8 +636,9 @@ class PlansList(AdminBase):
             where
                 ot.id = p.office_type_id
             order by
-                description asc
-            """
+                updated desc
+            limit %s offset %s
+            """,(limit,limit*offset)
         )
         for x in o:
             x['coupons'] = db.query("""

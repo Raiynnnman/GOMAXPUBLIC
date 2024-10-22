@@ -131,6 +131,13 @@ class PlansGetRest(RestBase):
         ret = u.process(args[0])
         return ret
 
+class PlansUpdateRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Admin.PlansUpdate()
+        ret = u.process(args[0])
+        return ret
+
 class AdminReportGetRest(RestBase):
 
     def post(self, *args, **kwargs):
