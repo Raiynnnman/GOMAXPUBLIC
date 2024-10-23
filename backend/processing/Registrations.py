@@ -265,8 +265,7 @@ class RegistrationLandingData(RegistrationsBase):
             from
                 pricing_data p
             where 
-                1 = 1 and
-                toshow = 1 
+                1 = 1 
             """
         p = []
         if 'type' in params and params['type'] is not None:

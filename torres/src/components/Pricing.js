@@ -89,14 +89,12 @@ const Pricing = ({ onSelectPlan, showButton, office_type }) => {
   const landingData = useSelector((store) => store.landingData);
 
   if (!landingData?.data?.pricing?.length) return null;
-  console.log("p",office_type,landingData);
   return (
     <Box className='pricing-table-banner' id="pricing">
       <Container>
         <Grid container spacing={4} justifyContent="center">
           {landingData.data.pricing.filter((t) => t.office_type === office_type).map((plan, index) => (
             <Grid item key={index} xs={12} sm={6} md={4} className={classes.pricingColumn} >
-                {console.log("o",plan)}
               <Paper className={`${classes.pricePackage} ${index === 1 ? classes.centerCard : ''}`} elevation={4}>
                 <div className={classes.pricePackageTop}>
                   <Typography variant="h4" component="h4" className={classes.whiteText}>

@@ -94,7 +94,7 @@ class RegisterProvider extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (this.props.landingData !== prevProps.landingData && this.props.landingData.data) {
+        if (this.props.landingData && this.props.landingData.data && this.props.landingData.data.pricing && !this.state.selPlan) {
             const { pq, pricing, do_billing_charge, all_plans } = this.props.landingData.data;
             if (pq && this.state.pq_id && !this.state.phone) {
                 this.setState({
@@ -104,6 +104,10 @@ class RegisterProvider extends Component {
                     email: pq.email,
                     showAddresses: pq.addr,
                     selPlan: this.state.selPlan || pricing.find((e) => parseInt(pq.plan) === e.id) || null,
+                });
+            } else if (this.state.plan && !this.state.phone && pricing) {
+                this.setState({
+                    selPlan: pricing.find((e) => parseInt(this.state.plan) === e.id) || null
                 });
             } else if (pricing && !this.state.selPlan) {
                 this.setState({
@@ -571,10 +575,12 @@ class RegisterProvider extends Component {
             steps = ['Register Information'];
         } 
 
+        if (!this.props.landingData.data.pricing) { return (<></>); }
+
         return (
             <ThemeProvider theme={theme}>
                 <Navbar />
-                {(!selPlan) && (
+                {(false && !selPlan) && (
                     <Pricing office_type={1} onSelectPlan={this.handleSelectPlan} showButton={true} />
                 )}
                 <CssBaseline />
