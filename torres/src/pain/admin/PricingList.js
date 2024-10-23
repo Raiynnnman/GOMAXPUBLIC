@@ -269,6 +269,7 @@ class PricingList extends Component {
                 </>
                 )}
             </Grid>
+            {(this.state.selected) && ( 
             <Grid container xs="12" style={{marginTop:20}}>
                 <Grid item xs="12">
                     <Grid item xs="6">
@@ -278,6 +279,7 @@ class PricingList extends Component {
                     </Grid>
                 </Grid>
             </Grid>
+            )}
         </>
         )}
         </Box>
