@@ -12,6 +12,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@fawmi/vue-google-maps": "^0.9.79",
     "@primevue/themes": "^4.0.7",
     "@vueuse/core": "^11.0.3",
     "axios": "^1.7.7",

@@ -9,7 +9,7 @@ import App from './App.vue'
 import { useProfileStore } from '@/stores/profile';
 import { useAuthStore } from '@/stores/auth';
 import router from './router'
-
+import VueGoogleMaps from '@fawmi/vue-google-maps';
 //PrimeVue components
 import Button from 'primevue/button';
 import Card from 'primevue/card';
@@ -36,7 +36,11 @@ import InputOtp from 'primevue/inputotp';
 import Toast from 'primevue/toast';
 import Divider from 'primevue/divider';
 import FileUpload from 'primevue/fileupload';
-
+import Tabs from 'primevue/tabs';
+import TabList from 'primevue/tablist';
+import Tab from 'primevue/tab';
+import TabPanels from 'primevue/tabpanels';
+import TabPanel from 'primevue/tabpanel';
 import ToastService from 'primevue/toastservice';
 const MyPreset = definePreset(Lara, {
     semantic: {
@@ -82,7 +86,11 @@ app.component('Toast', Toast);
 app.component('Divider', Divider);
 app.component('FileUpload', FileUpload);
 
-
+app.component('Tabs', Tabs);
+app.component('TabList', TabList);
+app.component('Tab', Tab);
+app.component('TabPanels', TabPanels);
+app.component('TabPanel', TabPanel);
 //Custom Components
 app.component('Navbar', Navbar);
 
@@ -99,7 +107,11 @@ app.use(PrimeVue, {
 app.use(createPinia())
 app.use(ToastService)
 app.use(router)
-
+app.use(VueGoogleMaps, {
+    load: {
+      key: 'AIzaSyDnFCHKJCZPEfgF9nD4ljZHweuOy6XrfCk',
+    },
+  });
 const profileStore = useProfileStore();
 const authStore = useAuthStore();
 if (localStorage.getItem("token")) { 

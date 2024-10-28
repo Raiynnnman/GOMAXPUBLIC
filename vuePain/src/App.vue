@@ -11,10 +11,6 @@
    <RouterView></RouterView>
 </template>
 
-
-
-
-
 <script setup>
 import { ref } from 'vue';
 import { RouterLink, RouterView } from 'vue-router'
@@ -39,7 +35,4 @@ const items = ref([
       },
    },
 ]);
-
-
-
 </script>
