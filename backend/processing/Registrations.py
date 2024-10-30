@@ -824,20 +824,20 @@ class RegisterProvider(RegistrationsBase):
                         'item': PL[selplan]['description'],
                         'details': PL[selplan]['description'],
                         'quantity': 1,
-                        'price':PL[selplan]['upfront_cost']*PL[selplan]['duration']
+                        'price':round(PL[selplan]['upfront_cost']*PL[selplan]['duration'],2)
                     })
                     if len(coup) > 0:
                         lines.append({
                             'item': coup['name'],
                             'details': coup['name'],
                             'quantity': 1,
-                            'price':discount
+                            'price':round(discount,2)
                         })
                     body = { 
                         'customer_id':card['customer']['id'],
                         'send_now': False,
                         'url': 'https://app.staxpayments.com/#/bill/',
-                        'total': str(plan_total + discount),
+                        'total': str(round(plan_total + discount,2)),
                         'meta': { 
                             'lineItems':lines,
                             'isCCPaymentEnabled': True,
@@ -851,7 +851,7 @@ class RegisterProvider(RegistrationsBase):
                     body = { 
                         'payment_method_id':card_id,
                         'email_receipt':True,
-                        'apply_balance': plan_total + discount
+                        'apply_balance': round(plan_total + discount,2)
                     } 
                     s = sp.payInvoice(s_invoice_id,body)
                     db.update("""
