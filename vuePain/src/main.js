@@ -11,6 +11,7 @@ import { useAuthStore } from '@/stores/auth';
 import router from './router'
 import VueGoogleMaps from '@fawmi/vue-google-maps';
 //PrimeVue components
+
 import Button from 'primevue/button';
 import Card from 'primevue/card';
 import Password from 'primevue/password';
@@ -42,6 +43,12 @@ import Tab from 'primevue/tab';
 import TabPanels from 'primevue/tabpanels';
 import TabPanel from 'primevue/tabpanel';
 import ToastService from 'primevue/toastservice';
+import Knob from 'primevue/knob';
+
+import emergency from './views/familyTracker/emergency.vue';
+import EmergencyContacts from './components/EmergencyContacts/EmergencyContacts.vue';
+import ContactItem from './components/EmergencyContacts/ContactItem.vue';
+
 const MyPreset = definePreset(Lara, {
     semantic: {
         primary: {
@@ -85,7 +92,7 @@ app.component('InputOtp', InputOtp);
 app.component('Toast', Toast);
 app.component('Divider', Divider);
 app.component('FileUpload', FileUpload);
-
+app.component('Knob', Knob);
 app.component('Tabs', Tabs);
 app.component('TabList', TabList);
 app.component('Tab', Tab);
@@ -93,6 +100,10 @@ app.component('TabPanels', TabPanels);
 app.component('TabPanel', TabPanel);
 //Custom Components
 app.component('Navbar', Navbar);
+app.component('emergency', emergency);
+app.component('EmergencyContacts', EmergencyContacts);
+app.component('ContactItem', ContactItem);
+
 
 app.use(PrimeVue, {
     theme: {

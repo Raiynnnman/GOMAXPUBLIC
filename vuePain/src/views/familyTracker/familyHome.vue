@@ -49,6 +49,10 @@
             <i class="fa-solid fa-location-dot"></i><br>
             <small>Places</small>
           </Tab>
+          <Tab value="3" as="div" class="flex justify-content-center text-center">
+            <i class="fa-solid fa-cog"></i><br>
+            <small>Settings</small>
+          </Tab>
         </TabList>
         <TabPanels class="p-0">
           <TabPanel value="0" as="p" class="m-0 p-0">
@@ -66,9 +70,12 @@
             </GMapMap>
           </TabPanel>
           <TabPanel value="1" as="p" class="m-0">
-
+            <emergency></emergency>
           </TabPanel>
           <TabPanel value="2" as="p" class="m-0">
+
+          </TabPanel>
+          <TabPanel value="3" as="p" class="m-0">
 
           </TabPanel>
         </TabPanels>
@@ -327,6 +334,8 @@ const shareCode = () => {
 
 
 <style scoped>
+
+
 .container-fluid {
 
   background-color: #303030;
