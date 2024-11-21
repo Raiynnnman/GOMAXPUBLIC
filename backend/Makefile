@@ -70,7 +70,7 @@ install: build
 
 compile:
 	(source p/bin/activate || . p/bin/activate; \
-        find . -name '*.py' | grep -v '^\.\/p/' \
+		find . -name *.py | grep -v '^\.\/p\/' | grep -v '^\.\/pre\/p\/' \
         | xargs python -m compileall -f )
 
 copypre:
