@@ -71,7 +71,7 @@ install-docs:
 install: build install-docs
 	rm -rf targets
 	mkdir -p targets bin
-	cp ../version.sh ../version.ini .
+	cp ../version.sh ../version.ini . || /bin/true
 	if [ -f requirements.txt ]; then cp requirements.txt pre; fi
 	if [ -f .celery-process ]; then touch pre/.celery-process; fi
 	if [ -d pre/pre ]; then rm -rf pre/pre; fi
