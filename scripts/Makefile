@@ -55,7 +55,7 @@ compile:
         | xargs python -m compileall -f )
 
 copypre:
-	mkdir __pycache__
+	mkdir -p __pycache__
 	rm -rf pre
 	mkdir -p pre
 	find . -type f | grep __pycache__ | grep -v '^\.\/p/' | cpio -pdv pre

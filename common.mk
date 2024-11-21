@@ -71,7 +71,6 @@ install-docs:
 install: build install-docs
 	rm -rf targets
 	mkdir -p targets bin
-	cp ../scripts/s3upload.sh bin
 	cp ../version.sh ../version.ini .
 	if [ -f requirements.txt ]; then cp requirements.txt pre; fi
 	if [ -f .celery-process ]; then touch pre/.celery-process; fi

@@ -13,7 +13,6 @@ $D:
 	(cd $@ && make install)
 
 upload-masterinstall: gen-masterinstall
-	# bash -x scripts/s3upload.sh `find depot -name master*`
 
 save:
 	mkdir -p save/configs/$(USER)
