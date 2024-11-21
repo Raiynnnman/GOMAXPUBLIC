@@ -74,7 +74,7 @@ for x in activity:
     completed = j['isCompleted']
     mytype = j['type']
     title = j['title']
-    if 'title' is None:
+    if title is None:
         title = ''
     print("----")
     print(json.dumps(j,indent=4))
