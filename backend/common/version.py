@@ -1,7 +1,7 @@
 MAJOR = 3
 MINOR = 1
 RELEASE = 0
-COMMIT = "1e3342a4"
+COMMIT = "5cf3c142"
 BUILD = "dev"
 
 

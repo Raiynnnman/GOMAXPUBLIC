@@ -1,5 +1,5 @@
 #!/bin/sh
-I="processing.SubmitDataRequest"
+I="processing.SubmitDataRequest,util.Jenkins,util.Mail,util.S3Processing"
 
 umask 0077
 source version.sh || . version.sh
