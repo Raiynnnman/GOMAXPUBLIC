@@ -1,6 +1,6 @@
 #!/bin/sh
 
 MAJOR=3
-MINOR=1
+MINOR=2
 RELEASE=0
 

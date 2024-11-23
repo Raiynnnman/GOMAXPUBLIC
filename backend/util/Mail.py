@@ -2,9 +2,11 @@ import os
 import sys
 import boto3
 import logging
+from bs4 import BeautifulSoup
 import threading
 from concurrent.futures import ThreadPoolExecutor, TimeoutError
-
+from sendgrid.helpers.mail import *
+import sendgrid
 import traceback
 from common import settings, version
 from processing.run import app
@@ -48,6 +50,38 @@ class Mail:
     def sendEmailQueued(self,*args):
         sendEmail.delay(*args)
 
+
+    def send_email_sendgrid(self, sender, to, subject,content):
+        key = config.getKey("sendgrid_key")
+        sg = sendgrid.SendGridAPIClient(api_key=key)
+        soup = BeautifulSoup(content,features="html.parser")
+        tcontent = soup.get_text()
+        mail = sendgrid.helpers.mail.Mail(sender, to, subject, tcontent, content)
+        resp = sg.client.mail.send.post(request_body=mail.get())
+
+    def send_email_ses(self,sender, to,subject,content):
+        client = boto3.client(
+            'ses', region_name='us-east-1',
+            aws_access_key_id=access, aws_secret_access_key=secret, use_ssl=True
+        )
+        response = client.send_email(
+            Destination={'ToAddresses': [to]},
+            Message={
+                'Body': {
+                    'Html': {
+                        'Data': body
+                    },
+                    'Text': {
+                        'Data': body
+                    }
+                },
+                'Subject': {
+                    'Data': subject
+                }
+            },
+            Source=sender
+        )
+
     def send_email(self, to, subject, template, data):
         if config.getKey("email_to_override") is not None:
             to = config.getKey("email_to_override")
@@ -55,35 +89,15 @@ class Mail:
             return
         sender = config.getKey("email_from")
         if sender is None:
-            sender = "noreply@poundpain.com"
+            sender = "noreply@gomaxpain.com"
         access = config.getKey("email_user")
         secret = config.getKey("email_pass")
         with open(template, "rb") as H:
             body = H.read().decode('utf-8',errors='ignore')
         for x in data:
             body = body.replace(x, str(data[x]))
-        client = boto3.client(
-            'ses', region_name='us-east-1',
-            aws_access_key_id=access, aws_secret_access_key=secret, use_ssl=True
-        )
         try:
-            response = client.send_email(
-                Destination={'ToAddresses': [to]},
-                Message={
-                    'Body': {
-                        'Html': {
-                            'Data': body
-                        },
-                        'Text': {
-                            'Data': body
-                        }
-                    },
-                    'Subject': {
-                        'Data': subject
-                    }
-                },
-                Source=sender
-            )
+            self.send_email_sendgrid(sender, to,subject,body)
         except Exception as e:
             log.error(f"Failed to send mail request to {to}. Reason: {str(e)}")
             return
