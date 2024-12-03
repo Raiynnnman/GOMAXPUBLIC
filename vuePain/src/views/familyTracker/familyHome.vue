@@ -56,24 +56,18 @@
         </TabList>
         <TabPanels class="p-0">
           <TabPanel value="0" as="p" class="m-0 p-0">
-            <GMapMap :center="{ lat: userLat, lng: userLng }" :zoom="17" map-type-id="roadmap"
-              style="width: 100vw; height: 100vh" :options="{
-                zoomControl: true,
-                mapTypeControl: true,
-                scaleControl: true,
-                streetViewControl: true,
-                rotateControl: true,
-                fullscreenControl: true
-              }">
-              <GMapMarker :key="index" v-for="(m, index) in markers" :position="m.position" :clickable="true"
-                :draggable="true" />
-            </GMapMap>
+
+            <GoogleMap :api-promise="apiPromise" mapId="248cb853e3723ced"
+              style="width: 100vw; height: 85vh" :center="{ lat: userLat, lng: userLng }" :gestureHandling="cooperative"
+              :zoom="17">
+              <Marker :options="markerOptions" />
+            </GoogleMap>
           </TabPanel>
           <TabPanel value="1" as="p" class="m-0">
             <emergency></emergency>
           </TabPanel>
           <TabPanel value="2" as="p" class="m-0">
-
+            <places></places>
           </TabPanel>
           <TabPanel value="3" as="p" class="m-0">
 
@@ -174,7 +168,16 @@
 import { ref, onMounted } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { useShare } from '@vueuse/core'
+import { Loader } from '@googlemaps/js-api-loader';
 
+const loader = new Loader({
+  apiKey:
+    'AIzaSyDnFCHKJCZPEfgF9nD4ljZHweuOy6XrfCk',
+  version: 'weekly',
+  libraries: ['places'],
+});
+
+const apiPromise = loader.load();
 
 
 const shareOptions = ref();
@@ -195,7 +198,13 @@ const otherRole = ref();
 const { share, isSupported } = useShare()
 const userLat = ref();
 const userLng = ref();
-
+const markerOptions = {
+  position: {
+    lat: 51.093048,
+    lng: 6.842120
+  }, title: 'Me'
+}
+const pinOptions = { background: '#f97316' }
 const markers = ref([
   {
     id: 1,
@@ -228,16 +237,16 @@ const setMarker = async () => {
     console.log("User's current location: ", { latitude, longitude });
 
     // Check if markers array has at least one marker
-    if (markers.value[0]) {
-      console.log("Marker exists, updating position...");
-      // Update the first marker's position
-      userLat.value = latitude;
-      userLng.value = longitude;
-      markers.value[0].position.lat = latitude;
-      markers.value[0].position.lng = longitude;
-    } else {
-      console.error("Marker is undefined, cannot update position.");
-    }
+    //if (markers.value[0]) {
+
+    // Update the first marker's position
+    userLat.value = latitude;
+    userLng.value = longitude;
+    markerOptions.position.lat = userLat.value;
+    markerOptions.position.lng = userLng.value;
+    /*  } else {
+       console.error("Marker is undefined, cannot update position.");
+     } */
 
   } catch (error) {
     console.error("Error fetching location:", error);
@@ -334,8 +343,6 @@ const shareCode = () => {
 
 
 <style scoped>
-
-
 .container-fluid {
 
   background-color: #303030;

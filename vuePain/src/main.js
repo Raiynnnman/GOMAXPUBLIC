@@ -9,7 +9,8 @@ import App from './App.vue'
 import { useProfileStore } from '@/stores/profile';
 import { useAuthStore } from '@/stores/auth';
 import router from './router'
-import VueGoogleMaps from '@fawmi/vue-google-maps';
+import { GoogleMap, Marker, AdvancedMarker, InfoWindow } from 'vue3-google-map';
+
 //PrimeVue components
 
 import Button from 'primevue/button';
@@ -44,10 +45,13 @@ import TabPanels from 'primevue/tabpanels';
 import TabPanel from 'primevue/tabpanel';
 import ToastService from 'primevue/toastservice';
 import Knob from 'primevue/knob';
+import Message from 'primevue/message';
 
 import emergency from './views/familyTracker/emergency.vue';
 import EmergencyContacts from './components/EmergencyContacts/EmergencyContacts.vue';
 import ContactItem from './components/EmergencyContacts/ContactItem.vue';
+import places from './views/familyTracker/places.vue';
+import placesSidebar from './views/familyTracker/placesSidebar.vue';
 
 const MyPreset = definePreset(Lara, {
     semantic: {
@@ -98,13 +102,22 @@ app.component('TabList', TabList);
 app.component('Tab', Tab);
 app.component('TabPanels', TabPanels);
 app.component('TabPanel', TabPanel);
+app.component('Message', Message);
+
+
+
+
 //Custom Components
 app.component('Navbar', Navbar);
 app.component('emergency', emergency);
+app.component('places', places);
 app.component('EmergencyContacts', EmergencyContacts);
 app.component('ContactItem', ContactItem);
-
-
+app.component('placesSidebar', placesSidebar);
+app.component('GoogleMap', GoogleMap);
+app.component('InfoWindow', InfoWindow);
+app.component('Marker', Marker);
+app.component('AdvancedMarker', AdvancedMarker);
 app.use(PrimeVue, {
     theme: {
         preset: MyPreset,
@@ -118,11 +131,6 @@ app.use(PrimeVue, {
 app.use(createPinia())
 app.use(ToastService)
 app.use(router)
-app.use(VueGoogleMaps, {
-    load: {
-      key: 'AIzaSyDnFCHKJCZPEfgF9nD4ljZHweuOy6XrfCk',
-    },
-  });
 const profileStore = useProfileStore();
 const authStore = useAuthStore();
 if (localStorage.getItem("token")) { 
