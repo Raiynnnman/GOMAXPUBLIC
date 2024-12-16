@@ -57,6 +57,7 @@ class HomeHorizontal extends Component {
                 <div>
                     <Navbar />
                     <HeroOliveMain horizontal="horizontal" bgshape="bg-shape" />
+                    <FooterHome horizontal="horizontal" />
                 </div>
                 )}
                 {(siteType() === 'legal') && (
