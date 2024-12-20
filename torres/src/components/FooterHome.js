@@ -99,6 +99,7 @@ class FooterHome extends Component {
                                             <TemplateCheckbox boxColor='white' checkColor='black' style={{color:"white"}} checked={this.state.contactus.agree} 
                                                 onClick={this.agreeChange}
                                             label='By submitting this form, I acknowledge and agree to receive communications from PoundPain Tech via email, SMS, and phone call. I consent to PoundPain Tech contacting me for future updates, promotions, and other information.'/>
+                                            <a style={{marginLeft:90,color:"white"}} href="https://www.poundpain.com/privacy_policy.html">Privacy Policy</a>
                                             <TemplateButton
                                                 disabled={!this.state.contactus.agree}
                                                 style={{marginTop:10,color:"white",width:'100%',backgroundColor:'black'}} onClick={this.contactus} 
@@ -137,7 +138,7 @@ class FooterHome extends Component {
                                                 <i className="zmdi zmdi-view-headline"></i>
                                             </div>
                                             <div className="contact-text">
-                                                <a href="/terms_of_service.html" rel="noreferrer" target='_blank'>Terms and Conditions</a>
+                                                <a href="/terms_of_service.html" style={{color:"white"}} rel="noreferrer" target='_blank'>Terms and Conditions</a>
                                             </div>
                                         </div>
                                         <div className="single-contact-info">
@@ -145,7 +146,7 @@ class FooterHome extends Component {
                                                 <i className="zmdi zmdi-view-toc"></i>
                                             </div>
                                             <div className="contact-text">
-                                                <a href="/privacy_policy.html" rel="noreferrer" target='_blank'>Privacy Policy</a>
+                                                <a href="/privacy_policy.html" style={{color:"white"}} rel="noreferrer" target='_blank'>Privacy Policy</a>
                                             </div>
                                         </div>
                                         <div className="single-contact-info">
