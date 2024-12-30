@@ -15,6 +15,7 @@ class FooterHome extends Component {
                 name:'',
                 email:'',
                 agree:false,
+                sms:false,
                 message:''
             },
             contact_us_sent:false,
@@ -22,6 +23,7 @@ class FooterHome extends Component {
             maillist:'',
         } 
         this.agreeChange = this.agreeChange.bind(this);
+        this.smsChange = this.smsChange.bind(this);
         this.contactus = this.contactus.bind(this);
         this.mailinglist = this.mailinglist.bind(this);
         this.nameChange = this.nameChange.bind(this);
@@ -31,6 +33,10 @@ class FooterHome extends Component {
     }
     agreeChange(e) { 
         this.state.contactus.agree = e.target.value;
+        this.setState(this.state);
+    } 
+    smsChange(e) { 
+        this.state.contactus.sms = e.target.value;
         this.setState(this.state);
     } 
     nameChange(e) { 
@@ -96,9 +102,14 @@ class FooterHome extends Component {
                                             <TemplateTextField style={{backgroundColor:"white"}} label="Name" onChange={this.nameChange}/>
                                             <TemplateTextField style={{backgroundColor:'white'}} label="Email" onChange={this.emailChange}/>
                                             <TemplateTextArea rows={5} style={{backgroundColor:'white'}} label="Message" onChange={this.messageChange}/>
+                                            <hr/>
                                             <TemplateCheckbox boxColor='white' checkColor='black' style={{color:"white"}} checked={this.state.contactus.agree} 
                                                 onClick={this.agreeChange}
                                             label='By submitting this form, I acknowledge and agree to receive communications from PoundPain Tech via email, SMS, and phone call. I consent to PoundPain Tech contacting me for future updates, promotions, and other information.'/>
+                                            <hr/>
+                                            <TemplateCheckbox boxColor='white' checkColor='black' style={{color:"white"}} checked={this.state.contactus.sms} 
+                                                onClick={this.smsChange}
+                                                label='I consent to receive SMS from PoundPain Reply STOP to opt-out; Reply HELP; Message and data rates apply; Messaging frequency may vary'/>
                                             <a style={{marginLeft:90,color:"white"}} href="https://www.poundpain.com/privacy_policy.html">Privacy Policy</a>
                                             <TemplateButton
                                                 disabled={!this.state.contactus.agree}

@@ -97,6 +97,9 @@ class FooterHome extends Component {
                                             <TemplateCheckbox boxColor='white' checkColor='black' style={{color:"white"}} checked={this.state.contactus.agree} 
                                                 onClick={this.agreeChange}
                                             label='By submitting this form, I acknowledge and agree to receive communications from 360BluConsulting via email, SMS, and phone call. I consent to 360BluConsulting contacting me for future updates, promotions, and other information.'/>
+                                            <TemplateCheckbox boxColor='white' checkColor='black' style={{color:"white"}} checked={this.state.contactus.agree} 
+                                                onClick={this.agreeChange}
+                                            label='I consent to receive SMS from 360BluConsulting Reply STOP to opt-out; Reply HELP; Message and data rates apply; Messaging frequency may vary'/>
                                             <TemplateButton
                                                 disabled={!this.state.contactus.agree}
                                                 style={{marginTop:10,color:"white",width:'100%',backgroundColor:'black'}} onClick={this.contactus} 
