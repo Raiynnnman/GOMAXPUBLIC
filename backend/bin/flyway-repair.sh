@@ -1,3 +1,11 @@
 #!/bin/sh
 
-`pwd`/bin/flyway-9.0.1/flyway -configFiles=/etc/flyway.conf repair
+HOST=`hostname`
+CONF=`pwd`/bin/conf/flyway.conf
+if [ -f `pwd`/bin/conf/flyway.conf.$USER ] ; then
+    CONF=`pwd`/bin/conf/flyway.conf.$USER
+fi
+if [ -f `pwd`/bin/conf/flyway.conf.$USER.$HOST ] ; then
+    CONF=`pwd`/bin/conf/flyway.conf.$USER.$HOST
+fi
+`pwd`/bin/flyway-9.0.1/flyway -configFiles=$CONF repair

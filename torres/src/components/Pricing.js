@@ -87,13 +87,14 @@ const useStyles = makeStyles((theme) => ({
 const Pricing = ({ onSelectPlan, showButton, office_type }) => {
   const classes = useStyles();
   const landingData = useSelector((store) => store.landingData);
+    console.log("ld",landingData);
 
   if (!landingData?.data?.pricing?.length) return null;
   return (
     <Box className='pricing-table-banner' id="pricing">
       <Container>
         <Grid container spacing={4} justifyContent="center">
-          {landingData.data.pricing.filter((t) => t.office_type === office_type).map((plan, index) => (
+          {landingData.data.pricing.filter((t) => t.office_type === office_type).filter((t) => t.toshow === 1).map((plan, index) => (
             <Grid item key={index} xs={12} sm={6} md={4} className={classes.pricingColumn} >
               <Paper className={`${classes.pricePackage} ${index === 1 ? classes.centerCard : ''}`} elevation={4}>
                 <div className={classes.pricePackageTop}>
@@ -112,7 +113,7 @@ const Pricing = ({ onSelectPlan, showButton, office_type }) => {
                     <Typography component="span" className={classes.priceBottom} style={{fontSize:24,fontWeight:"bold"}}>{plan.upfront_cost > 0 ? "/month" : ""}</Typography>
                     </h3>
                     <h3 style={{display:'flex',justifyContent:'center'}}>
-                    <Typography component="span" className={classes.priceBottom} style={{fontSize:18}}>{plan.benefits[0].description}</Typography>
+                    <Typography component="span" className={classes.priceBottom} style={{fontSize:18}}>{plan.benefits && plan.benefits.length > 0 ? plan.benefits[0].description : "N/A"}</Typography>
                     </h3>
                   </div>
                   <List className={classes.priceList}>
