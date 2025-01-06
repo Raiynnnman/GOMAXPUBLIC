@@ -14,6 +14,7 @@ class FooterHome extends Component {
             contactus:{
                 name:'',
                 email:'',
+                phone:'',
                 agree:false,
                 sms:false,
                 message:''
@@ -28,6 +29,7 @@ class FooterHome extends Component {
         this.mailinglist = this.mailinglist.bind(this);
         this.nameChange = this.nameChange.bind(this);
         this.emailChange = this.emailChange.bind(this);
+        this.phoneChange = this.phoneChange.bind(this);
         this.messageChange = this.messageChange.bind(this);
         this.subscribeChange = this.subscribeChange.bind(this);
     }
@@ -45,6 +47,10 @@ class FooterHome extends Component {
     } 
     emailChange(e) {  
         this.state.contactus.email = e.target.value;
+        this.setState(this.state);
+    } 
+    phoneChange(e) {  
+        this.state.contactus.phone = e.target.value;
         this.setState(this.state);
     } 
     messageChange(e) {  
@@ -101,6 +107,7 @@ class FooterHome extends Component {
                                     <form className="contact-form" action="/">
                                             <TemplateTextField style={{backgroundColor:"white"}} label="Name" onChange={this.nameChange}/>
                                             <TemplateTextField style={{backgroundColor:'white'}} label="Email" onChange={this.emailChange}/>
+                                            <TemplateTextField style={{backgroundColor:'white'}} label="Phone" onChange={this.phoneChange}/>
                                             <TemplateTextArea rows={5} style={{backgroundColor:'white'}} label="Message" onChange={this.messageChange}/>
                                             <hr/>
                                             <TemplateCheckbox boxColor='white' checkColor='black' style={{color:"white"}} checked={this.state.contactus.agree} 

@@ -24,6 +24,7 @@ class ContactUs extends Component {
             contactus:{
                 name:'',
                 email:'',
+                phone: '',
                 agree:false,
                 sms:false,
                 message:''
@@ -35,9 +36,9 @@ class ContactUs extends Component {
         this.agreeChange = this.agreeChange.bind(this);
         this.smsChange = this.smsChange.bind(this);
         this.contactus = this.contactus.bind(this);
-        this.mailinglist = this.mailinglist.bind(this);
         this.nameChange = this.nameChange.bind(this);
         this.emailChange = this.emailChange.bind(this);
+        this.phoneChange = this.phoneChange.bind(this);
         this.messageChange = this.messageChange.bind(this);
         this.subscribeChange = this.subscribeChange.bind(this);
     } 
@@ -63,6 +64,10 @@ class ContactUs extends Component {
         this.state.contactus.email = e.target.value;
         this.setState(this.state);
     } 
+    phoneChange(e) {  
+        this.state.contactus.phone = e.target.value;
+        this.setState(this.state);
+    } 
     messageChange(e) {  
         this.state.contactus.message = e.target.value;
         this.setState(this.state);
@@ -76,15 +81,6 @@ class ContactUs extends Component {
 
         this.props.dispatch(contactus(this.state.contactus,function(err,args) { 
             args.state.contact_us_sent = true;
-            args.setState(args.state);
-        },this));
-
-    } 
-
-    mailinglist() { 
-
-        this.props.dispatch(subscribe({email:this.state.maillist},function(err,args) { 
-            args.state.subscribe_sent = true;
             args.setState(args.state);
         },this));
 
@@ -108,6 +104,7 @@ class ContactUs extends Component {
                         <h3 className="title">Contact Us</h3>
                         <TemplateTextField style={{backgroundColor:"white"}} label="Name" onChange={this.nameChange}/><br/>
                         <TemplateTextField style={{backgroundColor:'white'}} label="Email" onChange={this.emailChange}/>
+                        <TemplateTextField style={{backgroundColor:'white'}} label="Phone" onChange={this.phoneChange}/>
                         <TemplateTextArea rows={5} style={{backgroundColor:'white'}} label="Message" onChange={this.messageChange}/>
                         <hr/>
                         <Grid container xs="12">

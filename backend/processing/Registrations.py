@@ -1457,9 +1457,9 @@ class ContactUs(RegistrationsBase):
         if len(o) > 0:
             return {'success':True}
         db.update("""
-            insert into contactus_emails (name,email,message) 
+            insert into contactus_emails (name,email,message,phone) 
                 values (%s,lower(%s),%s)
-            """,(params['name'],params['email'],params['message'])
+            """,(params['name'],params['email'],params['message'],params['phone'])
         )
         sysemail = config.getKey("contact_us_email")
         url = config.getKey("host_url")
@@ -1473,6 +1473,7 @@ class ContactUs(RegistrationsBase):
         data['__NAME__'] = params['name']
         data['__EMAIL__'] = params['email']
         data['__MESSAGE__'] = params['message']
+        data['__PHONE__'] = params['phone']
         if config.getKey("use_defer") is not None:
             m.sendEmailQueued(sysemail,"Provider Information Inquiry - %s" % params['email'],"templates/mail/information-inquiry.html",data)
         else:
