@@ -97,3 +97,10 @@ class ReferralUpdateRest(RestBase):
         u = OfficeReferrals.ReferralUpdate()
         ret = u.process(args[0])
         return ret
+
+class ProfileUpdateRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Office.ProfileUpdate()
+        ret = u.process(args[0])
+        return ret

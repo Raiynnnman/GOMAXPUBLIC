@@ -453,6 +453,7 @@ class Navbar extends Component {
                                             <li className="active"><a href="/app">Home</a></li>
                                             <li><a href="/app/main/office/clients">Clients</a></li>
                                             <li><a href="/app/main/office/locations">Locations</a></li>
+                                            {/*<li><a href="/app/main/office/profile">Profile</a></li>*/}
                                             {/*<li><a href="/app/main/office/invoices">Invoices</a></li>*/}
                                             <li><a href="#">
                                                 <DropdownMenu currentUser={this.props.currentUser} 
@@ -470,8 +471,9 @@ class Navbar extends Component {
                                     <nav>
                                         <ul>                              
                                             <li className="active"><a href="/app">Home</a></li>
-                                            <li><a href="/app/main/admin/locations">Locations</a></li>
                                             <li><a href="/app/main/office/clients">Clients</a></li>
+                                            <li><a href="/app/main/admin/locations">Locations</a></li>
+                                            {/*<li><a href="/app/main/office/profile">Profile</a></li>*/}
                                             <li><a href="#">
                                                 <DropdownMenu currentUser={this.props.currentUser} 
                                                     title={

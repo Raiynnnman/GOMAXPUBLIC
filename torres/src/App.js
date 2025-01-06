@@ -20,6 +20,7 @@ import Forgot from './pain/forgot/Forgot';
 import Reset from './pain/reset/Reset';
 import 'react-toastify/dist/ReactToastify.css'
 import SearchAdmin from './pain/admin/SearchAdmin';
+import ContactUs from './pain/landing/ContactUs';
 import Map from './pain/admin/Map';
 import Register from './pain/register/Register';
 import InvoiceAdminList from './pain/admin/InvoiceAdminList';
@@ -43,6 +44,7 @@ import Tickets from "./pain/admin/Tickets";
 import Calendar from "./pain/calendar/Calender";
 import DataScience from './pain/datascience/DataScience';
 import CRMMain from './pain/admin/CRMMain';
+import Onboarding from './pain/office/Onboarding';
 const CloseButton = ({closeToast}) => <i onClick={closeToast} className="la la-close notifications-close"/>
 
 class App extends Component {
@@ -89,6 +91,7 @@ class App extends Component {
                         <Route exact path='/register-provider' component={RegisterProvider}/>
                         <Route exact path='/register-referrer' component={RegisterReferrer}/>
                         <Route exact path='/welcome' component={Welcome}/>
+                        <Route exact path='/contactus' component={ContactUs}/>
                         <Route exact path='/register-provider/:id' component={RegisterProvider}/>
                         <Route exact path='/register-legal' component={RegisterLegal}/>
                         <Route exact path='/register-legal/:id' component={RegisterLegal}/>
@@ -109,6 +112,7 @@ class App extends Component {
                         <Route exact path='/app/main/admin/plans' component={PricingList}/>
                         <Route exact path='/app/main/admin/users' component={UserAdminList}/>
                         <Route exact path="/app/main/office/locations"  component={OfficeAddresses} />
+                        <Route exact path="/app/main/office/profile"  component={Onboarding} />
                         {/*<Route exact path="/app/main/office/chat" component={ChatOffice} />*/}
                         <Route exact path="/app/main/office/clients"  component={Customers} />
                         <Route exact path="/app/main/client/search" component={Search} />

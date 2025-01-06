@@ -75,7 +75,6 @@ class OfficeDashboard(OfficeBase):
         return o[0]
 
     def getOfficeNotifications(self, off_id):
-        print(off_id)
         db = Query()
          #This query's primary goal is to group by `notifiable_type`.
          #It does this by finding the maximum value of `acknowledged` 
@@ -416,4 +415,19 @@ class UsersUpdate(OfficeBase):
         ret['success'] = True
         return ret
 
+class ProfileUpdate(OfficeBase):
+    def __init__(self):
+        super().__init__()
+
+    def isDeferred(self):
+        return False
+
+    @check_office
+    def execute(self, *args, **kwargs):
+        ret = []
+        job,user,off_id,params = self.getArgs(*args,**kwargs)
+        db = Query()
+        print(params)
+        db.commit()
+        return {'success':True}
 
