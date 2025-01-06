@@ -1458,7 +1458,7 @@ class ContactUs(RegistrationsBase):
             return {'success':True}
         db.update("""
             insert into contactus_emails (name,email,message,phone) 
-                values (%s,lower(%s),%s)
+                values (%s,lower(%s),%s,%s)
             """,(params['name'],params['email'],params['message'],params['phone'])
         )
         sysemail = config.getKey("contact_us_email")
