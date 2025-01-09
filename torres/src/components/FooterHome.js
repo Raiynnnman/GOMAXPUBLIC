@@ -112,16 +112,12 @@ class FooterHome extends Component {
                                             <hr/>
                                             <TemplateCheckbox boxColor='white' checkColor='black' style={{color:"white"}} checked={this.state.contactus.agree} 
                                                 onClick={this.agreeChange}
-                                            label='By submitting this form, I acknowledge and agree to receive communications from PoundPain Tech via email, SMS, and phone call. I consent to PoundPain Tech contacting me for future updates, promotions, and other information.'/>
+                                                label="By checking this box, I consent to receive text messages related to Appoints from POUND PAIN. You can use 'STOP' at any time to opt out. Message and data rates may apply. Message frequency may vary. Text 'HELP' to (407) 306-7241 for assistance. For information, please refer to our Privacy Policy (https://www.poundpain.com/privacy_policy.html) and SMS Terms and Conditions (https://www.poundpain.com/sms_policy.html) on our website"/>
                                             <hr/>
-                                            <TemplateCheckbox boxColor='white' checkColor='black' style={{color:"white"}} checked={this.state.contactus.sms} 
-                                                onClick={this.smsChange}
-                                                label='I consent to receive SMS from PoundPain Reply STOP to opt-out; Reply HELP; Message and data rates apply; Messaging frequency may vary'/>
-                                            <a style={{marginLeft:90,color:"white"}} href="https://www.poundpain.com/privacy_policy.html">Privacy Policy</a>
                                             <TemplateButton
                                                 disabled={!this.state.contactus.agree}
                                                 style={{marginTop:10,color:"white",width:'100%',backgroundColor:'black'}} onClick={this.contactus} 
-                                                label='Contact Us'/>
+                                                label='Contact Us'/> 
                                     </form>
                                     </>
                                     )}
@@ -150,6 +146,11 @@ class FooterHome extends Component {
                                                     https://poundpain.com/
                                                 </span>
                                             </div>
+                                            <div className="contact-text">
+                                                <span>mailto:info@poundpain.com<br />
+                                                <a href="/contactus" style={{color:"white"}} rel="noreferrer" target='_blank'>Contact Us</a>
+                                                </span>
+                                            </div>
                                         </div>
                                         <div className="single-contact-info">
                                             <div className="contact-icon">
@@ -157,6 +158,11 @@ class FooterHome extends Component {
                                             </div>
                                             <div className="contact-text">
                                                 <a href="/terms_of_service.html" style={{color:"white"}} rel="noreferrer" target='_blank'>Terms and Conditions</a>
+                                            </div>
+                                            <div className="contact-text">
+                                                <a href="/sms_policy.html" style={{color:"white"}} rel="noreferrer" target='_blank'>SMS Terms and Conditions </a>
+                                            </div>
+                                            <div className="contact-text">
                                             </div>
                                         </div>
                                         <div className="single-contact-info">
