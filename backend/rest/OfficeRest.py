@@ -104,3 +104,10 @@ class ProfileUpdateRest(RestBase):
         u = Office.ProfileUpdate()
         ret = u.process(args[0])
         return ret
+
+class ProfileListRest(RestBase):
+
+    def post(self, *args, **kwargs):
+        u = Office.ProfileList()
+        ret = u.process(args[0])
+        return ret

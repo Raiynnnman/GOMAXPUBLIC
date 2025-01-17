@@ -104,3 +104,10 @@ def referralupdate(*args, **kwargs):
 def profileupdate(*args, **kwargs):
     po = OfficeRest.ProfileUpdateRest()
     return po.postWrapper(*args,**kwargs)
+
+@office_set.route('/office/profile/list', methods=['POST'])
+@token_required
+@swag_from(docs_dir + 'office_users_update.yaml')
+def profilelist(*args, **kwargs):
+    po = OfficeRest.ProfileListRest()
+    return po.postWrapper(*args,**kwargs)
