@@ -64,6 +64,8 @@ class FooterHome extends Component {
 
     contactus() { 
 
+        window.location.href = "https://www.poundpain.com/contactus";
+        return;
         this.props.dispatch(contactus(this.state.contactus,function(err,args) { 
             args.state.contact_us_sent = true;
             args.setState(args.state);
@@ -105,7 +107,7 @@ class FooterHome extends Component {
                                     <>
                                     <h3 className="title">Say Hello!</h3>
                                     <form className="contact-form" action="/">
-                                            <TemplateTextField style={{backgroundColor:"white"}} label="Name" onChange={this.nameChange}/>
+                                            {/*<TemplateTextField style={{backgroundColor:"white"}} label="Name" onChange={this.nameChange}/>
                                             <TemplateTextField style={{backgroundColor:'white'}} label="Email" onChange={this.emailChange}/>
                                             <TemplateTextField style={{backgroundColor:'white'}} label="Phone" onChange={this.phoneChange}/>
                                             <TemplateTextArea rows={5} style={{backgroundColor:'white'}} label="Message" onChange={this.messageChange}/>
@@ -113,9 +115,9 @@ class FooterHome extends Component {
                                             <TemplateCheckbox boxColor='white' checkColor='black' style={{color:"white"}} checked={this.state.contactus.agree} 
                                                 onClick={this.agreeChange}
                                                 label="By checking this box, I consent to receive text messages related to Appoints from POUND PAIN. You can use 'STOP' at any time to opt out. Message and data rates may apply. Message frequency may vary. Text 'HELP' to (407) 306-7241 for assistance. For information, please refer to our Privacy Policy (https://www.poundpain.com/privacy_policy.html) and SMS Terms and Conditions (https://www.poundpain.com/sms_policy.html) on our website"/>
-                                            <hr/>
+                                            <hr/>*/}
                                             <TemplateButton
-                                                disabled={!this.state.contactus.agree}
+                                                disabled={this.state.contactus.agree}
                                                 style={{marginTop:10,color:"white",width:'100%',backgroundColor:'black'}} onClick={this.contactus} 
                                                 label='Contact Us'/> 
                                     </form>
@@ -159,9 +161,9 @@ class FooterHome extends Component {
                                             <div className="contact-text">
                                                 <a href="/terms_of_service.html" style={{color:"white"}} rel="noreferrer" target='_blank'>Terms and Conditions</a>
                                             </div>
-                                            <div className="contact-text">
+                                            {/*<div className="contact-text">
                                                 <a href="/sms_policy.html" style={{color:"white"}} rel="noreferrer" target='_blank'>SMS Terms and Conditions </a>
-                                            </div>
+                                            </div>*/}
                                             <div className="contact-text">
                                             </div>
                                         </div>

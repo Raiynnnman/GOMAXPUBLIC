@@ -24,6 +24,7 @@ import PracticeInfo from './PracticeInfo';
 import Preferences from './Preferences';
 import Welcome from './Welcome';
 import {profileSave} from '../../actions/profileSave';
+import {profileList} from '../../actions/profileList';
 
 const steps = [
     {
@@ -40,34 +41,10 @@ const steps = [
     },
     {
         id:3,
-        label: "Your Hours"
-    },
-    {
-        id:4,
-        label: "The Providers"
-    },
-    {
-        id:5,
-        label: "Designated Contacts"
-    },
-    {
-        id:6,
-        label: "Patient Services"
-    },
-    {
-        id:7,
-        label: "Insurance / Payment Accepted"
-    },
-    {
-        id:8,
-        label: "Practice Preferences"
-    },
-    {
-        id:9,
         label: "Onboarding Notes"
     },
     {
-        id:10,
+        id:4,
         label: "Activate"
     },
 ];
@@ -88,6 +65,7 @@ class Onboarding extends Component {
     }
 
     componentDidMount() {
+        this.props.dispatch(profileList({}));
     }
 
     onSave(r,t) { 
@@ -122,26 +100,9 @@ class Onboarding extends Component {
         <>
         <Navbar/>
         <Box style={{margin:20}}>
-            <Grid container xs="12">
-                <Grid item xs="12">
-                  <Stepper activeStep={this.state.active_step}>
-                    {steps.map((step, index) => (
-                      <Step key={step.id}>
-                        <StepLabel>
-                        </StepLabel>
-                        <StepContent>
-                        </StepContent>
-                      </Step>
-                    ))}
-                  </Stepper>
-                </Grid>                
-            </Grid>
             <Grid container xs="12" justifyContent="center" alignItems="center">
                 <Grid sx="12" style={{marginTop:20}}>
                 <>
-                    {this.state.active_step === -1 && (
-                        <Introduction profile={this.state.profile} onSave={this.onSave}/>
-                    )}
                     {this.state.active_step === 0 && (
                         <Welcome profile={this.state.profile} onSave={this.onSave}/>
                     )}
@@ -149,32 +110,18 @@ class Onboarding extends Component {
                         <PracticeInfo profile={this.state.profile} onSave={this.onSave}/>
                     )}
                     {this.state.active_step === 2 && (
-                        <Hours profile={this.state.profile} onSave={this.onSave}/>
-                    )}
-                    {this.state.active_step === 3 && (
-                        <Providers profile={this.state.profile} onSave={this.onSave}/>
-                    )}
-                    {this.state.active_step === 4 && (
-                        <DesignatedContacts profile={this.state.profile} onSave={this.onSave}/>
-                    )}
-                    {this.state.active_step === 5 && (
-                        <PatientServices profile={this.state.profile} onSave={this.onSave}/>
-                    )}
-                    {this.state.active_step === 6 && (
-                        <Insurance profile={this.state.profile} onSave={this.onSave}/>
-                    )}
-                    {this.state.active_step === 7 && (
                         <Preferences profile={this.state.profile} onSave={this.onSave}/>
                     )}
-                    {this.state.active_step === 8 && (
+                    {this.state.active_step === 3 && (
                         <Notes profile={this.state.profile} onSave={this.onSave}/>
                     )}
-                    {this.state.active_step === 9 && (
+                    {this.state.active_step === 4 && (
                         <Activate profile={this.state.profile} onSave={this.onSave}/>
                     )}
                 </>
                 </Grid>
             </Grid>
+            {(this.state.active_step < 1) && (
             <Grid container xs="12" justifyContent="center" alignItems="center">
                 <Grid sx="12">
                   <Box sx={{ mb: 2 }}>
@@ -196,6 +143,7 @@ class Onboarding extends Component {
                   </Box>
                 </Grid>
             </Grid>
+            )}
         </Box>
         </>
         )

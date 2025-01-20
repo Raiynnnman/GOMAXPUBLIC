@@ -431,3 +431,17 @@ class ProfileUpdate(OfficeBase):
         db.commit()
         return {'success':True}
 
+class ProfileList(OfficeBase):
+    def __init__(self):
+        super().__init__()
+
+    def isDeferred(self):
+        return False
+
+    @check_office
+    def execute(self, *args, **kwargs):
+        ret = []
+        job,user,off_id,params = self.getArgs(*args,**kwargs)
+        db = Query()
+        db.commit()
+        return ret
