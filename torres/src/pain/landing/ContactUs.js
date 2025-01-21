@@ -113,11 +113,8 @@ class ContactUs extends Component {
                             </Grid>
                             <Grid item xs="11">
                             <label for="t1">
-                            By checking this box, I consent to receive text messages related to Appointments from POUND PAIN.&nbsp;
-                            You can reply "STOP" at any time to opt out. Message and data rates may apply.&nbsp;
-                            Message frequency may vary, text HELP to (407) 305-7241 for Assistance.&nbsp;
-                            For more information, please refer to our <a style={{color:"black"}} href="/privacy_policy.html">Privacy Policy</a> (https://www.poundpain.com/privacy_policy.html) and&nbsp;
-                            and <a style={{color:"black"}} href="/sms_policy.html">SMS Terms and Conditions</a> (https://www.poundpain.com/sms_policy.html) on our website.
+By checking this box, you agree to receive text messages from Pound Pain related conversational purposes. You may reply "STOP" to opt out anytime. Reply to HELP for assistance. Message and date rates may apply. Message frequency may vary
+                            For more information, please refer to our <a style={{color:"black"}} href="/privacy_policy.html">Privacy Policy</a> (https://www.poundpain.com/privacy_policy.html) 
                             </label>
                             </Grid>
                         </Grid>
