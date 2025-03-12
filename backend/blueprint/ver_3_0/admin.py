@@ -275,3 +275,17 @@ def onlinedemolist(*args, **kwargs):
 def notificationslist(*args, **kwargs):
     po = AdminRest.NotificationsListRest()
     return po.postWrapper(*args,**kwargs)
+
+@admin.route('/admin/market/list', methods=['POST'])
+@token_required
+@swag_from(docs_dir + 'admin_office_list.yaml')
+def marketlist(*args, **kwargs):
+    po = AdminRest.MarketListRest()
+    return po.postWrapper(*args,**kwargs)
+
+@admin.route('/admin/market/update', methods=['POST'])
+@token_required
+@swag_from(docs_dir + 'admin_office_list.yaml')
+def marketupdate(*args, **kwargs):
+    po = AdminRest.MarketUpdateRest()
+    return po.postWrapper(*args,**kwargs)

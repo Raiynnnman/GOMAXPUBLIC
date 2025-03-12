@@ -18,6 +18,7 @@ import RegisterLegal from './pain/landing/RegisterLegal';
 import Welcome from './pain/welcome/Welcome';
 import Forgot from './pain/forgot/Forgot';
 import Reset from './pain/reset/Reset';
+import Market from './pain/market/Market';
 import 'react-toastify/dist/ReactToastify.css'
 import SearchAdmin from './pain/admin/SearchAdmin';
 import ContactUs from './pain/landing/ContactUs';
@@ -99,6 +100,7 @@ class App extends Component {
                         <Route exact path='/app/main/dashboard' component={Dashboard}/>
                         <Route exact path='/app/main/admin/investors' component={InvestorMap}/>
                         <Route exact path='/app/main/admin/datascience' component={DataScience}/>
+                        <Route exact path='/app/main/admin/market' component={Market}/>
                         <Route exact path='/app/main/view/incidentmap' component={InvestorMap}/>
                         <Route exact path='/app/main/admin/search' component={SearchAdmin}/>
                         <Route exact path='/app/main/admin/search/:id' component={SearchAdmin}/>
