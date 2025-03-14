@@ -35,7 +35,7 @@ Our platform leverages cutting-edge technology to match lawyers with clients who
 <b>Real-Time Notifications</b>: Stay updated with instant notifications whenever a new referral is available, allowing you to act swiftly and secure clients before your competitors.
                                 </p>
                                 <p style={{textAlign:'center',color:'black'}}>
-<b>ncreased Client Acquisition</b>: Our referral system helps you connect with a steady stream of potential clients, boosting your firm's case volume and revenue.
+<b>Increased Client Acquisition</b>: Our referral system helps you connect with a steady stream of potential clients, boosting your firm's case volume and revenue.
                                 </p>
                                 <p style={{textAlign:'center',color:'black'}}>
 <b>Enhanced Efficiency</b>: By automating the referral process, we reduce the administrative burden on your team, allowing them to focus on case preparation and client advocacy.
