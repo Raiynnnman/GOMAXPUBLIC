@@ -121,7 +121,6 @@ class Onboarding extends Component {
                 </>
                 </Grid>
             </Grid>
-            {(this.state.active_step < 1) && (
             <Grid container xs="12" justifyContent="center" alignItems="center">
                 <Grid sx="12">
                   <Box sx={{ mb: 2 }}>
@@ -143,7 +142,6 @@ class Onboarding extends Component {
                   </Box>
                 </Grid>
             </Grid>
-            )}
         </Box>
         </>
         )

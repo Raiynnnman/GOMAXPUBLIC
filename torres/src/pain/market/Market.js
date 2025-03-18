@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import Grid from '@mui/material/Grid';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
-import Navbar from '../components/Navbar';
+import Navbar from '../../components/Navbar';
 import translate from '../utils/translate';
 import AppSpinner from '../utils/Spinner';
 
