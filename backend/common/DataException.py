@@ -1,4 +1,0 @@
-
-class DataException(Exception):
-    pass
-
